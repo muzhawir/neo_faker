@@ -7,37 +7,37 @@ defmodule NeoFaker.Blood do
   @rh_factors ~w[+ -]
 
   @doc """
-  Generate random blood type in full format.
+  Generate a random blood group name.
 
-  Returns random blood type in full format like `B+`.
+  Returns a blood type in full format like `B+`.
 
   ## Examples
 
-      iex> NeoFaker.Blood.full_format()
+      iex> NeoFaker.Blood.group()
       "B"
 
   """
-  @spec full_format() :: String.t()
-  def full_format, do: "#{blood_type()}#{rh_factor()}"
+  @spec group() :: String.t()
+  def group, do: "#{type()}#{rh_factor()}"
 
   @doc """
-  Generate random blood type.
+  Generate a random blood type.
 
-  Returns only the blood type like `A` or `AB`.
+  Returns a blood type like `A` or `AB`.
 
   ## Examples
 
-      iex> NeoFaker.Blood.blood_type()
+      iex> NeoFaker.Blood.type()
       "B+"
 
   """
-  @spec blood_type() :: String.t()
-  def blood_type, do: Enum.random(@blood_types)
+  @spec type() :: String.t()
+  def type, do: Enum.random(@blood_types)
 
   @doc """
   Generate random rh factor.
 
-  Returns only random rh factor like `+` or `-`.
+  Returns a random rh factor like `+` or `-`.
 
   ## Examples
 

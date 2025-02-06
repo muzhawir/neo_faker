@@ -9,12 +9,12 @@ defmodule NeoFaker.Blood do
   @doc """
   Generate a random blood group name.
 
-  Returns a blood type in full format like `B+`.
+  Returns a blood type in full format like `A-` or `B+`.
 
   ## Examples
 
       iex> NeoFaker.Blood.group()
-      "B"
+      "B+"
 
   """
   @spec group() :: String.t()
@@ -23,12 +23,12 @@ defmodule NeoFaker.Blood do
   @doc """
   Generate a random blood type.
 
-  Returns a blood type like `A` or `AB`.
+  Returns a blood type like `A` or `B`.
 
   ## Examples
 
       iex> NeoFaker.Blood.type()
-      "B+"
+      "B"
 
   """
   @spec type() :: String.t()

@@ -7,6 +7,9 @@ defmodule NF.Gravatar do
 
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 
+  @typedoc "Email address"
+  @type email() :: String.t() | nil
+
   @gravatar_url "https://gravatar.com/avatar/"
 
   @doc """
@@ -19,7 +22,7 @@ defmodule NF.Gravatar do
   The accepted options are:
 
   - `:size` - specifies the image size
-  - `:fallback` - specifies the default fallback
+  - `:fallback` - specifies the default fallback image
 
   The values for `:size` can be:
   - `nil` - uses 80px (default)
@@ -34,6 +37,9 @@ defmodule NF.Gravatar do
 
   ## Examples
 
+      iex> NF.Gravatar.display()
+      "https://gravatar.com/avatar/205dd4220590dff2992f6146560666b5372d5acec005577fee792357ef3533dc?d=identicon&s=80"
+
       iex> NF.Gravatar.display("example.com")
       "https://gravatar.com/avatar/a379a6f6eeafb9a55e378c118034e2751e682fab9f2d30ab13d2125586ce1947?d=identicon&s=80"
 
@@ -44,18 +50,12 @@ defmodule NF.Gravatar do
       "https://gravatar.com/avatar/a379a6f6eeafb9a55e378c118034e2751e682fab9f2d30ab13d2125586ce1947?d=monsterid&s=80"
 
   """
-  @spec display(String.t(), Keyword.t()) :: String.t()
-  def display(email, opts \\ []) when is_binary(email) do
-    hashed_email = hash_email(email)
+  @spec display(email(), Keyword.t()) :: String.t()
+  def display(email \\ nil, opts \\ []) do
     image_size = image_size(opts)
     default_fallback = default_fallback(opts)
 
-    @gravatar_url
-    |> parse()
-    |> append_path("/#{hashed_email}")
-    |> append_query("d=#{default_fallback}")
-    |> append_query("s=#{image_size}")
-    |> URI.to_string()
+    generate_gravatar_url(email, image_size, default_fallback)
   end
 
   # Hash email using SHA256
@@ -82,5 +82,21 @@ defmodule NF.Gravatar do
       "wavatar" -> "wavatar"
       "robohash" -> "robohash"
     end
+  end
+
+  # Generate Gravatar URL with image size and default fallback query parameters
+  defp generate_gravatar_url(email, image_size, default_fallback) do
+    hashed_email =
+      case email do
+        nil -> hash_email("example_#{:rand.uniform(10_000)}.com")
+        _ -> hash_email(email)
+      end
+
+    @gravatar_url
+    |> parse()
+    |> append_path("/#{hashed_email}")
+    |> append_query("d=#{default_fallback}")
+    |> append_query("s=#{image_size}")
+    |> URI.to_string()
   end
 end

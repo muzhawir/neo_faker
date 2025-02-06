@@ -1,6 +1,6 @@
 defmodule NeoFaker.Blood do
   @moduledoc """
-  Generate random blood type.
+  Functions for generate random blood type.
   """
 
   @blood_types ~w[A B AB O]

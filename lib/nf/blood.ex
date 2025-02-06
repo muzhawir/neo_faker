@@ -1,4 +1,4 @@
-defmodule NeoFaker.Blood do
+defmodule NF.Blood do
   @moduledoc """
   Functions for generate random blood type.
   """
@@ -13,7 +13,7 @@ defmodule NeoFaker.Blood do
 
   ## Examples
 
-      iex> NeoFaker.Blood.group()
+      iex> NF.Blood.group()
       "B+"
 
   """
@@ -27,7 +27,7 @@ defmodule NeoFaker.Blood do
 
   ## Examples
 
-      iex> NeoFaker.Blood.type()
+      iex> NF.Blood.type()
       "B"
 
   """
@@ -35,13 +35,13 @@ defmodule NeoFaker.Blood do
   def type, do: Enum.random(@blood_types)
 
   @doc """
-  Generate random rh factor.
+  Generate arandom rh factor.
 
   Returns a random rh factor like `+` or `-`.
 
   ## Examples
 
-      iex> NeoFaker.Blood.rh_factor()
+      iex> NF.Blood.rh_factor()
       "+"
 
   """

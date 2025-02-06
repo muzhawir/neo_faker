@@ -1,4 +1,4 @@
-defmodule NeoFaker.Hash do
+defmodule NF.Hash do
   @moduledoc """
   Functions for generate random hash.
   """
@@ -18,10 +18,10 @@ defmodule NeoFaker.Hash do
 
   ## Examples
 
-      iex> NeoFaker.Hash.md5()
+      iex> NF.Hash.md5()
       "e35cb102765cfc56df21ba4c16e6a636"
 
-      iex> NeoFaker.Hash.md5(case: :upper)
+      iex> NF.Hash.md5(case: :upper)
       "E35CB102765CFC56DF21BA4C16E6A636"
 
   """
@@ -43,10 +43,10 @@ defmodule NeoFaker.Hash do
 
   ## Examples
 
-      iex> NeoFaker.Hash.sha1()
+      iex> NF.Hash.sha1()
       "c8719790cdfff41c37c75e0c848d2b57535255aa"
 
-      iex> NeoFaker.Hash.md5(case: :upper)
+      iex> NF.Hash.md5(case: :upper)
       "C8719790CDFFF41C37C75E0C848D2B57535255AA"
 
   """
@@ -68,10 +68,10 @@ defmodule NeoFaker.Hash do
 
   ## Examples
 
-      iex> NeoFaker.Hash.sha256()
+      iex> NF.Hash.sha256()
       "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
 
-      iex> NeoFaker.Hash.sha256(case: :upper)
+      iex> NF.Hash.sha256(case: :upper)
       "D0FF021E810FB8F3442A14393604B0661B02F0DFCB347D80C9580AF3AB5E7E6C"
 
   """

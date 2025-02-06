@@ -9,7 +9,7 @@ The package can be installed by adding `neo_faker` to your list of dependencies 
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.2.1"}
+    {:neo_faker, "~> 0.3.1"}
   ]
 end
 ```

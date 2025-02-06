@@ -1,10 +1,10 @@
 # neo_faker
 
-NeoFaker is a library for generating fake data for Elixir.
+neo_faker is a package for generating fake data for Elixir.
 
 ## Installation
 
-The package can be installed by adding `neo_faker` to your list of dependencies in `mix.exs`:
+Add `neo_faker` to your list of dependencies in `mix.exs` to install it from [Hex](https://hex.pm/packages/neo_faker):
 
 ```elixir
 def deps do

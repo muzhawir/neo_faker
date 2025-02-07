@@ -1,25 +1,22 @@
 defmodule Nf.Gravatar do
   @moduledoc """
-  Functions for generating a random Gravatar URL based on an email address.
+  Functions to generate random Gravatar URLs based on email addresses.
 
   This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """
   @moduledoc since: "0.3.1"
 
-  import URI, only: [parse: 1, append_path: 2, append_query: 2]
+  import Nf.Gravatar.Utils
 
   @typedoc "Email address"
   @type email :: String.t() | nil
 
-  @gravatar_url "https://gravatar.com/avatar/"
-  @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
   @doc """
-  Generate a Gravatar URL based on an email address.
+  Creates a Gravatar URL based on the email address.
 
   Returns a Gravatar URL with image size and default fallback query parameters.
 
-  ## Options
+  ## opts
 
   The accepted options are:
 
@@ -58,50 +55,5 @@ defmodule Nf.Gravatar do
     default_fallback = default_fallback(opts)
 
     generate_gravatar_url(email, image_size, default_fallback)
-  end
-
-  # Hash email using SHA256
-  defp hash_email!(email) do
-    if Regex.match?(@w3c_email_regex, email) do
-      user_email = email |> String.trim() |> String.downcase()
-      :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
-    else
-      raise ArgumentError, "Invalid email address"
-    end
-  end
-
-  # Get image size from display options
-  defp image_size(opts) when is_list(opts) do
-    case Keyword.get(opts, :size, 80) do
-      nil -> 80
-      size when is_integer(size) -> size
-    end
-  end
-
-  # Get default fallback from display options
-  defp default_fallback(opts) when is_list(opts) do
-    case Keyword.get(opts, :fallback, "identicon") do
-      nil -> "identicon"
-      "identicon" -> "identicon"
-      "monsterid" -> "monsterid"
-      "wavatar" -> "wavatar"
-      "robohash" -> "robohash"
-    end
-  end
-
-  # Generate Gravatar URL with image size and default fallback query parameters
-  defp generate_gravatar_url(email, image_size, default_fallback) do
-    hashed_email =
-      case email do
-        nil -> hash_email!("example_#{:rand.uniform(10_000)}.com")
-        _ -> hash_email!(email)
-      end
-
-    @gravatar_url
-    |> parse()
-    |> append_path("/#{hashed_email}")
-    |> append_query("d=#{default_fallback}")
-    |> append_query("s=#{image_size}")
-    |> URI.to_string()
   end
 end

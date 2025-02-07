@@ -1,6 +1,6 @@
 defmodule NF.Gravatar do
   @moduledoc """
-  Functions for generate a random Gravatar URL based on an email address.
+  Functions for generate random Gravatar URL based on an email address.
 
   This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """

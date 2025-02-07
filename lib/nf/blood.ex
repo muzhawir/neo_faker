@@ -1,6 +1,6 @@
 defmodule NF.Blood do
   @moduledoc """
-  Functions for generate a random blood type.
+  Functions for generate random blood type.
   """
   @moduledoc since: "0.3.1"
 

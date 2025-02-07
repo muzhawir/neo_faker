@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="./priv/logo/full_logo.svg" width="400" alt="NeoFaker Logo">
+  <a href="https://hexdocs.pm/neo_faker" target="_blank">
+    <img src="./priv/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
+  </a>
 </p>
 
 # NeoFaker
@@ -18,7 +20,7 @@ Add `neo_faker` to your list of dependencies in `mix.exs` to install it from [He
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.3.1"}
+    {:neo_faker, "~> 0.4.0", only: [:dev, :test], runtime: false}
   ]
 end
 ```

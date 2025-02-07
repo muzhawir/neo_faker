@@ -19,6 +19,7 @@ defmodule Nf.Gravatar.Utils do
   def hash_email!(email) do
     if Regex.match?(@w3c_email_regex, email) do
       user_email = email |> String.trim() |> String.downcase()
+
       :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
     else
       raise ArgumentError, "Invalid email address"

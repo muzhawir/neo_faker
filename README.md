@@ -1,5 +1,8 @@
 # neo_faker
 
+> [!WARNING]
+> **neo_faker is still in early development.** Expect breaking changes.
+
 **neo_faker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
 
 ## Installation

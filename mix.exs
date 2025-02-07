@@ -7,7 +7,32 @@ defmodule NeoFaker.MixProject do
       version: "0.3.1",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      description: description(),
+      package: package(),
+      deps: deps(),
+      name: "neo_faker",
+      source_url: "https://github.com/muzhawir/neo_faker",
+      homepage_url: "https://hex.pm/packages/neo_faker",
+      docs: &docs/0
+    ]
+  end
+
+  defp description do
+    "A fake data generator for Elixir, useful for testing, database seeding, and development."
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/muzhawir/neo_faker"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      logo: "./priv/logo/doc_logo.svg",
+      extras: ["README.md"]
     ]
   end
 

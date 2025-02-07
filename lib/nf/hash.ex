@@ -1,13 +1,13 @@
 defmodule Nf.Hash do
   @moduledoc """
-  Functions for generate random hash.
+  Functions to generate random hashes.
   """
   @moduledoc since: "0.3.1"
 
   @doc """
   Generate a random MD5 hash.
 
-  Returns a MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
+  Returns an MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
 
   ## Options
 
@@ -29,7 +29,7 @@ defmodule Nf.Hash do
 
   """
   @spec md5(Keyword.t()) :: String.t()
-  def md5(opts \\ []), do: generate_hash(:md5, opts)
+  def md5(options \\ []), do: generate_hash(:md5, options)
 
   @doc """
   Generate a random SHA1 hash.
@@ -51,12 +51,12 @@ defmodule Nf.Hash do
       iex> Nf.Hash.sha1()
       "c8719790cdfff41c37c75e0c848d2b57535255aa"
 
-      iex> Nf.Hash.md5(case: :upper)
+      iex> Nf.Hash.sha1(case: :upper)
       "C8719790CDFFF41C37C75E0C848D2B57535255AA"
 
   """
   @spec sha1(Keyword.t()) :: String.t()
-  def sha1(opts \\ []), do: generate_hash(:sha, opts)
+  def sha1(options \\ []), do: generate_hash(:sha, options)
 
   @doc """
   Generate a random SHA256 hash.
@@ -83,16 +83,18 @@ defmodule Nf.Hash do
 
   """
   @spec sha256(Keyword.t()) :: String.t()
-  def sha256(opts \\ []), do: generate_hash(:sha256, opts)
+  def sha256(options \\ []), do: generate_hash(:sha256, options)
 
-  defp generate_hash(type, opts) do
+  # Generate hash based on given hash type
+  defp generate_hash(hash_type, options) do
     character_case =
-      case Keyword.get(opts, :case) do
+      case Keyword.get(options, :case) do
         :upper -> :upper
         _ -> :lower
       end
 
     data = :crypto.strong_rand_bytes(16)
-    type |> :crypto.hash(data) |> Base.encode16(case: character_case)
+
+    hash_type |> :crypto.hash(data) |> Base.encode16(case: character_case)
   end
 end

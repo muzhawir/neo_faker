@@ -1,6 +1,6 @@
 defmodule Nf.Gravatar do
   @moduledoc """
-  Functions for generate random Gravatar URL based on an email address.
+  Functions for generating a random Gravatar URL based on an email address.
 
   This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """
@@ -9,7 +9,7 @@ defmodule Nf.Gravatar do
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 
   @typedoc "Email address"
-  @type email() :: String.t() | nil
+  @type email :: String.t() | nil
 
   @gravatar_url "https://gravatar.com/avatar/"
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/

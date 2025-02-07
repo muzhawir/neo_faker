@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./priv/logo/full_logo.svg" width="400" alt="NeoFaker Logo">
+</p>
+
 # neo_faker
 
 > [!WARNING]

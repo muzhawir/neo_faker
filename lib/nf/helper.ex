@@ -2,6 +2,7 @@ defmodule Nf.Helper do
   @moduledoc """
   Helper functions.
   """
+  @moduledoc since: "0.4.1"
 
   @doc """
   Retrieves the path to the `priv/lib` directory.

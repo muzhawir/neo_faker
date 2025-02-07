@@ -1,5 +1,6 @@
 defmodule Nf.Gravatar.Utils do
   @moduledoc false
+  @moduledoc since: "0.3.1"
 
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 

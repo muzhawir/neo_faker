@@ -1,6 +1,6 @@
 defmodule Nf.Hash do
   @moduledoc """
-  Functions to generate random hashes.
+  Functions to generating random hashes.
   """
   @moduledoc since: "0.3.1"
 

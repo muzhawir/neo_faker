@@ -11,6 +11,7 @@ defmodule NF.Gravatar do
   @type email() :: String.t() | nil
 
   @gravatar_url "https://gravatar.com/avatar/"
+  @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
   @doc """
   Generate a Gravatar URL based on an email address.
@@ -59,10 +60,13 @@ defmodule NF.Gravatar do
   end
 
   # Hash email using SHA256
-  defp hash_email(email) do
-    user_email = email |> String.trim() |> String.downcase()
-
-    :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
+  defp hash_email!(email) do
+    if Regex.match?(@w3c_email_regex, email) do
+      user_email = email |> String.trim() |> String.downcase()
+      :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
+    else
+      raise ArgumentError, "Invalid email address"
+    end
   end
 
   # Get image size from display options
@@ -88,8 +92,8 @@ defmodule NF.Gravatar do
   defp generate_gravatar_url(email, image_size, default_fallback) do
     hashed_email =
       case email do
-        nil -> hash_email("example_#{:rand.uniform(10_000)}.com")
-        _ -> hash_email(email)
+        nil -> hash_email!("example_#{:rand.uniform(10_000)}.com")
+        _ -> hash_email!(email)
       end
 
     @gravatar_url

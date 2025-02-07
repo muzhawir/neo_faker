@@ -2,12 +2,12 @@
   <img src="./priv/logo/full_logo.svg" width="400" alt="NeoFaker Logo">
 </p>
 
-# neo_faker
+# NeoFaker
 
 > [!WARNING]
-> **neo_faker is still in early development.** Expect breaking changes.
+> **NeoFaker is still in early development.** Expect breaking changes.
 
-**neo_faker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
+**NeoFaker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
 
 ## Installation
 

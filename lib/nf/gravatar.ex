@@ -1,4 +1,4 @@
-defmodule NF.Gravatar do
+defmodule Nf.Gravatar do
   @moduledoc """
   Functions for generate random Gravatar URL based on an email address.
 
@@ -39,17 +39,17 @@ defmodule NF.Gravatar do
 
   ## Examples
 
-      iex> NF.Gravatar.display()
-      "https://gravatar.com/avatar/205dd4220590dff2992f6146560666b5372d5acec005577fee792357ef3533dc?d=identicon&s=80"
+      iex> Nf.Gravatar.display()
+      "https://gravatar.com/avatar/836f82db99121b3481011f16b49dfa5fbc714a0d1b1b9f784a1ebbbf5b39577f?d=identicon&s=80"
 
-      iex> NF.Gravatar.display("example.com")
-      "https://gravatar.com/avatar/a379a6f6eeafb9a55e378c118034e2751e682fab9f2d30ab13d2125586ce1947?d=identicon&s=80"
+      iex> Nf.Gravatar.display("john.doe@example.com")
+      "https://gravatar.com/avatar/836f82db99121b3481011f16b49dfa5fbc714a0d1b1b9f784a1ebbbf5b39577f?d=identicon&s=80"
 
-      iex> NF.Gravatar.display("example.com", size: 100)
-      "https://gravatar.com/avatar/a379a6f6eeafb9a55e378c118034e2751e682fab9f2d30ab13d2125586ce1947?d=identicon&s=100"
+      iex> Nf.Gravatar.display("john.doe@example.com", size: 100)
+      "https://gravatar.com/avatar/836f82db99121b3481011f16b49dfa5fbc714a0d1b1b9f784a1ebbbf5b39577f?d=identicon&s=100"
 
-      iex> NF.Gravatar.display("example.com", fallback: "monsterid")
-      "https://gravatar.com/avatar/a379a6f6eeafb9a55e378c118034e2751e682fab9f2d30ab13d2125586ce1947?d=monsterid&s=80"
+      iex> Nf.Gravatar.display("john.doe@example.com", fallback: "monsterid")
+      "https://gravatar.com/avatar/836f82db99121b3481011f16b49dfa5fbc714a0d1b1b9f784a1ebbbf5b39577f?d=monsterid&s=80"
 
   """
   @spec display(email(), Keyword.t()) :: String.t()

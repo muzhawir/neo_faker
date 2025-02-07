@@ -4,6 +4,7 @@ defmodule NF.Gravatar do
 
   This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """
+  @moduledoc since: "0.3.1"
 
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 

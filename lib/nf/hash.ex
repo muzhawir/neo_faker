@@ -2,6 +2,7 @@ defmodule NF.Hash do
   @moduledoc """
   Functions for generate random hash.
   """
+  @moduledoc since: "0.3.1"
 
   @doc """
   Generate a random MD5 hash.

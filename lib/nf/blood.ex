@@ -2,6 +2,7 @@ defmodule NF.Blood do
   @moduledoc """
   Functions for generate a random blood type.
   """
+  @moduledoc since: "0.3.1"
 
   @blood_types ~w[A B AB O]
   @rh_factors ~w[+ -]

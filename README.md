@@ -1,6 +1,6 @@
 # neo_faker
 
-neo_faker is a package for generating fake data for Elixir.
+**neo_faker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
 
 ## Installation
 

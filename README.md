@@ -4,6 +4,8 @@
 
 # NeoFaker
 
+![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
+
 > [!WARNING]
 > **NeoFaker is still in early development.** Expect breaking changes.
 

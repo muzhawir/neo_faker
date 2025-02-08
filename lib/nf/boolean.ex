@@ -18,6 +18,7 @@ defmodule Nf.Boolean do
       false
 
   """
+  @spec boolean(pos_integer()) :: boolean()
   def boolean(true_ratio \\ 50) when true_ratio in 0..100 do
     :rand.uniform() <= true_ratio / 100
   end

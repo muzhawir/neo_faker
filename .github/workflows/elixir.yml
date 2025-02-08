@@ -19,6 +19,8 @@ jobs:
 
     name: Build and test
     runs-on: ubuntu-latest
+    env:
+      ImageOS: ubuntu24
 
     steps:
     - uses: actions/checkout@v4

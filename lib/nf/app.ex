@@ -3,15 +3,85 @@ defmodule Nf.App do
   Functions for generating information about app metadata.
   """
   @moduledoc since: "0.4.0"
+
   import Nf.App.Utils
 
   alias Nf.Helper
 
-  # TODO: complete the person generator module first and then create this author function
-  #
-  # def author do
-  #   "John Doe"
-  # end
+  @app_directory ["app"]
+
+  @doc """
+  Generate an app author.
+
+  Returns a full name of an app author.
+
+  ## Examples
+
+      iex> Nf.App.author()
+      "José Valim"
+
+  """
+  @spec author() :: String.t()
+  def author do
+    @app_directory
+    |> Helper.read_json_file!("author.json")
+    |> Map.get("authors")
+    |> Enum.random()
+  end
+
+  @doc """
+  Generate an app name.
+
+  Returns an app name.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:style` - specifies the style of the app name
+
+  The values for `:style` can be:
+
+  - `nil` - uses the default style like `Neo Faker` (default)
+  - `:camel_case` - uses camel case like `neoFaker`
+  - `:pascal_case` - uses pascal case like `NeoFaker`
+  - `:dashed` - uses dashed style like `Neo-faker`
+  - `:single` - uses a single word like `Faker`
+
+  ## Examples
+
+      iex> Nf.App.name()
+      "Neo Faker"
+
+      iex> Nf.App.name(style: :camel_case)
+      "neoFaker"
+
+      iex> Nf.App.name(style: :pascal_case)
+      "NeoFaker"
+
+      iex> Nf.App.name(style: :dashed)
+      "Neo-faker"
+
+      iex> Nf.App.name(style: :single)
+      "Faker"
+
+  """
+  @spec name(Keyword.t()) :: String.t()
+  def name(opts \\ []) do
+    [first_name, last_name] =
+      @app_directory
+      |> Helper.read_json_file!("name.json")
+      |> Map.values()
+      |> Enum.map(&Enum.random/1)
+
+    case Keyword.get(opts, :style) do
+      nil -> "#{first_name} #{last_name}"
+      :camel_case -> "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
+      :pascal_case -> "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
+      :dashed -> "#{String.capitalize(first_name)}-#{last_name}"
+      :single -> [first_name, last_name] |> Enum.random() |> String.capitalize()
+    end
+  end
 
   @doc """
   Generate an app description.
@@ -26,9 +96,7 @@ defmodule Nf.App do
   """
   @spec description() :: String.t()
   def description do
-    json_path = ["app"]
-
-    json_path
+    @app_directory
     |> Helper.read_json_file!("description.json")
     |> Map.get("descriptions")
     |> Enum.random()
@@ -39,12 +107,12 @@ defmodule Nf.App do
 
   Returns a semantic version number like `1.2.3`.
 
-  ## Option
+  ## Options
 
-  The accepted option is:
+  The accepted options is:
   - `:type` - specifies the type of semver version
 
-  The values for :type can be:
+  The values for `:type` can be:
 
   - `nil` - uses semver core like `1.2.3` (default)
   - `:pre_release` - uses semver core with pre-release label like `1.2.3-alpha.1`
@@ -105,9 +173,7 @@ defmodule Nf.App do
   """
   @spec license() :: String.t()
   def license do
-    json_path = ["app"]
-
-    json_path
+    @app_directory
     |> Helper.read_json_file!("license.json")
     |> Map.get("licenses")
     |> Enum.random()

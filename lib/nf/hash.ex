@@ -34,9 +34,9 @@ defmodule Nf.Hash do
   def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
-  Generate a random SHA1 hash.
+  Generate a random SHA-1 hash.
 
-  Returns a SHA1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
+  Returns a SHA-1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
 
   ## opts
 
@@ -61,9 +61,9 @@ defmodule Nf.Hash do
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
-  Generate a random SHA256 hash.
+  Generate a random SHA-256 hash.
 
-  Returns a SHA256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
+  Returns a SHA-256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
 
   ## Options
 

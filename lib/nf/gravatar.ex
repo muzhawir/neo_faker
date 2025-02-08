@@ -16,7 +16,7 @@ defmodule Nf.Gravatar do
 
   Returns a Gravatar URL with image size and default fallback query parameters.
 
-  ## opts
+  ## Options
 
   The accepted options are:
 

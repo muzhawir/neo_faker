@@ -24,7 +24,7 @@ defmodule Nf.App do
   @spec author() :: String.t()
   def author do
     @app_directory
-    |> Helper.read_json_file!("author.json")
+    |> Helper.read_exs_file!("author.exs")
     |> Map.get("authors")
     |> Enum.random()
   end
@@ -70,7 +70,7 @@ defmodule Nf.App do
   def name(opts \\ []) do
     [first_name, last_name] =
       @app_directory
-      |> Helper.read_json_file!("name.json")
+      |> Helper.read_exs_file!("name.exs")
       |> Map.values()
       |> Enum.map(&Enum.random/1)
 
@@ -97,7 +97,7 @@ defmodule Nf.App do
   @spec description() :: String.t()
   def description do
     @app_directory
-    |> Helper.read_json_file!("description.json")
+    |> Helper.read_exs_file!("description.exs")
     |> Map.get("descriptions")
     |> Enum.random()
   end
@@ -174,7 +174,7 @@ defmodule Nf.App do
   @spec license() :: String.t()
   def license do
     @app_directory
-    |> Helper.read_json_file!("license.json")
+    |> Helper.read_exs_file!("license.exs")
     |> Map.get("licenses")
     |> Enum.random()
   end

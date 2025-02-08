@@ -1,13 +1,13 @@
-defmodule Nf.Hash do
+defmodule Nf.Crypto do
   @moduledoc """
-  Functions to generating random hashes.
+  Functions to generating cryptographic hashes.
   """
   @moduledoc since: "0.3.1"
 
-  import Nf.Hash.Utils
+  import Nf.Crypto.Utils
 
   @doc """
-  Generate a random MD5 hash.
+  Generate an MD5 hash.
 
   Returns an MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
 
@@ -34,9 +34,9 @@ defmodule Nf.Hash do
   def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
-  Generate a random SHA-1 hash.
+  Generate an SHA-1 hash.
 
-  Returns a SHA-1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
+  Returns an SHA-1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
 
   ## opts
 
@@ -61,9 +61,9 @@ defmodule Nf.Hash do
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
-  Generate a random SHA-256 hash.
+  Generate an SHA-256 hash.
 
-  Returns a SHA-256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
+  Returns an SHA-256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
 
   ## Options
 

@@ -1,5 +1,5 @@
 defmodule Nf.BloodTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "group/0" do
     test "returns a blood type in full format with rh factor" do

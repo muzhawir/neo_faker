@@ -1,5 +1,5 @@
-{
-  "first_names": [
+%{
+  "first_names" => [
     "Aero",
     "Arc",
     "Astro",
@@ -79,7 +79,7 @@
     "Zenith",
     "Zephyr"
   ],
-  "last_names": [
+  "last_names" => [
     "Access",
     "AI",
     "App",

@@ -1,14 +1,14 @@
-{
-  "licenses": [
+%{
+  "licenses" => [
     "Academic Free License v3.0",
     "Apache License 2.0",
     "Artistic License 2.0",
     "Blue Oak Model License 1.0.0",
     "Boost Software License 1.0",
-    "BSD 2-Clause \"Simplified\" License",
-    "BSD 3-Clause \"New\" or \"Revised\" License",
+    ~s(BSD 2-Clause "Simplified" License),
+    ~s(BSD 3-Clause "New" or "Revised" License),
     "BSD 3-Clause Clear License",
-    "BSD 4-Clause \"Original\" or \"Old\" License",
+    ~s(BSD 4-Clause "Original" or "Old" License),
     "BSD-2-Clause Plus Patent License",
     "BSD Zero Clause License",
     "CeCILL Free Software License Agreement v2.1",

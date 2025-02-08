@@ -16,17 +16,16 @@ defmodule Nf.Helper do
   def get_priv_lib_path, do: Path.join([File.cwd!(), "priv", "lib"])
 
   @doc """
-  Reads a JSON file from the `priv/lib` directory.
+  Reads a `.exs` script file from the `priv/lib` directory.
 
-  Returns a decoded JSON content.
+  Returns map content.
   """
-  @spec read_json_file!(json_path(), String.t()) :: json_term()
-  def read_json_file!(path, file_name) when is_list(path) do
-    json_path = [get_priv_lib_path()] ++ path ++ [file_name]
+  def read_exs_file!(path, file_name) do
+    exs_path = [get_priv_lib_path()] ++ path ++ [file_name]
 
-    json_path
+    exs_path
     |> Path.join()
-    |> File.read!()
-    |> JSON.decode!()
+    |> Code.eval_file()
+    |> elem(0)
   end
 end

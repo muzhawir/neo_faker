@@ -1,5 +1,5 @@
-{
-  "descriptions": [
+%{
+  "descriptions" => [
     "Animation and transition toolkit using CSS and JavaScript.",
     "API client for integrating third-party services.",
     "Authentication and user profile management library for web applications.",

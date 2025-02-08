@@ -30,10 +30,10 @@ defmodule Nf.Gravatar do
 
   The values for `:fallback` can be:
   - `nil` - uses "identicon" (default)
-  - `"identicon"` - uses "identicon"
-  - `"monsterid"` - uses "monsterid"
-  - `"wavatar"` - uses "wavatar"
-  - `"robohash"` - uses "robohash"
+  - `:identicon` - uses "identicon"
+  - `:monsterid` - uses "monsterid"
+  - `:wavatar` - uses "wavatar"
+  - `:robohash` - uses "robohash"
 
   ## Examples
 

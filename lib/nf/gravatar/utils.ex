@@ -47,12 +47,12 @@ defmodule Nf.Gravatar.Utils do
   """
   @spec default_fallback(Keyword.t()) :: String.t()
   def default_fallback(opts) when is_list(opts) do
-    case Keyword.get(opts, :fallback, "identicon") do
+    case Keyword.get(opts, :fallback, :identicon) do
       nil -> "identicon"
-      "identicon" -> "identicon"
-      "monsterid" -> "monsterid"
-      "wavatar" -> "wavatar"
-      "robohash" -> "robohash"
+      :identicon -> "identicon"
+      :monsterid -> "monsterid"
+      :wavatar -> "wavatar"
+      :robohash -> "robohash"
     end
   end
 

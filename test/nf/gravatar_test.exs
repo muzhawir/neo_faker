@@ -20,7 +20,7 @@ defmodule Nf.GravatarTest do
       url_result =
         "https://gravatar.com/avatar/836f82db99121b3481011f16b49dfa5fbc714a0d1b1b9f784a1ebbbf5b39577f?d=monsterid&s=80"
 
-      assert Nf.Gravatar.display("john.doe@example.com", fallback: "monsterid") == url_result
+      assert Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid) == url_result
     end
   end
 end

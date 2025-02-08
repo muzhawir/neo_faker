@@ -18,7 +18,7 @@ defmodule Nf.Helper do
   @doc """
   Reads a JSON file from the `priv/lib` directory.
 
-  Returns a decoded JSON term.
+  Returns a decoded JSON content.
   """
   @spec read_json_file!(json_path(), String.t()) :: json_term()
   def read_json_file!(path, file_name) when is_list(path) do

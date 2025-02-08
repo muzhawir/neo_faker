@@ -1,6 +1,6 @@
 defmodule Nf.Helper do
   @moduledoc """
-  Helper functions.
+  Helper functions that frequently used in other modules.
   """
   @moduledoc since: "0.4.1"
 

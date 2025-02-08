@@ -4,8 +4,8 @@ defmodule Nf.Helper do
   """
   @moduledoc since: "0.4.1"
 
-  @type json_path :: list(String.t())
-  @type json_term :: term() | File.Error | Jason.DecodeError
+  @type exs_path :: list(String.t())
+  @type exs_term :: map() | Code.LoadError | ArgumentError
 
   @doc """
   Retrieves the path to the `priv/lib` directory.
@@ -20,6 +20,7 @@ defmodule Nf.Helper do
 
   Returns map content.
   """
+  @spec read_exs_file!(exs_path(), String.t()) :: exs_term()
   def read_exs_file!(path, file_name) do
     exs_path = [get_priv_lib_path()] ++ path ++ [file_name]
 

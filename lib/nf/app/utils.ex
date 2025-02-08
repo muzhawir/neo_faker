@@ -2,14 +2,10 @@ defmodule Nf.App.Utils do
   @moduledoc false
   @moduledoc since: "0.4.0"
 
-  alias Nf.Helper
-
-  @type license_term :: term() | File.Error | Jason.DecodeError
-
   @doc """
-    Generate a semver number.
+  Generate a semver number.
 
-    Returns a semantic version number like `1.2.3`.
+  Returns a semantic version number like `1.2.3`.
   """
   @spec semver_core() :: String.t()
   def semver_core do
@@ -43,19 +39,5 @@ defmodule Nf.App.Utils do
     |> Date.add(day_range)
     |> Date.to_string()
     |> String.replace("-", "")
-  end
-
-  @doc """
-  Read license file.
-
-  Returns the decoded license content. License lists taken from
-  <https://choosealicense.com/appendix>.
-  """
-  @spec read_license_file() :: license_term()
-  def read_license_file do
-    Helper.get_priv_lib_path()
-    |> Path.join("app/license.json")
-    |> File.read!()
-    |> JSON.decode!()
   end
 end

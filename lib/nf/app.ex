@@ -3,8 +3,9 @@ defmodule Nf.App do
   Functions for generating information about app metadata.
   """
   @moduledoc since: "0.4.0"
-
   import Nf.App.Utils
+
+  alias Nf.Helper
 
   @typedoc "Semantic version type"
   @type semver_type :: nil | :core | :pre_release | :build | :pre_release_build
@@ -62,7 +63,7 @@ defmodule Nf.App do
   @doc """
   Generate a simple version number.
 
-  Returns a simple version number like `1.2` (major.minor).
+  Returns a simple version number like `1.2`.
 
   ## Examples
 
@@ -86,5 +87,12 @@ defmodule Nf.App do
 
   """
   @spec license() :: String.t()
-  def license, do: read_license_file() |> Map.get("licenses") |> Enum.random()
+  def license do
+    json_path = ["app"]
+
+    json_path
+    |> Helper.read_json_file("license.json")
+    |> Map.get("licenses")
+    |> Enum.random()
+  end
 end

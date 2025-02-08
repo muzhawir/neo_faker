@@ -13,7 +13,25 @@ defmodule Nf.App do
   #   "John Doe"
   # end
 
-  def name do
+  @doc """
+  Generate an app description.
+
+  Returns a short app description.
+
+  ## Examples
+
+      iex> Nf.App.description()
+      "Fake data generator for Elixir, useful for testing, database seeding, and development."
+
+  """
+  @spec description() :: String.t()
+  def description do
+    json_path = ["app"]
+
+    json_path
+    |> Helper.read_json_file!("description.json")
+    |> Map.get("descriptions")
+    |> Enum.random()
   end
 
   @doc """

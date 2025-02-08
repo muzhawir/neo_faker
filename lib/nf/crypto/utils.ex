@@ -1,4 +1,4 @@
-defmodule Nf.Hash.Utils do
+defmodule Nf.Crypto.Utils do
   @moduledoc false
 
   @doc """

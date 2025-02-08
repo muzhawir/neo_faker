@@ -1,10 +1,10 @@
-defmodule Nf.Hash do
+defmodule Nf.Crypto do
   @moduledoc """
-  Functions to generating random hashes.
+  Functions to generating cryptographic hashes.
   """
   @moduledoc since: "0.3.1"
 
-  import Nf.Hash.Utils
+  import Nf.Crypto.Utils
 
   @doc """
   Generate a random MD5 hash.

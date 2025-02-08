@@ -11,7 +11,7 @@
 > [!WARNING]
 > **This project is still in early development.** Expect breaking changes!.
 
-**NeoFaker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
+**NeoFaker** is an Elixir package for generating fake data in tests and development.
 
 ## Installation
 

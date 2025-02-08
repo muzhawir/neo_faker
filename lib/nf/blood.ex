@@ -1,6 +1,6 @@
-defmodule NF.Blood do
+defmodule Nf.Blood do
   @moduledoc """
-  Functions for generate random blood type.
+  Functions for generating random blood types.
   """
   @moduledoc since: "0.3.1"
 
@@ -8,13 +8,13 @@ defmodule NF.Blood do
   @rh_factors ~w[+ -]
 
   @doc """
-  Generate a random blood group name.
+  Generate a random blood type group name.
 
   Returns a blood type in full format like `A-` or `B+`.
 
   ## Examples
 
-      iex> NF.Blood.group()
+      iex> Nf.Blood.group()
       "B+"
 
   """
@@ -28,7 +28,7 @@ defmodule NF.Blood do
 
   ## Examples
 
-      iex> NF.Blood.type()
+      iex> Nf.Blood.type()
       "B"
 
   """
@@ -42,7 +42,7 @@ defmodule NF.Blood do
 
   ## Examples
 
-      iex> NF.Blood.rh_factor()
+      iex> Nf.Blood.rh_factor()
       "+"
 
   """

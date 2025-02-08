@@ -1,13 +1,15 @@
-defmodule NF.Hash do
+defmodule Nf.Hash do
   @moduledoc """
-  Functions for generate random hash.
+  Functions to generating random hashes.
   """
   @moduledoc since: "0.3.1"
+
+  import Nf.Hash.Utils
 
   @doc """
   Generate a random MD5 hash.
 
-  Returns a MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
+  Returns an MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
 
   ## Options
 
@@ -21,10 +23,10 @@ defmodule NF.Hash do
 
   ## Examples
 
-      iex> NF.Hash.md5()
+      iex> Nf.Hash.md5()
       "e35cb102765cfc56df21ba4c16e6a636"
 
-      iex> NF.Hash.md5(case: :upper)
+      iex> Nf.Hash.md5(case: :upper)
       "E35CB102765CFC56DF21BA4C16E6A636"
 
   """
@@ -32,13 +34,13 @@ defmodule NF.Hash do
   def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
-  Generate a random SHA1 hash.
+  Generate a random SHA-1 hash.
 
-  Returns a SHA1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
+  Returns a SHA-1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
 
-  ## Options
+  ## opts
 
-  The accepted options are:
+  The accepted opts are:
 
   - `:case` - specifies the character case output
 
@@ -48,10 +50,10 @@ defmodule NF.Hash do
 
   ## Examples
 
-      iex> NF.Hash.sha1()
+      iex> Nf.Hash.sha1()
       "c8719790cdfff41c37c75e0c848d2b57535255aa"
 
-      iex> NF.Hash.md5(case: :upper)
+      iex> Nf.Hash.sha1(case: :upper)
       "C8719790CDFFF41C37C75E0C848D2B57535255AA"
 
   """
@@ -59,13 +61,13 @@ defmodule NF.Hash do
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
-  Generate a random SHA256 hash.
+  Generate a random SHA-256 hash.
 
-  Returns a SHA256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
+  Returns a SHA-256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
 
   ## Options
 
-  The accepted options are:
+  The accepted options is:
 
   - `:case` - specifies the character case output
 
@@ -75,24 +77,13 @@ defmodule NF.Hash do
 
   ## Examples
 
-      iex> NF.Hash.sha256()
+      iex> Nf.Hash.sha256()
       "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
 
-      iex> NF.Hash.sha256(case: :upper)
+      iex> Nf.Hash.sha256(case: :upper)
       "D0FF021E810FB8F3442A14393604B0661B02F0DFCB347D80C9580AF3AB5E7E6C"
 
   """
   @spec sha256(Keyword.t()) :: String.t()
   def sha256(opts \\ []), do: generate_hash(:sha256, opts)
-
-  defp generate_hash(type, opts) do
-    character_case =
-      case Keyword.get(opts, :case) do
-        :upper -> :upper
-        _ -> :lower
-      end
-
-    data = :crypto.strong_rand_bytes(16)
-    type |> :crypto.hash(data) |> Base.encode16(case: character_case)
-  end
 end

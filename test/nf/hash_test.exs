@@ -1,5 +1,5 @@
 defmodule Nf.HashTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "md5/0" do
     test "returns a MD5 hash" do

@@ -1,5 +1,5 @@
 defmodule Nf.GravatarTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   describe "display/2" do
     test "returns a Gravatar URL" do

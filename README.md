@@ -9,7 +9,7 @@
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
 
 > [!WARNING]
-> **NeoFaker is still in early development.** Expect breaking changes.
+> **This project isstill in early development.** Expect breaking changes!.
 
 **NeoFaker** is a fake data generator for Elixir, useful for testing, database seeding, and development.
 

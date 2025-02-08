@@ -7,9 +7,6 @@ defmodule Nf.App do
 
   alias Nf.Helper
 
-  @typedoc "Semantic version type"
-  @type semver_type :: nil | :core | :pre_release | :build | :pre_release_build
-
   # TODO: complete the person generator module first and then create this author function
   #
   # def author do
@@ -17,7 +14,6 @@ defmodule Nf.App do
   # end
 
   def name do
-    "NeoFaker"
   end
 
   @doc """
@@ -25,9 +21,12 @@ defmodule Nf.App do
 
   Returns a semantic version number like `1.2.3`.
 
-  ## Arguments
+  ## Option
 
-  The accepted arguments are:
+  The accepted option is:
+  - `:type` - specifies the type of semver version
+
+  The values for :type can be:
 
   - `nil` - uses semver core like `1.2.3` (default)
   - `:pre_release` - uses semver core with pre-release label like `1.2.3-alpha.1`
@@ -50,9 +49,9 @@ defmodule Nf.App do
       "1.2.3-alpha.1+20250325"
 
   """
-  @spec semver(semver_type()) :: String.t()
-  def semver(type \\ nil) do
-    case type do
+  @spec semver(Keyword.t()) :: String.t()
+  def semver(opts \\ []) do
+    case Keyword.get(opts, :type) do
       nil -> semver_core()
       :pre_release -> "#{semver_core()}-#{semver_pre_release()}"
       :build -> "#{semver_core()}+#{semver_build_number()}"
@@ -91,7 +90,7 @@ defmodule Nf.App do
     json_path = ["app"]
 
     json_path
-    |> Helper.read_json_file("license.json")
+    |> Helper.read_json_file!("license.json")
     |> Map.get("licenses")
     |> Enum.random()
   end

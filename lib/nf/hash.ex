@@ -65,9 +65,9 @@ defmodule Nf.Hash do
 
   Returns a SHA256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
 
-  ## opts
+  ## Option
 
-  The accepted opts are:
+  The accepted option is:
 
   - `:case` - specifies the character case output
 

@@ -20,7 +20,7 @@ Add `neo_faker` to your list of dependencies in `mix.exs` to install it from [He
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.4.1", only: [:dev, :test], runtime: false}
+    {:neo_faker, "~> 0.4.2", only: [:dev, :test], runtime: false}
   ]
 end
 ```

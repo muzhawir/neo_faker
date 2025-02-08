@@ -20,12 +20,12 @@ defmodule Nf.Helper do
 
   Returns a decoded JSON term.
   """
-  @spec read_json_file(json_path(), String.t()) :: json_term()
-  def read_json_file(path, file_name) when is_list(path) do
-    json_path = path ++ [file_name]
+  @spec read_json_file!(json_path(), String.t()) :: json_term()
+  def read_json_file!(path, file_name) when is_list(path) do
+    json_path = [get_priv_lib_path()] ++ path ++ [file_name]
 
-    get_priv_lib_path()
-    |> Path.join(json_path)
+    json_path
+    |> Path.join()
     |> File.read!()
     |> JSON.decode!()
   end

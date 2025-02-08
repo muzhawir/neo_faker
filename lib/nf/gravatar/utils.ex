@@ -64,9 +64,12 @@ defmodule Nf.Gravatar.Utils do
   @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: gravatar_url()
   def generate_gravatar_url(email, image_size, default_fallback) do
     hashed_email =
-      case email do
-        nil -> hash_email!("example_#{:rand.uniform(10_000)}.com")
-        _ -> hash_email!(email)
+      if is_nil(email) do
+        random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
+
+        hash_email!(random_email)
+      else
+        hash_email!(email)
       end
 
     @gravatar_url

@@ -15,6 +15,7 @@ defmodule Nf.Gravatar do
   Creates a Gravatar URL based on the email address.
 
   Returns a Gravatar URL with image size and default fallback query parameters.
+  If the email address is not provided, a random email address will be generated.
 
   ## Options
 

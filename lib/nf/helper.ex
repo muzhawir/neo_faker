@@ -4,7 +4,10 @@ defmodule Nf.Helper do
   """
   @moduledoc since: "0.4.1"
 
+  @typedoc "Path to the `priv/lib` directory"
   @type exs_path :: list(String.t())
+
+  @typedoc "Content of a `.exs` script file"
   @type exs_term :: map() | Code.LoadError | ArgumentError
 
   @doc """

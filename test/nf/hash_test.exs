@@ -7,7 +7,7 @@ defmodule Nf.HashTest do
       valid_string? = String.valid?(md5)
       valid_length? = String.length(md5) == 32
 
-      assert Enum.all?([valid_string?, valid_length?])
+      assert valid_string? and valid_length?
     end
   end
 
@@ -17,7 +17,7 @@ defmodule Nf.HashTest do
       valid_string? = String.valid?(sha1)
       valid_length? = String.length(sha1) == 40
 
-      assert Enum.all?([valid_string?, valid_length?])
+      assert valid_string? and valid_length?
     end
   end
 
@@ -27,7 +27,7 @@ defmodule Nf.HashTest do
       valid_string? = String.valid?(sha256)
       valid_length? = String.length(sha256) == 64
 
-      assert Enum.all?([valid_string?, valid_length?])
+      assert valid_string? and valid_length?
     end
   end
 end

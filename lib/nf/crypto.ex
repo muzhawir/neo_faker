@@ -1,87 +1,69 @@
 defmodule Nf.Crypto do
   @moduledoc """
-  Functions to generating cryptographic hashes.
+  Provides functions for generating cryptographic hashes.
+
+  Each function returns a hash string and supports the following option:
+
+    - `:case` - Specifies the character case of the output.
+      - `:lower` (default) - Uses lowercase characters.
+      - `:upper` - Uses uppercase characters.
+
+  ## Examples
+
+      iex> Nf.Crypto.md5()
+      "e35cb102765cfc56df21ba4c16e6a636"
+
+      iex> Nf.Crypto.sha256("hello", case: :upper)
+      "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
+
   """
   @moduledoc since: "0.3.1"
 
   import Nf.Crypto.Utils
 
   @doc """
-  Generate an MD5 hash.
+  Generates an MD5 hash.
 
-  Returns an MD5 hash like `e35cb102765cfc56df21ba4c16e6a636`.
+  Returns an MD5 hash string.
 
-  ## Options
-
-  The accepted options are:
-
-  - `:case` - specifies the character case output
-
-  The values for :case can be:
-  - `:lower` - uses lower case characters (default)
-  - `:upper` - uses upper case characters
+  See the module documentation for available options.
 
   ## Examples
 
       iex> Nf.Hash.md5()
       "e35cb102765cfc56df21ba4c16e6a636"
 
-      iex> Nf.Hash.md5(case: :upper)
-      "E35CB102765CFC56DF21BA4C16E6A636"
-
   """
   @spec md5(Keyword.t()) :: String.t()
   def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
-  Generate an SHA-1 hash.
+  Generates an SHA-1 hash.
 
-  Returns an SHA-1 hash like `c8719790cdfff41c37c75e0c848d2b57535255aa`.
+  Returns an SHA-1 hash string.
 
-  ## opts
-
-  The accepted opts are:
-
-  - `:case` - specifies the character case output
-
-  The values for :case can be:
-  - `:lower` - uses lower case characters (default)
-  - `:upper` - uses upper case characters
+  See the module documentation for available options.
 
   ## Examples
 
       iex> Nf.Hash.sha1()
       "c8719790cdfff41c37c75e0c848d2b57535255aa"
 
-      iex> Nf.Hash.sha1(case: :upper)
-      "C8719790CDFFF41C37C75E0C848D2B57535255AA"
-
   """
   @spec sha1(Keyword.t()) :: String.t()
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
-  Generate an SHA-256 hash.
+  Generates an SHA-256 hash.
 
-  Returns an SHA-256 hash like `d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c`.
+  Returns an SHA-256 hash string.
 
-  ## Options
-
-  The accepted options is:
-
-  - `:case` - specifies the character case output
-
-  The values for :case can be:
-  - `:lower` - uses lower case characters (default)
-  - `:upper` - uses upper case characters
+  See the module documentation for available options.
 
   ## Examples
 
       iex> Nf.Hash.sha256()
       "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
-
-      iex> Nf.Hash.sha256(case: :upper)
-      "D0FF021E810FB8F3442A14393604B0661B02F0DFCB347D80C9580AF3AB5E7E6C"
 
   """
   @spec sha256(Keyword.t()) :: String.t()

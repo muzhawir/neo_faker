@@ -30,9 +30,9 @@ defmodule NeoFaker.MixProject do
 
   defp docs do
     [
-      main: "readme",
-      logo: "./priv/logo/doc_logo.svg",
-      extras: ["README.md"]
+      # main: "readme",
+      logo: "./lib/assets/logo/doc_logo.svg"
+      # extras: ["README.md"]
     ]
   end
 

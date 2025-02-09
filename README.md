@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://hexdocs.pm/neo_faker" target="_blank">
-    <img src="./priv/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
+    <img src="./lib/assets/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
   </a>
 </p>
 
@@ -32,4 +32,4 @@ Full documentation is available on [HexDocs](https://hexdocs.pm/neo_faker).
 
 ## License
 
-NeoFaker is licensed under the [**MIT License**](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).
+NeoFaker is licensed under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

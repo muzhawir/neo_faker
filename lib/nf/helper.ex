@@ -8,19 +8,19 @@ defmodule Nf.Helper do
   @type exs_path :: list(String.t())
 
   @doc """
-  Returns the absolute path to the `priv/lib` directory.
+  Returns the absolute path to the `lib/data/` directory.
 
-  This path is useful for loading dynamic files, such as JSON.
+  This path is useful for loading dynamic files, such as `.exs` scripts.
   """
-  @spec get_priv_lib_path() :: String.t()
-  def get_priv_lib_path, do: Path.join([File.cwd!(), "priv", "lib"])
+  @spec get_data_path() :: String.t()
+  def get_data_path, do: Path.join([File.cwd!(), "lib", "data"])
 
   @doc """
-  Reads an `.exs` script file from the `priv/lib` directory and returns its contents as a map.
+  Reads an `.exs` script file from the `lib/data/` directory and returns its contents as a map.
   """
   @spec read_exs_file!(exs_path(), String.t()) :: map()
   def read_exs_file!(path, file_name) do
-    exs_path = [get_priv_lib_path()] ++ path ++ [file_name]
+    exs_path = [get_data_path()] ++ path ++ [file_name]
 
     exs_path
     |> Path.join()

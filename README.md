@@ -32,4 +32,4 @@ Full documentation is available on [HexDocs](https://hexdocs.pm/neo_faker).
 
 ## License
 
-NeoFaker is licensed under the [**MIT License**](LICENSE.md).
+NeoFaker is licensed under the [**MIT License**](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

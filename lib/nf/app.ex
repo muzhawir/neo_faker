@@ -50,6 +50,7 @@ defmodule Nf.App do
   - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
   - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
   - `:dashed` - Uses a dashed style, e.g., `"Neo-faker"`.
+  - `:underscore` - Uses an underscore style, e.g., `"neo_faker"`.
   - `:single` - Uses a single-word format, e.g., `"Faker"`.
 
   ## Examples
@@ -65,6 +66,9 @@ defmodule Nf.App do
 
       iex> Nf.App.name(style: :dashed)
       "Neo-faker"
+
+      iex> Nf.App.name(style: :underscore)
+      "neo_faker"
 
       iex> Nf.App.name(style: :single)
       "Faker"
@@ -83,6 +87,7 @@ defmodule Nf.App do
       :camel_case -> "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
       :pascal_case -> "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
       :dashed -> "#{String.capitalize(first_name)}-#{last_name}"
+      :underscore -> "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
       :single -> [first_name, last_name] |> Enum.random() |> String.capitalize()
     end
   end

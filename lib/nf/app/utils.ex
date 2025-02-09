@@ -1,11 +1,11 @@
 defmodule Nf.App.Utils do
   @moduledoc false
-  @moduledoc since: "0.4.0"
 
   @doc """
-  Generate a semver number.
+  Generates a core semantic version number.
 
-  Returns a semantic version number like `1.2.3`.
+  The version follows the `MAJOR.MINOR.PATCH` format as defined by the
+  [Semantic Versioning 2.0.0](https://semver.org/) specification.
   """
   @spec semver_core() :: String.t()
   def semver_core do
@@ -15,9 +15,10 @@ defmodule Nf.App.Utils do
   end
 
   @doc """
-  Generate a pre-release identifier.
+  Generates a random pre-release identifier.
 
-  Returns a pre-release identifier like `alpha.1`, `beta.2`, or `rc.3`.
+  The pre-release identifier is typically used to indicate unstable versions and follows the
+  format `"alpha.N"`, `"beta.N"`, or `"rc.N"`.
   """
   @spec semver_pre_release() :: String.t()
   def semver_pre_release do
@@ -27,9 +28,9 @@ defmodule Nf.App.Utils do
   end
 
   @doc """
-  Generate a build number.
+  Generates a build number based on the current date.
 
-  Returns a build number based on the date format `YYYYMMDD`.
+  The build number is formatted as `YYYYMMDD`, providing a timestamp for identifying builds.
   """
   @spec semver_build_number() :: String.t()
   def semver_build_number do

@@ -1,6 +1,8 @@
 defmodule Nf.Blood do
   @moduledoc """
-  Functions for generating random blood types.
+  Provides functions for generating blood types.
+
+  This module includes functions to generate random blood type groups, blood types, and Rh factors.
   """
   @moduledoc since: "0.3.1"
 
@@ -8,37 +10,38 @@ defmodule Nf.Blood do
   @rh_factors ~w[+ -]
 
   @doc """
-  Generate a random blood type group name.
+  Returns a random blood type group.
 
-  Returns a blood type in full format like `A-` or `B+`.
+  A blood type group consists of a blood type (`A`, `B`, `AB`, or `O`)
+  and an Rh factor (`+` or `-`), forming a complete blood group.
 
   ## Examples
 
-      iex> Nf.Blood.group()
-      "B+"
+    iex> Nf.Blood.group()
+    "B+"
 
   """
   @spec group() :: String.t()
   def group, do: "#{type()}#{rh_factor()}"
 
   @doc """
-  Generate a random blood type.
+  Returns a random blood type.
 
-  Returns a blood type like `A` or `B`.
+  A blood type is one of `A`, `B`, `AB`, or `O`, without the Rh factor.
 
   ## Examples
 
-      iex> Nf.Blood.type()
-      "B"
+    iex> Nf.Blood.type()
+    "B"
 
   """
   @spec type() :: String.t()
   def type, do: Enum.random(@blood_types)
 
   @doc """
-  Generate arandom rh factor.
+  Returns a random Rh factor.
 
-  Returns a random rh factor like `+` or `-`.
+  The Rh factor is either `+` (positive) or `-` (negative).
 
   ## Examples
 

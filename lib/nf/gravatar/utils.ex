@@ -1,6 +1,5 @@
 defmodule Nf.Gravatar.Utils do
   @moduledoc false
-  @moduledoc since: "0.3.1"
 
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 
@@ -12,9 +11,10 @@ defmodule Nf.Gravatar.Utils do
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
   @doc """
-  Hash email address to base16 string.
+  Hashes an email address into a Base16-encoded string.
 
-  Returns a base16 string or raises an `ArgumentError`.
+  This function computes a cryptographic hash of the given email address and returns a Base16
+  (hexadecimal) representation. If the input is invalid, an `ArgumentError` is raised.
   """
   @spec hash_email!(String.t()) :: hashed_email()
   def hash_email!(email) do
@@ -28,9 +28,10 @@ defmodule Nf.Gravatar.Utils do
   end
 
   @doc """
-  Get image size from display opts.
+  Extracts the image size from display options.
 
-  Returns an image size between 1 and 2048 pixels.
+  Parses the given display options to determine the image size from 1 to 2048 pixel.
+  If no valid size is specified, the default 80 pixel value is used.
   """
   @spec image_size(Keyword.t()) :: integer()
   def image_size(opts) when is_list(opts) do
@@ -41,9 +42,9 @@ defmodule Nf.Gravatar.Utils do
   end
 
   @doc """
-  Get default fallback from display options.
+  Retrieves the default fallback image type from display options.
 
-  Returns a default fallback image type.
+  Parses the given options to determine the fallback image type used when generating a Gravatar URL.
   """
   @spec default_fallback(Keyword.t()) :: String.t()
   def default_fallback(opts) when is_list(opts) do
@@ -57,9 +58,10 @@ defmodule Nf.Gravatar.Utils do
   end
 
   @doc """
-  Generate Gravatar URL.
+  Generates a Gravatar URL for the given email address.
 
-  Returns a Gravatar URL with image size and default fallback query parameters.
+  This function constructs a Gravatar URL using a hashed email, specified image size, and a
+  fallback image type.
   """
   @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: gravatar_url()
   def generate_gravatar_url(email, image_size, default_fallback) do

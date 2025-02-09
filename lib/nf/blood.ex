@@ -17,8 +17,8 @@ defmodule Nf.Blood do
 
   ## Examples
 
-    iex> Nf.Blood.group()
-    "B+"
+      iex> Nf.Blood.group()
+      "B+"
 
   """
   @spec group() :: String.t()
@@ -31,8 +31,8 @@ defmodule Nf.Blood do
 
   ## Examples
 
-    iex> Nf.Blood.type()
-    "B"
+      iex> Nf.Blood.type()
+      "B"
 
   """
   @spec type() :: String.t()

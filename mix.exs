@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.4.3",
+      version: "0.4.4",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -30,9 +30,9 @@ defmodule NeoFaker.MixProject do
 
   defp docs do
     [
-      main: "readme",
-      logo: "./priv/logo/doc_logo.svg",
-      extras: ["README.md"]
+      # main: "readme",
+      logo: "./lib/assets/logo/doc_logo.svg"
+      # extras: ["README.md"]
     ]
   end
 

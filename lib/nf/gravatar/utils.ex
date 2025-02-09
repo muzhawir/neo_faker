@@ -4,8 +4,6 @@ defmodule Nf.Gravatar.Utils do
   import URI, only: [parse: 1, append_path: 2, append_query: 2]
 
   @type email :: String.t() | nil
-  @type gravatar_url :: String.t() | ArgumentError
-  @type hashed_email :: String.t() | ArgumentError
 
   @gravatar_url "https://gravatar.com/avatar/"
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -16,7 +14,7 @@ defmodule Nf.Gravatar.Utils do
   This function computes a cryptographic hash of the given email address and returns a Base16
   (hexadecimal) representation. If the input is invalid, an `ArgumentError` is raised.
   """
-  @spec hash_email!(String.t()) :: hashed_email()
+  @spec hash_email!(String.t()) :: String.t()
   def hash_email!(email) do
     if Regex.match?(@w3c_email_regex, email) do
       user_email = email |> String.trim() |> String.downcase()
@@ -63,7 +61,7 @@ defmodule Nf.Gravatar.Utils do
   This function constructs a Gravatar URL using a hashed email, specified image size, and a
   fallback image type.
   """
-  @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: gravatar_url()
+  @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: String.t()
   def generate_gravatar_url(email, image_size, default_fallback) do
     hashed_email =
       if is_nil(email) do

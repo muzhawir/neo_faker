@@ -1,6 +1,6 @@
 defmodule Nf.Gravatar do
   @moduledoc """
-  Functions for generating random Gravatar URL.
+  Provides functions for generating random Gravatar URLs.
 
   This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """
@@ -12,28 +12,32 @@ defmodule Nf.Gravatar do
   @type email :: String.t() | nil
 
   @doc """
-  Creates a Gravatar URL based on the email address.
+  Generates a Gravatar URL from an email address.
 
-  Returns a Gravatar URL with image size and default fallback query parameters.
-  If the email address is not provided, a random email address will be generated.
+  The generated URL includes query parameters for image size and fallback options.
+  If no email address is provided, a random one is used.
 
   ## Options
 
-  The accepted options are:
+  The following options are available:
 
-  - `:size` - specifies the image size
-  - `:fallback` - specifies the default fallback image
+  - `:size` - Defines the image size.
+  - `:fallback` - Specifies the default fallback image.
 
-  The values for `:size` can be:
-  - `nil` - uses 80px (default)
-  - `integer` - specifies the image size in pixels from `1` to `2048`
+  ### `:size`
+  Defines the image size.
 
-  The values for `:fallback` can be:
-  - `nil` - uses "identicon" (default)
-  - `:identicon` - uses "identicon"
-  - `:monsterid` - uses "monsterid"
-  - `:wavatar` - uses "wavatar"
-  - `:robohash` - uses "robohash"
+  - `nil` (default) - Uses 80px.
+  - `integer` - The image size in pixels (valid range: `1` to `2048`).
+
+  ### `:fallback`
+  Specifies the default fallback image.
+
+  - `nil` (default) - Uses `"identicon"`.
+  - `:identicon` - Generates an "identicon".
+  - `:monsterid` - Generates a "monsterid".
+  - `:wavatar` - Generates a "wavatar".
+  - `:robohash` - Generates a "robohash".
 
   ## Examples
 

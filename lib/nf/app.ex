@@ -1,6 +1,9 @@
 defmodule Nf.App do
   @moduledoc """
-  Functions for generating information about app metadata.
+  Provides functions for generating app metadata.
+
+  This module includes functions to generate random app-related information, such as author names,
+  app names, descriptions, versions, and licenses.
   """
   @moduledoc since: "0.4.0"
 
@@ -11,9 +14,9 @@ defmodule Nf.App do
   @app_directory ["app"]
 
   @doc """
-  Generate an app author.
+  Returns a random app author.
 
-  Returns a full name of an app author.
+  The author name is a randomly generated full name.
 
   ## Examples
 
@@ -30,23 +33,24 @@ defmodule Nf.App do
   end
 
   @doc """
-  Generate an app name.
+  Returns a random app name.
 
-  Returns an app name.
+  By default, the app name is generated in a standard format. A different naming style can be
+  specified using the `:style` option.
 
   ## Options
 
   The accepted options are:
 
-  - `:style` - specifies the style of the app name
+  - `:style` - Specifies the style of the app name.
 
   The values for `:style` can be:
 
-  - `nil` - uses the default style like `Neo Faker` (default)
-  - `:camel_case` - uses camel case like `neoFaker`
-  - `:pascal_case` - uses pascal case like `NeoFaker`
-  - `:dashed` - uses dashed style like `Neo-faker`
-  - `:single` - uses a single word like `Faker`
+  - `nil` (default) - Uses the standard format, e.g., `"Neo Faker"`.
+  - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
+  - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
+  - `:dashed` - Uses a dashed style, e.g., `"Neo-faker"`.
+  - `:single` - Uses a single-word format, e.g., `"Faker"`.
 
   ## Examples
 
@@ -84,14 +88,14 @@ defmodule Nf.App do
   end
 
   @doc """
-  Generate an app description.
-
   Returns a short app description.
+
+  The description provides a brief summary of the app.
 
   ## Examples
 
       iex> Nf.App.description()
-      "Fake data generator for Elixir, useful for testing, database seeding, and development."
+      "Elixir library for generating fake data in tests and development."
 
   """
   @spec description() :: String.t()
@@ -103,22 +107,24 @@ defmodule Nf.App do
   end
 
   @doc """
-  Generate a semantic version number.
+  Returns a semantic version number.
 
-  Returns a semantic version number like `1.2.3`.
+  The generated version number follows the Semantic Versioning (SemVer) standard. By default, it
+  generates a core version (`MAJOR.MINOR.PATCH`). Additional versioning details can be specified
+  using the `:type` option.
 
   ## Options
 
-  The accepted options is:
-  - `:type` - specifies the type of semver version
+  The accepted options are:
+
+  - `:type` - Specifies the type of version format.
 
   The values for `:type` can be:
 
-  - `nil` - uses semver core like `1.2.3` (default)
-  - `:pre_release` - uses semver core with pre-release label like `1.2.3-alpha.1`
-  - `:build` - uses semver core with build number label like `1.2.3+20250325`
-  - `:pre_release_build` - uses  semver core with pre-release and build number label like
-    `1.2.3-alpha.1+20250325`
+  - `nil` (default) - Uses core SemVer format, e.g., `"1.2.3"`.
+  - `:pre_release` - Includes a pre-release label, e.g., `"1.2.3-beta.1"`.
+  - `:build` - Includes a build metadata label, e.g., `"1.2.3+20250325"`.
+  - `:pre_release_build` - Includes both pre-release and build metadata, e.g., `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 
@@ -126,13 +132,13 @@ defmodule Nf.App do
       "1.2.3"
 
       iex> Nf.App.semver(:pre_release)
-      "1.2.3-alpha.1"
+      "1.2.3-beta.1"
 
       iex> Nf.App.semver(:build)
       "1.2.3+20250325"
 
       iex> Nf.App.semver(:pre_release_build)
-      "1.2.3-alpha.1+20250325"
+      "1.2.3-rc.1+20250325"
 
   """
   @spec semver(Keyword.t()) :: String.t()
@@ -146,9 +152,9 @@ defmodule Nf.App do
   end
 
   @doc """
-  Generate a simple version number.
+  Returns a simple version number.
 
-  Returns a simple version number like `1.2`.
+  This version format follows `MAJOR.MINOR`.
 
   ## Examples
 
@@ -160,10 +166,9 @@ defmodule Nf.App do
   def version, do: semver_core() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 
   @doc """
-  Generate an open source license.
+  Returns a random open-source license.
 
-  Returns an open source license. License lists taken from
-  [https://choosealicense.com](https://choosealicense.com/appendix).
+  The license is selected from a predefined list based on [ChooseALicense](https://choosealicense.com/appendix).
 
   ## Examples
 

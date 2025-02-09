@@ -1,21 +1,24 @@
 defmodule Nf.Boolean do
   @moduledoc """
-  Functions for generating boolean values.
+  Provides functions for generating boolean values.
+
+  This module offers a function to generate random boolean values with a configurable probability.
   """
   @moduledoc since: "0.5.0"
 
   @doc """
-  Generate a boolean value.
+  Returns a random boolean value.
 
-  Returns a boolean value, default true ratio is 50% if no argument is provided.
+  By default, the function returns `true` or `false` with equal probability (50% each).
+  An optional argument can be provided to adjust the chance of returning `true`.
 
   ## Examples
 
       iex> Nf.Boolean.boolean()
-      true
-
-      iex> Nf.Boolean.boolean(50)
       false
+
+      iex> Nf.Boolean.boolean(75)
+      true
 
   """
   @spec boolean(pos_integer()) :: boolean()

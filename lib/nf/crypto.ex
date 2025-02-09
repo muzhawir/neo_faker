@@ -2,29 +2,25 @@ defmodule Nf.Crypto do
   @moduledoc """
   Provides functions for generating cryptographic hashes.
 
-  Each function returns a hash string and supports the following option:
+  ## Options
+
+  The accepted options are:
 
     - `:case` - Specifies the character case of the output.
-      - `:lower` (default) - Uses lowercase characters.
-      - `:upper` - Uses uppercase characters.
 
-  ## Examples
+  The values for `:case` can be:
 
-      iex> Nf.Crypto.md5()
-      "e35cb102765cfc56df21ba4c16e6a636"
-
-      iex> Nf.Crypto.sha256("hello", case: :upper)
-      "2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"
-
+    - `:lower` (default) - Uses lowercase characters.
+    - `:upper` - Uses uppercase characters.
   """
   @moduledoc since: "0.3.1"
 
   import Nf.Crypto.Utils
 
   @doc """
-  Generates an MD5 hash.
+  Generates a random MD5 hash.
 
-  Returns an MD5 hash string.
+  Returns a random MD5 hash string.
 
   See the module documentation for available options.
 
@@ -38,9 +34,9 @@ defmodule Nf.Crypto do
   def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
-  Generates an SHA-1 hash.
+  Generates a random SHA-1 hash.
 
-  Returns an SHA-1 hash string.
+  Returns a random SHA-1 hash string.
 
   See the module documentation for available options.
 
@@ -54,9 +50,9 @@ defmodule Nf.Crypto do
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
-  Generates an SHA-256 hash.
+  Generates a random SHA-256 hash.
 
-  Returns an SHA-256 hash string.
+  Returns a random SHA-256 hash string.
 
   See the module documentation for available options.
 

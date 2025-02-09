@@ -25,12 +25,14 @@ defmodule Nf.Gravatar do
   - `:fallback` - Specifies the default fallback image.
 
   ### `:size`
+
   Defines the image size.
 
   - `nil` (default) - Uses 80px.
   - `integer` - The image size in pixels (valid range: `1` to `2048`).
 
   ### `:fallback`
+
   Specifies the default fallback image.
 
   - `nil` (default) - Uses `"identicon"`.

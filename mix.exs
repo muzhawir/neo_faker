@@ -34,7 +34,7 @@ defmodule NeoFaker.MixProject do
       logo: "./lib/assets/logo/doc_logo.svg",
       extras: [
         "./lib/pages/getting-started.md",
-        "./lib/pages/cheat.cheatmd"
+        "./lib/pages/cheat-sheet/cheat.cheatmd"
       ]
     ]
   end

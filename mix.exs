@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.5.0",
+      version: "0.6.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -31,10 +31,10 @@ defmodule NeoFaker.MixProject do
   defp docs do
     [
       main: "getting-started",
-      logo: "./lib/assets/logo/doc_logo.svg",
+      logo: "lib/assets/logo/doc_logo.svg",
       extras: [
-        "./lib/pages/getting-started.md",
-        "./lib/pages/cheat-sheet/cheat.cheatmd"
+        "lib/pages/getting-started.md",
+        "lib/pages/cheat-sheet/cheat.cheatmd"
       ]
     ]
   end

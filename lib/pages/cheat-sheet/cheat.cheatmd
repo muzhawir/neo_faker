@@ -1,0 +1,129 @@
+# Cheat Sheet
+
+This page provides a quick reference for common functions in the NeoFaker package.
+
+## [App](`Nf.App`)
+
+{: .col-2}
+
+### [`author()`](`Nf.App.author/0`)
+
+```elixir
+iex> Nf.App.author()
+"José Valim"
+```
+
+### [`description()`](`Nf.App.description/0`)
+
+```elixir
+iex> Nf.App.description()
+"Elixir library for generating fake data in tests and development."
+```
+
+### [`license()`](`Nf.App.license/0`)
+
+```elixir
+iex> Nf.App.license()
+"MIT License"
+```
+
+### [`name(opts \\ [])`](`Nf.App.name/1`)
+
+```elixir
+iex> Nf.App.name()
+"Neo Faker"
+
+iex> Nf.App.name(style: :camel_case)
+"neoFaker"
+```
+
+### [`semver(opts \\ [])`](`Nf.App.semver/1`)
+
+```elixir
+iex> Nf.App.semver()
+"1.2.3"
+
+iex> Nf.App.semver(:pre_release)
+"1.2.3-beta.1"
+```
+
+### [`version()`](`Nf.App.version/0`)
+
+```elixir
+iex> Nf.App.version()
+"1.2"
+```
+
+## [Blood](`Nf.Blood`)
+
+{: .col-2}
+
+### [`group()`](`Nf.Blood.group/0`)
+
+```elixir
+iex> Nf.Blood.group()
+"B+"
+```
+
+### [`type()`](`Nf.Blood.type/0`)
+
+```elixir
+iex> Nf.Blood.type()
+"B"
+```
+
+## [Boolean](`Nf.Boolean`)
+
+{: .col-1}
+
+### [`boolean(true_ratio \\ 50)`](`Nf.Boolean.boolean/1`)
+
+```elixir
+iex> Nf.Boolean.boolean()
+false
+
+iex> Nf.Boolean.boolean(75)
+true
+```
+
+## [Crypto](`Nf.Crypto`)
+
+{: .col-2}
+
+### [`md5(opts \\ [])`](`Nf.Crypto.md5/1`)
+
+```elixir
+iex> Nf.Crypto.md5()
+"e35cb102765cfc56df21ba4c16e6a636"
+
+iex> Nf.Crypto.md5(case: :upper)
+"E35CB102765CFC56DF21BA4C16E6A636"
+```
+
+### [`sha1(opts \\ [])`](`Nf.Crypto.sha1/1`)
+
+```elixir
+iex> Nf.Crypto.sha1()
+"c8719790cdfff41c37c75e0c848d2b57535255aa"
+```
+
+### [`sha256(opts \\ [])`](`Nf.Crypto.sha256/1`)
+
+```elixir
+iex> Nf.Crypto.sha256()
+"d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
+```
+
+## [Gravatar](`Nf.Gravatar`)
+
+{: .col-1}
+
+### [`display(email \\ nil, opts \\ [])`](`Nf.Gravatar.display/2`)
+
+```elixir
+iex> Nf.Gravatar.display()
+"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
+
+iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
+"https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
+```

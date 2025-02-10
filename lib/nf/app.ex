@@ -50,6 +50,7 @@ defmodule Nf.App do
   - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
   - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
   - `:dashed` - Uses a dashed style, e.g., `"Neo-faker"`.
+  - `:underscore` - Uses an underscore style, e.g., `"neo_faker"`.
   - `:single` - Uses a single-word format, e.g., `"Faker"`.
 
   ## Examples
@@ -59,15 +60,6 @@ defmodule Nf.App do
 
       iex> Nf.App.name(style: :camel_case)
       "neoFaker"
-
-      iex> Nf.App.name(style: :pascal_case)
-      "NeoFaker"
-
-      iex> Nf.App.name(style: :dashed)
-      "Neo-faker"
-
-      iex> Nf.App.name(style: :single)
-      "Faker"
 
   """
   @spec name(Keyword.t()) :: String.t()
@@ -83,6 +75,7 @@ defmodule Nf.App do
       :camel_case -> "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
       :pascal_case -> "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
       :dashed -> "#{String.capitalize(first_name)}-#{last_name}"
+      :underscore -> "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
       :single -> [first_name, last_name] |> Enum.random() |> String.capitalize()
     end
   end
@@ -133,12 +126,6 @@ defmodule Nf.App do
 
       iex> Nf.App.semver(:pre_release)
       "1.2.3-beta.1"
-
-      iex> Nf.App.semver(:build)
-      "1.2.3+20250325"
-
-      iex> Nf.App.semver(:pre_release_build)
-      "1.2.3-rc.1+20250325"
 
   """
   @spec semver(Keyword.t()) :: String.t()

@@ -1,30 +1,33 @@
 defmodule Nf.Helper do
   @moduledoc """
-  Provides utility functions commonly used across modules.
+  This module provides helper functions commonly used across other modules.
   """
   @moduledoc since: "0.4.1"
 
-  @typedoc "Path to the `lib/data/` directory"
-  @type exs_path :: list(String.t())
+  @doc """
+  Helper function for build locale path.
+  """
+  @spec build_locale_path(String.t(), String.t(), String.t()) :: String.t()
+  def build_locale_path(locale, module, file_name) do
+    Path.join([File.cwd!(), "lib", "data", locale, module, file_name])
+  end
+
+  def load_locale_file(path), do: path |> Code.eval_file() |> elem(0)
 
   @doc """
-  Returns the absolute path to the `lib/data` directory.
+  Reads a locale file and returns its contents as a map.
 
-  This path is useful for loading dynamic files, such as `.exs` scripts.
+  If the specified locale file does not exist, it falls back to the default locale.
   """
-  @spec get_data_path() :: String.t()
-  def get_data_path, do: Path.join([File.cwd!(), "lib", "data"])
+  @spec read_locale_file(String.t(), String.t()) :: map()
+  def read_locale_file(module, file_name) do
+    locale = Application.get_env(:neo_faker, :locale)
+    path = build_locale_path(locale, module, file_name)
 
-  @doc """
-  Reads an `.exs` script file from the `lib/data` directory and returns its contents as a map.
-  """
-  @spec read_exs_file!(exs_path(), String.t()) :: map()
-  def read_exs_file!(path, file_name) do
-    exs_path = [get_data_path()] ++ path ++ [file_name]
-
-    exs_path
-    |> Path.join()
-    |> Code.eval_file()
-    |> elem(0)
+    if File.exists?(path) do
+      load_locale_file(path)
+    else
+      load_locale_file(build_locale_path("default", module, file_name))
+    end
   end
 end

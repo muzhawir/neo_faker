@@ -11,7 +11,7 @@ defmodule Nf.App do
 
   alias Nf.Helper
 
-  @app_directory ["app"]
+  @module_name "app"
 
   @doc """
   Returns a random app author.
@@ -26,8 +26,8 @@ defmodule Nf.App do
   """
   @spec author() :: String.t()
   def author do
-    @app_directory
-    |> Helper.read_exs_file!("author.exs")
+    @module_name
+    |> Helper.read_locale_file("author.exs")
     |> Map.get("authors")
     |> Enum.random()
   end
@@ -65,8 +65,8 @@ defmodule Nf.App do
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
     [first_name, last_name] =
-      @app_directory
-      |> Helper.read_exs_file!("name.exs")
+      @module_name
+      |> Helper.read_locale_file("name.exs")
       |> Map.values()
       |> Enum.map(&Enum.random/1)
 
@@ -93,8 +93,8 @@ defmodule Nf.App do
   """
   @spec description() :: String.t()
   def description do
-    @app_directory
-    |> Helper.read_exs_file!("description.exs")
+    @module_name
+    |> Helper.read_locale_file("description.exs")
     |> Map.get("descriptions")
     |> Enum.random()
   end
@@ -165,8 +165,8 @@ defmodule Nf.App do
   """
   @spec license() :: String.t()
   def license do
-    @app_directory
-    |> Helper.read_exs_file!("license.exs")
+    @module_name
+    |> Helper.read_locale_file("license.exs")
     |> Map.get("licenses")
     |> Enum.random()
   end

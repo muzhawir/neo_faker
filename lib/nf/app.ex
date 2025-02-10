@@ -61,18 +61,6 @@ defmodule Nf.App do
       iex> Nf.App.name(style: :camel_case)
       "neoFaker"
 
-      iex> Nf.App.name(style: :pascal_case)
-      "NeoFaker"
-
-      iex> Nf.App.name(style: :dashed)
-      "Neo-faker"
-
-      iex> Nf.App.name(style: :underscore)
-      "neo_faker"
-
-      iex> Nf.App.name(style: :single)
-      "Faker"
-
   """
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
@@ -138,12 +126,6 @@ defmodule Nf.App do
 
       iex> Nf.App.semver(:pre_release)
       "1.2.3-beta.1"
-
-      iex> Nf.App.semver(:build)
-      "1.2.3+20250325"
-
-      iex> Nf.App.semver(:pre_release_build)
-      "1.2.3-rc.1+20250325"
 
   """
   @spec semver(Keyword.t()) :: String.t()

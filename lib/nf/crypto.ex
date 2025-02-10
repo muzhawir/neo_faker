@@ -26,7 +26,7 @@ defmodule Nf.Crypto do
 
   ## Examples
 
-      iex> Nf.Hash.md5()
+      iex> Nf.Crypto.md5()
       "e35cb102765cfc56df21ba4c16e6a636"
 
   """
@@ -42,7 +42,7 @@ defmodule Nf.Crypto do
 
   ## Examples
 
-      iex> Nf.Hash.sha1()
+      iex> Nf.Crypto.sha1()
       "c8719790cdfff41c37c75e0c848d2b57535255aa"
 
   """
@@ -58,7 +58,7 @@ defmodule Nf.Crypto do
 
   ## Examples
 
-      iex> Nf.Hash.sha256()
+      iex> Nf.Crypto.sha256()
       "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
 
   """

@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.CheckAndTest do
+defmodule Mix.Tasks.Lint do
   @moduledoc false
 
   use Mix.Task

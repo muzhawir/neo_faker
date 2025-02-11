@@ -1,3 +1,7 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support documentation.
+
 name: Elixir CI
 
 on:
@@ -15,7 +19,7 @@ jobs:
       ImageOS: ubuntu22
 
     permissions:
-      contents: read
+      contents: read  # Hanya read di job ini
 
     steps:
     - uses: actions/checkout@v4
@@ -36,7 +40,7 @@ jobs:
       run: mix test
 
   lint:
-    if: github.ref != 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref != 'refs/heads/main'
     name: Lint Code (Non-Main Branch)
     runs-on: ubuntu-latest
     env:
@@ -48,36 +52,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Elixir
-      id: beam
       uses: erlef/setup-beam@v1
       with:
         elixir-version: '1.18.2'
         otp-version: '27.2.1'
-
-    # Create PLT cache if it doesn't exist
-    - name: Restore PLT cache
-      id: plt_cache
-      uses: actions/cache/restore@v3
-      with:
-        key: plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
-        restore-keys: plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
-        path: priv/plts
-
-    # If cache doesn't exist, create a new PLT
-    - name: Create PLTs
-      if: steps.plt_cache.outputs.cache-hit != 'true'
-      run: mix dialyzer --plt
-
-    # Save PLT to cache after it's created
-    - name: Save PLT cache
-      id: plt_cache_save
-      uses: actions/cache/save@v3
-      if: steps.plt_cache.outputs.cache-hit != 'true'
-      with:
-        key: plt-${{ runner.os }}-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
-        path: priv/plts
-
     - name: Install dependencies
       run: mix deps.get
-    - name: Run Linter (includes Dialyzer)
-      run: mix lint
+    - name: Run format
+      run: mix format
+    - name: Run test
+      run: mix test

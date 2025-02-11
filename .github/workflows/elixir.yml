@@ -11,24 +11,23 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: ${{ github.ref == 'refs/heads/main' && 'read' || 'write' }}
-
 jobs:
   build:
-
     name: Build and test
     runs-on: ubuntu-latest
     env:
       ImageOS: ubuntu22
 
+    permissions:
+      contents: read  # Hanya read di job ini
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Elixir
-      uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 # v1.16.0
+      uses: erlef/setup-beam@v1
       with:
-        elixir-version: '1.18.2' # [Required] Define the Elixir version
-        otp-version: '27.2.1'      # [Required] Define the Erlang/OTP version
+        elixir-version: '1.18.2'
+        otp-version: '27.2.1'
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
@@ -47,10 +46,13 @@ jobs:
     env:
       ImageOS: ubuntu22
 
+    permissions:
+      contents: write
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up Elixir
-      uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 # v1.16.0
+      uses: erlef/setup-beam@v1
       with:
         elixir-version: '1.18.2'
         otp-version: '27.2.1'

@@ -1,6 +1,8 @@
 defmodule Nf.Helper do
   @moduledoc false
 
+  import Nf.Helper.Utils
+
   @doc """
   Builds the absolute path to a locale-specific file.
 
@@ -30,12 +32,4 @@ defmodule Nf.Helper do
       load_locale_file(build_locale_path("default", module_name, file_name))
     end
   end
-
-  @doc """
-  Loads and evaluates the given locale file.
-
-  This function reads and evaluates an `.exs` file from the given `path`,
-  returning the evaluated result.
-  """
-  def load_locale_file(path), do: path |> Code.eval_file() |> elem(0)
 end

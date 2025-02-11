@@ -1,7 +1,6 @@
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# separate terms of service, privacy policy, and support documentation.
 
 name: Elixir CI
 
@@ -10,9 +9,10 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: ${{ github.ref == 'refs/heads/main' && 'read' || 'write' }}
 
 jobs:
   build:
@@ -39,3 +39,22 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix test
+
+  lint:
+    if: github.ref != 'refs/heads/main'
+    name: Lint Code (Non-Main Branch)
+    runs-on: ubuntu-latest
+    env:
+      ImageOS: ubuntu22
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Elixir
+      uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 # v1.16.0
+      with:
+        elixir-version: '1.18.2'
+        otp-version: '27.2.1'
+    - name: Install dependencies
+      run: mix deps.get
+    - name: Run Linter
+      run: mix lint

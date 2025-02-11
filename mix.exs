@@ -32,10 +32,7 @@ defmodule NeoFaker.MixProject do
     [
       main: "getting-started",
       logo: "lib/assets/logo/doc_logo.svg",
-      extras: [
-        "lib/pages/getting-started.md",
-        "lib/pages/cheat-sheet/cheat.cheatmd"
-      ]
+      extras: Path.wildcard("lib/pages/*.{md, cheatmd}")
     ]
   end
 

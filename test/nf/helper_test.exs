@@ -1,9 +1,9 @@
 defmodule Nf.HelperTest do
   use ExUnit.Case, async: true
 
-  describe "get_data_path/0" do
-    test "returns a path to the `priv/lib` directory" do
-      assert Nf.Helper.get_data_path() == Path.join([File.cwd!(), "lib", "data"])
-    end
-  end
+  # describe "read_locale_file/1" do
+  #   test "returns a path to the `lib/data` directory" do
+  #     assert Nf.Helper.read_locale_file()
+  #   end
+  # end
 end

@@ -9,7 +9,7 @@ defmodule Nf.Helper do
   If the requested data is not yet cached, it is first loaded from the locale files and cached
   for future retrieval.
   """
-  def get_random_data(module_name, file_name, map_key, amount \\ 1) do
+  def get_random_data(module_name, file_name, map_key, amount \\ 1) when amount > 0 do
     cache_name = "nf_#{module_name}_#{map_key}"
 
     case_result =

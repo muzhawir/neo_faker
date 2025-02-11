@@ -1,37 +1,77 @@
 defmodule Nf.Person do
+  @moduledoc """
+  Provides functions for generating person-related information.
 
-  alias Nf.Helper
+  This module includes functions to generate random person-related information, such as names, ages,
+  and genders.
+  """
+
+  import Nf.Helper, only: [get_random_data: 4]
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type random_result :: String.t() | [String.t()]
 
-  @module_name "gender"
+  @module_name "person"
+
+  @doc """
+  Returns a random age.
+
+  The age is a non-negative integer between 0 and 120.
+
+  ## Examples
+
+      iex> Nf.Person.age()
+      44
+
+  """
+  @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
+  def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
+
+  @doc """
+  Returns a random binary gender.
+
+  The gender is either "Male" or "Female".
+
+  ## Examples
+
+      iex> Nf.Person.binary_gender()
+      "Male"
+
+  """
+  @spec binary_gender(non_neg_integer()) :: random_result()
+  def binary_gender(amount \\ 1) when amount in 1..2 do
+    get_random_data(@module_name, "gender.exs", "binary", amount)
+  end
+
+  @doc """
+  Returns a random short binary gender.
+
+  The gender is either "M" or "F".
+
+  ## Examples
+
+      iex> Nf.Person.short_binary_gender()
+      "F"
+
+  """
+  @spec short_binary_gender(non_neg_integer()) :: random_result()
+  def short_binary_gender(amount \\ 1) when amount in 1..2 do
+    get_random_data(@module_name, "gender.exs", "short_binary", amount)
+  end
 
   @doc """
   Returns a random non-binary gender.
 
+  The gender is a non-binary gender, such as "Agender", "Androgyne", "Bigender", etc.
+
   ## Examples
 
-      iex> Nf.Gender.non_binary()
+      iex> Nf.Person.non_binary_gender()
       "Agender"
 
   """
-  @spec non_binary() :: random_result()
-  def non_binary(amount \\ 1) when amount > 0 do
-    list =
-      @module_name
-      |> Helper.read_locale_file("gender.exs")
-      |> Map.get("non_binary")
-      |> Enum.shuffle()
-
-    cached_list =
-      if :persistent_term.get(@module_name, nil) == nil do
-        :persistent_term.put(@module_name, list)
-        :persistent_term.get(@module_name)
-      else
-        :persistent_term.get(@module_name)
-      end
-
-    if amount == 1, do: Enum.random(cached_list), else: Enum.take(cached_list, amount)
+  @spec non_binary_gender(non_neg_integer()) :: random_result()
+  def non_binary_gender(amount \\ 1) do
+    get_random_data(@module_name, "gender.exs", "non_binary", amount)
   end
 end

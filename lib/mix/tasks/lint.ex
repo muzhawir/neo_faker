@@ -36,9 +36,8 @@ defmodule Mix.Tasks.Lint do
   end
 
   defp get_terminal_width do
-    with {:ok, width} <- :io.columns() do
-      width
-    else
+    case :io.columns() do
+      {:ok, width} -> width
       _ -> 80
     end
   end

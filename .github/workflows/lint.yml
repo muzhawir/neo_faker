@@ -1,0 +1,32 @@
+name: Lint and Test
+
+on:
+  pull_request:
+    branches-ignore: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint and Test (Non-Main Branch)
+    runs-on: ubuntu-latest
+    env:
+      ImageOS: ubuntu22
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.18.2'
+        otp-version: '27.2.1'
+    - name: Install dependencies
+      run: mix deps.get
+    - name: Check formatting and migrate
+      run: mix format --migrate
+    - name: Run formatter
+      run: mix format --check-formatted
+    - name: Run tests
+      run: mix test

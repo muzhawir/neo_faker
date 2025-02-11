@@ -1,6 +1,6 @@
 # Cheat Sheet
 
-This page provides a quick reference for common functions in the NeoFaker package.
+This page provides a quick reference to common random generator functions in this package.
 
 ## [App](`Nf.App`)
 
@@ -43,7 +43,7 @@ iex> Nf.App.name(style: :camel_case)
 iex> Nf.App.semver()
 "1.2.3"
 
-iex> Nf.App.semver(:pre_release)
+iex> Nf.App.semver(type: :pre_release)
 "1.2.3-beta.1"
 ```
 

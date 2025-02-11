@@ -1,30 +1,41 @@
 defmodule Nf.Helper do
-  @moduledoc """
-  Provides utility functions commonly used across modules.
-  """
-  @moduledoc since: "0.4.1"
-
-  @typedoc "Path to the `lib/data/` directory"
-  @type exs_path :: list(String.t())
+  @moduledoc false
 
   @doc """
-  Returns the absolute path to the `lib/data` directory.
+  Builds the absolute path to a locale-specific file.
 
-  This path is useful for loading dynamic files, such as `.exs` scripts.
+  Given a `locale`, `module`, and `file_name`, this function constructs the
+  corresponding file path within the `lib/data/` directory.
   """
-  @spec get_data_path() :: String.t()
-  def get_data_path, do: Path.join([File.cwd!(), "lib", "data"])
-
-  @doc """
-  Reads an `.exs` script file from the `lib/data` directory and returns its contents as a map.
-  """
-  @spec read_exs_file!(exs_path(), String.t()) :: map()
-  def read_exs_file!(path, file_name) do
-    exs_path = [get_data_path()] ++ path ++ [file_name]
-
-    exs_path
-    |> Path.join()
-    |> Code.eval_file()
-    |> elem(0)
+  @spec build_locale_path(String.t(), String.t(), String.t()) :: String.t()
+  def build_locale_path(locale, module, file_name) do
+    Path.join([File.cwd!(), "lib", "data", locale, module, file_name])
   end
+
+  @doc """
+  Reads a locale-specific file and returns its content as a map.
+
+  This function determines the appropriate locale from the application
+  configuration and attempts to read the specified file. If the file is
+  not found for the configured locale, it falls back to the `"default"` locale.
+  """
+  @spec read_locale_file(String.t(), String.t()) :: map()
+  def read_locale_file(module_name, file_name) do
+    locale = Application.get_env(:neo_faker, :locale)
+    path = build_locale_path(locale, module_name, file_name)
+
+    if File.exists?(path) do
+      load_locale_file(path)
+    else
+      load_locale_file(build_locale_path("default", module_name, file_name))
+    end
+  end
+
+  @doc """
+  Loads and evaluates the given locale file.
+
+  This function reads and evaluates an `.exs` file from the given `path`,
+  returning the evaluated result.
+  """
+  def load_locale_file(path), do: path |> Code.eval_file() |> elem(0)
 end

@@ -17,7 +17,7 @@ Add `:neo_faker` to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.5.1", only: [:dev, :test], runtime: false}
+    {:neo_faker, "~> 0.6.0", only: [:dev, :test]}
   ]
 end
 ```
@@ -41,7 +41,7 @@ iex> Nf.App.description()
 ```
 
 For a complete list of available functions, check out the [API Reference](api-reference.html).
-
+If you're looking for a quick reference, see the [Cheat Sheet](cheat.html).
 
 ## License
 

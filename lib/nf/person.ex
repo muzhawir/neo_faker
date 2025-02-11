@@ -1,7 +1,4 @@
-defmodule Nf.Gender do
-  @moduledoc """
-  Provides functions for generating gender-related information.
-  """
+defmodule Nf.Person do
 
   alias Nf.Helper
 

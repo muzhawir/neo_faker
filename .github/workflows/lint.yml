@@ -2,7 +2,8 @@ name: Lint and Test
 
 on:
   pull_request:
-    branches-ignore: [ "main" ]
+    branches-ignore:
+      - main
   workflow_dispatch:
 
 jobs:

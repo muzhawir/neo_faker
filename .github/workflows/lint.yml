@@ -1,14 +1,12 @@
 name: Lint and Test
 
 on:
-  pull_request:
-    branches-ignore:
-      - main
+  pull_request:  # Jalankan pada semua PR tanpa pengecualian
   workflow_dispatch:
 
 jobs:
   lint:
-    name: Lint and Test (Non-Main Branch)
+    name: Lint and Test
     runs-on: ubuntu-latest
     env:
       ImageOS: ubuntu22

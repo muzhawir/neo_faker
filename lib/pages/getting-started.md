@@ -41,6 +41,7 @@ iex> Nf.App.description()
 ```
 
 For a complete list of available functions, check out the [API Reference](api-reference.html).
+If you're looking for a quick reference, see the [Cheat Sheet](cheat.html).
 
 ## License
 

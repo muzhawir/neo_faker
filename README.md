@@ -21,7 +21,7 @@ NeoFaker is available on [Hex](https://hex.pm/packages/neo_faker). Add it to you
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.6.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.6.1", only: [:dev, :test]}
   ]
 end
 ```

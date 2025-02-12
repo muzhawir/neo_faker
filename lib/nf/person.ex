@@ -5,6 +5,7 @@ defmodule Nf.Person do
   This module includes functions to generate random person-related information, such as names, ages,
   and genders.
   """
+  @moduledoc since: "0.6.0"
 
   import Nf.Helper, only: [get_random_data: 4]
 

@@ -2,7 +2,6 @@
 
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker)
 ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
-[![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/elixir.yml/badge.svg?branch=main)](https://github.com/muzhawir/neo_faker/actions/workflows/elixir.yml)
 
 **NeoFaker** is an Elixir package for generating fake data for testing and development.
 
@@ -17,7 +16,7 @@ Add `:neo_faker` to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.6.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.6.1", only: [:dev, :test]}
   ]
 end
 ```

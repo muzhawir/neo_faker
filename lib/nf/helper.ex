@@ -1,6 +1,12 @@
 defmodule Nf.Helper do
   @moduledoc false
 
+  @typedoc "Result of a single value or a list of random values."
+  @type result :: String.t() | [String.t()]
+
+  @typedoc "Cached data loaded from a locale file."
+  @type cached_data :: list() | nil
+
   @base_data_path Path.join([File.cwd!(), "lib", "data"])
 
   @doc """
@@ -9,38 +15,45 @@ defmodule Nf.Helper do
   If the requested data is not yet cached, it is first loaded from the locale files and cached
   for future retrieval.
   """
-  def get_random_data(module_name, file_name, map_key, amount \\ 1) when amount > 0 do
-    cache_name = "nf_#{module_name}_#{map_key}"
+  @spec get_random_value(String.t(), String.t(), String.t(), integer()) :: result()
+  def get_random_value(module, file, key, amount \\ 1) do
+    module |> load_cache(file, key) |> random_result(amount)
+  end
 
-    case_result =
-      case :persistent_term.get(cache_name, nil) do
-        nil -> store_persistent_term(module_name, file_name, map_key)
-        list -> list
-      end
+  @doc """
+  Loads data from caches or creates new ones.
 
-    cached_list = Enum.shuffle(case_result)
+  If the requested data is not yet cached, it is first loaded from the locale files and cached
+  for future retrieval.
+  """
+  @spec load_cache(String.t(), String.t(), String.t()) :: cached_data()
+  def load_cache(module, file, key) do
+    case :persistent_term.get(key, nil) do
+      nil ->
+        store_persistent_term(module, file, key)
 
-    if amount == 1, do: Enum.random(cached_list), else: Enum.take(cached_list, amount)
+        :persistent_term.get("nf_#{module}_#{key}")
+
+      list ->
+        list
+    end
   end
 
   @doc """
   Loads data from the locale file and caches it using persistent term.
 
   This function retrieves the specified data from the locale file, shuffles it, and stores it in
-  `:persistent_term` for optimized performance.
+  `:persistent_term`.
   """
-  def store_persistent_term(module_name, file_name, map_key) do
-    cache_name = "nf_#{module_name}_#{map_key}"
-
-    random_list =
-      module_name
-      |> read_locale_file(file_name)
-      |> Map.get(map_key, [])
+  @spec store_persistent_term(String.t(), String.t(), String.t()) :: :ok
+  def store_persistent_term(module, file, key) do
+    data =
+      module
+      |> read_locale_file(file)
+      |> Map.get(key, [])
       |> Enum.shuffle()
 
-    :persistent_term.put(cache_name, random_list)
-
-    random_list
+    :persistent_term.put("nf_#{module}_#{key}", data)
   end
 
   @doc """
@@ -49,26 +62,16 @@ defmodule Nf.Helper do
   If the file does not exist for the configured locale, it falls back to the `"default"` locale.
   """
   @spec read_locale_file(String.t(), String.t()) :: map()
-  def read_locale_file(module_name, file_name) do
-    path =
-      :neo_faker
-      |> Application.get_env(:locale)
-      |> build_locale_path(module_name, file_name)
+  def read_locale_file(module, file) do
+    locale_setting = Application.get_env(:neo_faker, :locale)
+    locale_path = build_locale_path(locale_setting, module, file)
 
-    if File.exists?(path) do
-      load_locale_file(path)
+    if File.exists?(locale_path) do
+      locale_path |> Code.eval_file() |> elem(0)
     else
-      load_locale_file(build_locale_path("default", module_name, file_name))
+      "default" |> build_locale_path(module, file) |> Code.eval_file() |> elem(0)
     end
   end
-
-  @doc """
-  Loads and evaluates the given locale file.
-
-  Reads an `.exs` file from the specified `path`, evaluates its content, and returns the resulting map.
-  """
-  @spec load_locale_file(String.t()) :: map()
-  def load_locale_file(path), do: path |> Code.eval_file() |> elem(0)
 
   @doc """
   Constructs the absolute file path for a locale-specific data file.
@@ -76,5 +79,16 @@ defmodule Nf.Helper do
   @spec build_locale_path(String.t(), String.t(), String.t()) :: String.t()
   def build_locale_path(locale, module, file_name) do
     Path.join([@base_data_path, locale, module, file_name])
+  end
+
+  @doc """
+  Returns a random value or a list of random values.
+  """
+  @spec random_result([String.t()], integer()) :: result()
+  def random_result(list, -1), do: Enum.shuffle(list)
+  def random_result(list, 1), do: Enum.random(list)
+
+  def random_result(list, amount) when amount > 1 do
+    list |> Enum.shuffle() |> Enum.take(amount)
   end
 end

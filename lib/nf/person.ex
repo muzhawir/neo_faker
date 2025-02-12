@@ -7,15 +7,15 @@ defmodule Nf.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import Nf.Helper, only: [get_random_data: 4]
+  import Nf.Helper, only: [get_random_value: 4]
 
   @typedoc "Random result in the form of a string or a list of strings"
-  @type random_result :: String.t() | [String.t()]
+  @type result :: String.t() | [String.t()]
 
   @module_name "person"
 
   @doc """
-  Returns a random age.
+  Returns random age.
 
   The age is a non-negative integer between 0 and 120.
 
@@ -32,7 +32,7 @@ defmodule Nf.Person do
   def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
 
   @doc """
-  Returns a random binary gender.
+  Returns random binary gender.
 
   The gender is either "Male" or "Female".
 
@@ -45,13 +45,13 @@ defmodule Nf.Person do
       ["Male", "Female"]
 
   """
-  @spec binary_gender(non_neg_integer()) :: random_result()
+  @spec binary_gender(non_neg_integer()) :: result()
   def binary_gender(amount \\ 1) when amount in 1..2 do
-    get_random_data(@module_name, "gender.exs", "binary", amount)
+    get_random_value(@module_name, "gender.exs", "binary", amount)
   end
 
   @doc """
-  Returns a random short binary gender.
+  Returns random short binary gender.
 
   The gender is either "M" or "F".
 
@@ -64,13 +64,13 @@ defmodule Nf.Person do
       ["M", "F"]
 
   """
-  @spec short_binary_gender(non_neg_integer()) :: random_result()
+  @spec short_binary_gender(non_neg_integer()) :: result()
   def short_binary_gender(amount \\ 1) when amount in 1..2 do
-    get_random_data(@module_name, "gender.exs", "short_binary", amount)
+    get_random_value(@module_name, "gender.exs", "short_binary", amount)
   end
 
   @doc """
-  Returns a random non-binary gender.
+  Returns random non-binary gender.
 
   The gender is a non-binary gender, such as "Agender", "Androgyne", "Bigender", etc.
 
@@ -83,8 +83,8 @@ defmodule Nf.Person do
       ["Agender", "Androgyne"]
 
   """
-  @spec non_binary_gender(non_neg_integer()) :: random_result()
+  @spec non_binary_gender(non_neg_integer()) :: result()
   def non_binary_gender(amount \\ 1) do
-    get_random_data(@module_name, "gender.exs", "non_binary", amount)
+    get_random_value(@module_name, "gender.exs", "non_binary", amount)
   end
 end

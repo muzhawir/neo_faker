@@ -20,20 +20,19 @@ defmodule Nf.Crypto.Utils do
 
   The values for `:case` can be:
 
-  - `:upper` - uses upper case characters (default)
-  - `:lower` - uses lower case characters
+  - `:upper` - uses upper case characters
 
   """
   @spec generate_hash(atom(), Keyword.t()) :: String.t()
-  def generate_hash(hash_type, opts) do
-    character_case =
-      case Keyword.get(opts, :case) do
-        :upper -> :upper
-        _ -> :lower
-      end
-
+  def generate_hash(hash_type, []) do
     data = :crypto.strong_rand_bytes(16)
 
-    hash_type |> :crypto.hash(data) |> Base.encode16(case: character_case)
+    hash_type |> :crypto.hash(data) |> Base.encode16(case: :lower)
+  end
+
+  def generate_hash(hash_type, case: :upper) do
+    data = :crypto.strong_rand_bytes(16)
+
+    hash_type |> :crypto.hash(data) |> Base.encode16()
   end
 end

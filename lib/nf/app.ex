@@ -8,8 +8,10 @@ defmodule Nf.App do
   @moduledoc since: "0.4.0"
 
   import Nf.App.Utils
+  import Nf.Helper, only: [get_random_value: 4, read_locale_file: 2]
 
-  alias Nf.Helper
+  @typedoc "Random result in the form of a string or a list of strings"
+  @type result :: String.t() | [String.t()]
 
   @module_name "app"
 
@@ -23,13 +25,13 @@ defmodule Nf.App do
       iex> Nf.App.author()
       "José Valim"
 
+      iex> Nf.App.author(2)
+      ["Joe Armstrong", "José Valim"]
+
   """
-  @spec author() :: String.t()
-  def author do
-    @module_name
-    |> Helper.read_locale_file("author.exs")
-    |> Map.get("authors")
-    |> Enum.random()
+  @spec author(integer()) :: result()
+  def author(amount \\ 1) do
+    get_random_value(@module_name, "author.exs", "authors", amount)
   end
 
   @doc """
@@ -66,7 +68,7 @@ defmodule Nf.App do
   def name(opts \\ []) do
     [first_name, last_name] =
       @module_name
-      |> Helper.read_locale_file("name.exs")
+      |> read_locale_file("name.exs")
       |> Map.values()
       |> Enum.map(&Enum.random/1)
 
@@ -90,13 +92,14 @@ defmodule Nf.App do
       iex> Nf.App.description()
       "Elixir library for generating fake data in tests and development."
 
+      iex> Nf.App.description(2)
+      ["Elixir library for generating fake data in tests and development.",
+      "Task automation tool for improving development workflows."]
+
   """
-  @spec description() :: String.t()
-  def description do
-    @module_name
-    |> Helper.read_locale_file("description.exs")
-    |> Map.get("descriptions")
-    |> Enum.random()
+  @spec description(integer()) :: result()
+  def description(amount \\ 1) do
+    get_random_value(@module_name, "description.exs", "descriptions", amount)
   end
 
   @doc """
@@ -162,12 +165,12 @@ defmodule Nf.App do
       iex> Nf.App.license()
       "MIT License"
 
+      iex> Nf.App.license(2)
+      ["MIT License", "GNU General Public License v2.0"]
+
   """
-  @spec license() :: String.t()
-  def license do
-    @module_name
-    |> Helper.read_locale_file("license.exs")
-    |> Map.get("licenses")
-    |> Enum.random()
+  @spec license(integer()) :: result()
+  def license(amount \\ 1) do
+    get_random_value(@module_name, "license.exs", "licenses", amount)
   end
 end

@@ -23,6 +23,9 @@ defmodule Nf.Person do
       iex> Nf.Person.age()
       44
 
+      iex> Nf.Person.age(7..44)
+      27
+
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
@@ -36,6 +39,9 @@ defmodule Nf.Person do
 
       iex> Nf.Person.binary_gender()
       "Male"
+
+      iex> Nf.Person.binary_gender(2)
+      ["Male", "Female"]
 
   """
   @spec binary_gender(non_neg_integer()) :: random_result()
@@ -53,6 +59,9 @@ defmodule Nf.Person do
       iex> Nf.Person.short_binary_gender()
       "F"
 
+      iex> Nf.Person.short_binary_gender(2)
+      ["M", "F"]
+
   """
   @spec short_binary_gender(non_neg_integer()) :: random_result()
   def short_binary_gender(amount \\ 1) when amount in 1..2 do
@@ -68,6 +77,9 @@ defmodule Nf.Person do
 
       iex> Nf.Person.non_binary_gender()
       "Agender"
+
+      iex> Nf.Person.non_binary_gender(2)
+      ["Agender", "Androgyne"]
 
   """
   @spec non_binary_gender(non_neg_integer()) :: random_result()

@@ -81,9 +81,6 @@ iex> Nf.Blood.type()
 ```elixir
 iex> Nf.Boolean.boolean()
 false
-
-iex> Nf.Boolean.boolean(75)
-true
 ```
 
 ## [Crypto](`Nf.Crypto`)
@@ -126,4 +123,36 @@ iex> Nf.Gravatar.display()
 
 iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
+```
+
+## [Person](`Nf.Person`)
+
+{: .col-2}
+
+### [`age(min \\ 0, max \\ 120)`](`Nf.Person.age/2`)
+
+```elixir
+iex> Nf.Person.age()
+44
+```
+
+### [`binary_gender(amount \\ 1)`](`Nf.Person.binary_gender/1`)
+
+```elixir
+iex> Nf.Person.binary_gender()
+"Male"
+```
+
+### [`non_binary_gender(amount \\ 1)`](`Nf.Person.non_binary_gender/1`)
+
+```elixir
+iex> Nf.Person.non_binary_gender()
+"Agender"
+```
+
+### [`short_binary_gender(amount \\ 1)`](`Nf.Person.short_binary_gender/1`)
+
+```elixir
+iex> Nf.Person.short_binary_gender()
+"M"
 ```

@@ -15,7 +15,7 @@ defmodule Nf.Person do
   @module_name "person"
 
   @doc """
-  Returns a random age.
+  Returns random age.
 
   The age is a non-negative integer between 0 and 120.
 
@@ -32,7 +32,7 @@ defmodule Nf.Person do
   def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
 
   @doc """
-  Returns a random binary gender.
+  Returns random binary gender.
 
   The gender is either "Male" or "Female".
 
@@ -51,7 +51,7 @@ defmodule Nf.Person do
   end
 
   @doc """
-  Returns a random short binary gender.
+  Returns random short binary gender.
 
   The gender is either "M" or "F".
 
@@ -70,7 +70,7 @@ defmodule Nf.Person do
   end
 
   @doc """
-  Returns a random non-binary gender.
+  Returns random non-binary gender.
 
   The gender is a non-binary gender, such as "Agender", "Androgyne", "Bigender", etc.
 

@@ -7,10 +7,10 @@ defmodule Nf.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import Nf.Helper, only: [get_random_data: 4]
+  import Nf.Helper, only: [get_random_value: 4]
 
   @typedoc "Random result in the form of a string or a list of strings"
-  @type random_result :: String.t() | [String.t()]
+  @type result :: String.t() | [String.t()]
 
   @module_name "person"
 
@@ -45,9 +45,9 @@ defmodule Nf.Person do
       ["Male", "Female"]
 
   """
-  @spec binary_gender(non_neg_integer()) :: random_result()
+  @spec binary_gender(non_neg_integer()) :: result()
   def binary_gender(amount \\ 1) when amount in 1..2 do
-    get_random_data(@module_name, "gender.exs", "binary", amount)
+    get_random_value(@module_name, "gender.exs", "binary", amount)
   end
 
   @doc """
@@ -64,9 +64,9 @@ defmodule Nf.Person do
       ["M", "F"]
 
   """
-  @spec short_binary_gender(non_neg_integer()) :: random_result()
+  @spec short_binary_gender(non_neg_integer()) :: result()
   def short_binary_gender(amount \\ 1) when amount in 1..2 do
-    get_random_data(@module_name, "gender.exs", "short_binary", amount)
+    get_random_value(@module_name, "gender.exs", "short_binary", amount)
   end
 
   @doc """
@@ -83,8 +83,8 @@ defmodule Nf.Person do
       ["Agender", "Androgyne"]
 
   """
-  @spec non_binary_gender(non_neg_integer()) :: random_result()
+  @spec non_binary_gender(non_neg_integer()) :: result()
   def non_binary_gender(amount \\ 1) do
-    get_random_data(@module_name, "gender.exs", "non_binary", amount)
+    get_random_value(@module_name, "gender.exs", "non_binary", amount)
   end
 end

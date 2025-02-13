@@ -6,7 +6,7 @@
 
 # NeoFaker
 
-![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
+![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
 > [!WARNING]
 > This project is still in early development. Expect breaking changes.
@@ -21,7 +21,7 @@ NeoFaker is available on [Hex](https://hex.pm/packages/neo_faker). Add it to you
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.6.1", only: [:dev, :test]}
+    {:neo_faker, "~> 0.7.0", only: [:dev, :test]}
   ]
 end
 ```

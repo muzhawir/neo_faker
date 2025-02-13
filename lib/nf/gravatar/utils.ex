@@ -1,29 +1,10 @@
 defmodule Nf.Gravatar.Utils do
   @moduledoc false
 
-  import URI, only: [parse: 1, append_path: 2, append_query: 2]
-
   @type email :: String.t() | nil
 
   @gravatar_url "https://gravatar.com/avatar/"
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-  @doc """
-  Hashes an email address into a Base16-encoded string.
-
-  This function computes a cryptographic hash of the given email address and returns a Base16
-  (hexadecimal) representation. If the input is invalid, an `ArgumentError` is raised.
-  """
-  @spec hash_email!(String.t()) :: String.t()
-  def hash_email!(email) do
-    if Regex.match?(@w3c_email_regex, email) do
-      user_email = email |> String.trim() |> String.downcase()
-
-      :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
-    else
-      raise ArgumentError, "Invalid email address"
-    end
-  end
 
   @doc """
   Extracts the image size from display options.
@@ -31,13 +12,9 @@ defmodule Nf.Gravatar.Utils do
   Parses the given display options to determine the image size from 1 to 2048 pixel.
   If no valid size is specified, the default 80 pixel value is used.
   """
-  @spec image_size(Keyword.t()) :: integer()
-  def image_size(opts) when is_list(opts) do
-    case Keyword.get(opts, :size, 80) do
-      nil -> 80
-      size when size in 1..2048 -> size
-    end
-  end
+  @spec image_size(Keyword.t()) :: non_neg_integer()
+  def image_size(size: nil), do: 80
+  def image_size(size: size) when size in 1..2048, do: size
 
   @doc """
   Retrieves the default fallback image type from display options.
@@ -73,10 +50,27 @@ defmodule Nf.Gravatar.Utils do
       end
 
     @gravatar_url
-    |> parse()
-    |> append_path("/#{hashed_email}")
-    |> append_query("d=#{default_fallback}")
-    |> append_query("s=#{image_size}")
+    |> URI.parse()
+    |> URI.append_path("/#{hashed_email}")
+    |> URI.append_query("d=#{default_fallback}")
+    |> URI.append_query("s=#{image_size}")
     |> URI.to_string()
+  end
+
+  @doc """
+  Hashes an email address into a Base16-encoded string.
+
+  This function computes a cryptographic hash of the given email address and returns a Base16
+  (hexadecimal) representation. If the input is invalid, an `ArgumentError` is raised.
+  """
+  @spec hash_email!(String.t()) :: String.t()
+  def hash_email!(email) do
+    if Regex.match?(@w3c_email_regex, email) do
+      user_email = email |> String.trim() |> String.downcase()
+
+      :sha256 |> :crypto.hash(user_email) |> Base.encode16(case: :lower)
+    else
+      raise ArgumentError, "Invalid email address"
+    end
   end
 end

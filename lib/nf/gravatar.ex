@@ -54,8 +54,8 @@ defmodule Nf.Gravatar do
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    image_size = image_size(opts)
-    default_fallback = default_fallback(opts)
+    image_size = image_size(size: opts[:size])
+    default_fallback = default_fallback(fallback: opts[:fallback])
 
     generate_gravatar_url(email, image_size, default_fallback)
   end

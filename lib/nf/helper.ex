@@ -15,8 +15,8 @@ defmodule Nf.Helper do
   If the requested data is not yet cached, it is first loaded from the locale files and cached
   for future retrieval.
   """
-  @spec get_random_value(String.t(), String.t(), String.t(), integer()) :: result()
-  def get_random_value(module, file, key, amount \\ 1) do
+  @spec random_value(String.t(), String.t(), String.t(), integer()) :: result()
+  def random_value(module, file, key, amount \\ 1) do
     module |> load_cache(file, key) |> random_result(amount)
   end
 

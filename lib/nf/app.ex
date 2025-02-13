@@ -8,7 +8,7 @@ defmodule Nf.App do
   @moduledoc since: "0.4.0"
 
   import Nf.App.Utils
-  import Nf.Helper, only: [get_random_value: 4, read_locale_file: 2]
+  import Nf.Helper, only: [random_value: 4, read_locale_file: 2]
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]
@@ -31,7 +31,7 @@ defmodule Nf.App do
   """
   @spec author(integer()) :: result()
   def author(amount \\ 1) do
-    get_random_value(@module_name, "author.exs", "authors", amount)
+    random_value(@module_name, "author.exs", "authors", amount)
   end
 
   @doc """
@@ -99,7 +99,7 @@ defmodule Nf.App do
   """
   @spec description(integer()) :: result()
   def description(amount \\ 1) do
-    get_random_value(@module_name, "description.exs", "descriptions", amount)
+    random_value(@module_name, "description.exs", "descriptions", amount)
   end
 
   @doc """
@@ -171,6 +171,6 @@ defmodule Nf.App do
   """
   @spec license(integer()) :: result()
   def license(amount \\ 1) do
-    get_random_value(@module_name, "license.exs", "licenses", amount)
+    random_value(@module_name, "license.exs", "licenses", amount)
   end
 end

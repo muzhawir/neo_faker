@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Lint do
     run_task("test")
     print_separator()
 
-    run_task("dialyzer", ["--quiet-with-result"])
+    run_task("dialyzer")
     print_separator()
 
     run_task("credo", ["--format", "oneline"])

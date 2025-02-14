@@ -1,6 +1,9 @@
 defmodule Nf.App.Utils do
   @moduledoc false
 
+  alias Mix.Locale
+  alias Nf.Helper.Locale
+
   @doc """
   Loads and returns the first and last names for app names.
 
@@ -10,11 +13,11 @@ defmodule Nf.App.Utils do
   def load_app_names_cache(module, amount \\ 1) do
     %{"first_names" => first_name_list, "last_names" => last_name_list} =
       module
-      |> Nf.Helper.load_cache("name.exs", "names")
+      |> Locale.load_cache("name.exs", "names")
       |> Map.new()
 
-    first_name = Nf.Helper.random_result(first_name_list, amount)
-    last_name = Nf.Helper.random_result(last_name_list, amount)
+    first_name = Locale.random_result(first_name_list, amount)
+    last_name = Locale.random_result(last_name_list, amount)
 
     {first_name, last_name}
   end

@@ -1,6 +1,8 @@
 defmodule Nf.AppTest do
   use ExUnit.Case, async: true
 
+  alias Nf.App
+
   # Helper function for validate core version
   @spec validate_version_core(String.t()) :: boolean
   defp validate_version_core(version) do
@@ -46,14 +48,14 @@ defmodule Nf.AppTest do
         :single -> ~r/^[A-Z]?[a-z0-9]+$/
       end
 
-    app_name = Nf.App.name(amount, style: opts)
+    app_name = App.name(amount, style: opts)
 
     Regex.match?(regexp, app_name)
   end
 
   describe "author/0" do
     test "returns a full name of an app author" do
-      author_name = Nf.App.author()
+      author_name = App.author()
 
       assert String.valid?(author_name)
     end
@@ -65,7 +67,7 @@ defmodule Nf.AppTest do
     end
 
     test "returns an app name with custom amount" do
-      assert is_list(Nf.App.name(2))
+      assert is_list(App.name(2))
     end
 
     test "returns an app name with :camel_case option" do
@@ -87,23 +89,23 @@ defmodule Nf.AppTest do
 
   describe "description/0" do
     test "returns a short app description" do
-      description = Nf.App.description()
+      description = App.description()
 
       assert String.valid?(description)
     end
 
     test "returns a short app description with custom amount" do
-      assert is_list(Nf.App.description(2))
+      assert is_list(App.description(2))
     end
   end
 
   describe "semver/1" do
     test "returns a semantic version number" do
-      assert validate_version_core(Nf.App.semver())
+      assert validate_version_core(App.semver())
     end
 
     test "returns a semantic version number with pre-release type" do
-      semver = Nf.App.semver(type: :pre_release)
+      semver = App.semver(type: :pre_release)
       [core_version, pre_release_identifier] = String.split(semver, "-")
       is_valid_core_version? = validate_version_core(core_version)
       is_valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
@@ -112,7 +114,7 @@ defmodule Nf.AppTest do
     end
 
     test "returns a semantic version number with build number type" do
-      semver = Nf.App.semver(type: :build)
+      semver = App.semver(type: :build)
       [core_version, build_number] = String.split(semver, "+")
       is_valid_core_version? = validate_version_core(core_version)
       id_valid_build_number? = validate_build_number(build_number)
@@ -121,7 +123,7 @@ defmodule Nf.AppTest do
     end
 
     test "returns a semantic version number with pre-release and build number type" do
-      semver = Nf.App.semver(type: :pre_release_build)
+      semver = App.semver(type: :pre_release_build)
 
       [core_version, pre_release, build_number] =
         semver
@@ -139,13 +141,13 @@ defmodule Nf.AppTest do
 
   describe "license/0" do
     test "returns an open source license" do
-      lisense = Nf.App.license()
+      lisense = App.license()
 
       assert String.valid?(lisense)
     end
 
     test "returns an open source license with custom amount" do
-      assert is_list(Nf.App.license(2))
+      assert is_list(App.license(2))
     end
   end
 end

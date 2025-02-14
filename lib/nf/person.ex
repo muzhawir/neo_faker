@@ -7,7 +7,7 @@ defmodule Nf.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import Nf.Helper, only: [random_value: 4]
+  import Nf.Helper.Locale, only: [random_value: 4]
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]

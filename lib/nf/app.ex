@@ -8,7 +8,7 @@ defmodule Nf.App do
   @moduledoc since: "0.4.0"
 
   import Nf.App.Utils
-  import Nf.Helper
+  import Nf.Helper.Locale
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]

@@ -73,15 +73,15 @@ defmodule Nf.App do
   def name(1, opts) do
     style = Keyword.get(opts, :style, nil)
 
-    @module_name |> load_app_name_cache(1) |> name_case(style)
+    @module_name |> load_app_names_cache(1) |> name_case(type: style)
   end
 
   def name(amount, opts) when amount == -1 or amount > 1 do
-    {first_names_list, last_names_list} = load_app_name_cache(@module_name, amount)
+    {first_names_list, last_names_list} = load_app_names_cache(@module_name, amount)
     style = Keyword.get(opts, :style, nil)
 
     for {first_name, last_name} <- Enum.zip(first_names_list, last_names_list) do
-      name_case({first_name, last_name}, style)
+      name_case({first_name, last_name}, type: style)
     end
   end
 

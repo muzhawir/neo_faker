@@ -36,7 +36,7 @@ defmodule Nf.AppTest do
 
   # Helper function for validate name function with options
   @spec validate_name_app(atom()) :: boolean
-  defp validate_name_app(opts \\ nil) do
+  defp validate_name_app(amount \\ 1, opts \\ nil) do
     regexp =
       case opts do
         nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
@@ -46,7 +46,7 @@ defmodule Nf.AppTest do
         :single -> ~r/^[A-Z]?[a-z0-9]+$/
       end
 
-    app_name = Nf.App.name(style: opts)
+    app_name = Nf.App.name(amount, style: opts)
 
     Regex.match?(regexp, app_name)
   end
@@ -59,25 +59,29 @@ defmodule Nf.AppTest do
     end
   end
 
-  describe "name" do
+  describe "name/2" do
     test "returns an app name" do
       assert validate_name_app()
     end
 
+    test "returns an app name with custom amount" do
+      assert is_list(Nf.App.name(2))
+    end
+
     test "returns an app name with :camel_case option" do
-      assert validate_name_app(:camel_case)
+      assert validate_name_app(1, :camel_case)
     end
 
     test "returns an app name with :pascal_case option" do
-      assert validate_name_app(:pascal_case)
+      assert validate_name_app(1, :pascal_case)
     end
 
     test "returns an app name with :dashed option" do
-      assert validate_name_app(:dashed)
+      assert validate_name_app(1, :dashed)
     end
 
     test "returns an app name with :single option" do
-      assert validate_name_app(:single)
+      assert validate_name_app(1, :single)
     end
   end
 
@@ -87,9 +91,13 @@ defmodule Nf.AppTest do
 
       assert String.valid?(description)
     end
+
+    test "returns a short app description with custom amount" do
+      assert is_list(Nf.App.description(2))
+    end
   end
 
-  describe "semver" do
+  describe "semver/1" do
     test "returns a semantic version number" do
       assert validate_version_core(Nf.App.semver())
     end
@@ -134,6 +142,10 @@ defmodule Nf.AppTest do
       lisense = Nf.App.license()
 
       assert String.valid?(lisense)
+    end
+
+    test "returns an open source license with custom amount" do
+      assert is_list(Nf.App.license(2))
     end
   end
 end

@@ -8,7 +8,7 @@ defmodule Nf.App do
   @moduledoc since: "0.4.0"
 
   import Nf.App.Utils
-  import Nf.Helper, only: [random_value: 4, read_locale_file: 2]
+  import Nf.Helper
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]
@@ -60,25 +60,28 @@ defmodule Nf.App do
       iex> Nf.App.name()
       "Neo Faker"
 
+      iex> Nf.App.name(2)
+      ["Neo Faker", "Ignite Core"]
+
       iex> Nf.App.name(style: :camel_case)
       "neoFaker"
 
   """
-  @spec name(Keyword.t()) :: String.t()
-  def name(opts \\ []) do
-    [first_name, last_name] =
-      @module_name
-      |> read_locale_file("name.exs")
-      |> Map.values()
-      |> Enum.map(&Enum.random/1)
+  @spec name(integer(), keyword()) :: result()
+  def name(amount \\ 1, opts \\ [])
 
-    case Keyword.get(opts, :style) do
-      nil -> "#{first_name} #{last_name}"
-      :camel_case -> "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
-      :pascal_case -> "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
-      :dashed -> "#{String.capitalize(first_name)}-#{last_name}"
-      :underscore -> "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
-      :single -> [first_name, last_name] |> Enum.random() |> String.capitalize()
+  def name(1, opts) do
+    style = Keyword.get(opts, :style, nil)
+
+    @module_name |> load_app_name_cache(1) |> name_case(style)
+  end
+
+  def name(amount, opts) when amount == -1 or amount > 1 do
+    {first_names_list, last_names_list} = load_app_name_cache(@module_name, amount)
+    style = Keyword.get(opts, :style, nil)
+
+    for {first_name, last_name} <- Enum.zip(first_names_list, last_names_list) do
+      name_case({first_name, last_name}, style)
     end
   end
 
@@ -132,13 +135,13 @@ defmodule Nf.App do
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  def semver(opts \\ []) do
-    case Keyword.get(opts, :type) do
-      nil -> semver_core()
-      :pre_release -> "#{semver_core()}-#{semver_pre_release()}"
-      :build -> "#{semver_core()}+#{semver_build_number()}"
-      :pre_release_build -> "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
-    end
+  def semver(opts \\ [])
+  def semver([]), do: semver_core()
+  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
+  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
+
+  def semver(type: :pre_release_build) do
+    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
   end
 
   @doc """

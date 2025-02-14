@@ -11,6 +11,9 @@ This page provides a quick reference to common random generator functions in thi
 ```elixir
 iex> Nf.App.author()
 "José Valim"
+
+iex> Nf.App.author(2)
+["Joe Armstrong", "José Valim"]
 ```
 
 ### [`description()`](`Nf.App.description/0`)
@@ -95,6 +98,10 @@ iex> Nf.Crypto.md5()
 
 iex> Nf.Crypto.md5(case: :upper)
 "E35CB102765CFC56DF21BA4C16E6A636"
+
+iex> Nf.Crypto.md5(2)
+["afc4c626c55e4166421d82732163857d",
+"9b1c12d90d0aaf8d9b20458fbb24d481"]
 ```
 
 ### [`sha1(opts \\ [])`](`Nf.Crypto.sha1/1`)
@@ -134,6 +141,9 @@ iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 ```elixir
 iex> Nf.Person.age()
 44
+
+iex> Nf.Person.age(7..44)
+27
 ```
 
 ### [`binary_gender(amount \\ 1)`](`Nf.Person.binary_gender/1`)
@@ -141,6 +151,9 @@ iex> Nf.Person.age()
 ```elixir
 iex> Nf.Person.binary_gender()
 "Male"
+
+iex> Nf.Person.binary_gender(2)
+["Male", "Female"]
 ```
 
 ### [`non_binary_gender(amount \\ 1)`](`Nf.Person.non_binary_gender/1`)

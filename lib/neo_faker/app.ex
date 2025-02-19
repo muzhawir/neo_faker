@@ -10,10 +10,10 @@ defmodule NeoFaker.App do
   import NeoFaker.App.Utils
   import NeoFaker.Helper.Locale
 
-  @typedoc "Random result in the form of a string or a list of strings"
+  @typedoc "Random result in the form of a string or a list of strings."
   @type result :: String.t() | [String.t()]
 
-  @module_name "app"
+  @module __MODULE__
 
   @doc """
   Returns a random app author.
@@ -31,7 +31,7 @@ defmodule NeoFaker.App do
   """
   @spec author(integer()) :: result()
   def author(amount \\ 1) do
-    random_value(@module_name, "author.exs", "authors", amount)
+    random_value(@module, "author.exs", "authors", amount)
   end
 
   @doc """
@@ -73,11 +73,11 @@ defmodule NeoFaker.App do
   def name(1, opts) do
     style = Keyword.get(opts, :style, nil)
 
-    @module_name |> load_app_names_cache(1) |> name_case(type: style)
+    @module |> load_app_names_cache(1) |> name_case(type: style)
   end
 
   def name(amount, opts) when amount == -1 or amount > 1 do
-    {first_names_list, last_names_list} = load_app_names_cache(@module_name, amount)
+    {first_names_list, last_names_list} = load_app_names_cache(@module, amount)
     style = Keyword.get(opts, :style, nil)
 
     for {first_name, last_name} <- Enum.zip(first_names_list, last_names_list) do
@@ -102,7 +102,7 @@ defmodule NeoFaker.App do
   """
   @spec description(integer()) :: result()
   def description(amount \\ 1) do
-    random_value(@module_name, "description.exs", "descriptions", amount)
+    random_value(@module, "description.exs", "descriptions", amount)
   end
 
   @doc """
@@ -174,6 +174,6 @@ defmodule NeoFaker.App do
   """
   @spec license(integer()) :: result()
   def license(amount \\ 1) do
-    random_value(@module_name, "license.exs", "licenses", amount)
+    random_value(@module, "license.exs", "licenses", amount)
   end
 end

@@ -15,9 +15,14 @@ defmodule NeoFaker.Helper.Locale do
   If the requested data is not yet cached, it is first loaded from the locale files and cached
   for future retrieval.
   """
-  @spec random_value(String.t(), String.t(), String.t(), integer()) :: result()
+  @spec random_value(atom(), String.t(), String.t(), integer()) :: result()
   def random_value(module, file, key, amount \\ 1) do
-    module |> load_cache(file, key) |> random_result(amount)
+    module
+    |> Module.split()
+    |> List.last()
+    |> String.downcase()
+    |> load_cache(file, key)
+    |> random_result(amount)
   end
 
   @doc """

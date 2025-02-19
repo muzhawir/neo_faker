@@ -77,7 +77,7 @@
     "Yvonne",
     "Zara",
     "Zelda",
-    "Zoey",
+    "Zoey"
   ],
   "middle_names" => [
     "Adele",
@@ -157,7 +157,7 @@
     "Yelena",
     "Zahara",
     "Zelda",
-    "Zinnia",
+    "Zinnia"
   ],
   "last_names" => [
     "Andrews",

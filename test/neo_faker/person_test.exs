@@ -1,8 +1,8 @@
-defmodule Nf.PersonTest do
+defmodule NeoFaker.PersonTest do
   use ExUnit.Case, async: true
 
-  alias Nf.Helper.Locale
-  alias Nf.Person
+  alias NeoFaker.Helper.Locale
+  alias NeoFaker.Person
 
   describe "age/2" do
     test "returns random age" do

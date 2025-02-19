@@ -1,4 +1,4 @@
-defmodule Nf.Person do
+defmodule NeoFaker.Person do
   @moduledoc """
   Provides functions for generating person-related information.
 
@@ -7,7 +7,7 @@ defmodule Nf.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import Nf.Helper.Locale, only: [random_value: 4]
+  import NeoFaker.Helper.Locale, only: [random_value: 4]
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]
@@ -21,10 +21,10 @@ defmodule Nf.Person do
 
   ## Examples
 
-      iex> Nf.Person.age()
+      iex> NeoFaker.Person.age()
       44
 
-      iex> Nf.Person.age(7..44)
+      iex> NeoFaker.Person.age(7..44)
       27
 
   """
@@ -38,10 +38,10 @@ defmodule Nf.Person do
 
   ## Examples
 
-      iex> Nf.Person.binary_gender()
+      iex> NeoFaker.Person.binary_gender()
       "Male"
 
-      iex> Nf.Person.binary_gender(2)
+      iex> NeoFaker.Person.binary_gender(2)
       ["Male", "Female"]
 
   """
@@ -57,10 +57,10 @@ defmodule Nf.Person do
 
   ## Examples
 
-      iex> Nf.Person.short_binary_gender()
+      iex> NeoFaker.Person.short_binary_gender()
       "F"
 
-      iex> Nf.Person.short_binary_gender(2)
+      iex> NeoFaker.Person.short_binary_gender(2)
       ["M", "F"]
 
   """
@@ -76,10 +76,10 @@ defmodule Nf.Person do
 
   ## Examples
 
-      iex> Nf.Person.non_binary_gender()
+      iex> NeoFaker.Person.non_binary_gender()
       "Agender"
 
-      iex> Nf.Person.non_binary_gender(2)
+      iex> NeoFaker.Person.non_binary_gender(2)
       ["Agender", "Androgyne"]
 
   """

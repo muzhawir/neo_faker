@@ -1,4 +1,4 @@
-defmodule Nf.Boolean do
+defmodule NeoFaker.Boolean do
   @moduledoc """
   Provides functions for generating boolean values.
 
@@ -14,10 +14,10 @@ defmodule Nf.Boolean do
 
   ## Examples
 
-      iex> Nf.Boolean.boolean()
+      iex> NeoFaker.Boolean.boolean()
       false
 
-      iex> Nf.Boolean.boolean(75)
+      iex> NeoFaker.Boolean.boolean(75)
       true
 
   """

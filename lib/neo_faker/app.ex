@@ -1,4 +1,4 @@
-defmodule Nf.App do
+defmodule NeoFaker.App do
   @moduledoc """
   Provides functions for generating app metadata.
 
@@ -7,8 +7,8 @@ defmodule Nf.App do
   """
   @moduledoc since: "0.4.0"
 
-  import Nf.App.Utils
-  import Nf.Helper.Locale
+  import NeoFaker.App.Utils
+  import NeoFaker.Helper.Locale
 
   @typedoc "Random result in the form of a string or a list of strings"
   @type result :: String.t() | [String.t()]
@@ -22,10 +22,10 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.author()
+      iex> NeoFaker.App.author()
       "José Valim"
 
-      iex> Nf.App.author(2)
+      iex> NeoFaker.App.author(2)
       ["Joe Armstrong", "José Valim"]
 
   """
@@ -57,13 +57,13 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.name()
+      iex> NeoFaker.App.name()
       "Neo Faker"
 
-      iex> Nf.App.name(2)
+      iex> NeoFaker.App.name(2)
       ["Neo Faker", "Ignite Core"]
 
-      iex> Nf.App.name(style: :camel_case)
+      iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
   """
@@ -92,10 +92,10 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.description()
+      iex> NeoFaker.App.description()
       "Elixir library for generating fake data in tests and development."
 
-      iex> Nf.App.description(2)
+      iex> NeoFaker.App.description(2)
       ["Elixir library for generating fake data in tests and development.",
       "Task automation tool for improving development workflows."]
 
@@ -127,10 +127,10 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.semver()
+      iex> NeoFaker.App.semver()
       "1.2.3"
 
-      iex> Nf.App.semver(:pre_release)
+      iex> NeoFaker.App.semver(:pre_release)
       "1.2.3-beta.1"
 
   """
@@ -151,7 +151,7 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.version()
+      iex> NeoFaker.App.version()
       "1.2"
 
   """
@@ -165,10 +165,10 @@ defmodule Nf.App do
 
   ## Examples
 
-      iex> Nf.App.license()
+      iex> NeoFaker.App.license()
       "MIT License"
 
-      iex> Nf.App.license(2)
+      iex> NeoFaker.App.license(2)
       ["MIT License", "GNU General Public License v2.0"]
 
   """

@@ -25,7 +25,7 @@
     "Pvt.",
     "Rev.",
     "Sgt.",
-    "Sir",
+    "Sir"
   ],
   "title_suffixes" => [
     "B.A.",
@@ -53,6 +53,6 @@
     "R.N.",
     "Sr.",
     "Th.D.",
-    "V",
+    "V"
   ]
 }

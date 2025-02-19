@@ -1,8 +1,8 @@
-defmodule Nf.App.Utils do
+defmodule NeoFaker.App.Utils do
   @moduledoc false
 
   alias Mix.Locale
-  alias Nf.Helper.Locale
+  alias NeoFaker.Helper.Locale
 
   @doc """
   Loads and returns the first and last names for app names.

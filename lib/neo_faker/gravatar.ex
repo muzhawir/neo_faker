@@ -1,4 +1,4 @@
-defmodule Nf.Gravatar do
+defmodule NeoFaker.Gravatar do
   @moduledoc """
   Provides functions for generating random Gravatar URLs.
 
@@ -6,7 +6,7 @@ defmodule Nf.Gravatar do
   """
   @moduledoc since: "0.3.1"
 
-  import Nf.Gravatar.Utils
+  import NeoFaker.Gravatar.Utils
 
   @typedoc "Email address"
   @type email :: String.t() | nil
@@ -39,16 +39,16 @@ defmodule Nf.Gravatar do
 
   ## Examples
 
-      iex> Nf.Gravatar.display()
+      iex> NeoFaker.Gravatar.display()
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
-      iex> Nf.Gravatar.display("john.doe@example.com")
+      iex> NeoFaker.Gravatar.display("john.doe@example.com")
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
-      iex> Nf.Gravatar.display("john.doe@example.com", size: 100)
+      iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=100"
 
-      iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
+      iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
       "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 
   """

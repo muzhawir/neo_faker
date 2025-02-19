@@ -1,4 +1,4 @@
-defmodule Nf.Helper.Locale do
+defmodule NeoFaker.Helper.Locale do
   @moduledoc false
 
   @typedoc "Result of a single value or a list of random values."

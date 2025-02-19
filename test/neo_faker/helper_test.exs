@@ -1,7 +1,7 @@
-defmodule Nf.HelperTest do
+defmodule NeoFaker.HelperTest do
   use ExUnit.Case, async: true
 
-  alias Nf.Helper.Locale
+  alias NeoFaker.Helper.Locale
 
   describe "build_locale_path/3" do
     test "builds the absolute path to a locale-specific file" do

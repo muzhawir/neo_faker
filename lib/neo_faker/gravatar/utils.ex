@@ -1,4 +1,4 @@
-defmodule Nf.Gravatar.Utils do
+defmodule NeoFaker.Gravatar.Utils do
   @moduledoc false
 
   @type email :: String.t() | nil

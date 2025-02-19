@@ -1,4 +1,4 @@
-defmodule Nf.Blood do
+defmodule NeoFaker.Blood do
   @moduledoc """
   Provides functions for generating blood types.
 
@@ -17,7 +17,7 @@ defmodule Nf.Blood do
 
   ## Examples
 
-      iex> Nf.Blood.group()
+      iex> NeoFaker.Blood.group()
       "B+"
 
   """
@@ -31,7 +31,7 @@ defmodule Nf.Blood do
 
   ## Examples
 
-      iex> Nf.Blood.type()
+      iex> NeoFaker.Blood.type()
       "B"
 
   """
@@ -45,7 +45,7 @@ defmodule Nf.Blood do
 
   ## Examples
 
-      iex> Nf.Blood.rh_factor()
+      iex> NeoFaker.Blood.rh_factor()
       "+"
 
   """

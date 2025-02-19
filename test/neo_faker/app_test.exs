@@ -1,7 +1,7 @@
-defmodule Nf.AppTest do
+defmodule NeoFaker.AppTest do
   use ExUnit.Case, async: true
 
-  alias Nf.App
+  alias NeoFaker.App
 
   # Helper function for validate core version
   @spec validate_version_core(String.t()) :: boolean

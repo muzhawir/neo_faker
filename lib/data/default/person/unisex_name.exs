@@ -77,7 +77,7 @@
     "Yuki",
     "Zane",
     "Zephyr",
-    "Zion",
+    "Zion"
   ],
   "middle_names" => [
     "Adrian",
@@ -157,7 +157,7 @@
     "Yuki",
     "Zane",
     "Zephyr",
-    "Zion",
+    "Zion"
   ],
   "last_names" => [
     "Adams",

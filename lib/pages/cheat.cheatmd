@@ -2,170 +2,170 @@
 
 This page provides a quick reference to common random generator functions in this package.
 
-## [App](`Nf.App`)
+## [App](`NeoFaker.App`)
 
 {: .col-2}
 
-### [`author()`](`Nf.App.author/0`)
+### [`author()`](`NeoFaker.App.author/0`)
 
 ```elixir
-iex> Nf.App.author()
+iex> NeoFaker.App.author()
 "José Valim"
 
-iex> Nf.App.author(2)
+iex> NeoFaker.App.author(2)
 ["Joe Armstrong", "José Valim"]
 ```
 
-### [`description()`](`Nf.App.description/0`)
+### [`description()`](`NeoFaker.App.description/0`)
 
 ```elixir
-iex> Nf.App.description()
+iex> NeoFaker.App.description()
 "Elixir library for generating fake data in tests and development."
 ```
 
-### [`license()`](`Nf.App.license/0`)
+### [`license()`](`NeoFaker.App.license/0`)
 
 ```elixir
-iex> Nf.App.license()
+iex> NeoFaker.App.license()
 "MIT License"
 ```
 
-### [`name(opts \\ [])`](`Nf.App.name/1`)
+### [`name(opts \\ [])`](`NeoFaker.App.name/1`)
 
 ```elixir
-iex> Nf.App.name()
+iex> NeoFaker.App.name()
 "Neo Faker"
 
-iex> Nf.App.name(style: :camel_case)
+iex> NeoFaker.App.name(style: :camel_case)
 "neoFaker"
 ```
 
-### [`semver(opts \\ [])`](`Nf.App.semver/1`)
+### [`semver(opts \\ [])`](`NeoFaker.App.semver/1`)
 
 ```elixir
-iex> Nf.App.semver()
+iex> NeoFaker.App.semver()
 "1.2.3"
 
-iex> Nf.App.semver(type: :pre_release)
+iex> NeoFaker.App.semver(type: :pre_release)
 "1.2.3-beta.1"
 ```
 
-### [`version()`](`Nf.App.version/0`)
+### [`version()`](`NeoFaker.App.version/0`)
 
 ```elixir
-iex> Nf.App.version()
+iex> NeoFaker.App.version()
 "1.2"
 ```
 
-## [Blood](`Nf.Blood`)
+## [Blood](`NeoFaker.Blood`)
 
 {: .col-2}
 
-### [`group()`](`Nf.Blood.group/0`)
+### [`group()`](`NeoFaker.Blood.group/0`)
 
 ```elixir
-iex> Nf.Blood.group()
+iex> NeoFaker.Blood.group()
 "B+"
 ```
 
-### [`type()`](`Nf.Blood.type/0`)
+### [`type()`](`NeoFaker.Blood.type/0`)
 
 ```elixir
-iex> Nf.Blood.type()
+iex> NeoFaker.Blood.type()
 "B"
 ```
 
-## [Boolean](`Nf.Boolean`)
+## [Boolean](`NeoFaker.Boolean`)
 
 {: .col-1}
 
-### [`boolean(true_ratio \\ 50)`](`Nf.Boolean.boolean/1`)
+### [`boolean(true_ratio \\ 50)`](`NeoFaker.Boolean.boolean/1`)
 
 ```elixir
-iex> Nf.Boolean.boolean()
+iex> NeoFaker.Boolean.boolean()
 false
 ```
 
-## [Crypto](`Nf.Crypto`)
+## [Crypto](`NeoFaker.Crypto`)
 
 {: .col-2}
 
-### [`md5(opts \\ [])`](`Nf.Crypto.md5/1`)
+### [`md5(opts \\ [])`](`NeoFaker.Crypto.md5/1`)
 
 ```elixir
-iex> Nf.Crypto.md5()
+iex> NeoFaker.Crypto.md5()
 "e35cb102765cfc56df21ba4c16e6a636"
 
-iex> Nf.Crypto.md5(case: :upper)
+iex> NeoFaker.Crypto.md5(case: :upper)
 "E35CB102765CFC56DF21BA4C16E6A636"
 
-iex> Nf.Crypto.md5(2)
+iex> NeoFaker.Crypto.md5(2)
 ["afc4c626c55e4166421d82732163857d",
 "9b1c12d90d0aaf8d9b20458fbb24d481"]
 ```
 
-### [`sha1(opts \\ [])`](`Nf.Crypto.sha1/1`)
+### [`sha1(opts \\ [])`](`NeoFaker.Crypto.sha1/1`)
 
 ```elixir
-iex> Nf.Crypto.sha1()
+iex> NeoFaker.Crypto.sha1()
 "c8719790cdfff41c37c75e0c848d2b57535255aa"
 ```
 
-### [`sha256(opts \\ [])`](`Nf.Crypto.sha256/1`)
+### [`sha256(opts \\ [])`](`NeoFaker.Crypto.sha256/1`)
 
 ```elixir
-iex> Nf.Crypto.sha256()
+iex> NeoFaker.Crypto.sha256()
 "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
 ```
 
-## [Gravatar](`Nf.Gravatar`)
+## [Gravatar](`NeoFaker.Gravatar`)
 
 {: .col-1}
 
-### [`display(email \\ nil, opts \\ [])`](`Nf.Gravatar.display/2`)
+### [`display(email \\ nil, opts \\ [])`](`NeoFaker.Gravatar.display/2`)
 
 ```elixir
-iex> Nf.Gravatar.display()
+iex> NeoFaker.Gravatar.display()
 "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
-iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
+iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 ```
 
-## [Person](`Nf.Person`)
+## [Person](`NeoFaker.Person`)
 
 {: .col-2}
 
-### [`age(min \\ 0, max \\ 120)`](`Nf.Person.age/2`)
+### [`age(min \\ 0, max \\ 120)`](`NeoFaker.Person.age/2`)
 
 ```elixir
-iex> Nf.Person.age()
+iex> NeoFaker.Person.age()
 44
 
-iex> Nf.Person.age(7..44)
+iex> NeoFaker.Person.age(7..44)
 27
 ```
 
-### [`binary_gender(amount \\ 1)`](`Nf.Person.binary_gender/1`)
+### [`binary_gender(amount \\ 1)`](`NeoFaker.Person.binary_gender/1`)
 
 ```elixir
-iex> Nf.Person.binary_gender()
+iex> NeoFaker.Person.binary_gender()
 "Male"
 
-iex> Nf.Person.binary_gender(2)
+iex> NeoFaker.Person.binary_gender(2)
 ["Male", "Female"]
 ```
 
-### [`non_binary_gender(amount \\ 1)`](`Nf.Person.non_binary_gender/1`)
+### [`non_binary_gender(amount \\ 1)`](`NeoFaker.Person.non_binary_gender/1`)
 
 ```elixir
-iex> Nf.Person.non_binary_gender()
+iex> NeoFaker.Person.non_binary_gender()
 "Agender"
 ```
 
-### [`short_binary_gender(amount \\ 1)`](`Nf.Person.short_binary_gender/1`)
+### [`short_binary_gender(amount \\ 1)`](`NeoFaker.Person.short_binary_gender/1`)
 
 ```elixir
-iex> Nf.Person.short_binary_gender()
+iex> NeoFaker.Person.short_binary_gender()
 "M"
 ```

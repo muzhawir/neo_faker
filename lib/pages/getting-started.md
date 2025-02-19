@@ -33,10 +33,10 @@ mix deps.get
 Here are some examples of how to use NeoFaker:
 
 ```elixir
-iex> Nf.App.name()
+iex> NeoFaker.App.name()
 "Neo Faker"
 
-iex> Nf.App.description()
+iex> NeoFaker.App.description()
 "Elixir library for generating fake data in tests and development."
 ```
 

@@ -35,6 +35,45 @@ defmodule NeoFaker.App do
   end
 
   @doc """
+  Returns a short app description.
+
+  The description provides a brief summary of the app.
+
+  ## Examples
+
+      iex> NeoFaker.App.description()
+      "Elixir library for generating fake data in tests and development."
+
+      iex> NeoFaker.App.description(2)
+      ["Elixir library for generating fake data in tests and development.",
+      "Task automation tool for improving development workflows."]
+
+  """
+  @spec description(integer()) :: result()
+  def description(amount \\ 1) do
+    random_value(@module, "description.exs", "descriptions", amount)
+  end
+
+  @doc """
+  Returns a random open-source license.
+
+  The license is selected from a predefined list based on [ChooseALicense](https://choosealicense.com/appendix).
+
+  ## Examples
+
+      iex> NeoFaker.App.license()
+      "MIT License"
+
+      iex> NeoFaker.App.license(2)
+      ["MIT License", "GNU General Public License v2.0"]
+
+  """
+  @spec license(integer()) :: result()
+  def license(amount \\ 1) do
+    random_value(@module, "license.exs", "licenses", amount)
+  end
+
+  @doc """
   Returns a random app name.
 
   By default, the app name is generated in a standard format. A different naming style can be
@@ -83,26 +122,6 @@ defmodule NeoFaker.App do
     for {first_name, last_name} <- Enum.zip(first_names_list, last_names_list) do
       name_case({first_name, last_name}, type: style)
     end
-  end
-
-  @doc """
-  Returns a short app description.
-
-  The description provides a brief summary of the app.
-
-  ## Examples
-
-      iex> NeoFaker.App.description()
-      "Elixir library for generating fake data in tests and development."
-
-      iex> NeoFaker.App.description(2)
-      ["Elixir library for generating fake data in tests and development.",
-      "Task automation tool for improving development workflows."]
-
-  """
-  @spec description(integer()) :: result()
-  def description(amount \\ 1) do
-    random_value(@module, "description.exs", "descriptions", amount)
   end
 
   @doc """
@@ -156,24 +175,10 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver_core() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
-
-  @doc """
-  Returns a random open-source license.
-
-  The license is selected from a predefined list based on [ChooseALicense](https://choosealicense.com/appendix).
-
-  ## Examples
-
-      iex> NeoFaker.App.license()
-      "MIT License"
-
-      iex> NeoFaker.App.license(2)
-      ["MIT License", "GNU General Public License v2.0"]
-
-  """
-  @spec license(integer()) :: result()
-  def license(amount \\ 1) do
-    random_value(@module, "license.exs", "licenses", amount)
+  def version do
+    semver_core()
+    |> String.split(".")
+    |> Enum.take(2)
+    |> Enum.join(".")
   end
 end

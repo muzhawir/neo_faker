@@ -32,13 +32,9 @@ defmodule NeoFaker.Crypto do
       iex> NeoFaker.Crypto.md5(case: :upper)
       "AFC4C626C55E4166421D82732163857D"
 
-      iex> NeoFaker.Crypto.md5(2)
-      ["afc4c626c55e4166421d82732163857d",
-      "9b1c12d90d0aaf8d9b20458fbb24d481"]
-
   """
-  @spec md5(non_neg_integer(), Keyword.t()) :: String.t() | [String.t()]
-  def md5(amount \\ 1, opts \\ []), do: generate_hash(amount, :md5, opts)
+  @spec md5(Keyword.t()) :: String.t()
+  def md5(opts \\ []), do: generate_hash(:md5, opts)
 
   @doc """
   Generates a random SHA-1 hash.
@@ -52,16 +48,12 @@ defmodule NeoFaker.Crypto do
       iex> NeoFaker.Crypto.sha1()
       "339fe49a3fd882823ae29263e4873e1a6200ca69"
 
-      iex> NeoFaker.Crypto.sha1(2)
-      ["339fe49a3fd882823ae29263e4873e1a6200ca69",
-      "c8719790cdfff41c37c75e0c848d2b57535255aa"]
-
       iex> NeoFaker.Crypto.sha1(case: :upper)
       "339FE49A3FD882823AE29263E4873E1A6200CA69"
 
   """
-  @spec sha1(non_neg_integer(), Keyword.t()) :: String.t() | [String.t()]
-  def sha1(amount \\ 1, opts \\ []), do: generate_hash(amount, :sha, opts)
+  @spec sha1(Keyword.t()) :: String.t()
+  def sha1(opts \\ []), do: generate_hash(:sha, opts)
 
   @doc """
   Generates a random SHA-256 hash.
@@ -75,14 +67,10 @@ defmodule NeoFaker.Crypto do
       iex> NeoFaker.Crypto.sha256()
       "0d2780031e5d677719534fd32d7418c191cc7cecfb392566d8e1206f94631469"
 
-      iex> NeoFaker.Crypto.sha256(2)
-      ["0d2780031e5d677719534fd32d7418c191cc7cecfb392566d8e1206f94631469",
-      "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"]
-
       iex> NeoFaker.Crypto.sha256(case: :upper)
       "0D2780031E5D677719534FD32D7418C191CC7CECFB392566D8E1206F94631469"
 
   """
-  @spec sha256(non_neg_integer(), Keyword.t()) :: String.t() | [String.t()]
-  def sha256(amount \\ 1, opts \\ []), do: generate_hash(amount, :sha256, opts)
+  @spec sha256(Keyword.t()) :: String.t()
+  def sha256(opts \\ []), do: generate_hash(:sha256, opts)
 end

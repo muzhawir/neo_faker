@@ -10,10 +10,11 @@ defmodule NeoFaker.App do
   import NeoFaker.App.Utils
   import NeoFaker.Helper.Locale
 
-  @typedoc "Random result in the form of a string or a list of strings."
-  @type result :: String.t() | [String.t()]
-
   @module __MODULE__
+  @authors_file "author.exs"
+  @descriptions_file "description.exs"
+  @licenses_file "license.exs"
+  @names_file "name.exs"
 
   @doc """
   Returns a random app author.
@@ -25,14 +26,9 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.author()
       "José Valim"
 
-      iex> NeoFaker.App.author(2)
-      ["Joe Armstrong", "José Valim"]
-
   """
-  @spec author(integer()) :: result()
-  def author(amount \\ 1) do
-    random_value(@module, "author.exs", "authors", amount)
-  end
+  @spec author() :: String.t()
+  def author, do: random_value(@module, @authors_file, "authors")
 
   @doc """
   Returns a short app description.
@@ -44,15 +40,9 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.description()
       "Elixir library for generating fake data in tests and development."
 
-      iex> NeoFaker.App.description(2)
-      ["Elixir library for generating fake data in tests and development.",
-      "Task automation tool for improving development workflows."]
-
   """
-  @spec description(integer()) :: result()
-  def description(amount \\ 1) do
-    random_value(@module, "description.exs", "descriptions", amount)
-  end
+  @spec description() :: String.t()
+  def description, do: random_value(@module, @descriptions_file, "descriptions")
 
   @doc """
   Returns a random open-source license.
@@ -64,14 +54,9 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.license()
       "MIT License"
 
-      iex> NeoFaker.App.license(2)
-      ["MIT License", "GNU General Public License v2.0"]
-
   """
-  @spec license(integer()) :: result()
-  def license(amount \\ 1) do
-    random_value(@module, "license.exs", "licenses", amount)
-  end
+  @spec license() :: String.t()
+  def license, do: random_value(@module, @licenses_file, "licenses")
 
   @doc """
   Returns a random app name.
@@ -99,29 +84,21 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.name()
       "Neo Faker"
 
-      iex> NeoFaker.App.name(2)
-      ["Neo Faker", "Ignite Core"]
-
       iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
   """
-  @spec name(integer(), keyword()) :: result()
-  def name(amount \\ 1, opts \\ [])
+  def name(type \\ [style: nil]) do
+    names =
+      @module
+      |> current_module()
+      |> load_cache(@names_file, "names")
+      |> Map.new()
 
-  def name(1, opts) do
-    style = Keyword.get(opts, :style, nil)
+    first_name_list = names |> Map.get("first_names") |> Enum.random()
+    last_name_list = names |> Map.get("last_names") |> Enum.random()
 
-    @module |> load_app_names_cache(1) |> name_case(type: style)
-  end
-
-  def name(amount, opts) when amount == -1 or amount > 1 do
-    {first_names_list, last_names_list} = load_app_names_cache(@module, amount)
-    style = Keyword.get(opts, :style, nil)
-
-    for {first_name, last_name} <- Enum.zip(first_names_list, last_names_list) do
-      name_case({first_name, last_name}, type: style)
-    end
+    name_case({first_name_list, last_name_list}, type)
   end
 
   @doc """
@@ -175,10 +152,5 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version do
-    semver_core()
-    |> String.split(".")
-    |> Enum.take(2)
-    |> Enum.join(".")
-  end
+  def version, do: semver_core() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 end

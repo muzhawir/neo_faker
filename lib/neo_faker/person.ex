@@ -7,12 +7,27 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Helper.Locale, only: [random_value: 4]
-
-  @typedoc "Random result in the form of a string or a list of strings."
-  @type result :: String.t() | [String.t()]
+  import NeoFaker.Helper.Locale, only: [random_value: 3]
 
   @module __MODULE__
+  @unisex_name_file "unisex_name.exs"
+  @name_affix_file "name_affixes.exs"
+  @gender_file "gender.exs"
+
+  @spec first_name() :: String.t()
+  def first_name, do: random_value(@module, @unisex_name_file, "first_names")
+
+  @spec middle_name() :: String.t()
+  def middle_name, do: random_value(@module, @unisex_name_file, "middle_names")
+
+  @spec last_name() :: String.t()
+  def last_name, do: random_value(@module, @unisex_name_file, "last_names")
+
+  @spec prefix() :: String.t()
+  def prefix, do: random_value(@module, @name_affix_file, "prefixes")
+
+  @spec suffix() :: String.t()
+  def suffix, do: random_value(@module, @name_affix_file, "suffixes")
 
   @doc """
   Returns random age.
@@ -41,14 +56,9 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.binary_gender()
       "Male"
 
-      iex> NeoFaker.Person.binary_gender(2)
-      ["Male", "Female"]
-
   """
-  @spec binary_gender(non_neg_integer()) :: result()
-  def binary_gender(amount \\ 1) when amount in 1..2 do
-    random_value(@module, "gender.exs", "binary", amount)
-  end
+  @spec binary_gender() :: String.t()
+  def binary_gender, do: random_value(@module, @gender_file, "binary")
 
   @doc """
   Returns random short binary gender.
@@ -60,14 +70,9 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.short_binary_gender()
       "F"
 
-      iex> NeoFaker.Person.short_binary_gender(2)
-      ["M", "F"]
-
   """
-  @spec short_binary_gender(non_neg_integer()) :: result()
-  def short_binary_gender(amount \\ 1) when amount in 1..2 do
-    random_value(@module, "gender.exs", "short_binary", amount)
-  end
+  @spec short_binary_gender() :: String.t()
+  def short_binary_gender, do: random_value(@module, @gender_file, "short_binary")
 
   @doc """
   Returns random non-binary gender.
@@ -79,12 +84,7 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.non_binary_gender()
       "Agender"
 
-      iex> NeoFaker.Person.non_binary_gender(2)
-      ["Agender", "Androgyne"]
-
   """
-  @spec non_binary_gender(non_neg_integer()) :: result()
-  def non_binary_gender(amount \\ 1) do
-    random_value(@module, "gender.exs", "non_binary", amount)
-  end
+  @spec non_binary_gender() :: String.t()
+  def non_binary_gender, do: random_value(@module, @gender_file, "non_binary")
 end

@@ -1,51 +1,29 @@
 defmodule NeoFaker.App.Utils do
   @moduledoc false
 
-  alias Mix.Locale
-  alias NeoFaker.Helper.Locale
-
-  @doc """
-  Loads and returns the first and last names for app names.
-
-  Loads and returns the first and last names for app names from the `"name.exs"` locale file.
-  """
-  @spec load_app_names_cache(module(), integer()) :: {String.t(), String.t()}
-  def load_app_names_cache(module, amount \\ 1) do
-    %{"first_names" => first_name_list, "last_names" => last_name_list} =
-      module
-      |> Locale.current_module()
-      |> Locale.load_cache("name.exs", "names")
-      |> Map.new()
-
-    first_name = Locale.random_result(first_name_list, amount)
-    last_name = Locale.random_result(last_name_list, amount)
-
-    {first_name, last_name}
-  end
-
   @doc """
   Converts a first name and last name to a name in the given case format.
   """
   @spec name_case({String.t(), String.t()}, Keyword.t()) :: String.t()
-  def name_case({first_name, last_name}, type: nil), do: "#{first_name} #{last_name}"
+  def name_case({first_name, last_name}, style: nil), do: "#{first_name} #{last_name}"
 
-  def name_case({first_name, last_name}, type: :camel_case) do
+  def name_case({first_name, last_name}, style: :camel_case) do
     "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
   end
 
-  def name_case({first_name, last_name}, type: :pascal_case) do
+  def name_case({first_name, last_name}, style: :pascal_case) do
     "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
   end
 
-  def name_case({first_name, last_name}, type: :dashed) do
+  def name_case({first_name, last_name}, style: :dashed) do
     "#{String.capitalize(first_name)}-#{last_name}"
   end
 
-  def name_case({first_name, last_name}, type: :underscore) do
+  def name_case({first_name, last_name}, style: :underscore) do
     "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
   end
 
-  def name_case({first_name, last_name}, type: :single) do
+  def name_case({first_name, last_name}, style: :single) do
     [first_name, last_name] |> Enum.random() |> String.capitalize()
   end
 

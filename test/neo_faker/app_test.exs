@@ -38,7 +38,7 @@ defmodule NeoFaker.AppTest do
 
   # Helper function for validate name function with options
   @spec validate_name_app(atom()) :: boolean
-  defp validate_name_app(amount \\ 1, opts \\ nil) do
+  defp validate_name_app(opts \\ nil) do
     regexp =
       case opts do
         nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
@@ -48,7 +48,7 @@ defmodule NeoFaker.AppTest do
         :single -> ~r/^[A-Z]?[a-z0-9]+$/
       end
 
-    app_name = App.name(amount, style: opts)
+    app_name = App.name(style: opts)
 
     Regex.match?(regexp, app_name)
   end
@@ -66,24 +66,20 @@ defmodule NeoFaker.AppTest do
       assert validate_name_app()
     end
 
-    test "returns an app name with custom amount" do
-      assert is_list(App.name(2))
-    end
-
     test "returns an app name with :camel_case option" do
-      assert validate_name_app(1, :camel_case)
+      assert validate_name_app(:camel_case)
     end
 
     test "returns an app name with :pascal_case option" do
-      assert validate_name_app(1, :pascal_case)
+      assert validate_name_app(:pascal_case)
     end
 
     test "returns an app name with :dashed option" do
-      assert validate_name_app(1, :dashed)
+      assert validate_name_app(:dashed)
     end
 
     test "returns an app name with :single option" do
-      assert validate_name_app(1, :single)
+      assert validate_name_app(:single)
     end
   end
 
@@ -92,10 +88,6 @@ defmodule NeoFaker.AppTest do
       description = App.description()
 
       assert String.valid?(description)
-    end
-
-    test "returns a short app description with custom amount" do
-      assert is_list(App.description(2))
     end
   end
 
@@ -144,10 +136,6 @@ defmodule NeoFaker.AppTest do
       lisense = App.license()
 
       assert String.valid?(lisense)
-    end
-
-    test "returns an open source license with custom amount" do
-      assert is_list(App.license(2))
     end
   end
 end

@@ -1,9 +1,6 @@
 defmodule NeoFaker.Helper.Locale do
   @moduledoc false
 
-  @typedoc "Result of a single value or a list of random values."
-  @type result :: String.t() | [String.t()]
-
   @typedoc "Cached data loaded from a locale file."
   @type cached_data :: list() | nil
 
@@ -15,12 +12,12 @@ defmodule NeoFaker.Helper.Locale do
   If the requested data is not yet cached, it is first loaded from the locale files and cached
   for future retrieval.
   """
-  @spec random_value(atom(), String.t(), String.t(), integer()) :: result()
-  def random_value(module, file, key, amount \\ 1) do
+  @spec random_value(atom(), String.t(), String.t()) :: String.t()
+  def random_value(module, file, key) do
     module
     |> current_module()
     |> load_cache(file, key)
-    |> random_result(amount)
+    |> Enum.random()
   end
 
   @doc """
@@ -95,16 +92,5 @@ defmodule NeoFaker.Helper.Locale do
   @spec build_locale_path(String.t(), String.t(), String.t()) :: String.t()
   def build_locale_path(locale, module, file_name) do
     Path.join([@base_data_path, locale, module, file_name])
-  end
-
-  @doc """
-  Returns a random value or a list of random values.
-  """
-  @spec random_result([String.t()], integer()) :: result()
-  def random_result(list, -1), do: Enum.shuffle(list)
-  def random_result(list, 1), do: Enum.random(list)
-
-  def random_result(list, amount) when amount > 1 do
-    list |> Enum.shuffle() |> Enum.take(amount)
   end
 end

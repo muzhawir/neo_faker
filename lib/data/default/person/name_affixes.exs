@@ -1,5 +1,5 @@
 %{
-  "title_prefixes" => [
+  "prefixes" => [
     "Ambassador",
     "Baron",
     "Baroness",
@@ -27,7 +27,7 @@
     "Sgt.",
     "Sir"
   ],
-  "title_suffixes" => [
+  "suffixes" => [
     "B.A.",
     "B.S.",
     "C.P.A.",

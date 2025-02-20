@@ -9,10 +9,11 @@ defmodule NeoFaker.App.Utils do
 
   Loads and returns the first and last names for app names from the `"name.exs"` locale file.
   """
-  @spec load_app_names_cache(String.t(), integer()) :: {String.t(), String.t()}
+  @spec load_app_names_cache(module(), integer()) :: {String.t(), String.t()}
   def load_app_names_cache(module, amount \\ 1) do
     %{"first_names" => first_name_list, "last_names" => last_name_list} =
       module
+      |> Locale.current_module()
       |> Locale.load_cache("name.exs", "names")
       |> Map.new()
 

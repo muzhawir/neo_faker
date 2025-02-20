@@ -18,11 +18,22 @@ defmodule NeoFaker.Helper.Locale do
   @spec random_value(atom(), String.t(), String.t(), integer()) :: result()
   def random_value(module, file, key, amount \\ 1) do
     module
+    |> current_module()
+    |> load_cache(file, key)
+    |> random_result(amount)
+  end
+
+  @doc """
+  Returns the name of the current module in lowercase.
+
+  This function splits the module name into parts and returns the last part in lowercase.
+  """
+  @spec current_module(atom()) :: String.t()
+  def current_module(module) do
+    module
     |> Module.split()
     |> List.last()
     |> String.downcase()
-    |> load_cache(file, key)
-    |> random_result(amount)
   end
 
   @doc """

@@ -25,7 +25,7 @@
     "Hayden",
     "Hunter",
     "Indigo",
-    "Israel",
+    "Ismael",
     "Ivory",
     "Jamie",
     "Jordan",

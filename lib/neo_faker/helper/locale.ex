@@ -16,14 +16,24 @@ defmodule NeoFaker.Helper.Locale do
   def random_value(module, file, key) do
     module
     |> current_module()
-    |> load_cache(file, key)
+    |> load_persistent_term(file, key)
     |> Enum.random()
+  end
+
+  @doc """
+  Read data from persistent term based on the specified module name.
+
+  Reads the requested data from the persistent term and returns it.
+  """
+  @spec read_persistent_term(atom(), String.t(), String.t()) :: cached_data()
+  def read_persistent_term(module, file, key) do
+    module |> current_module() |> load_persistent_term(file, key)
   end
 
   @doc """
   Returns the name of the current module in lowercase.
 
-  This function splits the module name into parts and returns the last part in lowercase.
+  Splits the module name into parts and returns the last part in lowercase string.
   """
   @spec current_module(atom()) :: String.t()
   def current_module(module) do
@@ -34,18 +44,18 @@ defmodule NeoFaker.Helper.Locale do
   end
 
   @doc """
-  Loads data from caches or creates new ones.
+  Loads locale data and stores it in persistent term if not already loaded.
 
-  If the requested data is not yet cached, it is first loaded from the locale files and cached
-  for future retrieval.
+  If the requested data is not yet stored in persistent term, it is first loaded from the locale
+  files and cached for future retrieval.
   """
-  @spec load_cache(String.t(), String.t(), String.t()) :: cached_data()
-  def load_cache(module, file, key) do
+  @spec load_persistent_term(String.t(), String.t(), String.t()) :: cached_data()
+  def load_persistent_term(module, file, key) do
     case :persistent_term.get(key, nil) do
       nil ->
         store_persistent_term(module, file, key)
 
-        :persistent_term.get("nf_#{module}_#{key}")
+        :persistent_term.get("neo_faker_#{module}_#{key}")
 
       list ->
         list
@@ -53,10 +63,10 @@ defmodule NeoFaker.Helper.Locale do
   end
 
   @doc """
-  Loads data from the locale file and caches it using persistent term.
+  Loads data from the locale file and stores it in persistent term.
 
   This function retrieves the specified data from the locale file, shuffles it, and stores it in
-  `:persistent_term`.
+  the persistent term.
   """
   @spec store_persistent_term(String.t(), String.t(), String.t()) :: :ok
   def store_persistent_term(module, file, key) do
@@ -66,7 +76,7 @@ defmodule NeoFaker.Helper.Locale do
       |> Map.get(key, [])
       |> Enum.shuffle()
 
-    :persistent_term.put("nf_#{module}_#{key}", data)
+    :persistent_term.put("neo_faker_#{module}_#{key}", data)
   end
 
   @doc """

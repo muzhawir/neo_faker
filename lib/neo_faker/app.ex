@@ -92,7 +92,7 @@ defmodule NeoFaker.App do
     names =
       @module
       |> current_module()
-      |> load_cache(@names_file, "names")
+      |> load_persistent_term(@names_file, "names")
       |> Map.new()
 
     first_name_list = names |> Map.get("first_names") |> Enum.random()

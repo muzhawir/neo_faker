@@ -1,6 +1,8 @@
 defmodule NeoFaker.App.Utils do
   @moduledoc false
 
+  @pre_release_label ~w[alpha beta rc]
+
   @doc """
   Converts a first name and last name to a name in the given case format.
   """
@@ -44,9 +46,9 @@ defmodule NeoFaker.App.Utils do
   """
   @spec semver_pre_release() :: String.t()
   def semver_pre_release do
-    identifier = Enum.random(~w[alpha beta rc])
+    label = Enum.random(@pre_release_label)
 
-    "#{identifier}.#{Enum.random(1..10)}"
+    "#{label}.#{Enum.random(1..10)}"
   end
 
   @doc """

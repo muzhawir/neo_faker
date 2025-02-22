@@ -99,19 +99,19 @@ defmodule NeoFaker.AppTest do
     test "returns a semantic version number with pre-release type" do
       semver = App.semver(type: :pre_release)
       [core_version, pre_release_identifier] = String.split(semver, "-")
-      is_valid_core_version? = validate_version_core(core_version)
-      is_valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
+      valid_core_version? = validate_version_core(core_version)
+      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
 
-      assert is_valid_core_version? and is_valid_pre_release_identifier?
+      assert valid_core_version? and valid_pre_release_identifier?
     end
 
     test "returns a semantic version number with build number type" do
       semver = App.semver(type: :build)
       [core_version, build_number] = String.split(semver, "+")
-      is_valid_core_version? = validate_version_core(core_version)
-      id_valid_build_number? = validate_build_number(build_number)
+      valid_core_version? = validate_version_core(core_version)
+      valid_build_number? = validate_build_number(build_number)
 
-      assert is_valid_core_version? and id_valid_build_number?
+      assert valid_core_version? and valid_build_number?
     end
 
     test "returns a semantic version number with pre-release and build number type" do
@@ -123,11 +123,11 @@ defmodule NeoFaker.AppTest do
         |> then(fn [core, rest] -> [core, String.split(rest, "+")] end)
         |> then(fn [core, [pre_release, build_number]] -> [core, pre_release, build_number] end)
 
-      is_valid_core_version? = validate_version_core(core_version)
-      is_valid_pre_release_identifier? = validate_pre_release_identifier(pre_release)
-      id_valid_build_number? = validate_build_number(build_number)
+      valid_core_version? = validate_version_core(core_version)
+      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release)
+      valid_build_number? = validate_build_number(build_number)
 
-      assert Enum.all?([is_valid_core_version?, is_valid_pre_release_identifier?, id_valid_build_number?])
+      assert Enum.all?([valid_core_version?, valid_pre_release_identifier?, valid_build_number?])
     end
   end
 

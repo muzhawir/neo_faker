@@ -34,11 +34,7 @@ defmodule NeoFaker.App.Utils do
   [Semantic Versioning 2.0.0](https://semver.org/) specification.
   """
   @spec semver_core() :: String.t()
-  def semver_core do
-    {major, minor, patch} = {0..10, 0..20, 1..30}
-
-    Enum.map_join([major, minor, patch], ".", &Enum.random/1)
-  end
+  def semver_core, do: Enum.map_join([0..9, 0..20, 1..30], ".", &Enum.random/1)
 
   @doc """
   Generates a random pre-release identifier.

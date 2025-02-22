@@ -6,26 +6,26 @@ defmodule NeoFaker.App.Utils do
   @doc """
   Converts a first name and last name to a name in the given case format.
   """
-  @spec name_case({String.t(), String.t()}, Keyword.t()) :: String.t()
-  def name_case({first_name, last_name}, style: nil), do: "#{first_name} #{last_name}"
+  @spec name_case({String.t(), String.t()}, atom()) :: String.t()
+  def name_case({first_name, last_name}, nil), do: "#{first_name} #{last_name}"
 
-  def name_case({first_name, last_name}, style: :camel_case) do
+  def name_case({first_name, last_name}, :camel_case) do
     "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
   end
 
-  def name_case({first_name, last_name}, style: :pascal_case) do
+  def name_case({first_name, last_name}, :pascal_case) do
     "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
   end
 
-  def name_case({first_name, last_name}, style: :dashed) do
+  def name_case({first_name, last_name}, :dashed) do
     "#{String.capitalize(first_name)}-#{last_name}"
   end
 
-  def name_case({first_name, last_name}, style: :underscore) do
+  def name_case({first_name, last_name}, :underscore) do
     "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
   end
 
-  def name_case({first_name, last_name}, style: :single) do
+  def name_case({first_name, last_name}, :single) do
     [first_name, last_name] |> Enum.random() |> String.capitalize()
   end
 

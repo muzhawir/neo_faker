@@ -88,7 +88,7 @@ defmodule NeoFaker.App do
       "neoFaker"
 
   """
-  def name(type \\ [style: nil]) do
+  def name(opts \\ []) do
     names =
       @module
       |> current_module()
@@ -97,6 +97,7 @@ defmodule NeoFaker.App do
 
     first_name_list = names |> Map.get("first_names") |> Enum.random()
     last_name_list = names |> Map.get("last_names") |> Enum.random()
+    type = Keyword.get(opts, :style)
 
     name_case({first_name_list, last_name_list}, type)
   end

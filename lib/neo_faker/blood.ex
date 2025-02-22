@@ -7,7 +7,6 @@ defmodule NeoFaker.Blood do
   @moduledoc since: "0.3.1"
 
   @blood_types ~w[A B AB O]
-  @rh_factors ~w[+ -]
 
   @doc """
   Returns a random blood type group.
@@ -50,5 +49,5 @@ defmodule NeoFaker.Blood do
 
   """
   @spec rh_factor() :: String.t()
-  def rh_factor, do: Enum.random(@rh_factors)
+  def rh_factor, do: Enum.random(["+", "-"])
 end

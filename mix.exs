@@ -32,8 +32,15 @@ defmodule NeoFaker.MixProject do
     [
       main: "getting-started",
       logo: "lib/assets/logo/doc_logo.svg",
-      extras: Path.wildcard("lib/pages/**/*.md") ++ Path.wildcard("lib/pages/**/*.cheatmd")
+      extras: extra_pages()
     ]
+  end
+
+  defp extra_pages do
+    List.flatten([
+      Path.wildcard("lib/pages/**/*.md"),
+      Path.wildcard("lib/pages/**/*.cheatmd")
+    ])
   end
 
   # Run "mix help compile.app" to learn about applications.

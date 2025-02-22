@@ -6,10 +6,6 @@
 
 **NeoFaker** is an Elixir package for generating fake data for testing and development.
 
-> #### Warning {: .warning}
->
-> This project is still in early development. Expect breaking changes.
-
 ## Installation
 
 Add `:neo_faker` to your dependencies in `mix.exs`:

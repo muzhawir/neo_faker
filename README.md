@@ -8,9 +8,6 @@
 
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-> [!WARNING]
-> This project is still in early development. Expect breaking changes.
-
 **NeoFaker** is an Elixir package for generating fake data in tests and development.
 
 ## Installation

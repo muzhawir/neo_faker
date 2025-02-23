@@ -77,7 +77,7 @@
     "Yusuf",
     "Zainal",
     "Zakaria",
-    "Zulkifli",
+    "Zulkifli"
   ],
   "middle_names" => [
     "Adi",
@@ -157,7 +157,7 @@
     "Yusuf",
     "Zakaria",
     "Zaki",
-    "Zulkarnain",
+    "Zulkarnain"
   ],
   "last_names" => [
     "Abdullah",
@@ -237,6 +237,6 @@
     "Yusuf",
     "Zainal",
     "Zakaria",
-    "Zulkarnain",
+    "Zulkarnain"
   ]
 }

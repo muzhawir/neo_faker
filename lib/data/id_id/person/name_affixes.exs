@@ -15,7 +15,7 @@
     "R.K.",
     "R.M.",
     "Raden",
-    "Tn.",
+    "Tn."
   ],
   "suffixes" => [
     "Dr.",

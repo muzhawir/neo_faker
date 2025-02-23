@@ -32,7 +32,7 @@ config :neo_faker, locale: "default"
 
 If the specified locale is not found, it will fall back to `"default"`.
 
-A list of available locales can be found on the [Available Locales](available-locales.html) page.
+A list of available locales can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage
 
@@ -44,10 +44,13 @@ iex> NeoFaker.App.name()
 
 iex> NeoFaker.App.description()
 "An Elixir library for generating fake data in tests and development."
+
+iex> NeoFaker.App.description(locale: "id_id")
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
-For a complete list of available modules, refer to the [API Reference](api-reference.html).
-For a summarized guide, see the [Cheat Sheet](cheat.html).
+For a complete list of available modules, refer to the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
+For a summarized guide, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
 
 ## License
 

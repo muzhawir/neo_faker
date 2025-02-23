@@ -6,7 +6,8 @@
 
 ## Installation
 
-Add `:neo_faker` to your dependencies in `mix.exs`:
+NeoFaker is available on [Hex](https://hex.pm/packages/neo_faker). Add it to your dependencies
+in `mix.exs`:
 
 ```elixir
 def deps do

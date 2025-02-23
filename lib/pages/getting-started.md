@@ -1,8 +1,6 @@
 # Getting Started
 
-![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker)
-![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
-[![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
+![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
 **NeoFaker** is an Elixir package for generating fake data for testing and development.
 
@@ -24,6 +22,18 @@ Then, fetch the dependencies:
 mix deps.get
 ```
 
+## Configuration
+
+The default locale is `"default"`, but it can be changed in `config.exs`:
+
+```elixir
+config :neo_faker, locale: "default"
+```
+
+If the specified locale is not found, it will fall back to `"default"`.
+
+A list of available locales can be found on the [Available Locales](available-locales.html) page.
+
 ## Usage
 
 Here are some examples of how to use NeoFaker:
@@ -33,11 +43,11 @@ iex> NeoFaker.App.name()
 "Neo Faker"
 
 iex> NeoFaker.App.description()
-"Elixir library for generating fake data in tests and development."
+"An Elixir library for generating fake data in tests and development."
 ```
 
-For a complete list of available functions, check out the [API Reference](api-reference.html).
-If you're looking for a quick reference, see the [Cheat Sheet](cheat.html).
+For a complete list of available modules, refer to the [API Reference](api-reference.html).
+For a summarized guide, see the [Cheat Sheet](cheat.html).
 
 ## License
 

@@ -1,6 +1,6 @@
 # Cheat Sheet
 
-This page provides a quick reference to common random generator functions in this package.
+A quick reference for common random generator functions in NeoFaker.
 
 ## [App](`NeoFaker.App`)
 
@@ -11,9 +11,6 @@ This page provides a quick reference to common random generator functions in thi
 ```elixir
 iex> NeoFaker.App.author()
 "José Valim"
-
-iex> NeoFaker.App.author(2)
-["Joe Armstrong", "José Valim"]
 ```
 
 ### [`description()`](`NeoFaker.App.description/0`)
@@ -79,11 +76,17 @@ iex> NeoFaker.Blood.type()
 
 {: .col-1}
 
-### [`boolean(true_ratio \\ 50)`](`NeoFaker.Boolean.boolean/1`)
+### [`boolean(true_ratio \\ 50, opts \\ [])`](`NeoFaker.Boolean.boolean/2`)
 
 ```elixir
 iex> NeoFaker.Boolean.boolean()
 false
+
+iex> NeoFaker.Boolean.boolean(75)
+true
+
+iex> NeoFaker.Boolean.boolean(75, integer: true)
+1
 ```
 
 ## [Crypto](`NeoFaker.Crypto`)
@@ -98,10 +101,6 @@ iex> NeoFaker.Crypto.md5()
 
 iex> NeoFaker.Crypto.md5(case: :upper)
 "E35CB102765CFC56DF21BA4C16E6A636"
-
-iex> NeoFaker.Crypto.md5(2)
-["afc4c626c55e4166421d82732163857d",
-"9b1c12d90d0aaf8d9b20458fbb24d481"]
 ```
 
 ### [`sha1(opts \\ [])`](`NeoFaker.Crypto.sha1/1`)
@@ -109,6 +108,9 @@ iex> NeoFaker.Crypto.md5(2)
 ```elixir
 iex> NeoFaker.Crypto.sha1()
 "c8719790cdfff41c37c75e0c848d2b57535255aa"
+
+iex> NeoFaker.Crypto.sha1(case: :upper)
+"C8719790CDFFF41C37C75E0C848D2B57535255AA"
 ```
 
 ### [`sha256(opts \\ [])`](`NeoFaker.Crypto.sha256/1`)
@@ -116,6 +118,9 @@ iex> NeoFaker.Crypto.sha1()
 ```elixir
 iex> NeoFaker.Crypto.sha256()
 "d0ff021e810fb8f3442a14393604b0661b02f0dfcb347d80c9580af3ab5e7e6c"
+
+iex> NeoFaker.Crypto.sha256(case: :upper)
+"D0FF021E810FB8F3442A14393604B0661B02F0DFCB347D80C9580AF3AB5E7E6C"
 ```
 
 ## [Gravatar](`NeoFaker.Gravatar`)
@@ -146,26 +151,67 @@ iex> NeoFaker.Person.age(7..44)
 27
 ```
 
-### [`binary_gender(amount \\ 1)`](`NeoFaker.Person.binary_gender/1`)
+### [`binary_gender()`](`NeoFaker.Person.binary_gender/0`)
 
 ```elixir
 iex> NeoFaker.Person.binary_gender()
 "Male"
-
-iex> NeoFaker.Person.binary_gender(2)
-["Male", "Female"]
 ```
 
-### [`non_binary_gender(amount \\ 1)`](`NeoFaker.Person.non_binary_gender/1`)
+### [`first_name(opts \\ [])`](`NeoFaker.Person.first_name/1`)
+
+```elixir
+iex> NeoFaker.Person.first_name()
+"Tiffany"
+
+iex> NeoFaker.Person.first_name(type: :masculine)
+"Theodore"
+```
+
+### [`last_name(opts \\ [])`](`NeoFaker.Person.last_name/1`)
+
+```elixir
+iex> NeoFaker.Person.last_name()
+"Norris"
+
+iex> NeoFaker.Person.last_name(type: :unisex)
+"Harris"
+```
+
+### [`middle_name(opts \\ [])`](`NeoFaker.Person.middle_name/1`)
+
+```elixir
+iex> NeoFaker.Person.middle_name()
+"Arden"
+
+iex> NeoFaker.Person.middle_name(type: :feminine)
+"Juliette"
+```
+
+### [`prefix()`](`NeoFaker.Person.prefix/0`)
+
+```elixir
+iex> NeoFaker.Person.prefix()
+"Mr."
+```
+
+### [`non_binary_gender()`](`NeoFaker.Person.non_binary_gender/0`)
 
 ```elixir
 iex> NeoFaker.Person.non_binary_gender()
 "Agender"
 ```
 
-### [`short_binary_gender(amount \\ 1)`](`NeoFaker.Person.short_binary_gender/1`)
+### [`short_binary_gender()`](`NeoFaker.Person.short_binary_gender/0`)
 
 ```elixir
 iex> NeoFaker.Person.short_binary_gender()
 "M"
+```
+
+### [`suffix()`](`NeoFaker.Person.suffix/0`)
+
+```elixir
+iex> NeoFaker.Person.suffix()
+"Jr."
 ```

@@ -1,6 +1,7 @@
 # Available Locales
 
-NeoFaker supports the following locales. You can change the default locale in `config.exs`:
+NeoFaker supports the following locales. You can change the default locale in
+[`config.exs`](getting-started.html#configuration):
 
 | Locale    | Country      | Language                                      |
 | --------- | ------------ | --------------------------------------------- |

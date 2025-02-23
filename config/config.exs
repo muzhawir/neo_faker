@@ -1,3 +1,3 @@
 import Config
 
-config :neo_faker, locale: "en_us"
+config :neo_faker, locale: "default"

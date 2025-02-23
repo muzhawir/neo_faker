@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://hexdocs.pm/neo_faker" target="_blank">
+    <img src="./lib/assets/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
+  </a>
+</p>
+
 # NeoFaker
 
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)

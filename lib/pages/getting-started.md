@@ -45,6 +45,9 @@ iex> NeoFaker.App.name()
 
 iex> NeoFaker.App.description()
 "An Elixir library for generating fake data in tests and development."
+
+iex> NeoFaker.App.name(locale: "id_id")
+"Elixir library untuk menghasilkan fake data dalam pengujian dan pengembangan."
 ```
 
 For a complete list of available modules, refer to the [API Reference](api-reference.html).

@@ -8,13 +8,13 @@ defmodule NeoFaker.App do
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Utils
-  import NeoFaker.Helper.Locale
+  import NeoFaker.Helper.Generator, only: [random: 4, fetch_data: 3]
 
   @module __MODULE__
-  @authors_file "author.exs"
-  @descriptions_file "description.exs"
-  @licenses_file "license.exs"
-  @names_file "name.exs"
+  @author_file "author.exs"
+  @description_file "description.exs"
+  @license_file "license.exs"
+  @name_file "name.exs"
 
   @doc """
   Returns a random app author.
@@ -27,8 +27,8 @@ defmodule NeoFaker.App do
       "José Valim"
 
   """
-  @spec author() :: String.t()
-  def author, do: random_value(@module, @authors_file, "authors")
+  @spec author(Keyword.t()) :: String.t()
+  def author(opts \\ []), do: random(@module, @author_file, "authors", opts)
 
   @doc """
   Returns a short app description.
@@ -41,8 +41,8 @@ defmodule NeoFaker.App do
       "Elixir library for generating fake data in tests and development."
 
   """
-  @spec description() :: String.t()
-  def description, do: random_value(@module, @descriptions_file, "descriptions")
+  @spec description(Keyword.t()) :: String.t()
+  def description(opts \\ []), do: random(@module, @description_file, "descriptions", opts)
 
   @doc """
   Returns a random open-source license.
@@ -55,8 +55,8 @@ defmodule NeoFaker.App do
       "MIT License"
 
   """
-  @spec license() :: String.t()
-  def license, do: random_value(@module, @licenses_file, "licenses")
+  @spec license(Keyword.t()) :: String.t()
+  def license(opts \\ []), do: random(@module, @license_file, "licenses", opts)
 
   @doc """
   Returns a random app name.
@@ -89,15 +89,12 @@ defmodule NeoFaker.App do
 
   """
   def name(opts \\ []) do
-    names =
-      @module
-      |> current_module()
-      |> load_persistent_term(@names_file, "names")
-      |> Map.new()
-
-    first_name_list = names |> Map.get("first_names") |> Enum.random()
-    last_name_list = names |> Map.get("last_names") |> Enum.random()
     type = Keyword.get(opts, :style)
+    locale = Keyword.get(opts, :locale)
+    data = fetch_data(@module, @name_file, locale: locale)
+
+    first_name_list = data |> Map.get("first_names") |> Enum.random()
+    last_name_list = data |> Map.get("last_names") |> Enum.random()
 
     name_case({first_name_list, last_name_list}, type)
   end

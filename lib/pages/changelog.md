@@ -1,5 +1,9 @@
 # Changelog for v0.7
 
+## v0.7.1 (2025-02-24)
+
+Refactor all module and function documentation.
+
 ## v0.7.0 (2025-02-23)
 
 ### Introduced `:locale` option in functions
@@ -12,7 +16,7 @@ locale in a specific function call, you can do the following:
 
 ```elixir
 iex> NeoFaker.App.name(locale: "id_id")
-"Elixir library untuk menghasilkan fake data dalam pengujian dan pengembangan."
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
 ### Introduced new generator functions and options

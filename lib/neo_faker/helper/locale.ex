@@ -1,33 +1,83 @@
 defmodule NeoFaker.Helper.Locale do
   @moduledoc false
 
-  @typedoc "Cached data loaded from a locale file."
-  @type cached_data :: list() | nil
+  @type locale :: String.t() | nil
+  @type locale_data :: map() | File.Error
 
-  @base_data_path Path.join([File.cwd!(), "lib", "data"])
+  @data_path Path.join([File.cwd!(), "lib", "data"])
 
   @doc """
-  Returns a random value or a list of random values.
+  Loads data from the persistent term.
 
-  If the requested data is not yet cached, it is first loaded from the locale files and cached
-  for future retrieval.
+  Loads data from the persistent term, if the data is not found in the persistent term, it will be
+  loaded from the locale file first.
   """
-  @spec random_value(atom(), String.t(), String.t()) :: String.t()
-  def random_value(module, file, key) do
-    module
-    |> current_module()
-    |> load_persistent_term(file, key)
-    |> Enum.random()
+  @spec load_persistent_term(locale(), atom(), String.t()) :: any()
+  def load_persistent_term(locale \\ nil, module, file) do
+    key = persistent_term_key(locale, module, file)
+
+    case :persistent_term.get(key, nil) do
+      nil ->
+        store_persistent_term(locale, module, file)
+
+        :persistent_term.get(key)
+
+      term ->
+        term
+    end
   end
 
   @doc """
-  Read data from persistent term based on the specified module name.
+  Loads data from the locale file and stores it in persistent term.
 
-  Reads the requested data from the persistent term and returns it.
+  Reads the specified data from the locale file and stores it in the persistent term.
   """
-  @spec read_persistent_term(atom(), String.t(), String.t()) :: cached_data()
-  def read_persistent_term(module, file, key) do
-    module |> current_module() |> load_persistent_term(file, key)
+  @spec store_persistent_term(locale(), atom(), String.t()) :: :ok
+  def store_persistent_term(locale \\ nil, module, file) do
+    data = read_locale_file!(locale, module, file)
+    key = persistent_term_key(locale, module, file)
+
+    :persistent_term.put(key, data)
+  end
+
+  @doc """
+  Creates a key for storing data in persistent term.
+
+  Creates a key for storing data in persistent term based on the locale, module, and file name.
+  """
+  @spec persistent_term_key(locale(), atom(), String.t()) :: String.t()
+  def persistent_term_key(locale \\ nil, module, file) do
+    locale_setting = locale || Application.get_env(:neo_faker, :locale)
+    file_path = Path.join([@data_path, locale_setting])
+    module_name = current_module(module)
+    file_name = file |> String.split(".") |> List.first()
+
+    if File.exists?(file_path) do
+      "neofaker_#{locale_setting}_#{module_name}_#{file_name}"
+    else
+      "neofaker_default_#{module_name}_#{file_name}"
+    end
+  end
+
+  @doc """
+  Reads data from the locale file.
+
+  Reads the specified data from the locale file and returns it as a map.
+  """
+  @spec read_locale_file!(locale(), atom(), String.t()) :: locale_data()
+  def read_locale_file!(locale \\ nil, module, file) do
+    locale_path = locale_path(locale)
+    current_module = current_module(module)
+    file_path = Path.join([locale_path, current_module, file])
+
+    if File.exists?(file_path) do
+      file_path
+      |> File.read!()
+      |> Code.eval_string()
+      |> elem(0)
+    else
+      raise File.Error, reason: :enoent
+    end
   end
 
   @doc """
@@ -44,63 +94,20 @@ defmodule NeoFaker.Helper.Locale do
   end
 
   @doc """
-  Loads locale data and stores it in persistent term if not already loaded.
+  Returns the path to the locale file.
 
-  If the requested data is not yet stored in persistent term, it is first loaded from the locale
-  files and cached for future retrieval.
+  If the locale is provided, it returns the path to the locale file. Otherwise, it returns the path
+  to the default locale file.
   """
-  @spec load_persistent_term(String.t(), String.t(), String.t()) :: cached_data()
-  def load_persistent_term(module, file, key) do
-    case :persistent_term.get(key, nil) do
-      nil ->
-        store_persistent_term(module, file, key)
+  @spec locale_path(locale()) :: String.t()
+  def locale_path(locale \\ nil) do
+    locale_setting = locale || Application.get_env(:neo_faker, :locale)
+    file_path = Path.join([@data_path, locale_setting])
 
-        :persistent_term.get("neo_faker_#{module}_#{key}")
-
-      list ->
-        list
-    end
-  end
-
-  @doc """
-  Loads data from the locale file and stores it in persistent term.
-
-  This function retrieves the specified data from the locale file, shuffles it, and stores it in
-  the persistent term.
-  """
-  @spec store_persistent_term(String.t(), String.t(), String.t()) :: :ok
-  def store_persistent_term(module, file, key) do
-    data =
-      module
-      |> read_locale_file(file)
-      |> Map.get(key, [])
-      |> Enum.shuffle()
-
-    :persistent_term.put("neo_faker_#{module}_#{key}", data)
-  end
-
-  @doc """
-  Reads and returns the content of a locale file as a map.
-
-  If the file does not exist for the configured locale, it falls back to the `"default"` locale.
-  """
-  @spec read_locale_file(String.t(), String.t()) :: map()
-  def read_locale_file(module, file) do
-    locale_setting = Application.get_env(:neo_faker, :locale)
-    locale_path = build_locale_path(locale_setting, module, file)
-
-    if File.exists?(locale_path) do
-      locale_path |> Code.eval_file() |> elem(0)
+    if File.exists?(file_path) do
+      file_path
     else
-      "default" |> build_locale_path(module, file) |> Code.eval_file() |> elem(0)
+      Path.join([@data_path, "default"])
     end
-  end
-
-  @doc """
-  Constructs the absolute file path for a locale-specific data file.
-  """
-  @spec build_locale_path(String.t(), String.t(), String.t()) :: String.t()
-  def build_locale_path(locale, module, file_name) do
-    Path.join([@base_data_path, locale, module, file_name])
   end
 end

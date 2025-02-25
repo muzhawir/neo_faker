@@ -15,7 +15,7 @@ defmodule NeoFaker.Crypto do
   """
   @moduledoc since: "0.3.1"
 
-  import NeoFaker.Crypto.Utils
+  import NeoFaker.Crypto.Util
 
   @doc """
   Generates a random MD5 hash.

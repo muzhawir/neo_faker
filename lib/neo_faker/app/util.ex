@@ -1,4 +1,4 @@
-defmodule NeoFaker.App.Utils do
+defmodule NeoFaker.App.Util do
   @moduledoc false
 
   @pre_release_label ~w[alpha beta rc]

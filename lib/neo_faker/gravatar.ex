@@ -6,7 +6,7 @@ defmodule NeoFaker.Gravatar do
   """
   @moduledoc since: "0.3.1"
 
-  import NeoFaker.Gravatar.Utils
+  import NeoFaker.Gravatar.Util
 
   @typedoc "Email address."
   @type email :: String.t() | nil

@@ -1,4 +1,4 @@
-defmodule NeoFaker.Crypto.Utils do
+defmodule NeoFaker.Crypto.Util do
   @moduledoc false
 
   @doc """

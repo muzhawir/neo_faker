@@ -7,7 +7,7 @@ defmodule NeoFaker.App do
   """
   @moduledoc since: "0.4.0"
 
-  import NeoFaker.App.Utils
+  import NeoFaker.App.Util
   import NeoFaker.Helper.Generator, only: [random: 4, fetch_data: 3]
 
   @module __MODULE__

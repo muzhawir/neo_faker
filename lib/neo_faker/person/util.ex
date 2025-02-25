@@ -1,4 +1,4 @@
-defmodule NeoFaker.Person.Utils do
+defmodule NeoFaker.Person.Util do
   @moduledoc false
 
   import NeoFaker.Helper.Generator, only: [fetch_data: 3, random: 4]

@@ -8,7 +8,7 @@ defmodule NeoFaker.Person do
   @moduledoc since: "0.6.0"
 
   import NeoFaker.Helper.Generator, only: [random: 4]
-  import NeoFaker.Person.Utils
+  import NeoFaker.Person.Util
 
   @module __MODULE__
   @gender_file "gender.exs"

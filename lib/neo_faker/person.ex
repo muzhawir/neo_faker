@@ -7,15 +7,12 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Helper.Locale, only: [random_value: 3]
+  import NeoFaker.Helper.Generator, only: [random: 4]
   import NeoFaker.Person.Utils
 
   @module __MODULE__
-  @unisex_name_file "unisex_name.exs"
-  @name_affix_file "name_affixes.exs"
-  @masculine_name_file "masculine_name.exs"
-  @feminine_name_file "feminine_name.exs"
   @gender_file "gender.exs"
+  @name_affixes_file "name_affixes.exs"
 
   @doc """
   Returns a random first name.
@@ -46,11 +43,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec first_name(Keyword.t()) :: String.t()
-  def first_name(opts \\ [])
-  def first_name([]), do: @module |> load_all_random_names("first_names") |> Enum.random()
-  def first_name(type: :unisex), do: random_value(@module, @unisex_name_file, "first_names")
-  def first_name(type: :masculine), do: random_value(@module, @masculine_name_file, "first_names")
-  def first_name(type: :feminine), do: random_value(@module, @feminine_name_file, "first_names")
+  def first_name(opts \\ []), do: random_name(@module, "first_names", opts)
 
   @doc """
   Returns a random middle name.
@@ -81,11 +74,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
-  def middle_name(opts \\ [])
-  def middle_name([]), do: @module |> load_all_random_names("middle_names") |> Enum.random()
-  def middle_name(type: :unisex), do: random_value(@module, @unisex_name_file, "middle_names")
-  def middle_name(type: :masculine), do: random_value(@module, @masculine_name_file, "middle_names")
-  def middle_name(type: :feminine), do: random_value(@module, @feminine_name_file, "middle_names")
+  def middle_name(opts \\ []), do: random_name(@module, "middle_names", opts)
 
   @doc """
   Returns a random last name.
@@ -116,11 +105,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
-  def last_name(opts \\ [])
-  def last_name([]), do: @module |> load_all_random_names("last_names") |> Enum.random()
-  def last_name(type: :unisex), do: random_value(@module, @unisex_name_file, "last_names")
-  def last_name(type: :masculine), do: random_value(@module, @masculine_name_file, "last_names")
-  def last_name(type: :feminine), do: random_value(@module, @feminine_name_file, "last_names")
+  def last_name(opts \\ []), do: random_name(@module, "last_names", opts)
 
   @doc """
   Returns a random name prefix.
@@ -131,8 +116,9 @@ defmodule NeoFaker.Person do
       "Mr."
 
   """
-  @spec prefix() :: String.t()
-  def prefix, do: random_value(@module, @name_affix_file, "prefixes")
+
+  @spec prefix(Keyword.t()) :: String.t()
+  def prefix(opts \\ []), do: random(@module, @name_affixes_file, "prefixes", opts)
 
   @doc """
   Returns a random name suffix.
@@ -144,8 +130,8 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec suffix() :: String.t()
-  def suffix, do: random_value(@module, @name_affix_file, "suffixes")
+  @spec suffix(Keyword.t()) :: String.t()
+  def suffix(opts \\ []), do: random(@module, @name_affixes_file, "suffixes", opts)
 
   @doc """
   Returns random age.
@@ -175,8 +161,8 @@ defmodule NeoFaker.Person do
       "Male"
 
   """
-  @spec binary_gender() :: String.t()
-  def binary_gender, do: random_value(@module, @gender_file, "binary")
+  @spec binary_gender(Keyword.t()) :: String.t()
+  def binary_gender(opts \\ []), do: random(@module, @gender_file, "binary", opts)
 
   @doc """
   Returns random short binary gender.
@@ -189,8 +175,8 @@ defmodule NeoFaker.Person do
       "F"
 
   """
-  @spec short_binary_gender() :: String.t()
-  def short_binary_gender, do: random_value(@module, @gender_file, "short_binary")
+  @spec short_binary_gender(Keyword.t()) :: String.t()
+  def short_binary_gender(opts \\ []), do: random(@module, @gender_file, "short_binary", opts)
 
   @doc """
   Returns random non-binary gender.
@@ -203,6 +189,6 @@ defmodule NeoFaker.Person do
       "Agender"
 
   """
-  @spec non_binary_gender() :: String.t()
-  def non_binary_gender, do: random_value(@module, @gender_file, "non_binary")
+  @spec non_binary_gender(Keyword.t()) :: String.t()
+  def non_binary_gender(opts \\ []), do: random(@module, @gender_file, "non_binary", opts)
 end

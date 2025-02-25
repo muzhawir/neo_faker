@@ -22,26 +22,28 @@ defmodule NeoFaker.Person.Utils do
     end
   end
 
-  # Merges the male and female data names and returns a random unisex name
+  # Retuns a random unisex name from the persistent term
   defp random_unisex_name(module, key, opts) do
     locale = Keyword.get(opts, :locale) || Application.get_env(:neo_faker, :locale)
-    male_names = fetch_data(module, @male_name_file, locale: locale)
-    female_names = fetch_data(module, @female_name_file, locale: locale)
-    persisent_term_key = Locale.persistent_term_key(locale, module, "unisex_name")
+    male_data = fetch_data(module, @male_name_file, locale: locale)
+    female_data = fetch_data(module, @female_name_file, locale: locale)
+    unisex_name_key = Locale.persistent_term_key(locale, module, "unisex_name")
 
-    unisex_names =
-      Map.merge(male_names, female_names, fn _key, male, female ->
-        male |> Stream.concat(female) |> Enum.shuffle()
-      end)
-
-    case :persistent_term.get(persisent_term_key, nil) do
+    case :persistent_term.get(unisex_name_key, nil) do
       nil ->
-        :persistent_term.put(persisent_term_key, unisex_names)
+        unisex_data = Map.merge(male_data, female_data, &merge_lists/3)
 
-        persisent_term_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+        :persistent_term.put(unisex_name_key, unisex_data)
 
-      term ->
-        term |> Map.get(key) |> Enum.random()
+        unisex_name_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+
+      unisex_data ->
+        unisex_data |> Map.get(key) |> Enum.random()
     end
+  end
+
+  # Merges two lists and returns a shuffled list
+  defp merge_lists(_key, first_list, second_list) do
+    first_list |> Stream.concat(second_list) |> Enum.shuffle()
   end
 end

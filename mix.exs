@@ -32,7 +32,8 @@ defmodule NeoFaker.MixProject do
     [
       main: "getting-started",
       logo: "lib/assets/logo/doc_logo.svg",
-      extras: extra_pages()
+      extras: extra_pages(),
+      groups_for_modules: groups_for_modules()
     ]
   end
 
@@ -41,6 +42,12 @@ defmodule NeoFaker.MixProject do
       Path.wildcard("lib/pages/**/*.md"),
       Path.wildcard("lib/pages/**/*.cheatmd")
     ])
+  end
+
+  defp groups_for_modules do
+    [
+      "Random Generators": ~r/^NeoFaker/
+    ]
   end
 
   # Run "mix help compile.app" to learn about applications.

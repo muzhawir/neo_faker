@@ -26,9 +26,9 @@ defmodule NeoFaker.Crypto.Util do
   """
   @spec generate_hash(atom(), Keyword.t()) :: String.t() | [String.t()]
   def generate_hash(hash_type, opts) do
-    data = :crypto.strong_rand_bytes(16)
     case_type = Keyword.get(opts, :case, :lower)
+    random_byte = :crypto.strong_rand_bytes(16)
 
-    hash_type |> :crypto.hash(data) |> Base.encode16(case: case_type)
+    hash_type |> :crypto.hash(random_byte) |> Base.encode16(case: case_type)
   end
 end

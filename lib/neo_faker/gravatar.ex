@@ -54,8 +54,8 @@ defmodule NeoFaker.Gravatar do
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    image_size = image_size(size: opts[:size])
-    default_fallback = default_fallback(fallback: opts[:fallback])
+    image_size = opts |> Keyword.get(:size) |> image_size()
+    default_fallback = opts |> Keyword.get(:fallback) |> default_fallback()
 
     generate_gravatar_url(email, image_size, default_fallback)
   end

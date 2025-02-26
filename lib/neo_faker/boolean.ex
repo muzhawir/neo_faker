@@ -34,11 +34,11 @@ defmodule NeoFaker.Boolean do
     :rand.uniform() <= true_ratio / 100
   end
 
+  def boolean(true_ratio, integer: false) when true_ratio in 0..100, do: boolean()
+
   def boolean(true_ratio, integer: true) when true_ratio in 0..100 do
     result = :rand.uniform() <= true_ratio / 100
 
     if result == true, do: 1, else: 0
   end
-
-  def boolean(true_ratio, integer: false) when true_ratio in 0..100, do: boolean()
 end

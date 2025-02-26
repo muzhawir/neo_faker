@@ -45,11 +45,7 @@ defmodule NeoFaker.App.Util do
   format `"alpha.N"`, `"beta.N"`, or `"rc.N"`.
   """
   @spec semver_pre_release() :: String.t()
-  def semver_pre_release do
-    label = Enum.random(@pre_release_label)
-
-    "#{label}.#{Enum.random(1..10)}"
-  end
+  def semver_pre_release, do: "#{Enum.random(@pre_release_label)}.#{Enum.random(1..10)}"
 
   @doc """
   Generates a build number based on the current date.

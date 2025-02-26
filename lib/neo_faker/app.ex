@@ -8,7 +8,7 @@ defmodule NeoFaker.App do
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Util
-  import NeoFaker.Helper.Generator, only: [random: 4, fetch_data: 3]
+  import NeoFaker.Helper.Generator, only: [random: 4]
 
   @module __MODULE__
   @author_file "author.exs"
@@ -47,7 +47,8 @@ defmodule NeoFaker.App do
   @doc """
   Returns a random open-source license.
 
-  The license is selected from a predefined list based on [ChooseALicense](https://choosealicense.com/appendix).
+  The license is selected from a predefined list based on
+  [ChooseALicense](https://choosealicense.com/appendix).
 
   ## Examples
 
@@ -89,14 +90,12 @@ defmodule NeoFaker.App do
 
   """
   def name(opts \\ []) do
-    type = Keyword.get(opts, :style)
+    style = Keyword.get(opts, :style)
     locale = Keyword.get(opts, :locale)
-    data = fetch_data(@module, @name_file, locale: locale)
+    first_name = random(@module, @name_file, "first_names", locale: locale)
+    last_name = random(@module, @name_file, "last_names", locale: locale)
 
-    first_name_list = data |> Map.get("first_names") |> Enum.random()
-    last_name_list = data |> Map.get("last_names") |> Enum.random()
-
-    name_case({first_name_list, last_name_list}, type)
+    name_case({first_name, last_name}, style)
   end
 
   @doc """
@@ -150,5 +149,10 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver_core() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version do
+    semver_core()
+    |> String.split(".")
+    |> Enum.take(2)
+    |> Enum.join(".")
+  end
 end

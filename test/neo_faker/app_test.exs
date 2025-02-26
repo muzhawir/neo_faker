@@ -39,19 +39,18 @@ defmodule NeoFaker.AppTest do
   # Helper function for validate name function with options
   @spec validate_name_app(atom()) :: boolean
   defp validate_name_app(opts \\ nil) do
-    regexp =
-      case opts do
-        nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
-        :camel_case -> ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
-        :pascal_case -> ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
-        :dashed -> ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
-        :single -> ~r/^[A-Z]?[a-z0-9]+$/
-      end
-
+    case_regexp = case_regexp(opts)
     app_name = App.name(style: opts)
 
-    Regex.match?(regexp, app_name)
+    Regex.match?(case_regexp, app_name)
   end
+
+  # Case regexp for validate name function
+  defp case_regexp(nil), do: ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
+  defp case_regexp(:camel_case), do: ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
+  defp case_regexp(:pascal_case), do: ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
+  defp case_regexp(:dashed), do: ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
+  defp case_regexp(:single), do: ~r/^[A-Z]?[a-z0-9]+$/
 
   describe "author/0" do
     test "returns a full name of an app author" do

@@ -22,7 +22,13 @@ defmodule NeoFaker.Person.Util do
     end
   end
 
-  # Retuns a random unisex name from the persistent term
+  @doc """
+  Returns a random unisex name list.
+
+  Returns a random unisex name list, if no options are provided it will return a random data
+  from default locale.
+  """
+  @spec unisex_name(atom(), String.t(), Keyword.t()) :: list()
   def unisex_name(module, key, opts \\ []) do
     locale = Keyword.get(opts, :locale) || Application.get_env(:neo_faker, :locale)
     male_data = fetch_data(module, @male_name_file, locale: locale)

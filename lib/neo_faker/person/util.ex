@@ -16,14 +16,14 @@ defmodule NeoFaker.Person.Util do
   @spec random_name(atom(), String.t(), Keyword.t()) :: String.t()
   def random_name(module, key, opts \\ []) do
     case Keyword.get(opts, :sex) do
-      nil -> random_unisex_name(module, key, opts)
+      nil -> module |> unisex_name(key, opts) |> Enum.random()
       :female -> random(module, @female_name_file, key, opts)
       :male -> random(module, @male_name_file, key, opts)
     end
   end
 
   # Retuns a random unisex name from the persistent term
-  defp random_unisex_name(module, key, opts) do
+  def unisex_name(module, key, opts \\ []) do
     locale = Keyword.get(opts, :locale) || Application.get_env(:neo_faker, :locale)
     male_data = fetch_data(module, @male_name_file, locale: locale)
     female_data = fetch_data(module, @female_name_file, locale: locale)
@@ -35,10 +35,10 @@ defmodule NeoFaker.Person.Util do
 
         :persistent_term.put(unisex_name_key, unisex_data)
 
-        unisex_name_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+        unisex_name_key |> :persistent_term.get() |> Map.get(key)
 
       unisex_data ->
-        unisex_data |> Map.get(key) |> Enum.random()
+        Map.get(unisex_data, key)
     end
   end
 

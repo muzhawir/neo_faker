@@ -1,95 +1,115 @@
 defmodule NeoFaker.PersonTest do
   use ExUnit.Case, async: true
 
-  alias NeoFaker.Helper.Locale
+  alias NeoFaker.Helper.Generator
   alias NeoFaker.Person
-  alias NeoFaker.Person.Utils
+  alias NeoFaker.Person.Util
 
   @module NeoFaker.Person
 
-  describe "age/2" do
-    test "returns random age" do
-      assert Person.age(7, 44) in 7..44
-    end
-  end
-
-  describe "binary_gender/1" do
-    test "returns random binary gender" do
-      assert Person.binary_gender() in ["Male", "Female"]
-    end
-  end
-
   describe "first_name/1" do
-    test "returns random first name" do
-      first_names = Utils.load_all_random_names(@module, "first_names")
-
-      assert Person.first_name() in first_names
+    test "returns a first name" do
+      assert Person.first_name() in Util.unisex_name(@module, "first_names")
     end
 
-    test "returns random first name in unisex, masculine, or feminine" do
-      first_names = Utils.load_all_random_names(@module, "first_names")
+    test "returns a first name with option" do
+      male_names = Util.unisex_name(@module, "first_names", locale: "id_id")
 
-      unisex_first_names = Person.first_name(type: :unisex) in first_names
-      masculine_first_names = Person.first_name(type: :masculine) in first_names
-      feminine_first_names = Person.first_name(type: :feminine) in first_names
-
-      assert Enum.all?([unisex_first_names, masculine_first_names, feminine_first_names])
-    end
-  end
-
-  describe "last_name/1" do
-    test "returns random last name" do
-      last_names = Utils.load_all_random_names(@module, "last_names")
-
-      assert Person.last_name() in last_names
-    end
-
-    test "returns random last name in unisex, masculine, or feminine" do
-      last_names = Utils.load_all_random_names(@module, "last_names")
-
-      unisex_last_names = Person.last_name(type: :unisex) in last_names
-      masculine_last_names = Person.last_name(type: :masculine) in last_names
-      feminine_last_names = Person.last_name(type: :feminine) in last_names
-
-      assert Enum.all?([unisex_last_names, masculine_last_names, feminine_last_names])
+      assert Person.first_name(sex: :male, locale: "id_id") in male_names
     end
   end
 
   describe "middle_name/1" do
-    test "returns random middle name" do
-      middle_names = Utils.load_all_random_names(@module, "middle_names")
-
-      assert Person.middle_name() in middle_names
+    test "returns a middle name" do
+      assert Person.middle_name() in Util.unisex_name(@module, "middle_names")
     end
 
-    test "returns random middle name in unisex, masculine, or feminine" do
-      middle_names = Utils.load_all_random_names(@module, "middle_names")
+    test "returns a middle name with option" do
+      female_names = Util.unisex_name(@module, "middle_names", locale: "id_id")
 
-      unisex_middle_names = Person.middle_name(type: :unisex) in middle_names
-      masculine_middle_names = Person.middle_name(type: :masculine) in middle_names
-      feminine_middle_names = Person.middle_name(type: :feminine) in middle_names
+      assert Person.middle_name(sex: :female, locale: "id_id") in female_names
+    end
+  end
 
-      assert Enum.all?([unisex_middle_names, masculine_middle_names, feminine_middle_names])
+  describe "last_name/1" do
+    test "returns a last name" do
+      assert Person.last_name() in Util.unisex_name(@module, "last_names")
+    end
+
+    test "returns a last name with option" do
+      unisex_names = Util.unisex_name(@module, "last_names", locale: "id_id")
+
+      assert Person.last_name(locale: "id_id") in unisex_names
+    end
+  end
+
+  describe "prefix/1" do
+    test "returns a prefix" do
+      assert Person.prefix() in Generator.fetch_data(@module, "name_affixes.exs", key: "prefixes")
+    end
+
+    test "returns a local prefix" do
+      prefixes = Generator.fetch_data(@module, "name_affixes.exs", key: "prefixes", locale: "id_id")
+
+      assert Person.prefix(locale: "id_id") in prefixes
+    end
+  end
+
+  describe "suffix/1" do
+    test "returns a suffix" do
+      assert Person.suffix() in Generator.fetch_data(@module, "name_affixes.exs", key: "suffixes")
+    end
+
+    test "returns a local suffix" do
+      suffixes = Generator.fetch_data(@module, "name_affixes.exs", key: "suffixes", locale: "id_id")
+
+      assert Person.suffix(locale: "id_id") in suffixes
+    end
+  end
+
+  describe "age/2" do
+    test "returns a random age" do
+      assert Person.age() in 0..120
+    end
+  end
+
+  describe "binary_gender/1" do
+    test "returns a binary gender" do
+      assert Person.binary_gender() in Generator.fetch_data(@module, "gender.exs", key: "binary")
+    end
+
+    test "returns a binary gender with option" do
+      binary_gender = Generator.fetch_data(@module, "gender.exs", key: "binary", locale: "id_id")
+
+      assert Person.binary_gender(locale: "id_id") in binary_gender
+    end
+  end
+
+  describe "short_binary_gender/1" do
+    test "returns a short binary gender" do
+      short_binary_gender = Generator.fetch_data(@module, "gender.exs", key: "short_binary")
+
+      assert Person.short_binary_gender() in short_binary_gender
     end
   end
 
   describe "non_binary_gender/1" do
-    test "returns random non-binary gender" do
-      gender_lists = Locale.load_persistent_term("person", "gender.exs", "non_binary")
+    test "returns a non binary gender" do
+      non_binary_gender = Generator.fetch_data(@module, "gender.exs", key: "non_binary")
 
-      assert Person.non_binary_gender() in gender_lists
+      assert Person.non_binary_gender() in non_binary_gender
     end
-  end
 
-  describe "prefix/0" do
-  end
+    test "returns a non binary gender with option" do
+      non_binary_gender =
+        Generator.fetch_data(
+          @module,
+          "gender.exs",
+          key: "non_binary",
+          locale: "id_id"
+        )
 
-  describe "short_binary_gender/1" do
-    test "returns random short binary gender" do
-      assert Person.short_binary_gender() in ["M", "F"]
+      assert Person.non_binary_gender(locale: "id_id") in non_binary_gender
     end
-  end
-
-  describe "suffix/0" do
   end
 end

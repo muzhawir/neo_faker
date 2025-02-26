@@ -108,6 +108,42 @@ defmodule NeoFaker.Person do
   def last_name(opts \\ []), do: random_name(@module, "last_names", opts)
 
   @doc """
+  Returns a random full name.
+
+  Returns a random full name, if no options are provided it will return a default random unisex
+  full name.
+
+  ## Options
+
+  The accepted options are:
+
+    - `:locale` - Specifies the locale to use.
+    - `:sex` - Specifies the sex of the name to generate.
+    - `:middle_name` - Specifies whether to include a middle name in the full name.
+
+  ## Examples
+
+      iex> NeoFaker.Person.full_name()
+      "Tiffany Norris Jr."
+
+      iex> NeoFaker.Person.full_name(sex: :male)
+      "Theodore Buckley Jr."
+
+      iex> NeoFaker.Person.full_name(middle_name: false)
+      "Tiffany Norris"
+
+  """
+  @doc since: "0.7.0"
+  @spec full_name(Keyword.t()) :: String.t()
+  def full_name(opts \\ []) do
+    locale = Keyword.get(opts, :locale)
+    sex = Keyword.get(opts, :sex)
+    include_middle_name? = Keyword.get(opts, :middle_name, true)
+
+    random_full_name(locale, sex, include_middle_name?)
+  end
+
+  @doc """
   Returns a random name prefix.
 
   ## Examples

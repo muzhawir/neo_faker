@@ -4,6 +4,7 @@ defmodule NeoFaker.Person.Util do
   import NeoFaker.Helper.Generator, only: [fetch_data: 3, random: 4]
 
   alias NeoFaker.Helper.Locale
+  alias NeoFaker.Person
 
   @female_name_file "female_name.exs"
   @male_name_file "male_name.exs"
@@ -20,6 +21,29 @@ defmodule NeoFaker.Person.Util do
       :female -> random(module, @female_name_file, key, opts)
       :male -> random(module, @male_name_file, key, opts)
     end
+  end
+
+  @doc """
+  Returns a random full name.
+
+  Returns a random full name, if no options are provided it will return a default random unisex
+  full name.
+  """
+  def random_full_name(locale \\ "default", sex \\ nil, include_middle_name? \\ true)
+
+  def random_full_name(locale, sex, true) do
+    first_name = Person.first_name(sex: sex, locale: locale)
+    middle_name = Person.middle_name(sex: sex, locale: locale)
+    last_name = Person.last_name(sex: sex, locale: locale)
+
+    "#{first_name} #{middle_name} #{last_name}"
+  end
+
+  def random_full_name(locale, sex, false) do
+    first_name = Person.first_name(sex: sex, locale: locale)
+    last_name = Person.last_name(sex: sex, locale: locale)
+
+    "#{first_name} #{last_name}"
   end
 
   @doc """

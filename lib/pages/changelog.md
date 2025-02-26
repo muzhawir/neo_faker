@@ -26,6 +26,7 @@ iex> NeoFaker.App.name(locale: "id_id")
 - `NeoFaker.Person.first_name/1`
 - `NeoFaker.Person.middle_name/1`
 - `NeoFaker.Person.last_name/1`
+- `NeoFaker.Person.name/2`
 
 #### `NeoFaker.Boolean`
 

@@ -2,43 +2,47 @@
 
 ## v0.7.1 (2025-02-24)
 
-Refactor all module and function documentation.
+### Documentation Improvements
 
-## v0.7.0 (2025-02-23)
+Refactored all module and function documentation for better clarity and consistency.
 
-### Introduced `:locale` option in functions
+## **v0.7.0 (2025-02-23)**
 
-Functions that retrieve data from locale data files now support an optional `:locale` option.
-This allows specifying a locale other than the default one defined in `config.exs`.
+### New Feature: `:locale` Option
 
-For example, if the default locale in `config.exs` is `"default"`, but you need to use the `"id_id"`
-locale in a specific function call, you can do the following:
+Functions that retrieve data from locale files now support an optional `:locale` option, this
+allows overriding the default locale set in `config.exs`.
+
+#### **Example Usage:**
+
+If the default locale in `config.exs` is `"default"`, but you need to use `"id_id"` in a specific
+function call:
 
 ```elixir
 iex> NeoFaker.App.name(locale: "id_id")
 "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
-### Introduced new generator functions and options
+### New Generator Functions and Options
 
 #### `NeoFaker.Person`
 
-- `NeoFaker.Person.first_name/1`
-- `NeoFaker.Person.middle_name/1`
-- `NeoFaker.Person.last_name/1`
-- `NeoFaker.Person.name/2`
+- Added `NeoFaker.Person.first_name/1`
+- Added `NeoFaker.Person.middle_name/1`
+- Added `NeoFaker.Person.last_name/1`
+- Added `NeoFaker.Person.full_name/1`
 
 #### `NeoFaker.Boolean`
 
-- `NeoFaker.Boolean.boolean/2` now supports an optional `integer: true` option to return `1` or `0`
+`NeoFaker.Boolean.boolean/2` now supports an optional `integer: true` option to return `1` or `0`
 instead of `true` or `false`.
 
-### Updated documentation
+### Documentation Updates
 
-- Added [Available Locales](available-locales.html) page to provide a list of supported locales.
-- Added [Contributing](contributing.html) page to guide contributors.
+- Added [Available Locales](available-locales.html) page listing supported locales.
+- Updated [Cheat Sheet](cheat.html) page with new functions and options.
 
-### Major refactorings
+### Major Refactoring
 
-- Refactored the entire codebase to use `NeoFaker` instead of `Nf` for improved readability.
-- Removed multiple results in generator functions.
+- Standardized all module references, replacing `Nf` with `NeoFaker` for improved readability.
+- Removed support for multiple return values in generator functions.

@@ -12,8 +12,7 @@
 
 ## Installation
 
-NeoFaker is available on [Hex](https://hex.pm/packages/neo_faker). Add it to your dependencies
-in `mix.exs`:
+Add NeoFaker to your dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -23,7 +22,7 @@ def deps do
 end
 ```
 
-Then, fetch the dependencies:
+Then, fetch dependencies:
 
 ```sh
 mix deps.get
@@ -31,19 +30,16 @@ mix deps.get
 
 ## Configuration
 
-The default locale is `"default"`, but it can be changed in `config.exs`:
+Set the default locale in `config.exs`:
 
 ```elixir
 config :neo_faker, locale: "default"
 ```
 
-If the specified locale is not found, it will fall back to `"default"`.
-
-A list of available locales can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
+If the specified locale is unavailable, it falls back to `"default"`. A list of available locales
+can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage
-
-Here are some examples of how to use NeoFaker:
 
 ```elixir
 iex> NeoFaker.App.name()
@@ -56,8 +52,8 @@ iex> NeoFaker.App.description(locale: "id_id")
 "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
-For a complete list of available modules, refer to the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
-For a summarized guide, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
+For full documentation, check the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
+For a quick guide, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
 
 ## License
 

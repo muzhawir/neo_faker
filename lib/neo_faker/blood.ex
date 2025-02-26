@@ -2,7 +2,7 @@ defmodule NeoFaker.Blood do
   @moduledoc """
   Provides functions for generating blood types.
 
-  This module includes functions to generate random blood type groups, blood types, and Rh factors.
+  This module includes functions to generate random blood groups, blood types, and Rh factors.
   """
   @moduledoc since: "0.3.1"
 
@@ -10,10 +10,10 @@ defmodule NeoFaker.Blood do
   @rh_factors ~w[+ -]
 
   @doc """
-  Returns a random blood type group.
+  Generates a random blood group.
 
-  A blood type group consists of a blood type (`A`, `B`, `AB`, or `O`)
-  and an Rh factor (`+` or `-`), forming a complete blood group.
+  A blood group consists of a blood type (`A`, `B`, `AB`, or `O`) combined with an Rh factor
+  (`+` or `-`), forming a complete blood group.
 
   ## Examples
 
@@ -25,7 +25,7 @@ defmodule NeoFaker.Blood do
   def group, do: "#{type()}#{rh_factor()}"
 
   @doc """
-  Returns a random blood type.
+  Generates a random blood type.
 
   A blood type is one of `A`, `B`, `AB`, or `O`, without the Rh factor.
 
@@ -39,7 +39,7 @@ defmodule NeoFaker.Blood do
   def type, do: Enum.random(@blood_types)
 
   @doc """
-  Returns a random Rh factor.
+  Generates a random Rh factor.
 
   The Rh factor is either `+` (positive) or `-` (negative).
 

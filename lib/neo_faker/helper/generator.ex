@@ -22,8 +22,19 @@ defmodule NeoFaker.Helper.Generator do
   Fetches data from the persistent term, if the data is not found, it will be loaded from the
   locale file first.
   """
-  @spec fetch_data(atom(), String.t(), Keyword.t()) :: map()
+  @spec fetch_data(atom(), String.t(), Keyword.t()) :: map() | list()
   def fetch_data(module, file, opts \\ []) do
-    opts |> Keyword.get(:locale, "default") |> Locale.load_persistent_term(module, file)
+    locale = Keyword.get(opts, :locale, "default")
+    key = Keyword.get(opts, :key)
+
+    load_data(locale, module, file, key)
+  end
+
+  # Load data from the persistent term
+  defp load_data(locale, module, file, nil), do: Locale.load_persistent_term(locale, module, file)
+
+  # Load data from the persistent term and return the specified key
+  defp load_data(locale, module, file, key) do
+    locale |> Locale.load_persistent_term(module, file) |> Map.fetch!(key)
   end
 end

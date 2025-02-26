@@ -4,7 +4,10 @@ defmodule NeoFaker.App.Util do
   @pre_release_label ~w[alpha beta rc]
 
   @doc """
-  Converts a first name and last name to a name in the given case format.
+  Converts a name into the specified case format.
+
+  This function takes a tuple containing a first name and a last name, then formats it
+  according to the given case style.
   """
   @spec name_case({String.t(), String.t()}, atom()) :: String.t()
   def name_case({first_name, last_name}, nil), do: "#{first_name} #{last_name}"
@@ -32,7 +35,8 @@ defmodule NeoFaker.App.Util do
   @doc """
   Generates a core semantic version number.
 
-  The version follows the `MAJOR.MINOR.PATCH` format as defined by the
+  This function returns a randomly generated semantic version number following
+  the `MAJOR.MINOR.PATCH` format as defined by the
   [Semantic Versioning 2.0.0](https://semver.org/) specification.
   """
   @spec semver_core() :: String.t()
@@ -41,8 +45,17 @@ defmodule NeoFaker.App.Util do
   @doc """
   Generates a random pre-release identifier.
 
-  The pre-release identifier is typically used to indicate unstable versions and follows the
-  format `"alpha.N"`, `"beta.N"`, or `"rc.N"`.
+  This function returns a randomly generated pre-release identifier
+  following the Semantic Versioning 2.0.0 specification.
+
+  Pre-release identifiers are used to indicate unstable versions
+  and typically follow one of these formats:
+
+  - `"alpha.N"` - Represents an early development stage.
+  - `"beta.N"` - Represents a testing phase before release.
+  - `"rc.N"` - Stands for "Release Candidate," meaning it is nearly final.
+
+  `N` is a positive integer that represents the version sequence.
   """
   @spec semver_pre_release() :: String.t()
   def semver_pre_release, do: "#{Enum.random(@pre_release_label)}.#{Enum.random(1..10)}"
@@ -50,7 +63,14 @@ defmodule NeoFaker.App.Util do
   @doc """
   Generates a build number based on the current date.
 
-  The build number is formatted as `YYYYMMDD`, providing a timestamp for identifying builds.
+  This function returns a build number in the format `YYYYMMDD`, where:
+
+  - `YYYY` is the four-digit year.
+  - `MM` is the two-digit month (01-12).
+  - `DD` is the two-digit day (01-31).
+
+  This format provides a simple way to timestamp builds, making it easier to track versions over
+  time.
   """
   @spec semver_build_number() :: String.t()
   def semver_build_number do

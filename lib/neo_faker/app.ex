@@ -2,8 +2,8 @@ defmodule NeoFaker.App do
   @moduledoc """
   Provides functions for generating app metadata.
 
-  This module includes functions to generate random app-related information, such as author names,
-  app names, descriptions, versions, and licenses.
+  This module offers functions to generate random app-related information, including
+  author names, app names, descriptions, versions, and licenses.
   """
   @moduledoc since: "0.4.0"
 
@@ -17,9 +17,9 @@ defmodule NeoFaker.App do
   @name_file "name.exs"
 
   @doc """
-  Returns a random app author.
+  Generates a random app author name.
 
-  The author name is a randomly generated full name.
+  The author name is randomly generated as a full name.
 
   ## Examples
 
@@ -31,23 +31,37 @@ defmodule NeoFaker.App do
   def author(opts \\ []), do: random(@module, @author_file, "authors", opts)
 
   @doc """
-  Returns a short app description.
+  Generates a short app description.
 
-  The description provides a brief summary of the app.
+  The description provides a brief summary of the app's purpose.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:locale` - Specifies the locale to use.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `"default"`.
+  - `"id_id"` - Uses the Indonesian locale, for example.
 
   ## Examples
 
       iex> NeoFaker.App.description()
       "Elixir library for generating fake data in tests and development."
 
+      iex> NeoFaker.App.description(locale: "id_id")
+      "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+
   """
   @spec description(Keyword.t()) :: String.t()
   def description(opts \\ []), do: random(@module, @description_file, "descriptions", opts)
 
   @doc """
-  Returns a random open-source license.
+  Generates a random open-source license.
 
-  The license is selected from a predefined list based on
+  The license is randomly selected from a predefined list based on
   [ChooseALicense](https://choosealicense.com/appendix).
 
   ## Examples
@@ -56,29 +70,35 @@ defmodule NeoFaker.App do
       "MIT License"
 
   """
-  @spec license(Keyword.t()) :: String.t()
-  def license(opts \\ []), do: random(@module, @license_file, "licenses", opts)
+  @spec license() :: String.t()
+  def license, do: random(@module, @license_file, "licenses", [])
 
   @doc """
-  Returns a random app name.
+  Generates a random app name.
 
-  By default, the app name is generated in a standard format. A different naming style can be
-  specified using the `:style` option.
+  By default, the app name follows a standard format. You can specify a different case style
+  using the `:style` option.
 
   ## Options
 
   The accepted options are:
 
-  - `:style` - Specifies the style of the app name.
+  - `:style` - Defines the case style of the app name.
+  - `:locale` - Specifies the locale to use.
 
   The values for `:style` can be:
 
   - `nil` (default) - Uses the standard format, e.g., `"Neo Faker"`.
   - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
   - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
-  - `:dashed` - Uses a dashed style, e.g., `"Neo-faker"`.
-  - `:underscore` - Uses an underscore style, e.g., `"neo_faker"`.
+  - `:dashed` - Uses a dashed format, e.g., `"Neo-faker"`.
+  - `:underscore` - Uses an underscore format, e.g., `"neo_faker"`.
   - `:single` - Uses a single-word format, e.g., `"Faker"`.
+
+  The values for `:locale` can be:
+
+  - `nil` - Uses the default locale `"default"`.
+  - `"id_id"` - Uses the Indonesian locale, for example.
 
   ## Examples
 
@@ -88,7 +108,11 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
+      iex> NeoFaker.App.name(locale: "id_id")
+      "Garuda Web"
+
   """
+  @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
     style = Keyword.get(opts, :style)
     locale = Keyword.get(opts, :locale)

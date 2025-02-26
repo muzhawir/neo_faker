@@ -1,25 +1,26 @@
 defmodule NeoFaker.Gravatar.Util do
   @moduledoc false
 
-  @type email :: nil | String.t()
+  @typedoc "Email address."
+  @type email :: String.t() | nil
 
   @gravatar_url "https://gravatar.com/avatar/"
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
   @doc """
-  Extracts the image size from display options.
+  Sets the image size for display options.
 
-  Parses the given display options to determine the image size from 1 to 2048 pixel.
-  If no valid size is specified, the default 80 pixel value is used.
+  Parses the given display options to determine the image size, which must be between `1` and
+  `2048` pixels. If no valid size is specified, the default value of `80` pixels is used.
   """
   @spec image_size(non_neg_integer()) :: non_neg_integer()
   def image_size(size) when is_nil(size), do: 80
   def image_size(size) when size in 1..2048, do: size
 
   @doc """
-  Retrieves the default fallback image type from display options.
+  Sets the default fallback image type for display options.
 
-  Parses the given options to determine the fallback image type used when generating a Gravatar URL.
+  Parses the given options to determine the fallback image type when generating a Gravatar URL.
   """
   @spec default_fallback(atom()) :: String.t()
   def default_fallback(nil), do: "identicon"
@@ -31,8 +32,7 @@ defmodule NeoFaker.Gravatar.Util do
   @doc """
   Generates a Gravatar URL for the given email address.
 
-  This function constructs a Gravatar URL using a hashed email, specified image size, and a
-  fallback image type.
+  Constructs a Gravatar URL using a hashed email, specified image size, and fallback image type.
   """
   @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: String.t()
   def generate_gravatar_url(email, image_size, default_fallback) do
@@ -47,8 +47,8 @@ defmodule NeoFaker.Gravatar.Util do
   @doc """
   Hashes an email address into a Base16-encoded string.
 
-  This function computes a cryptographic hash of the given email address and returns a Base16
-  (hexadecimal) representation. If the input is invalid, an `ArgumentError` is raised.
+  Computes a cryptographic hash of the given email address and returns its Base16 (hexadecimal)
+  representation.
   """
   @spec hash_email!(email()) :: String.t()
   def hash_email!(email) when is_nil(email) do

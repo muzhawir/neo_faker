@@ -26,16 +26,16 @@ defmodule NeoFaker.Gravatar do
 
   The values for `:size` can be:
 
-  - `nil` (default) - Uses 80px.
+  - `nil` - Uses `80px` (default).
   - `integer` - The image size in pixels (valid range: `1` to `2048`).
 
   The values for `:fallback` can be:
 
-  - `nil` (default) - Uses `"identicon"`.
-  - `:identicon` - Generates an "identicon".
-  - `:monsterid` - Generates a "monsterid".
-  - `:wavatar` - Generates a "wavatar".
-  - `:robohash` - Generates a "robohash".
+  - `nil` - Generates an "identicon" image (default).
+  - `:identicon` - Generates an "identicon" image.
+  - `:monsterid` - Generates a "monsterid" image.
+  - `:wavatar` - Generates a "wavatar" image.
+  - `:robohash` - Generates a "robohash" image.
 
   ## Examples
 

@@ -53,7 +53,7 @@ defmodule Mix.Tasks.CheckCode do
 
     print_separator()
 
-    IO.puts("END LINT")
+    IO.puts("END check_code\n")
   end
 
   defp print_separator do

@@ -2,8 +2,8 @@ defmodule NeoFaker.Person do
   @moduledoc """
   Provides functions for generating person-related information.
 
-  This module includes functions to generate random person-related information, such as names, ages,
-  and genders.
+  This module offers a variety of functions to generate random personal details, such as names,
+  ages, and genders.
   """
   @moduledoc since: "0.6.0"
 
@@ -15,30 +15,38 @@ defmodule NeoFaker.Person do
   @name_affixes_file "name_affixes.exs"
 
   @doc """
-  Returns a random first name.
+  Generates a random first name.
 
-  Returns a random first name, if no options are provided it will return a random unisex,
-  masculine, or feminine name.
+  If no options are provided, it returns a random unisex first name.
 
   ## Options
 
   The accepted options are:
 
-    - `:type` - Specifies the type of name to generate.
+  - `:type` - Specifies the type of name to generate.
+  - `:locale` - Specifies the locale to use.
 
-  The values for `:type` can be:
+  Values for option `:type` can be:
 
-    - `:unisex` - Generates a random unisex name.
-    - `:masculine` - Generates a random masculine name.
-    - `:feminine` - Generates a random feminine name.
+  - `nil` - Generates a random unisex name (default).
+  - `:male` - Generates a random male name.
+  - `:female` - Generates a random female name.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `"default"`.
+  - `"id_id"` - Uses the Indonesian locale, for example.
 
   ## Examples
 
       iex> NeoFaker.Person.first_name()
-      "Tiffany"
+      "Julia"
 
-      iex> NeoFaker.Person.first_name(type: :masculine)
-      "Theodore"
+      iex> NeoFaker.Person.first_name(type: :male)
+      "José"
+
+      iex> NeoFaker.Person.first_name(locale: "id_id")
+      "Jaka"
 
   """
   @doc since: "0.7.0"
@@ -46,91 +54,62 @@ defmodule NeoFaker.Person do
   def first_name(opts \\ []), do: random_name(@module, "first_names", opts)
 
   @doc """
-  Returns a random middle name.
+  Generates a random middle name.
 
-  Returns a random middle name, if no options are provided it will return a random unisex,
-  masculine, or feminine name.
-
-  ## Options
-
-  The accepted options are:
-
-    - `:type` - Specifies the type of name to generate.
-
-  The values for `:type` can be:
-
-    - `:unisex` - Generates a random unisex name.
-    - `:masculine` - Generates a random masculine name.
-    - `:feminine` - Generates a random feminine name.
-
-  ## Examples
-
-      iex> NeoFaker.Person.middle_name()
-      "Arden"
-
-      iex> NeoFaker.Person.middle_name(type: :feminine)
-      "Juliette"
-
+  This function behaves similarly to `first_name/1`. See `first_name/1` for available options.
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
   def middle_name(opts \\ []), do: random_name(@module, "middle_names", opts)
 
   @doc """
-  Returns a random last name.
+  Generates a random last name.
 
-  Returns a random last name, if no options are provided it will return a random unisex,
-  masculine, or feminine name.
-
-  ## Options
-
-  The accepted options are:
-
-    - `:type` - Specifies the type of name to generate.
-
-  The values for `:type` can be:
-
-    - `:unisex` - Generates a random unisex name.
-    - `:masculine` - Generates a random masculine name.
-    - `:feminine` - Generates a random feminine name.
-
-  ## Examples
-
-      iex> NeoFaker.Person.last_name()
-      "Norris"
-
-      iex> NeoFaker.Person.last_name(type: :unisex)
-      "Harris"
-
+  This function behaves similarly to `first_name/1`. See `first_name/1` for available options.
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
   def last_name(opts \\ []), do: random_name(@module, "last_names", opts)
 
   @doc """
-  Returns a random full name.
+  Generates a random full name.
 
-  Returns a random full name, if no options are provided it will return a default random unisex
-  full name.
+  If no options are provided, it returns a default random unisex full name.
 
   ## Options
 
   The accepted options are:
 
-    - `:locale` - Specifies the locale to use.
-    - `:sex` - Specifies the sex of the name to generate.
-    - `:middle_name` - Specifies whether to include a middle name in the full name.
+  - `:locale` - Specifies the locale to use.
+  - `:sex` - Specifies the sex of the generated name.
+  - `:middle_name` - Determines whether to include a middle name in the full name.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `"default"`.
+  - `"id_id"` - Uses the Indonesian locale, for example.
+
+  Values for option `:sex` can be:
+
+  - `nil` - Generates a random unisex name (default).
+  - `:male` - Generates a random male name.
+  - `:female` - Generates a random female name.
+
+  Values for option `:middle_name` can be:
+
+  - `true` - Includes a random middle name (default).
+  - `false` - Excludes the middle name.
 
   ## Examples
 
       iex> NeoFaker.Person.full_name()
-      "Tiffany Norris Jr."
+      "Abigail Bethany Crawford"
 
       iex> NeoFaker.Person.full_name(sex: :male)
-      "Theodore Buckley Jr."
+      "Daniel Edward Fisher"
 
       iex> NeoFaker.Person.full_name(middle_name: false)
-      "Tiffany Norris"
+      "Gabriella Harrison"
 
   """
   @doc since: "0.7.0"
@@ -144,7 +123,7 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Returns a random name prefix.
+  Generates a random name prefix.
 
   ## Examples
 
@@ -157,7 +136,7 @@ defmodule NeoFaker.Person do
   def prefix(opts \\ []), do: random(@module, @name_affixes_file, "prefixes", opts)
 
   @doc """
-  Returns a random name suffix.
+  Generates a random name suffix.
 
   ## Examples
 
@@ -170,9 +149,9 @@ defmodule NeoFaker.Person do
   def suffix(opts \\ []), do: random(@module, @name_affixes_file, "suffixes", opts)
 
   @doc """
-  Returns random age.
+  Generates a random age.
 
-  The age is a non-negative integer between 0 and 120.
+  The age is a non-negative integer between 0 and 120 by default.
 
   ## Examples
 
@@ -187,9 +166,9 @@ defmodule NeoFaker.Person do
   def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
 
   @doc """
-  Returns random binary gender.
+  Generates a random binary gender.
 
-  The gender is either "Male" or "Female".
+  Returns either `"Male"` or `"Female"`.
 
   ## Examples
 
@@ -201,9 +180,9 @@ defmodule NeoFaker.Person do
   def binary_gender(opts \\ []), do: random(@module, @gender_file, "binary", opts)
 
   @doc """
-  Returns random short binary gender.
+  Generates a random short binary gender.
 
-  The gender is either "M" or "F".
+  Returns either `"M"` or `"F"`.
 
   ## Examples
 
@@ -215,9 +194,9 @@ defmodule NeoFaker.Person do
   def short_binary_gender(opts \\ []), do: random(@module, @gender_file, "short_binary", opts)
 
   @doc """
-  Returns random non-binary gender.
+  Generates a random non-binary gender.
 
-  The gender is a non-binary gender, such as "Agender", "Androgyne", "Bigender", etc.
+  Returns a non-binary gender, such as `"Agender"`, `"Androgyne"`, `"Bigender"`, etc.
 
   ## Examples
 

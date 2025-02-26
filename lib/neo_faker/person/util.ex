@@ -10,9 +10,9 @@ defmodule NeoFaker.Person.Util do
   @male_name_file "male_name.exs"
 
   @doc """
-  Returns a random name.
+  Generates a random name.
 
-  Returns a random name, if no options are provided it will return a random unisex name.
+  If no options are provided, it returns a random unisex name.
   """
   @spec random_name(atom(), String.t(), Keyword.t()) :: String.t()
   def random_name(module, key, opts \\ []) do
@@ -24,11 +24,11 @@ defmodule NeoFaker.Person.Util do
   end
 
   @doc """
-  Returns a random full name.
+  Generates a random full name.
 
-  Returns a random full name, if no options are provided it will return a default random unisex
-  full name.
+  If no options are provided, it returns a default random unisex full name.
   """
+  @spec random_full_name(String.t(), atom(), boolean()) :: String.t()
   def random_full_name(locale \\ "default", sex \\ nil, include_middle_name? \\ true)
 
   def random_full_name(locale, sex, true) do
@@ -47,10 +47,9 @@ defmodule NeoFaker.Person.Util do
   end
 
   @doc """
-  Returns a random unisex name list.
+  Returns a random list of unisex names.
 
-  Returns a random unisex name list, if no options are provided it will return a random data
-  from default locale.
+  If no options are provided, it returns data from the default locale.
   """
   @spec unisex_name(atom(), String.t(), Keyword.t()) :: list()
   def unisex_name(module, key, opts \\ []) do
@@ -72,7 +71,7 @@ defmodule NeoFaker.Person.Util do
     end
   end
 
-  # Merges two lists and returns a shuffled list
+  # Merges two lists and returns a shuffled result.
   defp merge_lists(_key, first_list, second_list) do
     first_list |> Stream.concat(second_list) |> Enum.shuffle()
   end

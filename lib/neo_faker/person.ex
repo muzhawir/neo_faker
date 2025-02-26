@@ -151,7 +151,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random age.
 
-  The age is a non-negative integer between 0 and 120 by default.
+  The age is a non-negative integer between `0` and `120` by default.
 
   ## Examples
 

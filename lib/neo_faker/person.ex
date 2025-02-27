@@ -141,7 +141,7 @@ defmodule NeoFaker.Person do
   ## Examples
 
       iex> NeoFaker.Person.suffix()
-      "Jr."
+      "IV"
 
   """
   @doc since: "0.7.0"

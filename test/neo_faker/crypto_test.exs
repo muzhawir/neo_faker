@@ -1,7 +1,7 @@
 defmodule NeoFaker.CryptoTest do
   use ExUnit.Case, async: true
 
-  describe "md5/0" do
+  describe "md5/1" do
     test "returns a MD5 hash" do
       md5 = NeoFaker.Crypto.md5()
       valid_string? = String.valid?(md5)
@@ -11,7 +11,7 @@ defmodule NeoFaker.CryptoTest do
     end
   end
 
-  describe "sha1/0" do
+  describe "sha1/1" do
     test "returns a SHA-1 hash" do
       sha1 = NeoFaker.Crypto.sha1()
       valid_string? = String.valid?(sha1)
@@ -21,7 +21,7 @@ defmodule NeoFaker.CryptoTest do
     end
   end
 
-  describe "sha256/0" do
+  describe "sha256/1" do
     test "returns a SHA-256 hash" do
       sha256 = NeoFaker.Crypto.sha256()
       valid_string? = String.valid?(sha256)

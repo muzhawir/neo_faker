@@ -1,7 +1,7 @@
 defmodule NeoFaker.BooleanTest do
   use ExUnit.Case, async: true
 
-  describe "value" do
+  describe "boolean/2" do
     test "returns a boolean value" do
       assert NeoFaker.Boolean.boolean() in [true, false]
     end

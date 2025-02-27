@@ -129,7 +129,7 @@ iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 iex> NeoFaker.Person.age()
 44
 
-iex> NeoFaker.Person.age(7..44)
+iex> NeoFaker.Person.age(7, 44)
 27
 ```
 

@@ -158,7 +158,7 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.age()
       44
 
-      iex> NeoFaker.Person.age(7..44)
+      iex> NeoFaker.Person.age(7, 44)
       27
 
   """

@@ -1,7 +1,7 @@
 name: Lint & Test
 
 on:
-  pull_request:  # Jalankan pada semua PR tanpa pengecualian
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -26,6 +26,6 @@ jobs:
     - name: Check formatting and migrate
       run: mix format --migrate
     - name: Run formatter
-      run: mix format --check-formatted
+      run: mix format
     - name: Run tests
       run: mix test

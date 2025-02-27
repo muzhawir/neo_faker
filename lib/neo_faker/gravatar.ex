@@ -1,4 +1,4 @@
-defmodule Nf.Gravatar do
+defmodule NeoFaker.Gravatar do
   @moduledoc """
   Provides functions for generating random Gravatar URLs.
 
@@ -6,9 +6,9 @@ defmodule Nf.Gravatar do
   """
   @moduledoc since: "0.3.1"
 
-  import Nf.Gravatar.Utils
+  import NeoFaker.Gravatar.Util
 
-  @typedoc "Email address"
+  @typedoc "Email address."
   @type email :: String.t() | nil
 
   @doc """
@@ -26,36 +26,36 @@ defmodule Nf.Gravatar do
 
   The values for `:size` can be:
 
-  - `nil` (default) - Uses 80px.
+  - `nil` - Uses `80px` (default).
   - `integer` - The image size in pixels (valid range: `1` to `2048`).
 
   The values for `:fallback` can be:
 
-  - `nil` (default) - Uses `"identicon"`.
-  - `:identicon` - Generates an "identicon".
-  - `:monsterid` - Generates a "monsterid".
-  - `:wavatar` - Generates a "wavatar".
-  - `:robohash` - Generates a "robohash".
+  - `nil` - Generates an "identicon" image (default).
+  - `:identicon` - Generates an "identicon" image.
+  - `:monsterid` - Generates a "monsterid" image.
+  - `:wavatar` - Generates a "wavatar" image.
+  - `:robohash` - Generates a "robohash" image.
 
   ## Examples
 
-      iex> Nf.Gravatar.display()
+      iex> NeoFaker.Gravatar.display()
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
-      iex> Nf.Gravatar.display("john.doe@example.com")
+      iex> NeoFaker.Gravatar.display("john.doe@example.com")
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
-      iex> Nf.Gravatar.display("john.doe@example.com", size: 100)
+      iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=100"
 
-      iex> Nf.Gravatar.display("john.doe@example.com", fallback: :monsterid)
+      iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
       "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    image_size = image_size(opts)
-    default_fallback = default_fallback(opts)
+    image_size = opts |> Keyword.get(:size) |> image_size()
+    default_fallback = opts |> Keyword.get(:fallback) |> default_fallback()
 
     generate_gravatar_url(email, image_size, default_fallback)
   end

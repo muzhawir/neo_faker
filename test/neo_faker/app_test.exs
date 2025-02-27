@@ -1,5 +1,7 @@
-defmodule Nf.AppTest do
+defmodule NeoFaker.AppTest do
   use ExUnit.Case, async: true
+
+  alias NeoFaker.App
 
   # Helper function for validate core version
   @spec validate_version_core(String.t()) :: boolean
@@ -37,29 +39,28 @@ defmodule Nf.AppTest do
   # Helper function for validate name function with options
   @spec validate_name_app(atom()) :: boolean
   defp validate_name_app(opts \\ nil) do
-    regexp =
-      case opts do
-        nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
-        :camel_case -> ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
-        :pascal_case -> ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
-        :dashed -> ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
-        :single -> ~r/^[A-Z]?[a-z0-9]+$/
-      end
+    case_regexp = case_regexp(opts)
+    app_name = App.name(style: opts)
 
-    app_name = Nf.App.name(style: opts)
-
-    Regex.match?(regexp, app_name)
+    Regex.match?(case_regexp, app_name)
   end
+
+  # Case regexp for validate name function
+  defp case_regexp(nil), do: ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
+  defp case_regexp(:camel_case), do: ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
+  defp case_regexp(:pascal_case), do: ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
+  defp case_regexp(:dashed), do: ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
+  defp case_regexp(:single), do: ~r/^[A-Z]?[a-z0-9]+$/
 
   describe "author/0" do
     test "returns a full name of an app author" do
-      author_name = Nf.App.author()
+      author_name = App.author()
 
       assert String.valid?(author_name)
     end
   end
 
-  describe "name" do
+  describe "name/2" do
     test "returns an app name" do
       assert validate_name_app()
     end
@@ -83,37 +84,37 @@ defmodule Nf.AppTest do
 
   describe "description/0" do
     test "returns a short app description" do
-      description = Nf.App.description()
+      description = App.description()
 
       assert String.valid?(description)
     end
   end
 
-  describe "semver" do
+  describe "semver/1" do
     test "returns a semantic version number" do
-      assert validate_version_core(Nf.App.semver())
+      assert validate_version_core(App.semver())
     end
 
     test "returns a semantic version number with pre-release type" do
-      semver = Nf.App.semver(type: :pre_release)
+      semver = App.semver(type: :pre_release)
       [core_version, pre_release_identifier] = String.split(semver, "-")
-      is_valid_core_version? = validate_version_core(core_version)
-      is_valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
+      valid_core_version? = validate_version_core(core_version)
+      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
 
-      assert is_valid_core_version? and is_valid_pre_release_identifier?
+      assert valid_core_version? and valid_pre_release_identifier?
     end
 
     test "returns a semantic version number with build number type" do
-      semver = Nf.App.semver(type: :build)
+      semver = App.semver(type: :build)
       [core_version, build_number] = String.split(semver, "+")
-      is_valid_core_version? = validate_version_core(core_version)
-      id_valid_build_number? = validate_build_number(build_number)
+      valid_core_version? = validate_version_core(core_version)
+      valid_build_number? = validate_build_number(build_number)
 
-      assert is_valid_core_version? and id_valid_build_number?
+      assert valid_core_version? and valid_build_number?
     end
 
     test "returns a semantic version number with pre-release and build number type" do
-      semver = Nf.App.semver(type: :pre_release_build)
+      semver = App.semver(type: :pre_release_build)
 
       [core_version, pre_release, build_number] =
         semver
@@ -121,17 +122,17 @@ defmodule Nf.AppTest do
         |> then(fn [core, rest] -> [core, String.split(rest, "+")] end)
         |> then(fn [core, [pre_release, build_number]] -> [core, pre_release, build_number] end)
 
-      is_valid_core_version? = validate_version_core(core_version)
-      is_valid_pre_release_identifier? = validate_pre_release_identifier(pre_release)
-      id_valid_build_number? = validate_build_number(build_number)
+      valid_core_version? = validate_version_core(core_version)
+      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release)
+      valid_build_number? = validate_build_number(build_number)
 
-      assert Enum.all?([is_valid_core_version?, is_valid_pre_release_identifier?, id_valid_build_number?])
+      assert Enum.all?([valid_core_version?, valid_pre_release_identifier?, valid_build_number?])
     end
   end
 
   describe "license/0" do
     test "returns an open source license" do
-      lisense = Nf.App.license()
+      lisense = App.license()
 
       assert String.valid?(lisense)
     end

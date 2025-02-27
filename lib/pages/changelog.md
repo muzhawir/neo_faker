@@ -1,23 +1,48 @@
-# Changelog for NeoFaker v0.6
+# Changelog for v0.7
 
-## v0.6.0 (2025-02-11)
+## v0.7.1 (2025-02-24)
 
-### Added Mix Tasks to simplify contributor workflow
+### Documentation Improvements
 
-Added the `mix lint` task, which sequentially runs `mix format`, `mix test`, `mix dialyzer`,
-and `mix credo` to ensure code quality. This makes it easier for contributors to maintain consistency.
+Refactored all module and function documentation for better clarity and consistency.
 
-Contributors are required to run this task before submitting a pull request (PR). Ensure all
-checks pass to maintain code consistency and correctness.
+## **v0.7.0 (2025-02-23)**
 
-### Introduced the `Person` generator
+### New Feature: `:locale` Option
 
-Added the `Person` module, which provides functions for generating random person-related data.
+Functions that retrieve data from locale files now support an optional `:locale` option, this
+allows overriding the default locale set in `config.exs`.
 
-### Introduced the locale feature
+#### **Example Usage:**
 
-NeoFaker now supports locale-based data generation, configurable in `config/config.exs`.
+If the default locale in `config.exs` is `"default"`, but you need to use `"id_id"` in a specific
+function call:
 
-Locale-specific `.exs` script files are stored in `lib/data/default`, which serves as the default
-directory containing the fallback file. This directory also acts as the main source for
-contributors who want to add support for additional languages.
+```elixir
+iex> NeoFaker.App.name(locale: "id_id")
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+```
+
+### New Generator Functions and Options
+
+#### `NeoFaker.Person`
+
+- Added `NeoFaker.Person.first_name/1`
+- Added `NeoFaker.Person.middle_name/1`
+- Added `NeoFaker.Person.last_name/1`
+- Added `NeoFaker.Person.full_name/1`
+
+#### `NeoFaker.Boolean`
+
+`NeoFaker.Boolean.boolean/2` now supports an optional `integer: true` option to return `1` or `0`
+instead of `true` or `false`.
+
+### Documentation Updates
+
+- Added [Available Locales](available-locales.html) page listing supported locales.
+- Updated [Cheat Sheet](cheat.html) page with new functions and options.
+
+### Major Refactoring
+
+- Standardized all module references, replacing `Nf` with `NeoFaker` for improved readability.
+- Removed support for multiple return values in generator functions.

@@ -1,46 +1,53 @@
 # Getting Started
 
-![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker)
-![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)
+![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
 **NeoFaker** is an Elixir package for generating fake data for testing and development.
 
-> #### Warning {: .warning}
->
-> This project is still in early development. Expect breaking changes.
-
 ## Installation
 
-Add `:neo_faker` to your dependencies in `mix.exs`:
+Add NeoFaker to your dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.6.1", only: [:dev, :test]}
+    {:neo_faker, "~> 0.7.0", only: [:dev, :test]}
   ]
 end
 ```
 
-Then, fetch the dependencies:
+Then, fetch dependencies:
 
 ```sh
 mix deps.get
 ```
 
-## Usage
+## Configuration
 
-Here are some examples of how to use NeoFaker:
+Set the default locale in `config.exs`:
 
 ```elixir
-iex> Nf.App.name()
-"Neo Faker"
-
-iex> Nf.App.description()
-"Elixir library for generating fake data in tests and development."
+config :neo_faker, locale: "default"
 ```
 
-For a complete list of available functions, check out the [API Reference](api-reference.html).
-If you're looking for a quick reference, see the [Cheat Sheet](cheat.html).
+If the specified locale is unavailable, it falls back to `"default"`. A list of available locales
+can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
+
+## Usage
+
+```elixir
+iex> NeoFaker.App.name()
+"Neo Faker"
+
+iex> NeoFaker.App.description()
+"An Elixir library for generating fake data in tests and development."
+
+iex> NeoFaker.App.description(locale: "id_id")
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+```
+
+For full documentation, check the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
+For a quick guide, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
 
 ## License
 

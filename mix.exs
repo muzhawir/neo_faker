@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.6.1",
+      version: "0.7.1",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -32,7 +32,21 @@ defmodule NeoFaker.MixProject do
     [
       main: "getting-started",
       logo: "lib/assets/logo/doc_logo.svg",
-      extras: Path.wildcard("lib/pages/**/*.md") ++ Path.wildcard("lib/pages/**/*.cheatmd")
+      extras: extra_pages(),
+      groups_for_modules: groups_for_modules()
+    ]
+  end
+
+  defp extra_pages do
+    List.flatten([
+      Path.wildcard("lib/pages/**/*.md"),
+      Path.wildcard("lib/pages/**/*.cheatmd")
+    ])
+  end
+
+  defp groups_for_modules do
+    [
+      "Random Generators": ~r/^NeoFaker/
     ]
   end
 

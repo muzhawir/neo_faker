@@ -56,7 +56,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random middle name.
 
-  This function behaves similarly to `first_name/1`. See `first_name/1` for available options.
+  This function behaves similarly to `first_name/1`, which provides the available options.
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
@@ -65,7 +65,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random last name.
 
-  This function behaves similarly to `first_name/1`. See `first_name/1` for available options.
+  This function behaves similarly to `first_name/1`, which provides the available options.
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()

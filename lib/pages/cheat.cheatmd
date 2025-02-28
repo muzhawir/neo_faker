@@ -192,3 +192,37 @@ iex> NeoFaker.Person.short_binary_gender()
 iex> NeoFaker.Person.suffix()
 "IV"
 ```
+
+## [Text](`NeoFaker.Text`)
+
+{: .col-2}
+
+### [`character(opts \\ [])`](`NeoFaker.Text.character/1`)
+
+```elixir
+iex> NeoFaker.Text.character()
+"a"
+
+iex> NeoFaker.Text.character(type: :digit)
+"0"
+```
+
+### [`characters(number \\ 11, opts \\ [])`](`NeoFaker.Text.characters/2`)
+
+```elixir
+iex> NeoFaker.Text.characters()
+"XfELJU1mRMg"
+
+iex> NeoFaker.Text.characters(20, type: :alphabet_upper)
+"BVAJHRGSCEVJFNYSWCJE"
+```
+
+### [`emoji(opts \\ [])`](`NeoFaker.Text.emoji/1`)
+
+```elixir
+iex> NeoFaker.Text.emoji()
+"✨"
+
+iex> NeoFaker.Text.emoji(category: :activities)
+"🎉"
+```

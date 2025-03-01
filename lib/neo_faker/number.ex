@@ -54,4 +54,16 @@ defmodule NeoFaker.Number do
 
     String.to_float(decimal_number)
   end
+
+  @doc """
+  Generates a random digit between 0 and 9.
+
+  ## Examples
+
+      iex> NeoFaker.Number.digit()
+      5
+
+  """
+  @spec digit() :: integer()
+  def digit, do: Enum.random(0..9)
 end

@@ -24,4 +24,12 @@ defmodule NeoFaker.NumberTest do
       assert is_float(decimal)
     end
   end
+
+  describe "digit/0" do
+    test "Generates a random digit between 0 and 9" do
+      digit = Number.digit()
+
+      assert is_integer(digit) and digit in 0..9
+    end
+  end
 end

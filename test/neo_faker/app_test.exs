@@ -65,20 +65,12 @@ defmodule NeoFaker.AppTest do
       assert validate_name_app()
     end
 
-    test "returns an app name with :camel_case option" do
-      assert validate_name_app(:camel_case)
-    end
+    test "returns an app name with option" do
+      options = [:camel_case, :pascal_case, :dashed, :single]
 
-    test "returns an app name with :pascal_case option" do
-      assert validate_name_app(:pascal_case)
-    end
-
-    test "returns an app name with :dashed option" do
-      assert validate_name_app(:dashed)
-    end
-
-    test "returns an app name with :single option" do
-      assert validate_name_app(:single)
+      for option <- options do
+        assert validate_name_app(option)
+      end
     end
   end
 

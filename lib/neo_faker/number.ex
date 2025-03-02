@@ -37,7 +37,8 @@ defmodule NeoFaker.Number do
   Generates a random floating-point number within the given range.
 
   The integer part is selected from `left_digit`, and the fractional part from `right_digit`.
-  Both arguments are ranges, and the function returns a float by combining a random value from each.
+  Both arguments are ranges, and the function returns a float by combining a random value from
+  each.
 
   ## Examples
 

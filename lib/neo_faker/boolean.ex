@@ -2,8 +2,8 @@ defmodule NeoFaker.Boolean do
   @moduledoc """
   Provides functions for generating boolean values.
 
-  This module includes functions to generate random boolean values with configurable probabilities,
-  allowing for controlled randomness in various use cases.
+  This module includes functions to generate random boolean values with configurable
+  probabilities, allowing for controlled randomness in various use cases.
   """
   @moduledoc since: "0.5.0"
 

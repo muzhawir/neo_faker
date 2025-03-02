@@ -2,7 +2,8 @@ defmodule NeoFaker.Gravatar do
   @moduledoc """
   Provides functions for generating random Gravatar URLs.
 
-  This module is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
+  This module is based on the
+  [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
   """
   @moduledoc since: "0.3.1"
 

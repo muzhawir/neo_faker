@@ -140,7 +140,8 @@ defmodule NeoFaker.App do
   - `nil` (default) - Uses core SemVer format, e.g., `"1.2.3"`.
   - `:pre_release` - Includes a pre-release label, e.g., `"1.2.3-beta.1"`.
   - `:build` - Includes a build metadata label, e.g., `"1.2.3+20250325"`.
-  - `:pre_release_build` - Includes both pre-release and build metadata, e.g., `"1.2.3-rc.1+20250325"`.
+  - `:pre_release_build` - Includes both pre-release and build metadata, e.g.,
+    `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 

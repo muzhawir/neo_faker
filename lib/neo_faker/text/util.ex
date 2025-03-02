@@ -41,11 +41,21 @@ defmodule NeoFaker.Text.Util do
   end
 
   def emoji(category: :activities), do: random(@module, @emoji_file, "activities", [])
-  def emoji(category: :animals_and_nature), do: random(@module, @emoji_file, "animals_and_nature", [])
   def emoji(category: :food_and_drink), do: random(@module, @emoji_file, "food_and_drink", [])
   def emoji(category: :objects), do: random(@module, @emoji_file, "objects", [])
   def emoji(category: :people_and_body), do: random(@module, @emoji_file, "people_and_body", [])
-  def emoji(category: :smileys_and_emotion), do: random(@module, @emoji_file, "smileys_and_emotion", [])
+
+  def emoji(category: :animals_and_nature) do
+    random(@module, @emoji_file, "animals_and_nature", [])
+  end
+
+  def emoji(category: :smileys_and_emotion) do
+    random(@module, @emoji_file, "smileys_and_emotion", [])
+  end
+
   def emoji(category: :symbols), do: random(@module, @emoji_file, "symbols", [])
-  def emoji(category: :travel_and_places), do: random(@module, @emoji_file, "travel_and_places", [])
+
+  def emoji(category: :travel_and_places) do
+    random(@module, @emoji_file, "travel_and_places", [])
+  end
 end

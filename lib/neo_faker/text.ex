@@ -25,7 +25,7 @@ defmodule NeoFaker.Text do
   - `:alphabet_lower` - A lowercase letter.
   - `:alphabet_upper` - An uppercase letter.
   - `:alphabet` - A letter (either lowercase or uppercase).
-  - `:digit` - A digit (0-9).
+  - `:digit` - A digit (`0`-`9`).
 
   ## Examples
 

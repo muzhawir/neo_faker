@@ -57,7 +57,7 @@ defmodule NeoFaker.Number do
   end
 
   @doc """
-  Generates a random digit between 0 and 9.
+  Generates a random digit between `0` and `9`.
 
   ## Examples
 

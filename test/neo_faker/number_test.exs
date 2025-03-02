@@ -18,8 +18,14 @@ defmodule NeoFaker.NumberTest do
   end
 
   describe "decimal/2" do
-    test "returns a random decimal" do
-      decimal = Number.decimal()
+    test "returns random floating-point number" do
+      decimal = Number.float()
+
+      assert is_float(decimal)
+    end
+
+    test "returns random floating-point number with specified range" do
+      decimal = Number.float(1..100, 100..1000)
 
       assert is_float(decimal)
     end

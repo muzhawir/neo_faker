@@ -41,15 +41,15 @@ defmodule NeoFaker.Number do
 
   ## Examples
 
-      iex> NeoFaker.Number.decimal()
+      iex> NeoFaker.Number.float()
       30.94372
 
-      iex> NeoFaker.Number.decimal(1..9, 10..90)
+      iex> NeoFaker.Number.float(1..9, 10..90)
       1.44
 
   """
-  @spec decimal(Range.t(), Range.t()) :: float()
-  def decimal(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
+  @spec float(Range.t(), Range.t()) :: float()
+  def float(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
     decimal_number = "#{Enum.random(left_digit)}.#{Enum.random(right_digit)}"
 
     String.to_float(decimal_number)

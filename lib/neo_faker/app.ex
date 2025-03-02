@@ -6,12 +6,12 @@ defmodule NeoFaker.App do
   author names, app names, descriptions, versions, and licenses.
   """
   @moduledoc since: "0.4.0"
-
   import NeoFaker.App.Util
   import NeoFaker.Helper.Generator, only: [random: 4]
 
+  alias NeoFaker.Person
+
   @module __MODULE__
-  @author_file "author.exs"
   @description_file "description.exs"
   @license_file "license.exs"
   @name_file "name.exs"
@@ -28,7 +28,7 @@ defmodule NeoFaker.App do
 
   """
   @spec author(Keyword.t()) :: String.t()
-  def author(opts \\ []), do: random(@module, @author_file, "authors", opts)
+  defdelegate author(opts \\ [middle_name: false]), to: Person, as: :full_name
 
   @doc """
   Generates a short app description.

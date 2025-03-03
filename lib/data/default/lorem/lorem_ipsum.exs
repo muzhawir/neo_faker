@@ -1,3 +1,5 @@
+# This Lorem Ipsum text is generated from https://www.lipsum.com
+
 %{
   "text" => ~s"""
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque finibus vulputate libero,

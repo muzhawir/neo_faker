@@ -4,7 +4,6 @@ defmodule NeoFaker.AppTest do
   alias NeoFaker.App
 
   # Helper function for validate core version
-  @spec validate_version_core(String.t()) :: boolean
   defp validate_version_core(version) do
     version
     |> String.split(".")
@@ -37,7 +36,6 @@ defmodule NeoFaker.AppTest do
   end
 
   # Helper function for validate name function with options
-  @spec validate_name_app(atom()) :: boolean
   defp validate_name_app(opts \\ nil) do
     case_regexp = case_regexp(opts)
     app_name = App.name(style: opts)
@@ -60,6 +58,22 @@ defmodule NeoFaker.AppTest do
     end
   end
 
+  describe "description/0" do
+    test "returns a short app description" do
+      description = App.description()
+
+      assert String.valid?(description)
+    end
+  end
+
+  describe "license/0" do
+    test "returns an open source license" do
+      lisense = App.license()
+
+      assert String.valid?(lisense)
+    end
+  end
+
   describe "name/2" do
     test "returns an app name" do
       assert validate_name_app()
@@ -71,14 +85,6 @@ defmodule NeoFaker.AppTest do
       for option <- options do
         assert validate_name_app(option)
       end
-    end
-  end
-
-  describe "description/0" do
-    test "returns a short app description" do
-      description = App.description()
-
-      assert String.valid?(description)
     end
   end
 
@@ -122,11 +128,9 @@ defmodule NeoFaker.AppTest do
     end
   end
 
-  describe "license/0" do
-    test "returns an open source license" do
-      lisense = App.license()
-
-      assert String.valid?(lisense)
+  describe "version/0" do
+    test "returns a version number" do
+      assert validate_version_core(App.version())
     end
   end
 end

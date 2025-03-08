@@ -1,48 +1,44 @@
-# Changelog for v0.7
+# Changelog for v0.8
 
-## v0.7.1 (2025-02-24)
+## v0.8.0 (2025-03-08)
 
-### Documentation Improvements
+### New Generator Functions
 
-Refactored all module and function documentation for better clarity and consistency.
+#### `NeoFaker.Color`
 
-## **v0.7.0 (2025-02-23)**
+The `NeoFaker.Color` module provides functions for generating random colors. It includes the
+following functions:
 
-### New Feature: `:locale` Option
+- `NeoFaker.Color.cmyk/1`
+- `NeoFaker.Color.hex/1`
+- `NeoFaker.Color.hsl/1`
+- `NeoFaker.Color.hsv/1`
+- `NeoFaker.Color.keyword/1`
+- `NeoFaker.Color.rgb/1`
 
-Functions that retrieve data from locale files now support an optional `:locale` option, this
-allows overriding the default locale set in `config.exs`.
+#### `NeoFaker.Lorem`
 
-#### **Example Usage:**
+The `NeoFaker.Lorem` module provides functions for generating random text using the Lorem Ipsum
+generator. It includes the following functions:
 
-If the default locale in `config.exs` is `"default"`, but you need to use `"id_id"` in a specific
-function call:
+- `NeoFaker.Lorem.paragraph/1`
+- `NeoFaker.Lorem.sentence/1`
+- `NeoFaker.Lorem.word/1`
 
-```elixir
-iex> NeoFaker.App.name(locale: "id_id")
-"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
-```
+#### `NeoFaker.Number`
 
-### New Generator Functions and Options
+The `NeoFaker.Number` module provides functions for generating random numbers. It includes the
+following functions:
 
-#### `NeoFaker.Person`
+- `NeoFaker.Number.between/1`
+- `NeoFaker.Number.digit/1`
+- `NeoFaker.Number.float/1`
 
-- Added `NeoFaker.Person.first_name/1`
-- Added `NeoFaker.Person.middle_name/1`
-- Added `NeoFaker.Person.last_name/1`
-- Added `NeoFaker.Person.full_name/1`
+#### `NeoFaker.Text`
 
-#### `NeoFaker.Boolean`
+The `NeoFaker.Text` module provides functions for generating random text. It includes the
+following functions:
 
-`NeoFaker.Boolean.boolean/2` now supports an optional `integer: true` option to return `1` or `0`
-instead of `true` or `false`.
-
-### Documentation Updates
-
-- Added [Available Locales](available-locales.html) page listing supported locales.
-- Updated [Cheat Sheet](cheat.html) page with new functions and options.
-
-### Major Refactoring
-
-- Standardized all module references, replacing `Nf` with `NeoFaker` for improved readability.
-- Removed support for multiple return values in generator functions.
+- `NeoFaker.Text.character/1`
+- `NeoFaker.Text.characters/1`
+- `NeoFaker.Text.emoji/1`

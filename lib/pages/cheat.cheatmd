@@ -119,6 +119,28 @@ iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 ```
 
+## [Lorem](`NeoFaker.Lorem`)
+
+{: .col-1}
+
+### [`sentence(opts \\ [])`](`NeoFaker.Lorem.sentence/1`)
+
+```elixir
+iex> NeoFaker.Lorem.paragraph()
+"Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Vestibulum urna
+risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
+convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
+
+iex> NeoFaker.Lorem.paragraph(type: "meditations")
+"Do the things external which fall upon thee distract thee? Give thyself time to learn
+something new and good, and cease to be whirled around. But then thou must also avoid being
+carried about the other way. For those too are triflers who have wearied themselves in life
+by their activity, and yet have no object to which to direct every movement, and, in a word,
+all their thoughts."
+```
+
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave similarly.
+
 ## [Person](`NeoFaker.Person`)
 
 {: .col-2}

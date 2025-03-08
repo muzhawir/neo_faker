@@ -6,6 +6,7 @@ defmodule NeoFaker.App do
   author names, app names, descriptions, versions, and licenses.
   """
   @moduledoc since: "0.4.0"
+
   import NeoFaker.App.Util
   import NeoFaker.Helper.Generator, only: [random: 4]
 
@@ -153,14 +154,7 @@ defmodule NeoFaker.App do
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  def semver(opts \\ [])
-  def semver([]), do: semver_core()
-  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
-  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
-
-  def semver(type: :pre_release_build) do
-    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
-  end
+  defdelegate semver(opts \\ []), to: NeoFaker.App.Util, as: :semver
 
   @doc """
   Returns a simple version number.
@@ -175,7 +169,7 @@ defmodule NeoFaker.App do
   """
   @spec version() :: String.t()
   def version do
-    semver_core()
+    semver()
     |> String.split(".")
     |> Enum.take(2)
     |> Enum.join(".")

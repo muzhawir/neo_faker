@@ -6,6 +6,7 @@ defmodule NeoFaker.ColorTest do
   @cmyk_format_regexp ~r/^cmyk\((\d{1,3})%, (\d{1,3})%, (\d{1,3})%, (\d{1,3})%\)$/
   @hex_format_regexp ~r/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/
   @hsl_format_regexp ~r/^hsl\((\d{1,3}), (\d{1,3})%, (\d{1,3})%\)$/
+  @hsla_format_regexp ~r/^hsla?\((\d{1,3}), (\d{1,3})%, (\d{1,3})%(?:, ([01](?:\.\d+)?)?)?\)$/
 
   describe "cmyk/1" do
     test "returns a CMYK color in tuple format" do
@@ -50,6 +51,22 @@ defmodule NeoFaker.ColorTest do
 
     test "returns a HSL color in W3C format" do
       assert Regex.match?(@hsl_format_regexp, Color.hsl(format: :w3c))
+    end
+  end
+
+  describe "hsla/1" do
+    test "returns a HSLA color in tuple format" do
+      hsla_color = Color.hsla()
+
+      assert is_tuple(hsla_color)
+
+      assert tuple_size(hsla_color) == 4
+
+      assert Enum.all?(Tuple.to_list(hsla_color), &is_number/1)
+    end
+
+    test "returns a HSLA color in W3C format" do
+      assert Regex.match?(@hsla_format_regexp, Color.hsla(format: :w3c))
     end
   end
 end

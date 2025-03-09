@@ -10,9 +10,8 @@ defmodule NeoFaker.Color.Util do
 
   This function delegates the call to `NeoFaker.Color.cmyk/1`.
   """
-  @spec cmyk(Keyword.t()) :: String.t()
+  @spec cmyk(Keyword.t()) :: tuple() | String.t()
   def cmyk(opts \\ [])
-
   def cmyk([]), do: generate_random_cmyk_color()
 
   def cmyk(format: :w3c) do
@@ -42,8 +41,13 @@ defmodule NeoFaker.Color.Util do
     Enum.map_join(1..digit, "", fn _ -> Enum.random(@hex_number) end)
   end
 
-  def hsl(opts \\ [])
+  @doc """
+  Generates a HSL color.
 
+  This function delegates the call to `NeoFaker.Color.hsl/1`.
+  """
+  @spec hsl(Keyword.t()) :: tuple() | String.t()
+  def hsl(opts \\ [])
   def hsl([]), do: generate_random_hsl_color()
 
   def hsl(format: :w3c) do
@@ -53,4 +57,25 @@ defmodule NeoFaker.Color.Util do
   end
 
   defp generate_random_hsl_color, do: {between(0, 359), between(), between()}
+
+  @doc """
+  Generates a HSLA color.
+
+  This function delegates the call to `NeoFaker.Color.hsla/1`.
+  """
+  @spec hsla(Keyword.t()) :: tuple() | String.t()
+  def hsla(opts \\ [])
+  def hsla([]), do: generate_random_hsla_color()
+
+  def hsla(format: :w3c) do
+    {h, s, l, a} = generate_random_hsla_color()
+
+    "hsla(#{h}, #{s}%, #{l}%, #{a})"
+  end
+
+  defp generate_random_hsla_color do
+    alpha = 0.0 |> between(1.0) |> Float.round(1)
+
+    {between(0, 359), between(), between(), alpha}
+  end
 end

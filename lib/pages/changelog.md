@@ -12,7 +12,6 @@ following functions:
 - `NeoFaker.Color.cmyk/1`
 - `NeoFaker.Color.hex/1`
 - `NeoFaker.Color.hsl/1`
-- `NeoFaker.Color.hsv/1`
 - `NeoFaker.Color.keyword/1`
 - `NeoFaker.Color.rgb/1`
 

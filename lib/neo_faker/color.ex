@@ -92,4 +92,30 @@ defmodule NeoFaker.Color do
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
   defdelegate hsl(opts \\ []), to: Util, as: :hsl
+
+  @doc """
+  Generates an HSLA color.
+
+  Returns an HSLA color, if no options are provided it returns the color in tuple format.
+
+  ## Options
+
+  - `:format` - Specifies the format of the output. Default is `:tuple`.
+
+  The values for `:format` can be:
+
+  - `nil` - Returns the color in tuple format (default).
+  - `:w3c` - Returns the color in W3C format.
+
+  ## Examples
+
+      iex> NeoFaker.Color.hsla()
+      {270, 40, 50, 0.5}
+
+      iex> NeoFaker.Color.hsla(format: :w3c)
+      "hsla(270, 40%, 50%, 0.5)"
+
+  """
+  @spec hsla(Keyword.t()) :: tuple() | String.t()
+  defdelegate hsla(opts \\ []), to: Util, as: :hsla
 end

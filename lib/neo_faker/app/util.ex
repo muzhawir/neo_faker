@@ -35,7 +35,7 @@ defmodule NeoFaker.App.Util do
   @doc """
   Generates a semantic version number.
 
-  This function delegates the call to `NeoFaker.Text.Util.character/1`.
+  This function delegates the call to `NeoFaker.App.semver/1`.
   """
   @spec semver(Keyword.t()) :: String.t()
   def semver([]), do: semver_core()

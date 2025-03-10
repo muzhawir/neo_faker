@@ -5,7 +5,12 @@ defmodule NeoFaker.Color do
   This module includes functions for generating random colors, such as CMYK, HEX, and RGB colors.
   """
 
+  import NeoFaker.Helper.Generator, only: [random: 4]
+
   alias NeoFaker.Color.Util
+  alias NeoFaker.Helper.Generator
+
+  @module __MODULE__
 
   @doc """
   Generates a CMYK color.
@@ -118,4 +123,20 @@ defmodule NeoFaker.Color do
   """
   @spec hsla(Keyword.t()) :: tuple() | String.t()
   defdelegate hsla(opts \\ []), to: Util, as: :hsla
+
+  def keyword(opts \\ []) do
+    case Keyword.get(opts, :category) do
+      nil -> get_all_colors(opts)
+      :basic -> random(@module, "keyword.exs", "basic", opts)
+      :extended -> random(@module, "keyword.exs", "extended", opts)
+    end
+  end
+
+  defp get_all_colors(opts) do
+    @module
+    |> Generator.fetch_data("keyword.exs", opts)
+    |> Map.values()
+    |> List.flatten()
+    |> Enum.random()
+  end
 end

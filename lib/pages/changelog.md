@@ -30,7 +30,7 @@ The `NeoFaker.Number` module provides functions for generating random numbers. I
 following functions:
 
 - `NeoFaker.Number.between/1`
-- `NeoFaker.Number.digit/1`
+- `NeoFaker.Number.digit/0`
 - `NeoFaker.Number.float/1`
 
 #### `NeoFaker.Text`

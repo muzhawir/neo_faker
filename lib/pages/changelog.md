@@ -14,6 +14,7 @@ following functions:
 - `NeoFaker.Color.hsl/1`
 - `NeoFaker.Color.keyword/1`
 - `NeoFaker.Color.rgb/1`
+- `NeoFaker.Color.rgba/1`
 
 #### `NeoFaker.Lorem`
 

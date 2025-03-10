@@ -5,12 +5,7 @@ defmodule NeoFaker.Color do
   This module includes functions for generating random colors, such as CMYK, HEX, and RGB colors.
   """
 
-  import NeoFaker.Helper.Generator, only: [random: 4]
-
   alias NeoFaker.Color.Util
-  alias NeoFaker.Helper.Generator
-
-  @module __MODULE__
 
   @doc """
   Generates a CMYK color.
@@ -41,7 +36,7 @@ defmodule NeoFaker.Color do
   @doc """
   Generates a HEX color.
 
-  Returns a HEX color, if no options are provided it returns the color in tuple format.
+  Returns a HEX color, if no options are provided it returns the color in six-digit format.
 
   ## Options
 
@@ -49,7 +44,7 @@ defmodule NeoFaker.Color do
 
   The values for `:format` can be:
 
-  - `nil` - Returns the color in tuple format (default).
+  - `nil` - Returns the color in six-digit format (default).
   - `:three_digit` - Returns the color in three-digit format.
   - `:four_digit` - Returns the color in four-digit format.
   - `:eight_digit` - Returns the color in eight-digit format.
@@ -62,12 +57,6 @@ defmodule NeoFaker.Color do
       iex> NeoFaker.Color.hex(format: :three_digit)
       "#365"
 
-      iex> NeoFaker.Color.hex(format: :four_digit)
-      "#365F"
-
-      iex> NeoFaker.Color.hex(format: :eight_digit)
-      "#613583FF"
-
   """
   @spec hex(Keyword.t()) :: String.t()
   defdelegate hex(opts \\ []), to: Util, as: :hex
@@ -75,25 +64,7 @@ defmodule NeoFaker.Color do
   @doc """
   Generates an HSL color.
 
-  Returns an HSL color, if no options are provided it returns the color in tuple format.
-
-  ## Options
-
-  - `:format` - Specifies the format of the output. Default is `:tuple`.
-
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
-
-  ## Examples
-
-      iex> NeoFaker.Color.hsl()
-      {270, 40, 50}
-
-      iex> NeoFaker.Color.hsl(format: :w3c)
-      "hsl(270, 40%, 50%)"
-
+  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
   defdelegate hsl(opts \\ []), to: Util, as: :hsl
@@ -101,42 +72,57 @@ defmodule NeoFaker.Color do
   @doc """
   Generates an HSLA color.
 
-  Returns an HSLA color, if no options are provided it returns the color in tuple format.
-
-  ## Options
-
-  - `:format` - Specifies the format of the output. Default is `:tuple`.
-
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
-
-  ## Examples
-
-      iex> NeoFaker.Color.hsla()
-      {270, 40, 50, 0.5}
-
-      iex> NeoFaker.Color.hsla(format: :w3c)
-      "hsla(270, 40%, 50%, 0.5)"
-
+  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec hsla(Keyword.t()) :: tuple() | String.t()
   defdelegate hsla(opts \\ []), to: Util, as: :hsla
 
-  def keyword(opts \\ []) do
-    case Keyword.get(opts, :category) do
-      nil -> get_all_colors(opts)
-      :basic -> random(@module, "keyword.exs", "basic", opts)
-      :extended -> random(@module, "keyword.exs", "extended", opts)
-    end
-  end
+  @doc """
+  Generates a keyword color.
 
-  defp get_all_colors(opts) do
-    @module
-    |> Generator.fetch_data("keyword.exs", opts)
-    |> Map.values()
-    |> List.flatten()
-    |> Enum.random()
-  end
+  Returns a keyword color, if no options are provided it returns all category colors.
+
+  ## Options
+
+  - `:category` - Specifies the format of the output. Default is `:tuple`.
+  - `:locale` - Specifies the locale to use.
+
+  The values for `:category` can be:
+
+  - `nil` - Returns all keyword colors (default).
+  - `:basic` - Returns basic keyword colors.
+  - `:extended` - Returns extended keyword colors.
+
+  The values for `:locale` can be:
+
+  - `nil` - Uses the default locale `"default"`.
+  - `"id_id"` - Uses the Indonesian locale, for example.
+
+  ## Examples
+
+      iex> NeoFaker.Color.keyword()
+      "blueviolet"
+
+      iex> NeoFaker.Color.keyword(category: :basic)
+      "purple"
+
+  """
+  @spec keyword(Keyword.t()) :: String.t()
+  defdelegate keyword(opts \\ []), to: Util, as: :keyword
+
+  @doc """
+  Generates an RGB color.
+
+  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  """
+  @spec rgb(Keyword.t()) :: tuple() | String.t()
+  defdelegate rgb(opts \\ []), to: Util, as: :rgb
+
+  @doc """
+  Generates an RGBA color.
+
+  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  """
+  @spec rgba(Keyword.t()) :: tuple() | String.t()
+  defdelegate rgba(opts \\ []), to: Util, as: :rgba
 end

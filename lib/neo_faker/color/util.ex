@@ -1,8 +1,10 @@
 defmodule NeoFaker.Color.Util do
   @moduledoc false
 
+  import NeoFaker.Helper.Generator, only: [fetch_data: 3, random: 4]
   import NeoFaker.Number, only: [between: 0, between: 2]
 
+  @module NeoFaker.Color
   @hex_number Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9 A B C D E F])
 
   @doc """
@@ -77,5 +79,62 @@ defmodule NeoFaker.Color.Util do
     alpha = 0.0 |> between(1.0) |> Float.round(1)
 
     {between(0, 359), between(), between(), alpha}
+  end
+
+  @doc """
+  Generates a keyword color.
+
+  This function delegates the call to `NeoFaker.Color.keyword/1`.
+  """
+  @spec keyword(Keyword.t()) :: String.t()
+  def keyword(opts \\ []), do: opts |> Keyword.get(:category) |> keyword_color(opts)
+
+  defp keyword_color(nil, opts) do
+    @module
+    |> fetch_data("keyword.exs", opts)
+    |> Map.values()
+    |> List.flatten()
+    |> Enum.random()
+  end
+
+  defp keyword_color(:basic, opts), do: random(@module, "keyword.exs", "basic", opts)
+  defp keyword_color(:extended, opts), do: random(@module, "keyword.exs", "extended", opts)
+
+  @doc """
+  Generates a RGB color.
+
+  This function delegates the call to `NeoFaker.Color.rgb/1`.
+  """
+  @spec rgb(Keyword.t()) :: tuple() | String.t()
+  def rgb(opts \\ [])
+  def rgb([]), do: generate_random_rgb_color()
+
+  def rgb(format: :w3c) do
+    {r, g, b} = generate_random_rgb_color()
+
+    "rgb(#{r}, #{g}, #{b})"
+  end
+
+  defp generate_random_rgb_color, do: {between(0, 255), between(0, 255), between(0, 255)}
+
+  @doc """
+  Generates a RGBA color.
+
+  This function delegates the call to `NeoFaker.Color.rgba/1`.
+  """
+  @spec rgba(Keyword.t()) :: tuple() | String.t()
+  def rgba(opts \\ [])
+  def rgba([]), do: generate_random_rgba_color()
+
+  def rgba(format: :w3c) do
+    {r, g, b, a} = generate_random_rgba_color()
+
+    "rgba(#{r}, #{g}, #{b}, #{a})"
+  end
+
+  defp generate_random_rgba_color do
+    alpha = 0.0 |> between(1.0) |> Float.round(1)
+
+    {between(0, 255), between(0, 255), between(0, 255), alpha}
   end
 end

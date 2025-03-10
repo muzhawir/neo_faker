@@ -89,6 +89,43 @@ iex> NeoFaker.Boolean.boolean(75, integer: true)
 1
 ```
 
+## [Color](`NeoFaker.Color`)
+
+{: .col-2}
+
+### [`cmyk(opts \\ [])`](`NeoFaker.Color.cmyk/1`)
+
+```elixir
+iex> NeoFaker.Color.cmyk()
+{0, 25, 50, 100}
+
+iex> NeoFaker.Color.cmyk(format: :w3c)
+"cmyk(0%, 25%, 50%, 100%)"
+```
+
+`NeoFaker.Color.hsl/1`, `NeoFaker.Color.hsla/1`, `NeoFaker.Color.rgb/1` and
+`NeoFaker.Color.rgba/1` behave the same way as `NeoFaker.Color.cmyk/1`.
+
+### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
+
+```elixir
+iex> NeoFaker.Color.hex()
+"#613583"
+
+iex> NeoFaker.Color.hex(format: :three_digit)
+"#365"
+```
+
+### [`keyword(opts \\ [])`](`NeoFaker.Color.keyword/1`)
+
+```elixir
+iex> NeoFaker.Color.keyword()
+"blueviolet"
+
+iex> NeoFaker.Color.keyword(category: :basic)
+"purple"
+```
+
 ## [Crypto](`NeoFaker.Crypto`)
 
 {: .col-1}
@@ -103,7 +140,8 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 "E35CB102765CFC56DF21BA4C16E6A636"
 ```
 
-`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave similarly.
+`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave the same way as
+`NeoFaker.Crypto.md5/1`.
 
 ## [Gravatar](`NeoFaker.Gravatar`)
 
@@ -139,7 +177,8 @@ by their activity, and yet have no object to which to direct every movement, and
 all their thoughts."
 ```
 
-`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave similarly.
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way as
+`NeoFaker.Lorem.paragraph/1`.
 
 ## [Person](`NeoFaker.Person`)
 
@@ -172,7 +211,8 @@ iex> NeoFaker.Person.first_name(type: :male)
 "José"
 ```
 
-`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave similarly.
+`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave the same way as
+`NeoFaker.Person.first_name/1`.
 
 ### [`full_name(opts \\ [])`](`NeoFaker.Person.full_name/1`)
 

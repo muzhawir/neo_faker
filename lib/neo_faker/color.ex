@@ -1,20 +1,21 @@
 defmodule NeoFaker.Color do
   @moduledoc """
-  Provides functions for generating colors.
+  Provides functions for generating random colors.
 
-  This module includes functions for generating random colors, such as CMYK, HEX, and RGB colors.
+  This module includes utilities for generating colors in various formats.
   """
+  @moduledoc since: "0.8.0"
 
   alias NeoFaker.Color.Util
 
   @doc """
   Generates a CMYK color.
 
-  Returns a CMYK color, if no options are provided it returns the color in tuple format.
+  Returns a CMYK color. If no options are provided, the color is returned in tuple format.
 
   ## Options
 
-  - `:format` - Specifies the format of the output. Default is `:tuple`.
+  - `:format` - Specifies the output format.
 
   The values for `:format` can be:
 
@@ -36,11 +37,11 @@ defmodule NeoFaker.Color do
   @doc """
   Generates a HEX color.
 
-  Returns a HEX color, if no options are provided it returns the color in six-digit format.
+  Returns a HEX color. If no options are provided, the color is returned in six-digit format.
 
   ## Options
 
-  - `:format` - Specifies the format of the output. Default is `:tuple`.
+  - `:format` - Specifies the output format.
 
   The values for `:format` can be:
 
@@ -80,11 +81,12 @@ defmodule NeoFaker.Color do
   @doc """
   Generates a keyword color.
 
-  Returns a keyword color, if no options are provided it returns all category colors.
+  Returns a keyword color. If no options are provided, all category colors are returned.
+
 
   ## Options
 
-  - `:category` - Specifies the format of the output. Default is `:tuple`.
+  - `:category` - Specifies the category of keyword colors.
   - `:locale` - Specifies the locale to use.
 
   The values for `:category` can be:

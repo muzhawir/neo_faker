@@ -180,6 +180,40 @@ all their thoughts."
 `NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way as
 `NeoFaker.Lorem.paragraph/1`.
 
+## [Number](`NeoFaker.Number`)
+
+{: .col-2}
+
+### [`between(min \\ 0, max \\ 100)`](`NeoFaker.Number.between/2`)
+
+```elixir
+iex> NeoFaker.Number.between()
+27
+
+iex> NeoFaker.Number.between(1, 100)
+28
+
+iex> NeoFaker.Number.between(1.0, 100.0)
+29.481745280074264
+```
+
+### [`digit()`](`NeoFaker.Number.digit/0`)
+
+```elixir
+iex> NeoFaker.Number.digit()
+5
+```
+
+### [`float(left_digit \\ 10..100, right_digit \\ 10000..100_000)`](`NeoFaker.Number.float/2`)
+
+```elixir
+iex> NeoFaker.Number.float()
+30.94372
+
+iex> NeoFaker.Number.float(1..9, 10..90)
+1.44
+```
+
 ## [Person](`NeoFaker.Person`)
 
 {: .col-2}

@@ -2,16 +2,16 @@ defmodule NeoFaker.Number do
   @moduledoc """
   Provides functions for generating random numbers.
 
-  This module offers utilities for producing random numbers, including generating values within
-  a specified range.
+  This module offers utilities for producing random numbers, including generating values within a
+  specified range.
   """
   @moduledoc since: "0.8.0"
 
   @doc """
   Generates a random number between `min` and `max`.
 
-  If both arguments are integers, the result is a random integer within the range.
-  If they are floats, a random float is returned instead.
+  If both arguments are integers, the result is a random integer within the range. If they are
+  floats, a random float within the range is returned.
 
   ## Examples
 

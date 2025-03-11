@@ -2,9 +2,10 @@ defmodule NeoFaker.Lorem do
   @moduledoc """
   Provides functions for generating random text using the Lorem Ipsum generator.
 
-  This module includes functions to generate random text, such as paragraphs, sentences, and
+  This module includes utilities for generating random text, such as paragraphs, sentences, and
   words.
   """
+  @moduledoc since: "0.8.0"
 
   import NeoFaker.Lorem.Utils
 
@@ -14,19 +15,19 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random paragraph.
 
-  Returns a random lorem ipsum paragraph, if option is provided, it returns a paragraph from a
-  specific text source.
+  Returns a random Lorem Ipsum paragraph. If an option is provided, the paragraph is sourced from
+  a specific text.
 
   ## Options
 
   The accepted options are:
 
-  - `:type` - Specifies the content text to use.
+  - `:type` - Specifies the text source.
   - `:locale` - Specifies the locale to use.
 
   Values for option `:type` can be:
 
-  - `"meditations"` - A meditation text book by Marcus Aurelius.
+  - `"meditations"` - A meditation text by Marcus Aurelius.
 
   Values for option `:locale` can be:
 
@@ -55,12 +56,6 @@ defmodule NeoFaker.Lorem do
   Generates a random sentence.
 
   This function behaves the same way as `paragraph/1`. See `paragraph/1` for more details.
-
-  ## Examples
-
-      iex> NeoFaker.Lorem.sentence()
-      "Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue."
-
   """
   @spec sentence(Keyword.t()) :: String.t()
   def sentence(opts \\ []) do
@@ -74,12 +69,6 @@ defmodule NeoFaker.Lorem do
   Generates a random word.
 
   This function behaves the same way as `sentence/1`. See `sentence/1` for more details.
-
-  ## Examples
-
-      iex> NeoFaker.Lorem.word()
-      "suspendisse"
-
   """
   @spec word(Keyword.t()) :: String.t()
   def word(opts \\ []) do

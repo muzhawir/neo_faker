@@ -2,7 +2,7 @@ defmodule NeoFaker.Text do
   @moduledoc """
   Provides functions for generating text.
 
-  This module includes functions to generate random text such as alphanumeric characters or
+  This module includes functions for generating random text, such as alphanumeric characters and
   emojis.
   """
   @moduledoc since: "0.8.0"

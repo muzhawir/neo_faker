@@ -4,7 +4,6 @@ defmodule NeoFaker.AppTest do
   alias NeoFaker.App
 
   # Helper function for validate core version
-  @spec validate_version_core(String.t()) :: boolean
   defp validate_version_core(version) do
     version
     |> String.split(".")
@@ -37,7 +36,6 @@ defmodule NeoFaker.AppTest do
   end
 
   # Helper function for validate name function with options
-  @spec validate_name_app(atom()) :: boolean
   defp validate_name_app(opts \\ nil) do
     case_regexp = case_regexp(opts)
     app_name = App.name(style: opts)
@@ -60,33 +58,33 @@ defmodule NeoFaker.AppTest do
     end
   end
 
-  describe "name/2" do
-    test "returns an app name" do
-      assert validate_name_app()
-    end
-
-    test "returns an app name with :camel_case option" do
-      assert validate_name_app(:camel_case)
-    end
-
-    test "returns an app name with :pascal_case option" do
-      assert validate_name_app(:pascal_case)
-    end
-
-    test "returns an app name with :dashed option" do
-      assert validate_name_app(:dashed)
-    end
-
-    test "returns an app name with :single option" do
-      assert validate_name_app(:single)
-    end
-  end
-
   describe "description/0" do
     test "returns a short app description" do
       description = App.description()
 
       assert String.valid?(description)
+    end
+  end
+
+  describe "license/0" do
+    test "returns an open source license" do
+      lisense = App.license()
+
+      assert String.valid?(lisense)
+    end
+  end
+
+  describe "name/2" do
+    test "returns an app name" do
+      assert validate_name_app()
+    end
+
+    test "returns an app name with option" do
+      options = [:camel_case, :pascal_case, :dashed, :single]
+
+      for option <- options do
+        assert validate_name_app(option)
+      end
     end
   end
 
@@ -130,11 +128,9 @@ defmodule NeoFaker.AppTest do
     end
   end
 
-  describe "license/0" do
-    test "returns an open source license" do
-      lisense = App.license()
-
-      assert String.valid?(lisense)
+  describe "version/0" do
+    test "returns a version number" do
+      assert validate_version_core(App.version())
     end
   end
 end

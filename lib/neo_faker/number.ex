@@ -2,16 +2,16 @@ defmodule NeoFaker.Number do
   @moduledoc """
   Provides functions for generating random numbers.
 
-  This module offers utilities for producing random numbers, including generating values within
-  a specified range.
+  This module offers utilities for producing random numbers, including generating values within a
+  specified range.
   """
   @moduledoc since: "0.8.0"
 
   @doc """
   Generates a random number between `min` and `max`.
 
-  If both arguments are integers, the result is a random integer within the range.
-  If they are floats, a random float is returned instead.
+  If both arguments are integers, the result is a random integer within the range. If they are
+  floats, a random float within the range is returned.
 
   ## Examples
 
@@ -37,21 +37,34 @@ defmodule NeoFaker.Number do
   Generates a random floating-point number within the given range.
 
   The integer part is selected from `left_digit`, and the fractional part from `right_digit`.
-  Both arguments are ranges, and the function returns a float by combining a random value from each.
+  Both arguments are ranges, and the function returns a float by combining a random value from
+  each.
 
   ## Examples
 
-      iex> NeoFaker.Number.decimal()
+      iex> NeoFaker.Number.float()
       30.94372
 
-      iex> NeoFaker.Number.decimal(1..9, 10..90)
+      iex> NeoFaker.Number.float(1..9, 10..90)
       1.44
 
   """
-  @spec decimal(Range.t(), Range.t()) :: float()
-  def decimal(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
+  @spec float(Range.t(), Range.t()) :: float()
+  def float(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
     decimal_number = "#{Enum.random(left_digit)}.#{Enum.random(right_digit)}"
 
     String.to_float(decimal_number)
   end
+
+  @doc """
+  Generates a random digit between `0` and `9`.
+
+  ## Examples
+
+      iex> NeoFaker.Number.digit()
+      5
+
+  """
+  @spec digit() :: integer()
+  def digit, do: Enum.random(0..9)
 end

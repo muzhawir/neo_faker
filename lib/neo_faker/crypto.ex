@@ -40,7 +40,7 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random SHA-1 hash.
 
-  This function behaves similarly to `md5/1`. See `md5/1` for available options.
+  This function behaves the same way as `md5/1`. See `md5/1` for more details.
   """
   @spec sha1(Keyword.t()) :: String.t()
   def sha1(opts \\ []), do: generate_hash(:sha, opts)
@@ -48,7 +48,7 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random SHA-256 hash.
 
-  This function behaves similarly to `md5/1`. See `md5/1` for available options.
+  This function behaves the same way as `md5/1`. See `md5/1` for more details.
   """
   @spec sha256(Keyword.t()) :: String.t()
   def sha256(opts \\ []), do: generate_hash(:sha256, opts)

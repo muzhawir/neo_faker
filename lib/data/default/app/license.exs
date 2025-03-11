@@ -1,3 +1,5 @@
+# Open-source license list from https://choosealicense.com/appendix
+
 %{
   "licenses" => [
     "Academic Free License v3.0",

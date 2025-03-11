@@ -89,6 +89,43 @@ iex> NeoFaker.Boolean.boolean(75, integer: true)
 1
 ```
 
+## [Color](`NeoFaker.Color`)
+
+{: .col-2}
+
+### [`cmyk(opts \\ [])`](`NeoFaker.Color.cmyk/1`)
+
+```elixir
+iex> NeoFaker.Color.cmyk()
+{0, 25, 50, 100}
+
+iex> NeoFaker.Color.cmyk(format: :w3c)
+"cmyk(0%, 25%, 50%, 100%)"
+```
+
+`NeoFaker.Color.hsl/1`, `NeoFaker.Color.hsla/1`, `NeoFaker.Color.rgb/1` and
+`NeoFaker.Color.rgba/1` behave the same way as `NeoFaker.Color.cmyk/1`.
+
+### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
+
+```elixir
+iex> NeoFaker.Color.hex()
+"#613583"
+
+iex> NeoFaker.Color.hex(format: :three_digit)
+"#365"
+```
+
+### [`keyword(opts \\ [])`](`NeoFaker.Color.keyword/1`)
+
+```elixir
+iex> NeoFaker.Color.keyword()
+"blueviolet"
+
+iex> NeoFaker.Color.keyword(category: :basic)
+"purple"
+```
+
 ## [Crypto](`NeoFaker.Crypto`)
 
 {: .col-1}
@@ -103,7 +140,8 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 "E35CB102765CFC56DF21BA4C16E6A636"
 ```
 
-`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave similarly.
+`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave the same way as
+`NeoFaker.Crypto.md5/1`.
 
 ## [Gravatar](`NeoFaker.Gravatar`)
 
@@ -117,6 +155,63 @@ iex> NeoFaker.Gravatar.display()
 
 iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
+```
+
+## [Lorem](`NeoFaker.Lorem`)
+
+{: .col-1}
+
+### [`sentence(opts \\ [])`](`NeoFaker.Lorem.sentence/1`)
+
+```elixir
+iex> NeoFaker.Lorem.paragraph()
+"Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Vestibulum urna
+risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
+convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
+
+iex> NeoFaker.Lorem.paragraph(type: "meditations")
+"Do the things external which fall upon thee distract thee? Give thyself time to learn
+something new and good, and cease to be whirled around. But then thou must also avoid being
+carried about the other way. For those too are triflers who have wearied themselves in life
+by their activity, and yet have no object to which to direct every movement, and, in a word,
+all their thoughts."
+```
+
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way as
+`NeoFaker.Lorem.paragraph/1`.
+
+## [Number](`NeoFaker.Number`)
+
+{: .col-2}
+
+### [`between(min \\ 0, max \\ 100)`](`NeoFaker.Number.between/2`)
+
+```elixir
+iex> NeoFaker.Number.between()
+27
+
+iex> NeoFaker.Number.between(1, 100)
+28
+
+iex> NeoFaker.Number.between(1.0, 100.0)
+29.481745280074264
+```
+
+### [`digit()`](`NeoFaker.Number.digit/0`)
+
+```elixir
+iex> NeoFaker.Number.digit()
+5
+```
+
+### [`float(left_digit \\ 10..100, right_digit \\ 10000..100_000)`](`NeoFaker.Number.float/2`)
+
+```elixir
+iex> NeoFaker.Number.float()
+30.94372
+
+iex> NeoFaker.Number.float(1..9, 10..90)
+1.44
 ```
 
 ## [Person](`NeoFaker.Person`)
@@ -150,7 +245,8 @@ iex> NeoFaker.Person.first_name(type: :male)
 "José"
 ```
 
-`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave similarly.
+`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave the same way as
+`NeoFaker.Person.first_name/1`.
 
 ### [`full_name(opts \\ [])`](`NeoFaker.Person.full_name/1`)
 
@@ -191,4 +287,38 @@ iex> NeoFaker.Person.short_binary_gender()
 ```elixir
 iex> NeoFaker.Person.suffix()
 "IV"
+```
+
+## [Text](`NeoFaker.Text`)
+
+{: .col-2}
+
+### [`character(opts \\ [])`](`NeoFaker.Text.character/1`)
+
+```elixir
+iex> NeoFaker.Text.character()
+"a"
+
+iex> NeoFaker.Text.character(type: :digit)
+"0"
+```
+
+### [`characters(number \\ 11, opts \\ [])`](`NeoFaker.Text.characters/2`)
+
+```elixir
+iex> NeoFaker.Text.characters()
+"XfELJU1mRMg"
+
+iex> NeoFaker.Text.characters(20, type: :alphabet_upper)
+"BVAJHRGSCEVJFNYSWCJE"
+```
+
+### [`emoji(opts \\ [])`](`NeoFaker.Text.emoji/1`)
+
+```elixir
+iex> NeoFaker.Text.emoji()
+"✨"
+
+iex> NeoFaker.Text.emoji(category: :activities)
+"🎉"
 ```

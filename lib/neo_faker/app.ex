@@ -10,8 +10,9 @@ defmodule NeoFaker.App do
   import NeoFaker.App.Util
   import NeoFaker.Helper.Generator, only: [random: 4]
 
+  alias NeoFaker.Person
+
   @module __MODULE__
-  @author_file "author.exs"
   @description_file "description.exs"
   @license_file "license.exs"
   @name_file "name.exs"
@@ -28,7 +29,7 @@ defmodule NeoFaker.App do
 
   """
   @spec author(Keyword.t()) :: String.t()
-  def author(opts \\ []), do: random(@module, @author_file, "authors", opts)
+  defdelegate author(opts \\ [middle_name: false]), to: Person, as: :full_name
 
   @doc """
   Generates a short app description.
@@ -140,7 +141,8 @@ defmodule NeoFaker.App do
   - `nil` (default) - Uses core SemVer format, e.g., `"1.2.3"`.
   - `:pre_release` - Includes a pre-release label, e.g., `"1.2.3-beta.1"`.
   - `:build` - Includes a build metadata label, e.g., `"1.2.3+20250325"`.
-  - `:pre_release_build` - Includes both pre-release and build metadata, e.g., `"1.2.3-rc.1+20250325"`.
+  - `:pre_release_build` - Includes both pre-release and build metadata, e.g.,
+    `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 
@@ -152,14 +154,7 @@ defmodule NeoFaker.App do
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  def semver(opts \\ [])
-  def semver([]), do: semver_core()
-  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
-  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
-
-  def semver(type: :pre_release_build) do
-    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
-  end
+  defdelegate semver(opts \\ []), to: NeoFaker.App.Util, as: :semver
 
   @doc """
   Returns a simple version number.
@@ -174,7 +169,7 @@ defmodule NeoFaker.App do
   """
   @spec version() :: String.t()
   def version do
-    semver_core()
+    semver()
     |> String.split(".")
     |> Enum.take(2)
     |> Enum.join(".")

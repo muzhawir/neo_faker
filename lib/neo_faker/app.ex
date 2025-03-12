@@ -45,14 +45,14 @@ defmodule NeoFaker.App do
   Values for option `:locale` can be:
 
   - `nil` - Uses the default locale `"default"`.
-  - `"id_id"` - Uses the Indonesian locale, for example.
+  - `:id_id` - Uses the Indonesian locale, for example.
 
   ## Examples
 
       iex> NeoFaker.App.description()
       "Elixir library for generating fake data in tests and development."
 
-      iex> NeoFaker.App.description(locale: "id_id")
+      iex> NeoFaker.App.description(locale: :id_id)
       "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 
   """
@@ -99,7 +99,7 @@ defmodule NeoFaker.App do
   The values for `:locale` can be:
 
   - `nil` - Uses the default locale `"default"`.
-  - `"id_id"` - Uses the Indonesian locale, for example.
+  - `:id_id` - Uses the Indonesian locale, for example.
 
   ## Examples
 
@@ -116,7 +116,7 @@ defmodule NeoFaker.App do
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
     style = Keyword.get(opts, :style)
-    locale = Keyword.get(opts, :locale)
+    locale = Keyword.get(opts, :locale, :default)
     first_name = random(@module, @name_file, "first_names", locale: locale)
     last_name = random(@module, @name_file, "last_names", locale: locale)
 

@@ -27,10 +27,10 @@ mix deps.get
 Set the default locale in `config.exs`:
 
 ```elixir
-config :neo_faker, locale: "default"
+config :neo_faker, locale: :default
 ```
 
-If the specified locale is unavailable, it falls back to `"default"`. A list of available locales
+If the specified locale is unavailable, it falls back to `:default`. A list of available locales
 can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage

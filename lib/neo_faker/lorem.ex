@@ -31,7 +31,7 @@ defmodule NeoFaker.Lorem do
 
   Values for option `:locale` can be:
 
-  - `nil` - Uses the default locale `"default"`.
+  - `nil` - Uses the default locale `:default`.
   - `"id_id"` - Uses the Indonesian locale, for example.
 
   ## Examples

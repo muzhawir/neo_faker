@@ -1,10 +1,10 @@
 defmodule NeoFaker.Helper.Locale do
   @moduledoc false
 
-  @type locale :: String.t() | nil
   @type locale_data :: map() | File.Error
 
   @data_path Path.join([File.cwd!(), "lib", "data"])
+  @default_locale_dir Path.join([@data_path, "default"])
 
   @doc """
   Loads data from the persistent term or falls back to the locale file.
@@ -19,8 +19,8 @@ defmodule NeoFaker.Helper.Locale do
   - `module` - The module associated with the locale data (e.g., `NeoFaker.App`).
   - `file` - The name of the data file within the module (e.g., `"author.exs"`).
   """
-  @spec load_persistent_term(locale(), atom(), String.t()) :: any()
-  def load_persistent_term(locale \\ nil, module, file) do
+  @spec load_persistent_term(atom(), atom(), String.t()) :: locale_data()
+  def load_persistent_term(locale \\ :default, module, file) do
     key = persistent_term_key(locale, module, file)
 
     case :persistent_term.get(key, nil) do
@@ -42,12 +42,12 @@ defmodule NeoFaker.Helper.Locale do
 
   ## Parameters
 
-  - `locale` - The locale identifier (e.g., `"id_id"`, `"en_us"`).
+  - `locale` - The locale identifier (e.g., `:id_id`, `:en_us`).
   - `module` - The module associated with the locale data (e.g., `NeoFaker.App`).
   - `file` - The name of the data file within the module (e.g., `"author.exs"`).
   """
-  @spec store_persistent_term(locale(), atom(), String.t()) :: :ok
-  def store_persistent_term(locale \\ nil, module, file) do
+  @spec store_persistent_term(atom(), atom(), String.t()) :: :ok
+  def store_persistent_term(locale \\ :default, module, file) do
     data = read_locale_file!(locale, module, file)
     key = persistent_term_key(locale, module, file)
 
@@ -60,15 +60,14 @@ defmodule NeoFaker.Helper.Locale do
   Generates a deterministic key based on the given `locale`, `module`, and `file`
   name. The key is used to store and retrieve data efficiently from the persistent term.
   """
-  @spec persistent_term_key(locale(), atom(), String.t()) :: String.t()
-  def persistent_term_key(locale \\ nil, module, file) do
-    locale_setting = locale || Application.get_env(:neo_faker, :locale)
-    file_path = Path.join([@data_path, locale_setting])
+  def persistent_term_key(locale \\ :default, module, file) do
+    locale_string = to_string(locale)
+    locale_path = Path.join([@data_path, locale_string])
     module_name = current_module(module)
     file_name = file |> String.split(".") |> List.first()
 
-    if File.exists?(file_path) do
-      "neofaker_#{locale_setting}_#{module_name}_#{file_name}"
+    if File.exists?(locale_path) do
+      "neofaker_#{locale_string}_#{module_name}_#{file_name}"
     else
       "neofaker_default_#{module_name}_#{file_name}"
     end
@@ -80,8 +79,7 @@ defmodule NeoFaker.Helper.Locale do
   Reads the data from a locale-specific file and returns it as a map.
   If the file cannot be found or fails to load, an exception will be raised.
   """
-  @spec read_locale_file!(locale(), atom(), String.t()) :: locale_data()
-  def read_locale_file!(locale \\ nil, module, file) do
+  def read_locale_file!(locale \\ :default, module, file) do
     locale_path = locale_path(locale)
     current_module = current_module(module)
     file_path = Path.join([locale_path, current_module, file])
@@ -117,17 +115,16 @@ defmodule NeoFaker.Helper.Locale do
 
   ## Parameters
 
-  - `locale` - The locale identifier (e.g., `"id_id"`, `"en_us"`).
+  - `locale` - The locale identifier (e.g., `:id_id`, `:en_us`).
   """
-  @spec locale_path(locale()) :: String.t()
-  def locale_path(locale \\ nil) do
-    locale_setting = locale || Application.get_env(:neo_faker, :locale)
-    file_path = Path.join([@data_path, locale_setting])
+  def locale_path(locale \\ :default) do
+    locale_string = to_string(locale)
+    locale_path = Path.join([@data_path, locale_string])
 
-    if File.exists?(file_path) do
-      file_path
+    if File.exists?(locale_path) do
+      locale_path
     else
-      Path.join([@data_path, "default"])
+      @default_locale_dir
     end
   end
 end

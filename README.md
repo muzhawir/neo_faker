@@ -33,10 +33,10 @@ mix deps.get
 Set the default locale in `config.exs`:
 
 ```elixir
-config :neo_faker, locale: "default"
+config :neo_faker, locale: :default
 ```
 
-If the specified locale is unavailable, it falls back to `"default"`. A list of available locales
+If the specified locale is unavailable, it falls back to `:default`. A list of available locales
 can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage
@@ -48,7 +48,7 @@ iex> NeoFaker.App.name()
 iex> NeoFaker.App.description()
 "An Elixir library for generating fake data in tests and development."
 
-iex> NeoFaker.App.description(locale: "id_id")
+iex> NeoFaker.App.description(locale: :id_id)
 "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 

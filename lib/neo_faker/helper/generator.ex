@@ -18,7 +18,7 @@ defmodule NeoFaker.Helper.Generator do
 
   ### Options
 
-  - `:locale` - Specifies the locale to use, e.g., `"id_id"`. If not provided, `nil` will be used,
+  - `:locale` - Specifies the locale to use, e.g., `:id_id`. If not provided, `nil` will be used,
   which loads the default locale.
   """
   @spec random(atom(), String.t(), String.t(), Keyword.t()) :: String.t()

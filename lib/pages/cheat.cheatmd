@@ -322,3 +322,10 @@ iex> NeoFaker.Text.emoji()
 iex> NeoFaker.Text.emoji(category: :activities)
 "🎉"
 ```
+
+### [`word()`](`NeoFaker.Text.word/0`)
+
+```elixir
+iex> NeoFaker.Text.word()
+"computer"
+```

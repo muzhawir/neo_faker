@@ -63,4 +63,10 @@ defmodule NeoFaker.TextTest do
       end
     end
   end
+
+  describe "word/0" do
+    test "returns a random word" do
+      assert Text.word() =~ @alphanumeric_regexp
+    end
+  end
 end

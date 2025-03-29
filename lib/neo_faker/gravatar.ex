@@ -28,7 +28,7 @@ defmodule NeoFaker.Gravatar do
   The values for `:size` can be:
 
   - `nil` - Uses `80px` (default).
-  - `integer` - The image size in pixels (valid range: `1` to `2048`).
+  - `1` - `2048` - The image size in pixels (valid range: `1` to `2048`).
 
   The values for `:fallback` can be:
 

@@ -96,4 +96,19 @@ defmodule NeoFaker.Text do
   """
   @spec emoji(Keyword.t()) :: String.t()
   defdelegate emoji(opts \\ []), to: Util, as: :emoji
+
+  @doc """
+  Generates a random word.
+
+  Returns a random word from common word lists.
+
+  ## Examples
+
+      iex> NeoFaker.Text.word()
+      "computer"
+
+  """
+  @doc since: "0.9.0"
+  @spec word() :: String.t()
+  defdelegate word(), to: Util, as: :word
 end

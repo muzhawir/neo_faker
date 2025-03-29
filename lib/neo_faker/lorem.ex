@@ -27,11 +27,11 @@ defmodule NeoFaker.Lorem do
 
   Values for option `:type` can be:
 
-  - `"meditations"` - A meditation text by Marcus Aurelius.
+  - `:meditations` - A meditation text by Marcus Aurelius.
 
   Values for option `:locale` can be:
 
-  - `nil` - Uses the default locale `"default"`.
+  - `nil` - Uses the default locale `:default`.
   - `"id_id"` - Uses the Indonesian locale, for example.
 
   ## Examples
@@ -41,7 +41,7 @@ defmodule NeoFaker.Lorem do
       risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
       convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
 
-      iex> NeoFaker.Lorem.paragraph(type: "meditations")
+      iex> NeoFaker.Lorem.paragraph(type: :meditations)
       "Do the things external which fall upon thee distract thee? Give thyself time to learn
       something new and good, and cease to be whirled around. But then thou must also avoid being
       carried about the other way. For those too are triflers who have wearied themselves in life

@@ -27,5 +27,5 @@ defmodule NeoFaker.Lorem.Utils do
   end
 
   defp text_content(nil), do: "lorem_ipsum.exs"
-  defp text_content("meditations"), do: "meditations.exs"
+  defp text_content(:meditations), do: "meditations.exs"
 end

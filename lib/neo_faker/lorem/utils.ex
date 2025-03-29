@@ -21,6 +21,7 @@ defmodule NeoFaker.Lorem.Utils do
     @module
     |> fetch_data(content, locale: locale)
     |> Map.get("text")
+    |> hd()
     |> String.replace(@new_line_regexp, " ")
     |> String.split("\n\n")
     |> Enum.shuffle()

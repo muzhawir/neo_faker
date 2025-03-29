@@ -60,6 +60,7 @@ defmodule NeoFaker.Helper.Locale do
   Generates a deterministic key based on the given `locale`, `module`, and `file`
   name. The key is used to store and retrieve data efficiently from the persistent term.
   """
+  @spec persistent_term_key(atom(), atom(), String.t()) :: String.t()
   def persistent_term_key(locale \\ :default, module, file) do
     locale_string = to_string(locale)
     locale_path = Path.join([@data_path, locale_string])
@@ -79,6 +80,7 @@ defmodule NeoFaker.Helper.Locale do
   Reads the data from a locale-specific file and returns it as a map.
   If the file cannot be found or fails to load, an exception will be raised.
   """
+  @spec read_locale_file!(atom(), atom(), String.t()) :: map() | File.Error
   def read_locale_file!(locale \\ :default, module, file) do
     locale_path = locale_path(locale)
     current_module = current_module(module)
@@ -89,6 +91,7 @@ defmodule NeoFaker.Helper.Locale do
       |> File.read!()
       |> Code.eval_string()
       |> elem(0)
+      |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
     else
       raise File.Error, reason: :enoent
     end
@@ -117,6 +120,7 @@ defmodule NeoFaker.Helper.Locale do
 
   - `locale` - The locale identifier (e.g., `:id_id`, `:en_us`).
   """
+  @spec locale_path(atom()) :: String.t()
   def locale_path(locale \\ :default) do
     locale_string = to_string(locale)
     locale_path = Path.join([@data_path, locale_string])

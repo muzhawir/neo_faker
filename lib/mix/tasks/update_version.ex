@@ -34,7 +34,9 @@ defmodule Mix.Tasks.UpdateVersion do
   end
 
   defp update_version_in_files(current_version, new_version) do
-    case @files |> Enum.map(&update_file(&1, new_version)) |> Enum.find(&match?({:error, _}, &1)) do
+    case @files
+         |> Enum.map(&update_file(&1, new_version))
+         |> Enum.find(&match?({:error, _}, &1)) do
       nil -> IO.puts("Updated version from #{current_version} to #{new_version}")
       {:error, reason} -> Mix.shell().error("Failed to update: #{reason}")
     end

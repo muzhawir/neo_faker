@@ -12,12 +12,12 @@ defmodule NeoFaker.IdId.Person.Utils do
   """
   @spec nik() :: String.t()
   def nik do
-    province_code = Number.between(11, 92)
-    regency_code = 1 |> Number.between(79) |> to_string() |> String.pad_leading(2, "0")
-    district_code = 1 |> Number.between(53) |> to_string() |> String.pad_leading(2, "0")
+    province_number = Number.between(11, 92)
+    regency_number = 1 |> Number.between(79) |> to_string() |> String.pad_leading(2, "0")
+    district_number = 1 |> Number.between(53) |> to_string() |> String.pad_leading(2, "0")
     serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
 
-    "#{province_code}#{regency_code}#{district_code}#{birth_date()}#{serial_number}"
+    "#{province_number}#{regency_number}#{district_number}#{birth_date()}#{serial_number}"
   end
 
   # Generate a random birth date with either the exact day or the day + 40 (for the female code).

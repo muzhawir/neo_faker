@@ -1,9 +1,9 @@
 defmodule NeoFaker.Date do
   @moduledoc """
-  Provides functions for generating random dates.
+  Functions for generating random dates.
 
-  This module offers various functions to generate random dates, such as
-  dates within a specific range, birthdays, and more.
+  This module provides utilities to generate random dates, including dates within a specific
+  range, birthdays, and more.
   """
   @moduledoc since: "0.9.0"
 

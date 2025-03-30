@@ -1,9 +1,9 @@
 defmodule NeoFaker.Person do
   @moduledoc """
-  Provides functions for generating person-related information.
+  Functions for generating person-related information.
 
-  This module offers a variety of functions to generate random personal details, such as names,
-  ages, and genders.
+  This module provides utilities to generate random personal details, such as names, ages, and
+  genders.
   """
   @moduledoc since: "0.6.0"
 

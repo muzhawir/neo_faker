@@ -1,9 +1,9 @@
 defmodule NeoFaker.Crypto do
   @moduledoc """
-  Provides functions for generating cryptographic hashes.
+  Functions for generating cryptographic hashes.
 
-  This module includes functions for generating various types of cryptographic hash values,
-  such as MD5 and SHA-based hashes.
+  This module provides utilities to generate cryptographic hash values, such as MD5 and SHA-based
+  hashes.
   """
   @moduledoc since: "0.3.1"
 

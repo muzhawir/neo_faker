@@ -1,9 +1,9 @@
 defmodule NeoFaker.App do
   @moduledoc """
-  Provides functions for generating app metadata.
+  Functions for generating app metadata.
 
-  This module offers functions to generate random app-related information, including
-  author names, app names, descriptions, versions, and licenses.
+  This module provides utilities to generate random app-related information, including author
+  names, app names, descriptions, versions, and licenses.
   """
   @moduledoc since: "0.4.0"
 

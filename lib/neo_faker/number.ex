@@ -1,9 +1,9 @@
 defmodule NeoFaker.Number do
   @moduledoc """
-  Provides functions for generating random numbers.
+  Functions for generating random numbers.
 
-  This module offers utilities for producing random numbers, including generating values within a
-  specified range.
+  This module provides utilities to generate random numbers, including values within a specified
+  range.
   """
   @moduledoc since: "0.8.0"
 

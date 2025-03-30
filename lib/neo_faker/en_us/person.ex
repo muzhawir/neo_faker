@@ -1,10 +1,9 @@
 defmodule NeoFaker.EnUs.Person do
   @moduledoc """
-  Provides functions for generating person-related information specific to the United States
-  locale.
+  Functions for generating person-related information specific to the United States.
 
-  This module offers a variety of functions to generate random personal details specific to the
-  United States, such as Social Security Numbers (SSNs), among others.
+  This module provides utilities to generate random personal details specific to the United States,
+  such as Social Security Numbers (SSNs).
   """
   @moduledoc since: "0.9.0"
 

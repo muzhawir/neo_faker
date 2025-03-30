@@ -8,7 +8,7 @@ defmodule NeoFaker.IdId.Person.Utils do
   @doc """
   Generate a random NIK.
 
-  This function delegates the call to `NeoFaker.IdId.Person.nik/0`.
+  This function delegates the call to `NeoFaker.Date.nik/0`.
   """
   @spec nik() :: String.t()
   def nik do

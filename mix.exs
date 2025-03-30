@@ -44,6 +44,7 @@ defmodule NeoFaker.MixProject do
 
   defp groups_for_modules do
     [
+      "Locale Random Generator": ~r/^NeoFaker\.[A-Z][a-z][A-Z][a-z]\..+/,
       "Random Generators": ~r/^NeoFaker/
     ]
   end

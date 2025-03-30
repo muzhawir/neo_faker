@@ -4,7 +4,8 @@
 
 ### BREAKING CHANGES
 
-This release introduces breaking changes as the library is still under heavy development. The locale configuration and option values now use `Atom` instead of `String`.
+This release introduces breaking changes as the library is still under heavy development. The
+locale configuration and option values now use `Atom` instead of `String`.
 
 #### Changes in `config.exs`
 
@@ -39,11 +40,13 @@ This release introduces new locale-specific generators.
 
 #### `NeoFaker.IdId.Person`
 
-The `NeoFaker.IdId.Person` module provides functions for generating person-related data specific to the Indonesian locale. Currently, it includes the `nik/0` function.
+The `NeoFaker.IdId.Person` module provides functions for generating person-related data specific
+to the Indonesian locale. Currently, it includes the `nik/0` function.
 
 #### `NeoFaker.EnUs.Person`
 
-Similar to `NeoFaker.IdId.Person`, but for the EN-US locale. At this stage, it includes only the `ssn/0` function.
+Similar to `NeoFaker.IdId.Person`, but for the EN-US locale. At this stage, it includes only the
+`ssn/0` function.
 
 ### New Date, Time, and DateTime Generators
 

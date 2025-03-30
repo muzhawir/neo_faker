@@ -5,7 +5,7 @@ defmodule NeoFaker.IdId.PersonTest do
 
   describe "nik/0" do
     test "returns a random NIK" do
-      assert is_binary(Person.nik()) && String.length(Person.nik()) == 16
+      assert is_binary(Person.nik()) and String.length(Person.nik()) == 16
     end
   end
 end

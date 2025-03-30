@@ -27,12 +27,12 @@ defmodule NeoFaker.EnUs.Person do
     "#{area_number()}-#{group_number}-#{serial_number}"
   end
 
-  # Generate a random area number, if the area number is 666, generate a new area number.
+  # Generate a random area number, if the area number is 666 replace it with 777
   defp area_number do
     number = Number.between(1, 899)
 
     case number do
-      666 -> 1 |> Number.between(899) |> to_string() |> String.pad_leading(3, "0")
+      666 -> "777"
       _ -> number |> to_string() |> String.pad_leading(3, "0")
     end
   end

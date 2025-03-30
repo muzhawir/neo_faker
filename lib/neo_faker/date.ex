@@ -5,6 +5,7 @@ defmodule NeoFaker.Date do
   This module offers various functions to generate random dates, such as
   dates within a specific range, birthdays, and more.
   """
+  @moduledoc since: "0.9.0"
 
   alias NeoFaker.Date.Utils
 

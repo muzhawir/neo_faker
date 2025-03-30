@@ -6,6 +6,7 @@ defmodule NeoFaker.EnUs.Person do
   This module offers a variety of functions to generate random personal details specific to the
   United States, such as Social Security Numbers (SSNs), among others.
   """
+  @moduledoc since: "0.9.0"
 
   alias NeoFaker.Number
 

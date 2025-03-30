@@ -5,6 +5,7 @@ defmodule NeoFaker.IdId.Person do
   This module offers a variety of functions to generate random personal details specific to
   Indonesia, such as Nomor Induk Kependudukan (NIK), among others.
   """
+  @moduledoc since: "0.9.0"
 
   alias NeoFaker.IdId.Person.Utils
 

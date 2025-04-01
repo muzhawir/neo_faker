@@ -1,11 +1,13 @@
 defmodule NeoFaker.Boolean do
   @moduledoc """
-  Provides functions for generating boolean values.
+  Functions for generating boolean values.
 
-  This module includes functions to generate random boolean values with configurable
-  probabilities, allowing for controlled randomness in various use cases.
+  This module provides utilities to generate random boolean values with configurable
+  probabilities, allowing for controlled randomness.
   """
   @moduledoc since: "0.5.0"
+
+  alias NeoFaker.Boolean.Utils
 
   @doc """
   Generates a random boolean value.
@@ -27,18 +29,6 @@ defmodule NeoFaker.Boolean do
       1
 
   """
-  @spec boolean(pos_integer(), Keyword.t()) :: boolean()
-  def boolean(true_ratio \\ 50, opts \\ [])
-
-  def boolean(true_ratio, []) when true_ratio in 0..100 do
-    :rand.uniform() <= true_ratio / 100
-  end
-
-  def boolean(true_ratio, integer: false) when true_ratio in 0..100, do: boolean()
-
-  def boolean(true_ratio, integer: true) when true_ratio in 0..100 do
-    result = :rand.uniform() <= true_ratio / 100
-
-    if result == true, do: 1, else: 0
-  end
+  @spec boolean(pos_integer(), Keyword.t()) :: boolean() | non_neg_integer()
+  defdelegate boolean(true_ratio \\ 50, opts \\ []), to: Utils, as: :boolean
 end

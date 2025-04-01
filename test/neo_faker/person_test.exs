@@ -49,7 +49,8 @@ defmodule NeoFaker.PersonTest do
     end
 
     test "returns a local prefix" do
-      prefixes = Generator.fetch_data(@module, "name_affixes.exs", key: "prefixes", locale: :id_id)
+      prefixes =
+        Generator.fetch_data(@module, "name_affixes.exs", key: "prefixes", locale: :id_id)
 
       assert Person.prefix(locale: "id_id") in prefixes
     end
@@ -61,7 +62,8 @@ defmodule NeoFaker.PersonTest do
     end
 
     test "returns a local suffix" do
-      suffixes = Generator.fetch_data(@module, "name_affixes.exs", key: "suffixes", locale: :id_id)
+      suffixes =
+        Generator.fetch_data(@module, "name_affixes.exs", key: "suffixes", locale: :id_id)
 
       assert Person.suffix(locale: :id_id) in suffixes
     end

@@ -1,43 +1,57 @@
-# Changelog for v0.8
+# Changelog for v0.9
 
-## v0.8.0 (2025-03-08)
+## v0.9.0 (2025-03-31)
 
-### New Generator Functions
+### BREAKING CHANGES
 
-This release introduces several new generator functions.
+This release introduces breaking changes as the library is still under heavy development. The
+locale configuration and option values now use `Atom` instead of `String`.
 
-#### `NeoFaker.Color`
+#### Changes in `config.exs`
 
-The `NeoFaker.Color` module provides functions for generating random colors, including:
+```elixir
+# Before
+config :neo_faker, :default_locale, "en_us"
 
-- `NeoFaker.Color.cmyk/1`
-- `NeoFaker.Color.hex/1`
-- `NeoFaker.Color.hsl/1`
-- `NeoFaker.Color.keyword/1`
-- `NeoFaker.Color.rgb/1`
-- `NeoFaker.Color.rgba/1`
+# After
+config :neo_faker, :default_locale, :en_us
+```
 
-#### `NeoFaker.Lorem`
+#### Changes in function options
 
-The `NeoFaker.Lorem` module offers functions for generating random text using the Lorem Ipsum
-generator, including:
+```elixir
+# Before
+iex> NeoFaker.App.description(locale: "id_id")
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 
-- `NeoFaker.Lorem.paragraph/1`
-- `NeoFaker.Lorem.sentence/1`
-- `NeoFaker.Lorem.word/1`
+# After
+iex> NeoFaker.App.description(locale: :id_id)
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+```
 
-#### `NeoFaker.Number`
+### Refactor Locale Data Map Values
 
-The `NeoFaker.Number` module provides functions for generating random numbers, including:
+The function `NeoFaker.Helper.Locale.read_locale_file!/3` has been refactored to return a map with
+shuffled values, increasing randomness in the generated output.
 
-- `NeoFaker.Number.between/1`
-- `NeoFaker.Number.digit/0`
-- `NeoFaker.Number.float/1`
+### New Locale Generators
 
-#### `NeoFaker.Text`
+This release introduces new locale-specific generators.
 
-The `NeoFaker.Text` module includes functions for generating random text, such as:
+#### `NeoFaker.IdId.Person`
 
-- `NeoFaker.Text.character/1`
-- `NeoFaker.Text.characters/1`
-- `NeoFaker.Text.emoji/1`
+The `NeoFaker.IdId.Person` module provides functions for generating person-related data specific
+to the Indonesian locale. Currently, it includes the `nik/0` function.
+
+#### `NeoFaker.EnUs.Person`
+
+Similar to `NeoFaker.IdId.Person`, but for the EN-US locale. At this stage, it includes only the
+`ssn/0` function.
+
+### New Date, Time, and DateTime Generators
+
+This release also introduces new generators for date, time, and datetime.
+
+#### `NeoFaker.Date`
+
+- `NeoFaker.Date.add/2` - Generates a random date within a specified range.

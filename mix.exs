@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.8.0",
+      version: "0.9.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -17,7 +17,9 @@ defmodule NeoFaker.MixProject do
     ]
   end
 
-  defp description, do: "Elixir library for generating fake data in tests and development"
+  defp description do
+    "NeoFaker is an Elixir library that generates fake data for testing and development."
+  end
 
   defp package do
     [

@@ -1,8 +1,8 @@
 defmodule NeoFaker.Lorem do
   @moduledoc """
-  Provides functions for generating random text using the Lorem Ipsum generator.
+  Functions for generating random text using a Lorem Ipsum generator.
 
-  This module includes utilities for generating random text, such as paragraphs, sentences, and
+  This module provides utilities to generate random text, such as paragraphs, sentences, and
   words.
   """
   @moduledoc since: "0.8.0"
@@ -32,7 +32,7 @@ defmodule NeoFaker.Lorem do
   Values for option `:locale` can be:
 
   - `nil` - Uses the default locale `:default`.
-  - `"id_id"` - Uses the Indonesian locale, for example.
+  - `:id_id` - Uses the Indonesian locale, for example.
 
   ## Examples
 

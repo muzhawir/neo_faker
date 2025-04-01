@@ -1,10 +1,11 @@
 defmodule NeoFaker.IdId.Person do
   @moduledoc """
-  Provides functions for generating person-related information specific to the Indonesian locale.
+  Functions for generating person-related information specific to Indonesia.
 
-  This module offers a variety of functions to generate random personal details specific to
-  Indonesia, such as Nomor Induk Kependudukan (NIK), among others.
+  This module provides utilities to generate random personal details specific to Indonesia, such
+  as Nomor Induk Kependudukan (NIK).
   """
+  @moduledoc since: "0.9.0"
 
   alias NeoFaker.IdId.Person.Utils
 

@@ -2,7 +2,8 @@ defmodule Mix.Tasks.CheckCode do
   @shortdoc "Runs `mix format`, `mix test`, `mix dialyzer`, and `mix credo` sequentially."
 
   @moduledoc """
-  Runs a series of code quality checks, including formatting, testing, static analysis, and linting.
+  Runs a series of code quality checks, including formatting, testing, static analysis, and
+  linting.
 
   This Mix task executes the following commands sequentially:
 

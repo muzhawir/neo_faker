@@ -1,11 +1,13 @@
 defmodule NeoFaker.Number do
   @moduledoc """
-  Provides functions for generating random numbers.
+  Functions for generating random numbers.
 
-  This module offers utilities for producing random numbers, including generating values within a
-  specified range.
+  This module provides utilities to generate random numbers, including values within a specified
+  range.
   """
   @moduledoc since: "0.8.0"
+
+  alias NeoFaker.Number.Utils
 
   @doc """
   Generates a random number between `min` and `max`.
@@ -26,12 +28,7 @@ defmodule NeoFaker.Number do
 
   """
   @spec between(number(), number()) :: number()
-  def between(min \\ 0, max \\ 100)
-  def between(min, max) when is_integer(min) and is_integer(max), do: Enum.random(min..max)
-
-  def between(min, max) when is_float(min) and is_float(max) do
-    :rand.uniform() * (max - min) + min
-  end
+  defdelegate between(min \\ 0, max \\ 100), to: Utils, as: :between
 
   @doc """
   Generates a random floating-point number within the given range.

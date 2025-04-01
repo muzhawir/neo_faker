@@ -1,8 +1,8 @@
 defmodule NeoFaker.Color do
   @moduledoc """
-  Provides functions for generating random colors.
+  Functions for generating random colors.
 
-  This module includes utilities for generating colors in various formats.
+  This module provides utilities to generate random colors in various formats.
   """
   @moduledoc since: "0.8.0"
 

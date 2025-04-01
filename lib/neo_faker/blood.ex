@@ -1,8 +1,8 @@
 defmodule NeoFaker.Blood do
   @moduledoc """
-  Provides functions for generating blood types.
+  Functions for generating blood types.
 
-  This module includes functions to generate random blood groups, blood types, and Rh factors.
+  This module provides utilities to generate random blood groups, blood types, and Rh factors.
   """
   @moduledoc since: "0.3.1"
 

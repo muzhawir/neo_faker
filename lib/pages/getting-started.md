@@ -2,7 +2,7 @@
 
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-**NeoFaker** is an Elixir library for generating fake data for testing and development.
+**NeoFaker** is an Elixir library that generates fake data for testing and development.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Add NeoFaker to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.8.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.9.0", only: [:dev, :test]}
   ]
 end
 ```
@@ -35,6 +35,8 @@ can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-l
 
 ## Usage
 
+Generate fake data using NeoFaker:
+
 ```elixir
 iex> NeoFaker.App.name()
 "Neo Faker"
@@ -46,8 +48,8 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
-For full documentation, check the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
-For a quick guide, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
+For complete documentation, visit the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
+For a quick overview, check out the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
 
 ## License
 

@@ -50,8 +50,9 @@ Similar to `NeoFaker.IdId.Person`, but for the EN-US locale. At this stage, it i
 
 ### New Date, Time, and DateTime Generators
 
-This release also introduces new generators for date, time, and datetime.
+This release also introduces new generators for date.
 
 #### `NeoFaker.Date`
 
 - `NeoFaker.Date.add/2` - Generates a random date within a specified range.
+- `NeoFaker.Date.between/3` - Generates a random date between two specified dates.

@@ -143,6 +143,30 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 `NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave the same way as
 `NeoFaker.Crypto.md5/1`.
 
+## [Date](`NeoFaker.Date`)
+
+{: .col-2}
+
+### [`add(range \\ -365..365, opts \\ [])`](`NeoFaker.Date.add/2`)
+
+```elixir
+iex> NeoFaker.Date.add()
+~D[2025-03-25]
+
+iex> NeoFaker.Date.add(0..31, format: :iso8601)
+"2025-03-25"
+```
+
+### [`between(start \\ ~D[1970-01-01], finish \\ Date.utc_today(), opts \\ [])`](`NeoFaker.Date.between/3`)
+
+```elixir
+iex> NeoFaker.Date.between()
+~D[2025-03-25]
+
+iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
+"2025-03-25"
+```
+
 ## [Gravatar](`NeoFaker.Gravatar`)
 
 {: .col-1}

@@ -4,6 +4,11 @@
 
 **NeoFaker** is an Elixir library that generates fake data for testing and development.
 
+## Requirements
+
+NeoFaker requires `Erlang 27.3` and `Elixir 1.18.3-otp-27` or later. We recommend using the
+[asdf version manager](https://asdf-vm.com) to manage multiple Erlang and Elixir versions.
+
 ## Installation
 
 Add NeoFaker to your dependencies in `mix.exs`:

@@ -30,9 +30,14 @@ defmodule NeoFaker.IdId.Person.Utils do
       |> Date.range(Date.shift(today, year: @max_age_years))
       |> Enum.random()
 
-    formatted_year = year |> Integer.to_string() |> String.slice(2, 2)
-    formatted_month = month |> Integer.to_string() |> String.pad_leading(2, "0")
-    formatted_day = Enum.random([day, day + 40])
+    formatted_year = year |> to_string() |> String.slice(2, 2)
+    formatted_month = month |> to_string() |> String.pad_leading(2, "0")
+
+    formatted_day =
+      [day, day + 40]
+      |> Enum.random()
+      |> to_string()
+      |> String.pad_leading(2, "0")
 
     "#{formatted_day}#{formatted_month}#{formatted_year}"
   end

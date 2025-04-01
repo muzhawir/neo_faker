@@ -7,7 +7,12 @@ defmodule NeoFaker.Text do
   """
   @moduledoc since: "0.8.0"
 
+  import NeoFaker.Helper.Generator, only: [random: 4]
+
   alias NeoFaker.Text.Util
+
+  @module __MODULE__
+  @word_file "word.exs"
 
   @doc """
   Generates a single random character.
@@ -110,5 +115,5 @@ defmodule NeoFaker.Text do
   """
   @doc since: "0.9.0"
   @spec word() :: String.t()
-  defdelegate word(), to: Util, as: :word
+  def word, do: random(@module, @word_file, "words", [])
 end

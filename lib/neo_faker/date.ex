@@ -7,7 +7,7 @@ defmodule NeoFaker.Date do
   """
   @moduledoc since: "0.9.0"
 
-  alias NeoFaker.Date.Utils
+  import NeoFaker.Date.Utils
 
   @doc """
   Generates a random date.
@@ -33,5 +33,9 @@ defmodule NeoFaker.Date do
 
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
-  defdelegate add(range \\ -365..365, opts \\ []), to: Utils, as: :add
+  def add(range \\ -365..365, opts \\ []) do
+    type = Keyword.get(opts, :format, :date)
+
+    random_date(range, type)
+  end
 end

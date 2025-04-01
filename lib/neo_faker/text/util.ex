@@ -12,7 +12,6 @@ defmodule NeoFaker.Text.Util do
   @digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9])
   @alphanumeric Enum.shuffle(@alphabet ++ @digits)
   @emoji_file "emoji.exs"
-  @word_file "word.exs"
 
   @doc """
   Generates a single random character.
@@ -59,12 +58,4 @@ defmodule NeoFaker.Text.Util do
   def emoji(category: :travel_and_places) do
     random(@module, @emoji_file, "travel_and_places", [])
   end
-
-  @doc """
-  Generates a random word.
-
-  This function delegates the call to `NeoFaker.Text.word/0`.
-  """
-  @spec word() :: String.t()
-  def word, do: random(@module, @word_file, "words", [])
 end

@@ -7,7 +7,7 @@ defmodule NeoFaker.EnUs.Person do
   """
   @moduledoc since: "0.9.0"
 
-  alias NeoFaker.Number
+  alias NeoFaker.EnUs.Person.Utils
 
   @doc """
   Generates a random SSN.
@@ -20,20 +20,6 @@ defmodule NeoFaker.EnUs.Person do
       "184-63-2006"
 
   """
-  def ssn do
-    group_number = 1 |> Number.between(99) |> to_string() |> String.pad_leading(2, "0")
-    serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
-
-    "#{area_number()}-#{group_number}-#{serial_number}"
-  end
-
-  # Generate a random area number, if the area number is 666 replace it with 777
-  defp area_number do
-    number = Number.between(1, 899)
-
-    case number do
-      666 -> "777"
-      _ -> number |> to_string() |> String.pad_leading(3, "0")
-    end
-  end
+  @spec ssn() :: String.t()
+  defdelegate ssn(), to: Utils, as: :ssn
 end

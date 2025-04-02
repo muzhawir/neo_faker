@@ -74,4 +74,40 @@ defmodule NeoFaker.Date do
 
     random_between_date(start, finish, format)
   end
+
+  @doc """
+  Generates a random birthday.
+
+  Returns a birthday within the specified age range.
+
+  ## Options
+
+  - `:format` - Specifies the format of the date.
+
+  The values for `:format` can be:
+
+  - `:date` - Returns the date in `Date` format (default).
+  - `:iso8601` - Returns the date in ISO 8601 format.
+
+  ## Examples
+
+      iex> NeoFaker.Date.birthday()
+      ~D[1997-01-02]
+
+      iex> NeoFaker.Date.birthday(18, 65)
+      ~D[1998-03-04]
+
+      iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
+      "1999-05-06"
+
+  """
+  @doc since: "0.10.0"
+  def birthday(min_age \\ 18, max_age \\ 65, opts \\ []) do
+    format = Keyword.get(opts, :format, :date)
+    today = Date.utc_today()
+    min_date = Date.shift(today, year: -min_age)
+    max_date = Date.shift(today, year: -max_age)
+
+    random_between_date(max_date, min_date, format)
+  end
 end

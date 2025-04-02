@@ -167,6 +167,16 @@ iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
 "2025-03-25"
 ```
 
+### [`birthday(min_age \\ 18, max_age \\ 65, opts \\ [])`](`NeoFaker.Date.birthday/3`)
+
+```elixir
+iex> NeoFaker.Date.birthday()
+~D[1997-01-02]
+
+iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
+"1999-05-06"
+```
+
 ## [Gravatar](`NeoFaker.Gravatar`)
 
 {: .col-1}

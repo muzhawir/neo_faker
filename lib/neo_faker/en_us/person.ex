@@ -7,7 +7,9 @@ defmodule NeoFaker.EnUs.Person do
   """
   @moduledoc since: "0.9.0"
 
-  alias NeoFaker.EnUs.Person.Utils
+  import NeoFaker.EnUs.Person.Utils
+
+  alias NeoFaker.Number
 
   @doc """
   Generates a random SSN.
@@ -21,5 +23,10 @@ defmodule NeoFaker.EnUs.Person do
 
   """
   @spec ssn() :: String.t()
-  defdelegate ssn(), to: Utils, as: :ssn
+  def ssn do
+    group_number = 1 |> Number.between(99) |> to_string() |> String.pad_leading(2, "0")
+    serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
+
+    "#{area_number()}-#{group_number}-#{serial_number}"
+  end
 end

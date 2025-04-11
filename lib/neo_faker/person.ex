@@ -10,7 +10,6 @@ defmodule NeoFaker.Person do
   import NeoFaker.Helper.Generator, only: [random: 4]
   import NeoFaker.Person.Util
 
-  @module __MODULE__
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
 
@@ -51,7 +50,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec first_name(Keyword.t()) :: String.t()
-  def first_name(opts \\ []), do: random_name(@module, "first_names", opts)
+  def first_name(opts \\ []), do: random_name(__MODULE__, "first_names", opts)
 
   @doc """
   Generates a random middle name.
@@ -60,7 +59,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
-  def middle_name(opts \\ []), do: random_name(@module, "middle_names", opts)
+  def middle_name(opts \\ []), do: random_name(__MODULE__, "middle_names", opts)
 
   @doc """
   Generates a random last name.
@@ -69,7 +68,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
-  def last_name(opts \\ []), do: random_name(@module, "last_names", opts)
+  def last_name(opts \\ []), do: random_name(__MODULE__, "last_names", opts)
 
   @doc """
   Generates a random full name.
@@ -119,7 +118,7 @@ defmodule NeoFaker.Person do
     sex = Keyword.get(opts, :sex, nil)
     include_middle_name? = Keyword.get(opts, :middle_name, true)
 
-    random_full_name(locale, sex, include_middle_name?)
+    random_full_name(sex, locale, include_middle_name?)
   end
 
   @doc """
@@ -133,7 +132,7 @@ defmodule NeoFaker.Person do
   """
 
   @spec prefix(Keyword.t()) :: String.t()
-  def prefix(opts \\ []), do: random(@module, @name_affixes_file, "prefixes", opts)
+  def prefix(opts \\ []), do: random(__MODULE__, @name_affixes_file, "prefixes", opts)
 
   @doc """
   Generates a random name suffix.
@@ -146,7 +145,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
-  def suffix(opts \\ []), do: random(@module, @name_affixes_file, "suffixes", opts)
+  def suffix(opts \\ []), do: random(__MODULE__, @name_affixes_file, "suffixes", opts)
 
   @doc """
   Generates a random age.
@@ -177,7 +176,7 @@ defmodule NeoFaker.Person do
 
   """
   @spec binary_gender(Keyword.t()) :: String.t()
-  def binary_gender(opts \\ []), do: random(@module, @gender_file, "binary", opts)
+  def binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "binary", opts)
 
   @doc """
   Generates a random short binary gender.
@@ -191,7 +190,7 @@ defmodule NeoFaker.Person do
 
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
-  def short_binary_gender(opts \\ []), do: random(@module, @gender_file, "short_binary", opts)
+  def short_binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "short_binary", opts)
 
   @doc """
   Generates a random non-binary gender.
@@ -205,5 +204,5 @@ defmodule NeoFaker.Person do
 
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
-  def non_binary_gender(opts \\ []), do: random(@module, @gender_file, "non_binary", opts)
+  def non_binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "non_binary", opts)
 end

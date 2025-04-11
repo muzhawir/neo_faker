@@ -24,7 +24,5 @@ defmodule NeoFaker.Internet do
       "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
 
   """
-  def user_agent do
-    random(__MODULE__, @user_agent_file, "user_agents", [])
-  end
+  def user_agent, do: random(__MODULE__, @user_agent_file, "user_agents", [])
 end

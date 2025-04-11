@@ -50,7 +50,7 @@ defmodule NeoFaker.Lorem do
 
   """
   @spec paragraph(Keyword.t()) :: String.t()
-  def paragraph(opts \\ []), do: opts |> get_lorem_ipsum() |> Enum.random()
+  def paragraph(opts \\ []), do: opts |> lorem_ipsum() |> Enum.random()
 
   @doc """
   Generates a random sentence.

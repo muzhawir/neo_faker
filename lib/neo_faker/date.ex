@@ -69,7 +69,7 @@ defmodule NeoFaker.Date do
 
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
-  def between(start \\ ~D[1970-01-01], finish \\ Date.utc_today(), opts \\ []) do
+  def between(start \\ ~D[1970-01-01], finish \\ local_date_now(), opts \\ []) do
     format = Keyword.get(opts, :format, :sigil)
 
     random_between_date(start, finish, format)

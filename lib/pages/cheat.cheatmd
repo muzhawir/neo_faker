@@ -167,6 +167,16 @@ iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
 "2025-03-25"
 ```
 
+### [`birthday(min_age \\ 18, max_age \\ 65, opts \\ [])`](`NeoFaker.Date.birthday/3`)
+
+```elixir
+iex> NeoFaker.Date.birthday()
+~D[1997-01-02]
+
+iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
+"1999-05-06"
+```
+
 ## [Gravatar](`NeoFaker.Gravatar`)
 
 {: .col-1}
@@ -352,4 +362,31 @@ iex> NeoFaker.Text.emoji(category: :activities)
 ```elixir
 iex> NeoFaker.Text.word()
 "computer"
+```
+
+## [Time](`NeoFaker.Time`)
+
+{: .col-2}
+
+### [`add(range \\ -24..24, opts \\ [])`](`NeoFaker.Time.add/1`)
+
+```elixir
+iex> NeoFaker.Time.add()
+~T[15:22:10]
+
+iex> NeoFaker.Time.add(-2..2, unit: :minute)
+~T[07:23:10]
+
+iex> NeoFaker.Time.add(0..10, format: :iso8601)
+"15:22:10"
+```
+
+### [`between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59], opts \\ [])`](`NeoFaker.Time.between/1`)
+
+```elixir
+iex> NeoFaker.Time.between()
+~T[15:22:10]
+
+iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
+"15:22:10"
 ```

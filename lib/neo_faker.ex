@@ -2,10 +2,33 @@ defmodule NeoFaker do
   @moduledoc false
 
   @doc """
+  Start NeoFaker
+  """
+  @spec start() :: :ok
+  def start do
+    Application.ensure_started(:neo_faker)
+
+    case_result =
+      case locale() do
+        :error -> set_locale(:default)
+        _ -> locale()
+      end
+
+    IO.puts("NeoFaker started with locale: :#{case_result}")
+
+    :ok
+  end
+
+  @doc """
   Returns the current locale.
   """
-  @spec locale() :: String.t()
-  def locale, do: Application.get_env(:neo_faker, :locale)
+  @spec locale() :: atom()
+  def locale do
+    case Application.get_env(:neo_faker, :locale) do
+      nil -> :error
+      locale -> locale
+    end
+  end
 
   @doc """
   Sets the current locale.
@@ -20,7 +43,7 @@ defmodule NeoFaker do
 
   """
   @spec set_locale(atom()) :: :ok
-  def set_locale(locale) when is_atom(locale) do
+  def set_locale(locale \\ :default) do
     Application.put_env(:neo_faker, :locale, locale)
   end
 end

@@ -23,14 +23,14 @@ defmodule NeoFaker.Person do
 
   The accepted options are:
 
-  - `:type` - Specifies the type of name to generate.
+  - `:sex` - Specifies the sex of the generated name.
   - `:locale` - Specifies the locale to use.
 
-  Values for option `:type` can be:
+  Values for option `:sex` can be:
 
   - `nil` - Generates a random unisex name (default).
-  - `:male` - Generates a random male name.
   - `:female` - Generates a random female name.
+  - `:male` - Generates a random male name.
 
   Values for option `:locale` can be:
 
@@ -42,10 +42,10 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.first_name()
       "Julia"
 
-      iex> NeoFaker.Person.first_name(type: :male)
+      iex> NeoFaker.Person.first_name(sex: :male)
       "José"
 
-      iex> NeoFaker.Person.first_name(locale: "id_id")
+      iex> NeoFaker.Person.first_name(locale: :id_id)
       "Jaka"
 
   """
@@ -115,8 +115,8 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
-    locale = Keyword.get(opts, :locale)
-    sex = Keyword.get(opts, :sex)
+    locale = Keyword.get(opts, :locale, :default)
+    sex = Keyword.get(opts, :sex, nil)
     include_middle_name? = Keyword.get(opts, :middle_name, true)
 
     random_full_name(locale, sex, include_middle_name?)

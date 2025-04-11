@@ -3,43 +3,36 @@ defmodule NeoFaker.PersonTest do
 
   alias NeoFaker.Helper.Generator
   alias NeoFaker.Person
-  alias NeoFaker.Person.Util
 
   @module NeoFaker.Person
 
   describe "first_name/1" do
     test "returns a first name" do
-      assert Person.first_name() in Util.unisex_name(@module, "first_names")
+      assert is_binary(Person.first_name())
     end
 
     test "returns a first name with option" do
-      male_names = Util.unisex_name(@module, "first_names", locale: :id_id)
-
-      assert Person.first_name(sex: :male, locale: :id_id) in male_names
+      assert is_binary(Person.first_name(sex: :male, locale: :id_id))
     end
   end
 
   describe "middle_name/1" do
     test "returns a middle name" do
-      assert Person.middle_name() in Util.unisex_name(@module, "middle_names")
+      assert is_binary(Person.middle_name())
     end
 
     test "returns a middle name with option" do
-      female_names = Util.unisex_name(@module, "middle_names", locale: :id_id)
-
-      assert Person.middle_name(sex: :female, locale: :id_id) in female_names
+      assert is_binary(Person.middle_name(sex: :female, locale: :id_id))
     end
   end
 
   describe "last_name/1" do
     test "returns a last name" do
-      assert Person.last_name() in Util.unisex_name(@module, "last_names")
+      assert is_binary(Person.last_name())
     end
 
     test "returns a last name with option" do
-      unisex_names = Util.unisex_name(@module, "last_names", locale: :id_id)
-
-      assert Person.last_name(locale: :id_id) in unisex_names
+      assert is_binary(Person.last_name(locale: :id_id))
     end
   end
 

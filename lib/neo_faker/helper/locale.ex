@@ -15,7 +15,7 @@ defmodule NeoFaker.Helper.Locale do
 
   ## Parameters
 
-  - `locale` - The locale identifier (e.g., `"id_id"`, `"en_us"`).
+  - `locale` - The locale identifier (e.g., `:id_id`, `:en_us`).
   - `module` - The module associated with the locale data (e.g., `NeoFaker.App`).
   - `file` - The name of the data file within the module (e.g., `"author.exs"`).
   """

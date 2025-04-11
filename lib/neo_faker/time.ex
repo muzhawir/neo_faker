@@ -27,8 +27,8 @@ defmodule NeoFaker.Time do
 
   The values for `:format` can be:
 
-  - `:sigil` - Returns the date in sigil `~T` format (default).
-  - `:iso8601` - Returns the date in ISO 8601 format.
+  - `:sigil` - Returns the time in sigil `~T` format (default).
+  - `:iso8601` - Returns the time in ISO 8601 format.
 
   ## Examples
 
@@ -57,12 +57,12 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Specifies the format of the date.
+  - `:format` - Specifies the format of the time.
 
   The values for `:format` can be:
 
-  - `:sigil` - Returns the date in sigil `~T` format (default).
-  - `:iso8601` - Returns the date in ISO 8601 format.
+  - `:sigil` - Returns the time in sigil `~T` format (default).
+  - `:iso8601` - Returns the time in ISO 8601 format.
 
   ## Examples
 

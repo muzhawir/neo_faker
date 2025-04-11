@@ -7,7 +7,7 @@
 ## Requirements
 
 NeoFaker requires `Erlang 27.3` and `Elixir 1.18.3-otp-27` or later. We recommend using the
-[asdf version manager](https://asdf-vm.com) to manage multiple Erlang and Elixir versions.
+[asdf version manager](https://asdf-vm.com) to manage multiple versions of Erlang and Elixir.
 
 ## Installation
 
@@ -21,7 +21,7 @@ def deps do
 end
 ```
 
-Then, fetch dependencies:
+Then, fetch the dependencies:
 
 ```sh
 mix deps.get
@@ -35,8 +35,20 @@ Set the default locale in `config.exs`:
 config :neo_faker, locale: :default
 ```
 
-If the specified locale is unavailable, it falls back to `:default`. A list of available locales
-can be found on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
+> ### Setting Configuration in Phoenix {: .tip}
+>
+> In [Phoenix Framework](https://hexdocs.pm/phoenix), set the locale in `config/dev.exs` or
+> `config/test.exs`.
+>
+> Then add `NeoFaker.start()` to `test/test_helper.exs`:
+>
+> ```elixir
+> ExUnit.start()
+> NeoFaker.start() # Add this line
+> ```
+
+If the specified locale is unavailable, it will fall back to `:default`.
+You can find the list of available locales on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage
 

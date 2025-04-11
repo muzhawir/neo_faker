@@ -16,7 +16,7 @@ Add NeoFaker to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.9.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.10.0", only: [:dev, :test]}
   ]
 end
 ```

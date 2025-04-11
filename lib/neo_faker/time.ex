@@ -2,7 +2,7 @@ defmodule NeoFaker.Time do
   @moduledoc """
   Functions for generating random times.
 
-  This module provides utilities to generate random dates, including dates within a specific
+  This module provides utilities to generate random times, including times within a specific
   range and more.
   """
   @moduledoc since: "0.10.0"

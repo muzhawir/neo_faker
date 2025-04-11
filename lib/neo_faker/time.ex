@@ -70,7 +70,7 @@ defmodule NeoFaker.Time do
       ~T[15:22:10]
 
       iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
-      ~T[15:22:10]
+      ~T[19:30:11]
 
       iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
       "15:22:10"

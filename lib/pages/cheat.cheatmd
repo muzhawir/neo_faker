@@ -191,6 +191,17 @@ iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 ```
 
+## [Internet](`NeoFaker.Internet`)
+
+{: .col-1}
+
+### [`user_agent()`](`NeoFaker.Internet.user_agent/0`)
+
+```elixir
+iex> NeoFaker.Internet.user_agent()
+"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
+```
+
 ## [Lorem](`NeoFaker.Lorem`)
 
 {: .col-1}

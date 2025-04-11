@@ -13,8 +13,8 @@ defmodule NeoFaker.Lorem.Utils do
 
   Fetches the paragraphs from the specified text source and returns a list of paragraphs.
   """
-  @spec get_lorem_ipsum(keyword()) :: list()
-  def get_lorem_ipsum(opts \\ []) do
+  @spec lorem_ipsum(keyword()) :: list()
+  def lorem_ipsum(opts \\ []) do
     content = opts |> Keyword.get(:type) |> text_content()
     locale = opts |> Keyword.get(:locale, nil) |> Locale.locale_path()
 

@@ -11,7 +11,6 @@ defmodule NeoFaker.Text do
 
   alias NeoFaker.Text.Util
 
-  @module __MODULE__
   @word_file "word.exs"
 
   @doc """
@@ -115,5 +114,5 @@ defmodule NeoFaker.Text do
   """
   @doc since: "0.9.0"
   @spec word() :: String.t()
-  def word, do: random(@module, @word_file, "words", [])
+  def word, do: random(__MODULE__, @word_file, "words", [])
 end

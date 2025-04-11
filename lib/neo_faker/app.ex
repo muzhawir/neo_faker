@@ -12,7 +12,6 @@ defmodule NeoFaker.App do
 
   alias NeoFaker.Person
 
-  @module __MODULE__
   @description_file "description.exs"
   @license_file "license.exs"
   @name_file "name.exs"
@@ -57,7 +56,7 @@ defmodule NeoFaker.App do
 
   """
   @spec description(Keyword.t()) :: String.t()
-  def description(opts \\ []), do: random(@module, @description_file, "descriptions", opts)
+  def description(opts \\ []), do: random(__MODULE__, @description_file, "descriptions", opts)
 
   @doc """
   Generates a random open-source license.
@@ -72,7 +71,7 @@ defmodule NeoFaker.App do
 
   """
   @spec license() :: String.t()
-  def license, do: random(@module, @license_file, "licenses", [])
+  def license, do: random(__MODULE__, @license_file, "licenses", [])
 
   @doc """
   Generates a random app name.
@@ -115,10 +114,10 @@ defmodule NeoFaker.App do
   """
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
-    style = Keyword.get(opts, :style)
     locale = Keyword.get(opts, :locale, :default)
-    first_name = random(@module, @name_file, "first_names", locale: locale)
-    last_name = random(@module, @name_file, "last_names", locale: locale)
+    style = Keyword.get(opts, :style)
+    first_name = random(__MODULE__, @name_file, "first_names", locale: locale)
+    last_name = random(__MODULE__, @name_file, "last_names", locale: locale)
 
     name_case({first_name, last_name}, style)
   end

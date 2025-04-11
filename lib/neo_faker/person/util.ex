@@ -1,9 +1,8 @@
 defmodule NeoFaker.Person.Util do
   @moduledoc false
 
-  import NeoFaker.Helper.Generator, only: [fetch_data: 3, random: 4]
+  import NeoFaker.Helper.Generator, only: [random: 4]
 
-  alias NeoFaker.Helper.Locale
   alias NeoFaker.Person
 
   @female_name_file "female_name.exs"
@@ -16,10 +15,14 @@ defmodule NeoFaker.Person.Util do
   """
   @spec random_name(atom(), String.t(), Keyword.t()) :: String.t()
   def random_name(module, key, opts \\ []) do
-    case Keyword.get(opts, :sex) do
-      nil -> module |> unisex_name(key, opts) |> Enum.random()
-      :female -> random(module, @female_name_file, key, opts)
-      :male -> random(module, @male_name_file, key, opts)
+    locale = Keyword.get(opts, :locale, :default)
+    female_name = random(module, @female_name_file, key, locale: locale)
+    male_name = random(module, @male_name_file, key, locale: locale)
+
+    case Keyword.get(opts, :sex, nil) do
+      nil -> Enum.random([female_name, male_name])
+      :female -> female_name
+      :male -> male_name
     end
   end
 
@@ -28,10 +31,24 @@ defmodule NeoFaker.Person.Util do
 
   If no options are provided, it returns a default random unisex full name.
   """
-  @spec random_full_name(String.t(), atom(), boolean()) :: String.t()
-  def random_full_name(locale \\ "default", sex \\ nil, include_middle_name? \\ true)
+  @spec random_full_name(atom(), Keyword.t(), boolean()) :: String.t()
+  def random_full_name(nil, locale, include_middle_name?) do
+    male_name = generate_full_name(:male, locale, include_middle_name?)
+    female_name = generate_full_name(:female, locale, include_middle_name?)
 
-  def random_full_name(locale, sex, true) do
+    Enum.random([male_name, female_name])
+  end
+
+  def random_full_name(:male, locale, include_middle_name?) do
+    generate_full_name(:male, locale, include_middle_name?)
+  end
+
+  def random_full_name(:female, locale, include_middle_name?) do
+    generate_full_name(:female, locale, include_middle_name?)
+  end
+
+  # Generates a full name with or without a middle name.
+  defp generate_full_name(sex, locale, true) do
     first_name = Person.first_name(sex: sex, locale: locale)
     middle_name = Person.middle_name(sex: sex, locale: locale)
     last_name = Person.last_name(sex: sex, locale: locale)
@@ -39,40 +56,10 @@ defmodule NeoFaker.Person.Util do
     "#{first_name} #{middle_name} #{last_name}"
   end
 
-  def random_full_name(locale, sex, false) do
-    first_name = Person.first_name(sex: sex, locale: locale)
-    last_name = Person.last_name(sex: sex, locale: locale)
+  defp generate_full_name(sex, locale, false) do
+    [first_name, _middle_name, last_name] =
+      sex |> generate_full_name(locale, true) |> String.split(" ")
 
     "#{first_name} #{last_name}"
-  end
-
-  @doc """
-  Returns a random list of unisex names.
-
-  If no options are provided, it returns data from the default locale.
-  """
-  @spec unisex_name(atom(), String.t(), Keyword.t()) :: list()
-  def unisex_name(module, key, opts \\ []) do
-    locale = Keyword.get(opts, :locale) || Application.get_env(:neo_faker, :locale)
-    male_data = fetch_data(module, @male_name_file, locale: locale)
-    female_data = fetch_data(module, @female_name_file, locale: locale)
-    unisex_name_key = Locale.persistent_term_key(locale, module, "unisex_name")
-
-    case :persistent_term.get(unisex_name_key, nil) do
-      nil ->
-        unisex_data = Map.merge(male_data, female_data, &merge_lists/3)
-
-        :persistent_term.put(unisex_name_key, unisex_data)
-
-        unisex_name_key |> :persistent_term.get() |> Map.get(key)
-
-      unisex_data ->
-        Map.get(unisex_data, key)
-    end
-  end
-
-  # Merges two lists and returns a shuffled result.
-  defp merge_lists(_key, first_list, second_list) do
-    first_list |> Stream.concat(second_list) |> Enum.shuffle()
   end
 end

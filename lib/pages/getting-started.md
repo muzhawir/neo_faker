@@ -6,8 +6,7 @@
 
 ## Requirements
 
-NeoFaker requires `Erlang 27.3` and `Elixir 1.18.3-otp-27` or later. We recommend using the
-[asdf version manager](https://asdf-vm.com) to manage multiple versions of Erlang and Elixir.
+NeoFaker requires `Erlang 27.0` and `Elixir 1.18.0-otp-27` or later.
 
 ## Installation
 
@@ -16,7 +15,7 @@ Add NeoFaker to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.9.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.10.0", only: [:dev, :test]}
   ]
 end
 ```

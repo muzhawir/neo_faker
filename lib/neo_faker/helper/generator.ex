@@ -36,7 +36,7 @@ defmodule NeoFaker.Helper.Generator do
   """
   @spec fetch_data(atom(), String.t(), Keyword.t()) :: map() | list()
   def fetch_data(module, file, opts \\ []) do
-    locale = Keyword.get(opts, :locale, "default")
+    locale = Keyword.get(opts, :locale, :default)
     key = Keyword.get(opts, :key)
 
     load_data(locale, module, file, key)

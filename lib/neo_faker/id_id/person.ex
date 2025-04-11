@@ -7,7 +7,9 @@ defmodule NeoFaker.IdId.Person do
   """
   @moduledoc since: "0.9.0"
 
-  alias NeoFaker.IdId.Person.Utils
+  import NeoFaker.IdId.Person.Utils
+
+  alias NeoFaker.Number
 
   @doc """
   Generates a random NIK.
@@ -21,5 +23,12 @@ defmodule NeoFaker.IdId.Person do
 
   """
   @spec nik() :: String.t()
-  defdelegate nik(), to: Utils, as: :nik
+  def nik do
+    province_number = Number.between(11, 92)
+    regency_number = 1 |> Number.between(79) |> to_string() |> String.pad_leading(2, "0")
+    district_number = 1 |> Number.between(53) |> to_string() |> String.pad_leading(2, "0")
+    serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
+
+    "#{province_number}#{regency_number}#{district_number}#{birth_date()}#{serial_number}"
+  end
 end

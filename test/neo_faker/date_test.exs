@@ -5,11 +5,12 @@ defmodule NeoFaker.DateTest do
 
   describe "add/2" do
     test "returns a random date in Date format" do
-      assert FakeDate.add(0..0) == Date.utc_today()
+      assert FakeDate.add(0..0) == NaiveDateTime.to_date(NaiveDateTime.local_now())
     end
 
     test "returns a random date in ISO 8601 format" do
-      assert FakeDate.add(0..0, format: :iso8601) == Date.to_iso8601(Date.utc_today())
+      assert FakeDate.add(0..0, format: :iso8601) ==
+               NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.to_iso8601()
     end
   end
 

@@ -7,6 +7,24 @@ defmodule NeoFaker.Locale.Resolver do
   @locale_file Path.join([@data_path, "locale.exs"])
 
   @doc """
+  Resolves the locale configuration based on the given options.
+  """
+  @spec resolve_locale_config(Keyword.t()) :: String.t()
+  def resolve_locale_config(opts) do
+    if is_nil(Keyword.get(opts, :locale)) do
+      :neo_faker
+      |> Application.get_env(:locale)
+      |> resolve_locale()
+      |> Atom.to_string()
+    else
+      opts
+      |> Keyword.get(:locale)
+      |> resolve_locale()
+      |> Atom.to_string()
+    end
+  end
+
+  @doc """
   Resolves a locale based on the given locale.
   """
   @spec resolve_locale(atom()) :: atom()

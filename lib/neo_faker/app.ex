@@ -8,7 +8,7 @@ defmodule NeoFaker.App do
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Util
-  import NeoFaker.Helper.Generator, only: [random: 4]
+  import NeoFaker.Locale.Generator
 
   alias NeoFaker.Person
 
@@ -56,7 +56,9 @@ defmodule NeoFaker.App do
 
   """
   @spec description(Keyword.t()) :: String.t()
-  def description(opts \\ []), do: random(__MODULE__, @description_file, "descriptions", opts)
+  def description(opts \\ []) do
+    random_data(__MODULE__, @description_file, "descriptions", opts)
+  end
 
   @doc """
   Generates a random open-source license.
@@ -71,7 +73,7 @@ defmodule NeoFaker.App do
 
   """
   @spec license() :: String.t()
-  def license, do: random(__MODULE__, @license_file, "licenses", [])
+  def license, do: random_data(__MODULE__, @license_file, "licenses")
 
   @doc """
   Generates a random app name.
@@ -114,10 +116,10 @@ defmodule NeoFaker.App do
   """
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
-    locale = Keyword.get(opts, :locale, :default)
+    locale = Keyword.get(opts, :locale)
     style = Keyword.get(opts, :style)
-    first_name = random(__MODULE__, @name_file, "first_names", locale: locale)
-    last_name = random(__MODULE__, @name_file, "last_names", locale: locale)
+    first_name = random_data(__MODULE__, @name_file, "first_names", locale: locale)
+    last_name = random_data(__MODULE__, @name_file, "last_names", locale: locale)
 
     name_case({first_name, last_name}, style)
   end
@@ -167,10 +169,5 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version do
-    semver()
-    |> String.split(".")
-    |> Enum.take(2)
-    |> Enum.join(".")
-  end
+  def version, do: semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 end

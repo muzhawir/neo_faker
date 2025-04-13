@@ -20,13 +20,18 @@ defmodule NeoFaker.Locale.Cache do
         "default" ->
           :persistent_term.put(
             create_persistent_term_key("default", module, file),
-            [@data_path, "default", module_name, file] |> Path.join() |> Disk.evaluate_file!()
+            [@data_path, "default", module_name, file]
+            |> Path.join()
+            |> Disk.evaluate_file!()
+            |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
           )
 
         _ ->
           :persistent_term.put(
             create_persistent_term_key(locale_name, module, file),
-            Disk.evaluate_file!(file_path)
+            file_path
+            |> Disk.evaluate_file!()
+            |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
           )
       end
     else

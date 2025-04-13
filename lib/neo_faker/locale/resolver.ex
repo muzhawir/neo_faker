@@ -9,18 +9,13 @@ defmodule NeoFaker.Locale.Resolver do
   @doc """
   Resolves the locale configuration based on the given options.
   """
-  @spec resolve_locale_config(Keyword.t()) :: String.t()
   def resolve_locale_config(opts) do
-    if is_nil(Keyword.get(opts, :locale)) do
+    if is_nil(opts) do
       :neo_faker
       |> Application.get_env(:locale)
       |> resolve_locale()
-      |> Atom.to_string()
     else
-      opts
-      |> Keyword.get(:locale)
-      |> resolve_locale()
-      |> Atom.to_string()
+      resolve_locale(opts)
     end
   end
 

@@ -25,9 +25,9 @@ defmodule NeoFaker.IdId.Person do
   @spec nik() :: String.t()
   def nik do
     province_number = Number.between(11, 92)
-    regency_number = 1 |> Number.between(79) |> to_string() |> String.pad_leading(2, "0")
-    district_number = 1 |> Number.between(53) |> to_string() |> String.pad_leading(2, "0")
-    serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
+    regency_number = serial_number(79, 2)
+    district_number = serial_number(53, 2)
+    serial_number = serial_number(9999, 4)
 
     "#{province_number}#{regency_number}#{district_number}#{birth_date()}#{serial_number}"
   end

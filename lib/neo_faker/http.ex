@@ -7,7 +7,7 @@ defmodule NeoFaker.Http do
   """
   @moduledoc since: "0.10.0"
 
-  import NeoFaker.Data.Generator, only: [random_data: 4]
+  import NeoFaker.Data.Generator, only: [random_data: 3]
 
   @user_agent_file "user_agent.exs"
 
@@ -24,5 +24,5 @@ defmodule NeoFaker.Http do
       "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
 
   """
-  def user_agent, do: random_data(__MODULE__, @user_agent_file, "user_agents", [])
+  def user_agent, do: random_data(__MODULE__, @user_agent_file, "user_agents")
 end

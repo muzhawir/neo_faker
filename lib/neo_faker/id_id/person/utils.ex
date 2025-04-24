@@ -1,15 +1,25 @@
 defmodule NeoFaker.IdId.Person.Utils do
   @moduledoc false
 
+  alias NeoFaker.Number
+
   @min_age_years -90
   @max_age_years -18
+
+  @doc """
+  Generate a serial number with a specified maximum number and padding count.
+  """
+  @spec serial_number(non_neg_integer(), non_neg_integer()) :: String.t()
+  def serial_number(max_number, pad_count) do
+    1 |> Number.between(max_number) |> to_string() |> String.pad_leading(pad_count, "0")
+  end
 
   @doc """
   Generate a random birth date with either the exact day or the day `n+40` (for the female code).
   """
   @spec birth_date() :: String.t()
   def birth_date do
-    today = Date.utc_today()
+    today = NaiveDateTime.local_now()
 
     %Date{year: year, month: month, day: day} =
       today

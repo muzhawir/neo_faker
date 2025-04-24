@@ -48,9 +48,7 @@ defmodule NeoFaker.Number do
   """
   @spec float(Range.t(), Range.t()) :: float()
   def float(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
-    decimal_number = "#{Enum.random(left_digit)}.#{Enum.random(right_digit)}"
-
-    String.to_float(decimal_number)
+    String.to_float("#{Enum.random(left_digit)}.#{Enum.random(right_digit)}")
   end
 
   @doc """

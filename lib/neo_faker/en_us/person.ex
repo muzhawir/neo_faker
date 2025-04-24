@@ -9,8 +9,6 @@ defmodule NeoFaker.EnUs.Person do
 
   import NeoFaker.EnUs.Person.Utils
 
-  alias NeoFaker.Number
-
   @doc """
   Generates a random SSN.
 
@@ -23,10 +21,5 @@ defmodule NeoFaker.EnUs.Person do
 
   """
   @spec ssn() :: String.t()
-  def ssn do
-    group_number = 1 |> Number.between(99) |> to_string() |> String.pad_leading(2, "0")
-    serial_number = 1 |> Number.between(9999) |> to_string() |> String.pad_leading(4, "0")
-
-    "#{area_number()}-#{group_number}-#{serial_number}"
-  end
+  def ssn, do: "#{area_number()}-#{serial_number(99, 2)}-#{serial_number(9999, 4)}"
 end

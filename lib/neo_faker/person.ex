@@ -27,7 +27,7 @@ defmodule NeoFaker.Person do
 
   Values for option `:sex` can be:
 
-  - `nil` - Generates a random unisex name (default).
+  - `:unisex` - Generates a random unisex name (default).
   - `:female` - Generates a random female name.
   - `:male` - Generates a random male name.
 
@@ -50,7 +50,13 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec first_name(Keyword.t()) :: String.t()
-  def first_name(opts \\ []), do: random_name(__MODULE__, "first_names", opts)
+  def first_name(opts \\ []) do
+    random_name(
+      Keyword.get(opts, :locale, :default),
+      "first_names",
+      Keyword.get(opts, :sex, :unisex)
+    )
+  end
 
   @doc """
   Generates a random middle name.
@@ -59,7 +65,13 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
-  def middle_name(opts \\ []), do: random_name(__MODULE__, "middle_names", opts)
+  def middle_name(opts \\ []) do
+    random_name(
+      Keyword.get(opts, :locale, :default),
+      "middle_names",
+      Keyword.get(opts, :sex, :unisex)
+    )
+  end
 
   @doc """
   Generates a random last name.
@@ -68,7 +80,13 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
-  def last_name(opts \\ []), do: random_name(__MODULE__, "last_names", opts)
+  def last_name(opts \\ []) do
+    random_name(
+      Keyword.get(opts, :locale, :default),
+      "last_names",
+      Keyword.get(opts, :sex, :unisex)
+    )
+  end
 
   @doc """
   Generates a random full name.
@@ -90,7 +108,7 @@ defmodule NeoFaker.Person do
 
   Values for option `:sex` can be:
 
-  - `nil` - Generates a random unisex name (default).
+  - `:unisex` - Generates a random unisex name (default).
   - `:male` - Generates a random male name.
   - `:female` - Generates a random female name.
 
@@ -114,20 +132,36 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
-    locale = Keyword.get(opts, :locale, :default)
-    sex = Keyword.get(opts, :sex, nil)
-    include_middle_name? = Keyword.get(opts, :middle_name, true)
-
-    random_full_name(sex, locale, include_middle_name?)
+    random_full_name(
+      Keyword.get(opts, :sex, :unisex),
+      Keyword.get(opts, :locale, :default),
+      Keyword.get(opts, :middle_name, true)
+    )
   end
 
   @doc """
   Generates a random name prefix.
 
+  Returns a name prefix, such as `"Mr."`, `"Ms."`, `"Dr."`, etc.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:locale` - Specifies the locale to use.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `:default`.
+  - `:id_id` - Uses the Indonesian locale, for example.
+
   ## Examples
 
       iex> NeoFaker.Person.prefix()
       "Mr."
+
+      iex> NeoFaker.Person.prefix(locale: :id_id)
+      "Tn."
 
   """
 
@@ -137,11 +171,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random name suffix.
 
-  ## Examples
-
-      iex> NeoFaker.Person.suffix()
-      "IV"
-
+  This function behaves the same way as `prefix/1`. See `prefix/1` for more details.
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
@@ -152,10 +182,24 @@ defmodule NeoFaker.Person do
 
   Returns either `"Male"` or `"Female"`.
 
+  ## Options
+
+  The accepted options are:
+
+  - `:locale` - Specifies the locale to use.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `:default`.
+  - `:id_id` - Uses the Indonesian locale, for example.
+
   ## Examples
 
       iex> NeoFaker.Person.binary_gender()
       "Male"
+
+      iex> NeoFaker.Person.binary_gender(locale: :id_id)
+      "Perempuan"
 
   """
   @spec binary_gender(Keyword.t()) :: String.t()
@@ -164,13 +208,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random short binary gender.
 
-  Returns either `"M"` or `"F"`.
-
-  ## Examples
-
-      iex> NeoFaker.Person.short_binary_gender()
-      "F"
-
+  This function behaves the same way as `binary_gender/1`. See `binary_gender/1` for more details.
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
   def short_binary_gender(opts \\ []) do
@@ -180,13 +218,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random non-binary gender.
 
-  Returns a non-binary gender, such as `"Agender"`, `"Androgyne"`, `"Bigender"`, etc.
-
-  ## Examples
-
-      iex> NeoFaker.Person.non_binary_gender()
-      "Agender"
-
+  This function behaves the same way as `binary_gender/1`. See `binary_gender/1` for more details.
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
   def non_binary_gender(opts \\ []), do: random_data(__MODULE__, @gender_file, "non_binary", opts)

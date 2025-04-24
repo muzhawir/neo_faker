@@ -11,9 +11,7 @@ defmodule NeoFaker.Data.Resolver do
   """
   def resolve_locale_config(opts) do
     if is_nil(opts) do
-      :neo_faker
-      |> Application.get_env(:locale)
-      |> resolve_locale()
+      :neo_faker |> Application.get_env(:locale) |> resolve_locale()
     else
       resolve_locale(opts)
     end
@@ -39,9 +37,13 @@ defmodule NeoFaker.Data.Resolver do
     if is_nil(:persistent_term.get(:available_locales, nil)) do
       :persistent_term.put(:available_locales, MapSet.new(Disk.evaluate_file!(@locale_file)))
 
-      :available_locales |> :persistent_term.get() |> MapSet.member?(Atom.to_string(locale))
+      check_locale_set(locale)
     else
-      :available_locales |> :persistent_term.get() |> MapSet.member?(Atom.to_string(locale))
+      check_locale_set(locale)
     end
+  end
+
+  defp check_locale_set(locale) do
+    :available_locales |> :persistent_term.get() |> MapSet.member?(Atom.to_string(locale))
   end
 end

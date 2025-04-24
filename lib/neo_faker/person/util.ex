@@ -1,7 +1,7 @@
 defmodule NeoFaker.Person.Util do
   @moduledoc false
 
-  import NeoFaker.Helper.Generator, only: [random: 4]
+  import NeoFaker.Data.Generator, only: [random_data: 4]
 
   alias NeoFaker.Person
 
@@ -16,8 +16,8 @@ defmodule NeoFaker.Person.Util do
   @spec random_name(atom(), String.t(), Keyword.t()) :: String.t()
   def random_name(module, key, opts \\ []) do
     locale = Keyword.get(opts, :locale, :default)
-    female_name = random(module, @female_name_file, key, locale: locale)
-    male_name = random(module, @male_name_file, key, locale: locale)
+    female_name = random_data(module, @female_name_file, key, locale: locale)
+    male_name = random_data(module, @male_name_file, key, locale: locale)
 
     case Keyword.get(opts, :sex, nil) do
       nil -> Enum.random([female_name, male_name])

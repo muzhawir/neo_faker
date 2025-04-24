@@ -1,9 +1,7 @@
 defmodule NeoFaker.Lorem.Utils do
   @moduledoc false
 
-  import NeoFaker.Helper.Generator, only: [fetch_data: 3]
-
-  alias NeoFaker.Helper.Locale
+  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
 
   @module NeoFaker.Lorem
   @new_line_regexp ~r/(?<!\n)\n(?!\n)/
@@ -15,11 +13,11 @@ defmodule NeoFaker.Lorem.Utils do
   """
   @spec lorem_ipsum(keyword()) :: list()
   def lorem_ipsum(opts \\ []) do
-    content = opts |> Keyword.get(:type) |> text_content()
-    locale = opts |> Keyword.get(:locale, nil) |> Locale.locale_path()
+    locale = Keyword.get(opts, :locale, :default)
+    file = opts |> Keyword.get(:text) |> text_content()
 
-    @module
-    |> fetch_data(content, locale: locale)
+    locale
+    |> fetch_cache!(@module, file)
     |> Map.get("text")
     |> hd()
     |> String.replace(@new_line_regexp, " ")

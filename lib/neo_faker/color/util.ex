@@ -1,7 +1,8 @@
 defmodule NeoFaker.Color.Util do
   @moduledoc false
 
-  import NeoFaker.Helper.Generator, only: [fetch_data: 3, random: 4]
+  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
+  import NeoFaker.Data.Generator, only: [random_data: 4]
   import NeoFaker.Number, only: [between: 0, between: 2]
 
   @module NeoFaker.Color
@@ -87,18 +88,28 @@ defmodule NeoFaker.Color.Util do
   This function delegates the call to `NeoFaker.Color.keyword/1`.
   """
   @spec keyword(Keyword.t()) :: String.t()
-  def keyword(opts \\ []), do: opts |> Keyword.get(:category) |> keyword_color(opts)
+  def keyword(opts \\ []) do
+    category = Keyword.get(opts, :category)
+    locale = Keyword.get(opts, :locale, :default)
 
-  defp keyword_color(nil, opts) do
-    @module
-    |> fetch_data("keyword.exs", opts)
+    keyword_color(category, locale)
+  end
+
+  defp keyword_color(nil, locale) do
+    locale
+    |> fetch_cache!(@module, "keyword.exs")
     |> Map.values()
     |> List.flatten()
     |> Enum.random()
   end
 
-  defp keyword_color(:basic, opts), do: random(@module, "keyword.exs", "basic", opts)
-  defp keyword_color(:extended, opts), do: random(@module, "keyword.exs", "extended", opts)
+  defp keyword_color(:basic, locale) do
+    random_data(@module, "keyword.exs", "basic", locale: locale)
+  end
+
+  defp keyword_color(:extended, locale) do
+    random_data(@module, "keyword.exs", "extended", locale: locale)
+  end
 
   @doc """
   Generates a RGB color.

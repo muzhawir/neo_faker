@@ -7,7 +7,7 @@ defmodule NeoFaker.Text do
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Helper.Generator, only: [random: 4]
+  import NeoFaker.Data.Generator, only: [random_data: 3]
 
   alias NeoFaker.Text.Util
 
@@ -114,5 +114,5 @@ defmodule NeoFaker.Text do
   """
   @doc since: "0.9.0"
   @spec word() :: String.t()
-  def word, do: random(__MODULE__, @word_file, "words", [])
+  def word, do: random_data(__MODULE__, @word_file, "words")
 end

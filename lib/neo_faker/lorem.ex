@@ -22,7 +22,7 @@ defmodule NeoFaker.Lorem do
 
   The accepted options are:
 
-  - `:type` - Specifies the text source.
+  - `:text` - Specifies the text source.
   - `:locale` - Specifies the locale to use.
 
   Values for option `:type` can be:

@@ -1,8 +1,9 @@
 defmodule NeoFaker.ColorTest do
   use ExUnit.Case, async: true
 
+  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
+
   alias NeoFaker.Color
-  alias NeoFaker.Helper.Generator
 
   @module NeoFaker.Color
   @cmyk_format_regexp ~r/^cmyk\((\d{1,3})%, (\d{1,3})%, (\d{1,3})%, (\d{1,3})%\)$/
@@ -76,13 +77,22 @@ defmodule NeoFaker.ColorTest do
 
   describe "keyword/1" do
     test "returns a color keyword" do
-      colors = @module |> Generator.fetch_data("keyword.exs") |> Map.values() |> List.flatten()
+      colors =
+        :default
+        |> fetch_cache!(@module, "keyword.exs")
+        |> Map.values()
+        |> List.flatten()
 
       assert Color.keyword() in colors
     end
 
     test "returns a color keyword with options" do
-      colors = @module |> Generator.fetch_data("keyword.exs") |> Map.values() |> List.flatten()
+      colors =
+        :default
+        |> fetch_cache!(@module, "keyword.exs")
+        |> Map.values()
+        |> List.flatten()
+
       options = [:category, :locale]
 
       for option <- options do

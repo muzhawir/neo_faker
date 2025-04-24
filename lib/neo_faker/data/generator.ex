@@ -1,8 +1,8 @@
-defmodule NeoFaker.Locale.Generator do
+defmodule NeoFaker.Data.Generator do
   @moduledoc false
 
-  alias NeoFaker.Locale.Cache
-  alias NeoFaker.Locale.Resolver
+  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data.Resolver
 
   @data_path Path.join([File.cwd!(), "lib", "data"])
 
@@ -26,26 +26,22 @@ defmodule NeoFaker.Locale.Generator do
   """
   @spec random_data(atom(), String.t(), String.t(), Keyword.t()) :: any()
   def random_data(module, file, key, opts \\ []) do
-    locale_name =
-      opts
-      |> Keyword.get(:locale, nil)
-      |> Resolver.resolve_locale_config()
-
+    locale_name = opts |> Keyword.get(:locale, nil) |> Resolver.resolve_locale_config()
     module_name = module |> Module.split() |> List.last() |> String.downcase()
     file_path = Path.join([@data_path, Atom.to_string(locale_name), module_name, file])
 
     if File.exists?(file_path) do
-      Cache.create_cache(locale_name, module, file)
-
-      persistent_term_key =
-        Cache.create_persistent_term_key(Atom.to_string(locale_name), module, file)
-
-      persistent_term_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+      generate_random_value(locale_name, module, file, key)
     else
-      Cache.create_cache(:default, module, file)
-      default_persistent_term_key = Cache.create_persistent_term_key("default", module, file)
-
-      default_persistent_term_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+      generate_random_value(:default, module, file, key)
     end
+  end
+
+  defp generate_random_value(locale, module, file, key) do
+    Cache.create_cache!(locale, module, file)
+
+    persistent_term_key = Cache.create_persistent_term_key(locale, module, file)
+
+    persistent_term_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
   end
 end

@@ -7,7 +7,7 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Helper.Generator, only: [random: 4]
+  import NeoFaker.Data.Generator, only: [random_data: 4]
   import NeoFaker.Person.Util
 
   @gender_file "gender.exs"
@@ -132,7 +132,7 @@ defmodule NeoFaker.Person do
   """
 
   @spec prefix(Keyword.t()) :: String.t()
-  def prefix(opts \\ []), do: random(__MODULE__, @name_affixes_file, "prefixes", opts)
+  def prefix(opts \\ []), do: random_data(__MODULE__, @name_affixes_file, "prefixes", opts)
 
   @doc """
   Generates a random name suffix.
@@ -145,7 +145,51 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
-  def suffix(opts \\ []), do: random(__MODULE__, @name_affixes_file, "suffixes", opts)
+  def suffix(opts \\ []), do: random_data(__MODULE__, @name_affixes_file, "suffixes", opts)
+
+  @doc """
+  Generates a random binary gender.
+
+  Returns either `"Male"` or `"Female"`.
+
+  ## Examples
+
+      iex> NeoFaker.Person.binary_gender()
+      "Male"
+
+  """
+  @spec binary_gender(Keyword.t()) :: String.t()
+  def binary_gender(opts \\ []), do: random_data(__MODULE__, @gender_file, "binary", opts)
+
+  @doc """
+  Generates a random short binary gender.
+
+  Returns either `"M"` or `"F"`.
+
+  ## Examples
+
+      iex> NeoFaker.Person.short_binary_gender()
+      "F"
+
+  """
+  @spec short_binary_gender(Keyword.t()) :: String.t()
+  def short_binary_gender(opts \\ []) do
+    random_data(__MODULE__, @gender_file, "short_binary", opts)
+  end
+
+  @doc """
+  Generates a random non-binary gender.
+
+  Returns a non-binary gender, such as `"Agender"`, `"Androgyne"`, `"Bigender"`, etc.
+
+  ## Examples
+
+      iex> NeoFaker.Person.non_binary_gender()
+      "Agender"
+
+  """
+  @spec non_binary_gender(Keyword.t()) :: String.t()
+  def non_binary_gender(opts \\ []), do: random_data(__MODULE__, @gender_file, "non_binary", opts)
 
   @doc """
   Generates a random age.
@@ -163,46 +207,4 @@ defmodule NeoFaker.Person do
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
-
-  @doc """
-  Generates a random binary gender.
-
-  Returns either `"Male"` or `"Female"`.
-
-  ## Examples
-
-      iex> NeoFaker.Person.binary_gender()
-      "Male"
-
-  """
-  @spec binary_gender(Keyword.t()) :: String.t()
-  def binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "binary", opts)
-
-  @doc """
-  Generates a random short binary gender.
-
-  Returns either `"M"` or `"F"`.
-
-  ## Examples
-
-      iex> NeoFaker.Person.short_binary_gender()
-      "F"
-
-  """
-  @spec short_binary_gender(Keyword.t()) :: String.t()
-  def short_binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "short_binary", opts)
-
-  @doc """
-  Generates a random non-binary gender.
-
-  Returns a non-binary gender, such as `"Agender"`, `"Androgyne"`, `"Bigender"`, etc.
-
-  ## Examples
-
-      iex> NeoFaker.Person.non_binary_gender()
-      "Agender"
-
-  """
-  @spec non_binary_gender(Keyword.t()) :: String.t()
-  def non_binary_gender(opts \\ []), do: random(__MODULE__, @gender_file, "non_binary", opts)
 end

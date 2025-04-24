@@ -1,1 +1,2 @@
 ExUnit.start()
+NeoFaker.start()

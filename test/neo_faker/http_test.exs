@@ -5,7 +5,7 @@ defmodule NeoFaker.HttpTest do
 
   describe "user_agent/0" do
     test "returns a random user agent" do
-      assert is_binary(Http.user_agent())
+      assert is_binary(Http.user_agent()) and String.valid?(Http.user_agent())
     end
   end
 end

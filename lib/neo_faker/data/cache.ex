@@ -1,8 +1,8 @@
-defmodule NeoFaker.Locale.Cache do
+defmodule NeoFaker.Data.Cache do
   @moduledoc false
 
-  alias NeoFaker.Locale.Disk
-  alias NeoFaker.Locale.Resolver
+  alias NeoFaker.Data.Disk
+  alias NeoFaker.Data.Resolver
 
   @data_path Path.join([File.cwd!(), "lib", "data"])
 
@@ -10,6 +10,7 @@ defmodule NeoFaker.Locale.Cache do
   Create a persistent term with value in locale data file.
   """
   # @spec create_cache(atom(), atom(), String.t()) :: :ok
+  @spec create_cache(atom(), atom(), String.t()) :: :ok | File.Error
   def create_cache(locale, module, file) do
     locale_name = locale |> Resolver.resolve_locale_config() |> Atom.to_string()
     module_name = module |> Module.split() |> List.last() |> String.downcase()

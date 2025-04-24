@@ -1,7 +1,7 @@
-defmodule NeoFaker.Locale.Resolver do
+defmodule NeoFaker.Data.Resolver do
   @moduledoc false
 
-  alias NeoFaker.Locale.Disk
+  alias NeoFaker.Data.Disk
 
   @data_path Path.join([File.cwd!(), "lib", "data"])
   @locale_file Path.join([@data_path, "locale.exs"])

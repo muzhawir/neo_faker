@@ -1,4 +1,4 @@
-defmodule NeoFaker.Locale.Disk do
+defmodule NeoFaker.Data.Disk do
   @moduledoc false
 
   @doc """

@@ -1,8 +1,8 @@
-defmodule NeoFaker.Locale.Generator do
+defmodule NeoFaker.Data.Generator do
   @moduledoc false
 
-  alias NeoFaker.Locale.Cache
-  alias NeoFaker.Locale.Resolver
+  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data.Resolver
 
   @data_path Path.join([File.cwd!(), "lib", "data"])
 

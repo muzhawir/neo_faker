@@ -7,7 +7,7 @@ defmodule NeoFaker.Http do
   """
   @moduledoc since: "0.10.0"
 
-  import NeoFaker.Locale.Generator, only: [random_data: 4]
+  import NeoFaker.Data.Generator, only: [random_data: 4]
 
   @user_agent_file "user_agent.exs"
 

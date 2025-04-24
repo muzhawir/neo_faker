@@ -8,7 +8,7 @@ defmodule NeoFaker.App do
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Util
-  import NeoFaker.Locale.Generator
+  import NeoFaker.Locale.Generator, only: [random_data: 3, random_data: 4]
 
   alias NeoFaker.Person
 

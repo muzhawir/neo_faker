@@ -1,11 +1,11 @@
-defmodule NeoFaker.InternetTest do
+defmodule NeoFaker.HttpTest do
   use ExUnit.Case, async: true
 
-  alias NeoFaker.Internet
+  alias NeoFaker.Http
 
   describe "user_agent/0" do
     test "returns a random user agent" do
-      assert is_binary(Internet.user_agent())
+      assert is_binary(Http.user_agent())
     end
   end
 end

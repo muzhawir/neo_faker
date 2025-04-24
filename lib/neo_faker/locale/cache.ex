@@ -16,24 +16,12 @@ defmodule NeoFaker.Locale.Cache do
     file_path = Path.join([@data_path, locale_name, module_name, file])
 
     if File.exists?(file_path) do
-      case locale_name do
-        "default" ->
-          :persistent_term.put(
-            create_persistent_term_key("default", module, file),
-            [@data_path, "default", module_name, file]
-            |> Path.join()
-            |> Disk.evaluate_file!()
-            |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
-          )
+      value =
+        file_path
+        |> Disk.evaluate_file!()
+        |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
 
-        _ ->
-          :persistent_term.put(
-            create_persistent_term_key(locale_name, module, file),
-            file_path
-            |> Disk.evaluate_file!()
-            |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
-          )
-      end
+      :persistent_term.put(create_persistent_term_key(locale_name, module, file), value)
     else
       raise File.Error, reason: :enoent
     end

@@ -102,6 +102,9 @@ defmodule NeoFaker.Http do
       iex> NeoFaker.Http.status_code(type: :simple)
       "200"
 
+      iex> NeoFaker.Http.status_code(group: :client_error)
+      "404 Not Found"
+
   """
   @spec status_code(opts :: Keyword.t()) :: String.t()
   def status_code(opts \\ []) do

@@ -78,11 +78,21 @@ defmodule NeoFaker.Http do
   The accepted options are:
 
   - `:type` - Defines the type of status code to generate.
+  - `:group` - Specifies the group of status codes to generate.
 
   The values for `:type` can be:
 
   - `:detailed` - Returns a detailed status code (default).
   - `:simple` - Returns a simple status code (e.g., `"200"` instead of `"200 OK"`).
+
+  The values for `:group` can be:
+
+  - `nil` - All status codes (default).
+  - `:information` - 1xx status codes (Informational).
+  - `:success` - 2xx status codes (Success).
+  - `:redirection` - 3xx status codes (Redirection).
+  - `:client_error` - 4xx status codes (Client Error).
+  - `:server_error` - 5xx status codes (Server Error).
 
   ## Examples
 
@@ -96,7 +106,7 @@ defmodule NeoFaker.Http do
   @spec status_code(opts :: Keyword.t()) :: String.t()
   def status_code(opts \\ []) do
     type = Keyword.get(opts, :type, :detailed)
-    status_codes = fetch_status_code_values!(Keyword.get(opts, :group, nil))
+    status_codes = fetch_status_code_values!(Keyword.get(opts, :group))
 
     generate_status_code(status_codes, type: type)
   end

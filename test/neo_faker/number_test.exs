@@ -5,29 +5,21 @@ defmodule NeoFaker.NumberTest do
 
   describe "between/2" do
     test "returns a random number between min and max" do
-      integer = Number.between()
-
-      assert is_integer(integer)
+      assert is_integer(Number.between())
     end
 
     test "returns a random float between min and max" do
-      float = Number.between(1.0, 100.0)
-
-      assert is_float(float)
+      assert is_float(Number.between(1.0, 100.0))
     end
   end
 
   describe "decimal/2" do
     test "returns random floating-point number" do
-      decimal = Number.float()
-
-      assert is_float(decimal)
+      assert is_float(Number.float())
     end
 
     test "returns random floating-point number with specified range" do
-      decimal = Number.float(1..100, 100..1000)
-
-      assert is_float(decimal)
+      assert is_float(Number.float(1..100, 100..1000))
     end
   end
 

@@ -3,10 +3,7 @@ defmodule NeoFaker.BloodTest do
 
   describe "group/0" do
     test "returns a blood type in full format with rh factor" do
-      full_format = NeoFaker.Blood.group()
-      blood_types = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
-
-      assert full_format in blood_types
+      assert NeoFaker.Blood.group() in ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
     end
   end
 

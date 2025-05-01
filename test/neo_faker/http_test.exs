@@ -5,14 +5,12 @@ defmodule NeoFaker.HttpTest do
 
   alias NeoFaker.Http
 
-  # HEADER
   describe "user_agent/0" do
     test "returns a random user agent" do
       assert is_binary(Http.user_agent()) and String.valid?(Http.user_agent())
     end
   end
 
-  # REQUEST
   describe "request_method/0" do
     test "returns a random request method" do
       assert Http.request_method() in ["GET", "POST", "PUT", "DELETE", "PATCH"]

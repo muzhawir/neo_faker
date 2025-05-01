@@ -52,25 +52,19 @@ defmodule NeoFaker.AppTest do
 
   describe "author/0" do
     test "returns a full name of an app author" do
-      author_name = App.author()
-
-      assert String.valid?(author_name)
+      assert String.valid?(App.author())
     end
   end
 
   describe "description/0" do
     test "returns a short app description" do
-      description = App.description()
-
-      assert String.valid?(description)
+      assert String.valid?(App.description())
     end
   end
 
   describe "license/0" do
     test "returns an open source license" do
-      lisense = App.license()
-
-      assert String.valid?(lisense)
+      assert String.valid?(App.license())
     end
   end
 

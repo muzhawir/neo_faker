@@ -84,7 +84,7 @@ defmodule NeoFaker.App.Util do
   defp semver_build_number do
     day_range = Enum.random(-365..365)
 
-    Date.utc_today()
+    NaiveDateTime.local_now()
     |> Date.add(day_range)
     |> Date.to_string()
     |> String.replace("-", "")

@@ -27,9 +27,11 @@ defmodule NeoFaker.Time.Utils do
     {start_seconds, finish_seconds} =
       Enum.min_max([time_to_seconds_start, time_to_seconds_finish])
 
-    seconds = Enum.random(start_seconds..finish_seconds) - start_seconds
-
-    Time.add(start, seconds, :second)
+    Time.add(
+      start,
+      Enum.random(start_seconds..finish_seconds) - start_seconds,
+      :second
+    )
   end
 
   def random_between_time(start, finish, :iso8601) do

@@ -4,7 +4,7 @@ defmodule NeoFaker.Data.Generator do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Data.Resolver
 
-  @data_path Path.join([File.cwd!(), "lib", "data"])
+  @data_path Path.join([File.cwd!(), "priv", "data"])
 
   @doc """
   Generates a random value from the specified locale data file.
@@ -40,8 +40,10 @@ defmodule NeoFaker.Data.Generator do
   defp generate_random_value(locale, module, file, key) do
     Cache.create_cache!(locale, module, file)
 
-    persistent_term_key = Cache.create_persistent_term_key(locale, module, file)
-
-    persistent_term_key |> :persistent_term.get() |> Map.get(key) |> Enum.random()
+    locale
+    |> Cache.create_persistent_term_key(module, file)
+    |> :persistent_term.get()
+    |> Map.get(key)
+    |> Enum.random()
   end
 end

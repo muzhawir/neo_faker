@@ -103,11 +103,12 @@ defmodule NeoFaker.Date do
   """
   @doc since: "0.10.0"
   def birthday(min_age \\ 18, max_age \\ 65, opts \\ []) do
-    format = Keyword.get(opts, :format, :sigil)
-    today = Date.utc_today()
-    min_date = Date.shift(today, year: -min_age)
-    max_date = Date.shift(today, year: -max_age)
+    today = NaiveDateTime.local_now()
 
-    random_between_date(max_date, min_date, format)
+    random_between_date(
+      Date.shift(today, year: -max_age),
+      Date.shift(today, year: -min_age),
+      Keyword.get(opts, :format, :sigil)
+    )
   end
 end

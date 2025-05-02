@@ -1,13 +1,14 @@
 %{
   "prefixes" => [
+    "Bapak",
     "Dr.",
     "Dra.",
     "Drs.",
     "H.",
     "Hj.",
+    "Ibu",
     "Ir.",
     "K.H.",
-    "Karaeng",
     "Nn.",
     "Ny.",
     "Prof.",
@@ -15,6 +16,9 @@
     "R.K.",
     "R.M.",
     "Raden",
+    "Saudara",
+    "Saudari",
+    "Sdr.",
     "Tn."
   ],
   "suffixes" => [

@@ -43,7 +43,5 @@ defmodule NeoFaker do
 
   """
   @spec set_locale(atom()) :: :ok
-  def set_locale(locale \\ :default) do
-    Application.put_env(:neo_faker, :locale, locale)
-  end
+  def set_locale(locale \\ :default), do: Application.put_env(:neo_faker, :locale, locale)
 end

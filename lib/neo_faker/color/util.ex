@@ -89,10 +89,10 @@ defmodule NeoFaker.Color.Util do
   """
   @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
-    category = Keyword.get(opts, :category)
-    locale = Keyword.get(opts, :locale, :default)
-
-    keyword_color(category, locale)
+    keyword_color(
+      Keyword.get(opts, :category),
+      Keyword.get(opts, :locale, :default)
+    )
   end
 
   defp keyword_color(nil, locale) do

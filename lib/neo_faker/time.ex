@@ -44,10 +44,11 @@ defmodule NeoFaker.Time do
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
   def add(range \\ -24..24, opts \\ []) do
-    unit = Keyword.get(opts, :unit, :hour)
-    format = Keyword.get(opts, :format, :sigil)
-
-    random_add_time(range, unit, format)
+    random_add_time(
+      range,
+      Keyword.get(opts, :unit, :hour),
+      Keyword.get(opts, :format, :sigil)
+    )
   end
 
   @doc """
@@ -78,8 +79,6 @@ defmodule NeoFaker.Time do
   """
   @spec between(Time.t(), Time.t(), Keyword.t()) :: Time.t() | String.t()
   def between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59], opts \\ []) do
-    format = Keyword.get(opts, :format, :sigil)
-
-    random_between_time(start, finish, format)
+    random_between_time(start, finish, Keyword.get(opts, :format, :sigil))
   end
 end

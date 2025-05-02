@@ -21,10 +21,7 @@ defmodule NeoFaker.Date.Utils do
   def random_between_date(start, finish, :sigil), do: start |> Date.range(finish) |> Enum.random()
 
   def random_between_date(start, finish, :iso8601) do
-    start
-    |> Date.range(finish)
-    |> Enum.random()
-    |> Date.to_iso8601()
+    start |> Date.range(finish) |> Enum.random() |> Date.to_iso8601()
   end
 
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())

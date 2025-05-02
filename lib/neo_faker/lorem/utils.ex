@@ -13,10 +13,10 @@ defmodule NeoFaker.Lorem.Utils do
   """
   @spec lorem_ipsum(keyword()) :: list()
   def lorem_ipsum(opts \\ []) do
-    locale = Keyword.get(opts, :locale, :default)
     file = opts |> Keyword.get(:text) |> text_content()
 
-    locale
+    opts
+    |> Keyword.get(:locale, :default)
     |> fetch_cache!(@module, file)
     |> Map.get("text")
     |> hd()

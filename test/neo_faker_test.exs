@@ -1,6 +1,10 @@
 defmodule NeoFakerTest do
   use ExUnit.Case, async: true
 
+  describe "start/0" do
+    assert NeoFaker.start() == :ok
+  end
+
   describe "locale/0" do
     test "returns current locale" do
       assert is_atom(NeoFaker.locale())

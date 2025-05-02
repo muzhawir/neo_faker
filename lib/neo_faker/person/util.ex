@@ -7,23 +7,27 @@ defmodule NeoFaker.Person.Util do
 
   @female_name_file "female_name.exs"
   @male_name_file "male_name.exs"
+  @module NeoFaker.Person
 
   @doc """
   Generates a random name.
 
-  If no options are provided, it returns a random unisex name.
+  Returns a random name based on the provided options.
   """
-  @spec random_name(atom(), String.t(), Keyword.t()) :: String.t()
-  def random_name(module, key, opts \\ []) do
-    locale = Keyword.get(opts, :locale, :default)
-    female_name = random_data(module, @female_name_file, key, locale: locale)
-    male_name = random_data(module, @male_name_file, key, locale: locale)
+  @spec random_name(atom(), String.t(), atom()) :: String.t()
+  def random_name(locale, key, :female) do
+    random_data(@module, @female_name_file, key, locale: locale)
+  end
 
-    case Keyword.get(opts, :sex, nil) do
-      nil -> Enum.random([female_name, male_name])
-      :female -> female_name
-      :male -> male_name
-    end
+  def random_name(locale, key, :male) do
+    random_data(@module, @male_name_file, key, locale: locale)
+  end
+
+  def random_name(locale, key, :unisex) do
+    Enum.random([
+      random_data(@module, @female_name_file, key, locale: locale),
+      random_data(@module, @male_name_file, key, locale: locale)
+    ])
   end
 
   @doc """
@@ -32,11 +36,11 @@ defmodule NeoFaker.Person.Util do
   If no options are provided, it returns a default random unisex full name.
   """
   @spec random_full_name(atom(), Keyword.t(), boolean()) :: String.t()
-  def random_full_name(nil, locale, include_middle_name?) do
-    male_name = generate_full_name(:male, locale, include_middle_name?)
-    female_name = generate_full_name(:female, locale, include_middle_name?)
-
-    Enum.random([male_name, female_name])
+  def random_full_name(:unisex, locale, include_middle_name?) do
+    Enum.random([
+      generate_full_name(:male, locale, include_middle_name?),
+      generate_full_name(:female, locale, include_middle_name?)
+    ])
   end
 
   def random_full_name(:male, locale, include_middle_name?) do

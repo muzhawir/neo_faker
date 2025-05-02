@@ -23,16 +23,10 @@ defmodule NeoFaker.Lorem do
   The accepted options are:
 
   - `:text` - Specifies the text source.
-  - `:locale` - Specifies the locale to use.
 
   Values for option `:type` can be:
 
   - `:meditations` - A meditation text by Marcus Aurelius.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
 
   ## Examples
 
@@ -59,10 +53,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec sentence(Keyword.t()) :: String.t()
   def sentence(opts \\ []) do
-    opts
-    |> paragraph()
-    |> String.split(@sentence_delimiter_regexp)
-    |> Enum.random()
+    opts |> paragraph() |> String.split(@sentence_delimiter_regexp) |> Enum.random()
   end
 
   @doc """

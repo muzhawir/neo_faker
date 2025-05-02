@@ -13,7 +13,7 @@ defmodule NeoFaker.Lorem.Utils do
   """
   @spec lorem_ipsum(keyword()) :: list()
   def lorem_ipsum(opts \\ []) do
-    file = opts |> Keyword.get(:text) |> text_content()
+    file = text_content(Keyword.get(opts, :text))
 
     opts
     |> Keyword.get(:locale, :default)

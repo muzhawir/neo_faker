@@ -3,26 +3,25 @@ defmodule NeoFaker.Data.Resolver do
 
   alias NeoFaker.Data.Disk
 
-  @data_path Path.join([File.cwd!(), "lib", "data"])
-  @locale_file Path.join([@data_path, "locale.exs"])
+  @locale_file Path.join([File.cwd!(), "priv", "data", "locale.exs"])
 
   @doc """
-  Resolves the locale configuration based on the given options.
+  Resolves the locale configuration based on the provided options.
   """
-  def resolve_locale_config(opts) do
-    if is_nil(opts) do
+  def resolve_locale_config(options) do
+    if is_nil(options) do
       :neo_faker |> Application.get_env(:locale) |> resolve_locale()
     else
-      resolve_locale(opts)
+      resolve_locale(options)
     end
   end
 
   @doc """
-  Resolves a locale based on the given locale.
+  Resolves a locale based on the provided locale.
   """
   @spec resolve_locale(atom()) :: atom()
   def resolve_locale(locale) do
-    if locale_exists?(locale) do
+    if locale_available?(locale) do
       locale
     else
       :default
@@ -30,20 +29,16 @@ defmodule NeoFaker.Data.Resolver do
   end
 
   @doc """
-  Checks if a locale exists in the locale.exs file.
+  Checks if a locale is available in the locale.exs file.
   """
-  @spec locale_exists?(atom()) :: boolean()
-  def locale_exists?(locale) do
+  @spec locale_available?(atom()) :: boolean()
+  def locale_available?(locale) do
     if is_nil(:persistent_term.get(:available_locales, nil)) do
-      :persistent_term.put(:available_locales, MapSet.new(Disk.evaluate_file!(@locale_file)))
+      available_locales = @locale_file |> Disk.evaluate_file!() |> MapSet.new()
 
-      check_locale_set(locale)
-    else
-      check_locale_set(locale)
+      :persistent_term.put(:available_locales, available_locales)
     end
-  end
 
-  defp check_locale_set(locale) do
     :available_locales |> :persistent_term.get() |> MapSet.member?(Atom.to_string(locale))
   end
 end

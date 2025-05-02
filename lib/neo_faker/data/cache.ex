@@ -4,7 +4,7 @@ defmodule NeoFaker.Data.Cache do
   alias NeoFaker.Data.Disk
   alias NeoFaker.Data.Resolver
 
-  @data_path Path.join([File.cwd!(), "lib", "data"])
+  @data_path Path.join([File.cwd!(), "priv", "data"])
 
   @spec fetch_cache!(atom(), atom(), String.t()) :: map()
   def fetch_cache!(locale, module, file) do

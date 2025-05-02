@@ -4,7 +4,7 @@ defmodule NeoFaker.Data.Generator do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Data.Resolver
 
-  @data_path Path.join([File.cwd!(), "lib", "data"])
+  @data_path Path.join([File.cwd!(), "priv", "data"])
 
   @doc """
   Generates a random value from the specified locale data file.

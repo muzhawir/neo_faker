@@ -24,5 +24,8 @@ defmodule NeoFaker.Date.Utils do
     start |> Date.range(finish) |> Enum.random() |> Date.to_iso8601()
   end
 
+  @doc """
+  Generate naive date now.
+  """
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())
 end

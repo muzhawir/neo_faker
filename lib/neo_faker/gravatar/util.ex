@@ -18,18 +18,6 @@ defmodule NeoFaker.Gravatar.Util do
   def image_size(size) when size in 1..2048, do: size
 
   @doc """
-  Sets the default fallback image type for display options.
-
-  Parses the given options to determine the fallback image type when generating a Gravatar URL.
-  """
-  @spec default_fallback(atom()) :: String.t()
-  def default_fallback(nil), do: "identicon"
-  def default_fallback(:identicon), do: "identicon"
-  def default_fallback(:monsterid), do: "monsterid"
-  def default_fallback(:wavatar), do: "wavatar"
-  def default_fallback(:robohash), do: "robohash"
-
-  @doc """
   Generates a Gravatar URL for the given email address.
 
   Constructs a Gravatar URL using a hashed email, specified image size, and fallback image type.
@@ -44,20 +32,15 @@ defmodule NeoFaker.Gravatar.Util do
     |> URI.to_string()
   end
 
-  @doc """
-  Hashes an email address into a Base16-encoded string.
-
-  Computes a cryptographic hash of the given email address and returns its Base16 (hexadecimal)
-  representation.
-  """
+  # Hashes an email address into a Base16-encoded string.
   @spec hash_email!(email()) :: String.t()
-  def hash_email!(email) when is_nil(email) do
+  defp hash_email!(email) when is_nil(email) do
     random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
 
     :sha256 |> :crypto.hash(random_email) |> Base.encode16(case: :lower)
   end
 
-  def hash_email!(email) do
+  defp hash_email!(email) do
     if Regex.match?(@w3c_email_regex, email) do
       user_email = email |> String.trim() |> String.downcase()
 

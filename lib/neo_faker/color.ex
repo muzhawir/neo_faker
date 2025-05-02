@@ -108,6 +108,9 @@ defmodule NeoFaker.Color do
       iex> NeoFaker.Color.keyword(category: :basic)
       "purple"
 
+      iex> NeoFaker.Color.keyword(locale: :id_id)
+      "ungu"
+
   """
   @spec keyword(Keyword.t()) :: String.t()
   defdelegate keyword(opts \\ []), to: Util, as: :keyword

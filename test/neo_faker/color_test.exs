@@ -13,6 +13,13 @@ defmodule NeoFaker.ColorTest do
   @rgb_format_regexp ~r/^rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)$/
   @rgba_format_regexp ~r/^rgba?\((\d{1,3}), (\d{1,3}), (\d{1,3})(?:, ([01](?:\.\d+)?)?)?\)$/
 
+  defp fetch_color_keyword_cache!(locale) do
+    locale
+    |> fetch_cache!(@module, "keyword.exs")
+    |> Map.values()
+    |> List.flatten()
+  end
+
   describe "cmyk/1" do
     test "returns a CMYK color in tuple format" do
       cmyk_color = Color.cmyk()
@@ -77,27 +84,17 @@ defmodule NeoFaker.ColorTest do
 
   describe "keyword/1" do
     test "returns a color keyword" do
-      colors =
-        :default
-        |> fetch_cache!(@module, "keyword.exs")
-        |> Map.values()
-        |> List.flatten()
-
-      assert Color.keyword() in colors
+      assert Color.keyword() in fetch_color_keyword_cache!(:default)
     end
 
-    test "returns a color keyword with options" do
-      colors =
-        :default
-        |> fetch_cache!(@module, "keyword.exs")
-        |> Map.values()
-        |> List.flatten()
-
-      options = [:category, :locale]
-
-      for option <- options do
-        assert Color.keyword(option: option) in colors
+    test "returns a color keyword with option" do
+      for option <- [:basic, :extended] do
+        assert Color.keyword(category: option) in fetch_color_keyword_cache!(:default)
       end
+    end
+
+    test "returns a color keyword with locale option" do
+      assert Color.keyword(locale: :id_id) in fetch_color_keyword_cache!(:id_id)
     end
   end
 

@@ -6,7 +6,7 @@ defmodule NeoFaker.Color.Util do
   import NeoFaker.Number, only: [between: 0, between: 2]
 
   @module NeoFaker.Color
-  @hex_number Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9 A B C D E F])
+  @hex_digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9 A B C D E F])
 
   @doc """
   Generates a CMYK color.
@@ -14,19 +14,16 @@ defmodule NeoFaker.Color.Util do
   This function delegates the call to `NeoFaker.Color.cmyk/1`.
   """
   @spec cmyk(Keyword.t()) :: tuple() | String.t()
-  def cmyk(opts \\ [])
-  def cmyk([]), do: generate_random_cmyk_color()
-
-  def cmyk(format: :w3c) do
-    cmyk_value =
-      generate_random_cmyk_color()
-      |> Tuple.to_list()
-      |> Enum.map_join(", ", fn n -> "#{n}%" end)
-
-    "cmyk(#{cmyk_value})"
+  def cmyk(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_cmyk_as_w3c(generate_cmyk_tuple())
+      _ -> generate_cmyk_tuple()
+    end
   end
 
-  defp generate_random_cmyk_color, do: {between(), between(), between(), between()}
+  defp generate_cmyk_tuple, do: {between(), between(), between(), between()}
+
+  defp format_cmyk_as_w3c({c, m, y, k}), do: "cmyk(#{c}%, #{m}%, #{y}%, #{k}%)"
 
   @doc """
   Generates a HEX color.
@@ -34,52 +31,60 @@ defmodule NeoFaker.Color.Util do
   This function delegates the call to `NeoFaker.Color.hex/1`.
   """
   @spec hex(Keyword.t()) :: String.t()
-  def hex(opts \\ [])
-  def hex([]), do: "#" <> generate_random_hex_color(6)
-  def hex(format: :three_digit), do: "#" <> generate_random_hex_color(3)
-  def hex(format: :four_digit), do: "#" <> generate_random_hex_color(4)
-  def hex(format: :eight_digit), do: "#" <> generate_random_hex_color(8)
+  def hex(opts \\ []) do
+    digits =
+      case Keyword.get(opts, :format) do
+        :three_digit -> 3
+        :four_digit -> 4
+        :eight_digit -> 8
+        _ -> 6
+      end
 
-  defp generate_random_hex_color(digit) do
-    Enum.map_join(1..digit, "", fn _ -> Enum.random(@hex_number) end)
+    "#" <> generate_hex_color(digits)
+  end
+
+  defp generate_hex_color(digits) do
+    Enum.map_join(1..digits, "", fn _ -> Enum.random(@hex_digits) end)
   end
 
   @doc """
-  Generates a HSL color.
+  Generates an HSL color.
 
   This function delegates the call to `NeoFaker.Color.hsl/1`.
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
-  def hsl(opts \\ [])
-  def hsl([]), do: generate_random_hsl_color()
-
-  def hsl(format: :w3c) do
-    {h, s, l} = generate_random_hsl_color()
-
-    "hsl(#{h}, #{s}%, #{l}%)"
+  def hsl(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_hsl_as_w3c(generate_hsl_tuple())
+      _ -> generate_hsl_tuple()
+    end
   end
 
-  defp generate_random_hsl_color, do: {between(0, 359), between(), between()}
+  defp generate_hsl_tuple, do: {between(0, 359), between(), between()}
+
+  defp format_hsl_as_w3c({h, s, l}), do: "hsl(#{h}, #{s}%, #{l}%)"
 
   @doc """
-  Generates a HSLA color.
+  Generates an HSLA color.
 
   This function delegates the call to `NeoFaker.Color.hsla/1`.
   """
   @spec hsla(Keyword.t()) :: tuple() | String.t()
-  def hsla(opts \\ [])
-  def hsla([]), do: generate_random_hsla_color()
-
-  def hsla(format: :w3c) do
-    {h, s, l, a} = generate_random_hsla_color()
-
-    "hsla(#{h}, #{s}%, #{l}%, #{a})"
+  def hsla(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_hsla_as_w3c(generate_hsla_tuple())
+      _ -> generate_hsla_tuple()
+    end
   end
 
-  defp generate_random_hsla_color do
-    alpha = 0.0 |> between(1.0) |> Float.round(1)
+  defp generate_hsla_tuple do
+    alpha = Float.round(between(0.0, 1.0), 1)
 
     {between(0, 359), between(), between(), alpha}
+  end
+
+  defp format_hsla_as_w3c({h, s, l, a}) do
+    "hsla(#{h}, #{s}%, #{l}%, #{a})"
   end
 
   @doc """
@@ -89,13 +94,13 @@ defmodule NeoFaker.Color.Util do
   """
   @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
-    keyword_color(
+    generate_keyword_color(
       Keyword.get(opts, :category),
       Keyword.get(opts, :locale, :default)
     )
   end
 
-  defp keyword_color(nil, locale) do
+  defp generate_keyword_color(nil, locale) do
     locale
     |> fetch_cache!(@module, "keyword.exs")
     |> Map.values()
@@ -103,49 +108,45 @@ defmodule NeoFaker.Color.Util do
     |> Enum.random()
   end
 
-  defp keyword_color(:basic, locale) do
-    random_data(@module, "keyword.exs", "basic", locale: locale)
-  end
-
-  defp keyword_color(:extended, locale) do
-    random_data(@module, "keyword.exs", "extended", locale: locale)
+  defp generate_keyword_color(category, locale) do
+    random_data(@module, "keyword.exs", Atom.to_string(category), locale: locale)
   end
 
   @doc """
-  Generates a RGB color.
+  Generates an RGB color.
 
   This function delegates the call to `NeoFaker.Color.rgb/1`.
   """
   @spec rgb(Keyword.t()) :: tuple() | String.t()
-  def rgb(opts \\ [])
-  def rgb([]), do: generate_random_rgb_color()
-
-  def rgb(format: :w3c) do
-    {r, g, b} = generate_random_rgb_color()
-
-    "rgb(#{r}, #{g}, #{b})"
+  def rgb(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_rgb_as_w3c(generate_rgb_tuple())
+      _ -> generate_rgb_tuple()
+    end
   end
 
-  defp generate_random_rgb_color, do: {between(0, 255), between(0, 255), between(0, 255)}
+  defp generate_rgb_tuple, do: {between(0, 255), between(0, 255), between(0, 255)}
+
+  defp format_rgb_as_w3c({r, g, b}), do: "rgb(#{r}, #{g}, #{b})"
 
   @doc """
-  Generates a RGBA color.
+  Generates an RGBA color.
 
   This function delegates the call to `NeoFaker.Color.rgba/1`.
   """
   @spec rgba(Keyword.t()) :: tuple() | String.t()
-  def rgba(opts \\ [])
-  def rgba([]), do: generate_random_rgba_color()
-
-  def rgba(format: :w3c) do
-    {r, g, b, a} = generate_random_rgba_color()
-
-    "rgba(#{r}, #{g}, #{b}, #{a})"
+  def rgba(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_rgba_as_w3c(generate_rgba_tuple())
+      _ -> generate_rgba_tuple()
+    end
   end
 
-  defp generate_random_rgba_color do
-    alpha = 0.0 |> between(1.0) |> Float.round(1)
+  defp generate_rgba_tuple do
+    alpha = Float.round(between(0.0, 1.0), 1)
 
     {between(0, 255), between(0, 255), between(0, 255), alpha}
   end
+
+  defp format_rgba_as_w3c({r, g, b, a}), do: "rgba(#{r}, #{g}, #{b}, #{a})"
 end

@@ -34,6 +34,9 @@ Set the default locale in `config.exs`:
 config :neo_faker, locale: :default
 ```
 
+If the specified locale is unavailable, it will fall back to `:default`.
+You can find the list of available locales on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
+
 > ### Setting Configuration in Phoenix {: .tip}
 >
 > In [Phoenix Framework](https://hexdocs.pm/phoenix), set the locale in `config/dev.exs` or
@@ -45,9 +48,6 @@ config :neo_faker, locale: :default
 > ExUnit.start()
 > NeoFaker.start() # Add this line
 > ```
-
-If the specified locale is unavailable, it will fall back to `:default`.
-You can find the list of available locales on the [Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://hexdocs.pm/neo_faker" target="_blank">
-    <img src="./lib/assets/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
+    <img src="./priv/assets/logo/full_logo.svg" width="300" alt="NeoFaker Logo">
   </a>
 </p>
 

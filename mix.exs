@@ -31,7 +31,7 @@ defmodule NeoFaker.MixProject do
   defp docs do
     [
       main: "getting-started",
-      logo: "lib/assets/logo/doc_logo.svg",
+      logo: "priv/assets/logo/doc_logo.svg",
       extras: extra_pages(),
       groups_for_modules: groups_for_modules()
     ]

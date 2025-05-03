@@ -9,7 +9,8 @@ defmodule NeoFaker.Text do
 
   import NeoFaker.Data.Generator, only: [random_data: 3]
 
-  alias NeoFaker.Text.Util
+  alias NeoFaker.Text.Character
+  alias NeoFaker.Text.Emoji
 
   @word_file "word.exs"
 
@@ -41,7 +42,7 @@ defmodule NeoFaker.Text do
 
   """
   @spec character(Keyword.t()) :: String.t()
-  defdelegate character(opts \\ []), to: Util, as: :character
+  defdelegate character(opts \\ []), to: Character, as: :character
 
   @doc """
   Generates a string of random characters.
@@ -99,7 +100,7 @@ defmodule NeoFaker.Text do
 
   """
   @spec emoji(Keyword.t()) :: String.t()
-  defdelegate emoji(opts \\ []), to: Util, as: :emoji
+  defdelegate emoji(opts \\ []), to: Emoji, as: :emoji
 
   @doc """
   Generates a random word.

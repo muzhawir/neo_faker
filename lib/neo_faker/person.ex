@@ -8,7 +8,8 @@ defmodule NeoFaker.Person do
   @moduledoc since: "0.6.0"
 
   import NeoFaker.Data.Generator, only: [random_data: 4]
-  import NeoFaker.Person.Util
+  import NeoFaker.Person.FullName
+  import NeoFaker.Person.Name
 
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
@@ -51,7 +52,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec first_name(Keyword.t()) :: String.t()
   def first_name(opts \\ []) do
-    random_name(
+    generate_random_name(
       Keyword.get(opts, :locale, :default),
       "first_names",
       Keyword.get(opts, :sex, :unisex)
@@ -66,7 +67,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
   def middle_name(opts \\ []) do
-    random_name(
+    generate_random_name(
       Keyword.get(opts, :locale, :default),
       "middle_names",
       Keyword.get(opts, :sex, :unisex)
@@ -81,7 +82,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
   def last_name(opts \\ []) do
-    random_name(
+    generate_random_name(
       Keyword.get(opts, :locale, :default),
       "last_names",
       Keyword.get(opts, :sex, :unisex)
@@ -132,7 +133,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
-    random_full_name(
+    generate_random_full_name(
       Keyword.get(opts, :sex, :unisex),
       Keyword.get(opts, :locale, :default),
       Keyword.get(opts, :middle_name, true)

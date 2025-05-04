@@ -6,7 +6,7 @@ defmodule NeoFaker.Color do
   """
   @moduledoc since: "0.8.0"
 
-  alias NeoFaker.Color.Util
+  import NeoFaker.Color.Util
 
   @doc """
   Generates a CMYK color.
@@ -32,7 +32,12 @@ defmodule NeoFaker.Color do
 
   """
   @spec cmyk(Keyword.t()) :: tuple() | String.t()
-  defdelegate cmyk(opts \\ []), to: Util, as: :cmyk
+  def cmyk(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_cmyk_as_w3c(generate_cmyk_tuple())
+      _ -> generate_cmyk_tuple()
+    end
+  end
 
   @doc """
   Generates a HEX color.
@@ -60,7 +65,17 @@ defmodule NeoFaker.Color do
 
   """
   @spec hex(Keyword.t()) :: String.t()
-  defdelegate hex(opts \\ []), to: Util, as: :hex
+  def hex(opts \\ []) do
+    digits =
+      case Keyword.get(opts, :format) do
+        :three_digit -> 3
+        :four_digit -> 4
+        :eight_digit -> 8
+        _ -> 6
+      end
+
+    "#" <> generate_hex_color(digits)
+  end
 
   @doc """
   Generates an HSL color.
@@ -68,7 +83,12 @@ defmodule NeoFaker.Color do
   This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
-  defdelegate hsl(opts \\ []), to: Util, as: :hsl
+  def hsl(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_hsl_as_w3c(generate_hsl_tuple())
+      _ -> generate_hsl_tuple()
+    end
+  end
 
   @doc """
   Generates an HSLA color.
@@ -76,13 +96,17 @@ defmodule NeoFaker.Color do
   This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec hsla(Keyword.t()) :: tuple() | String.t()
-  defdelegate hsla(opts \\ []), to: Util, as: :hsla
+  def hsla(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_hsla_as_w3c(generate_hsla_tuple())
+      _ -> generate_hsla_tuple()
+    end
+  end
 
   @doc """
   Generates a keyword color.
 
   Returns a keyword color. If no options are provided, all category colors are returned.
-
 
   ## Options
 
@@ -113,7 +137,12 @@ defmodule NeoFaker.Color do
 
   """
   @spec keyword(Keyword.t()) :: String.t()
-  defdelegate keyword(opts \\ []), to: Util, as: :keyword
+  def keyword(opts \\ []) do
+    generate_keyword_color(
+      Keyword.get(opts, :category),
+      Keyword.get(opts, :locale, :default)
+    )
+  end
 
   @doc """
   Generates an RGB color.
@@ -121,7 +150,12 @@ defmodule NeoFaker.Color do
   This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec rgb(Keyword.t()) :: tuple() | String.t()
-  defdelegate rgb(opts \\ []), to: Util, as: :rgb
+  def rgb(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_rgb_as_w3c(generate_rgb_tuple())
+      _ -> generate_rgb_tuple()
+    end
+  end
 
   @doc """
   Generates an RGBA color.
@@ -129,5 +163,10 @@ defmodule NeoFaker.Color do
   This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
   """
   @spec rgba(Keyword.t()) :: tuple() | String.t()
-  defdelegate rgba(opts \\ []), to: Util, as: :rgba
+  def rgba(opts \\ []) do
+    case Keyword.get(opts, :format) do
+      :w3c -> format_rgba_as_w3c(generate_rgba_tuple())
+      _ -> generate_rgba_tuple()
+    end
+  end
 end

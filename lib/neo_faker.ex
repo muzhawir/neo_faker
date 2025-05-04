@@ -14,7 +14,7 @@ defmodule NeoFaker do
         _ -> locale()
       end
 
-    IO.puts("NeoFaker started with locale: :#{case_result}")
+    IO.puts("\nNeoFaker started with locale: :#{case_result}")
 
     :ok
   end

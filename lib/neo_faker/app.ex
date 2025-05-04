@@ -8,6 +8,7 @@ defmodule NeoFaker.App do
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Name
+  import NeoFaker.App.Semver
   import NeoFaker.Data.Generator, only: [random_data: 3, random_data: 4]
 
   alias NeoFaker.Person
@@ -154,7 +155,14 @@ defmodule NeoFaker.App do
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  defdelegate semver(opts \\ []), to: NeoFaker.App.Semver, as: :semver
+  def semver(opts \\ [])
+  def semver([]), do: semver_core()
+  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
+  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
+
+  def semver(type: :pre_release_build) do
+    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
+  end
 
   @doc """
   Returns a simple version number.
@@ -168,5 +176,5 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version, do: [] |> semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 end

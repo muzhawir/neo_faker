@@ -21,11 +21,7 @@ defmodule NeoFaker.Data.Resolver do
   """
   @spec resolve_locale(atom()) :: atom()
   def resolve_locale(locale) do
-    if locale_available?(locale) do
-      locale
-    else
-      :default
-    end
+    if locale_available?(locale), do: locale, else: :default
   end
 
   @doc """

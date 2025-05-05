@@ -1,7 +1,7 @@
 defmodule NeoFaker.HttpTest do
   use ExUnit.Case, async: true
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
+  import NeoFaker.Data.Cache, only: [fetch!: 3]
 
   alias NeoFaker.Http
 
@@ -38,7 +38,7 @@ defmodule NeoFaker.HttpTest do
     test "returns a random status code" do
       status_code =
         :default
-        |> fetch_cache!(NeoFaker.Http, "status_code.exs")
+        |> fetch!(NeoFaker.Http, "status_code.exs")
         |> Map.values()
         |> List.flatten()
 
@@ -50,7 +50,7 @@ defmodule NeoFaker.HttpTest do
 
       status_code =
         :default
-        |> fetch_cache!(NeoFaker.Http, "status_code.exs")
+        |> fetch!(NeoFaker.Http, "status_code.exs")
         |> Map.values()
         |> List.flatten()
         |> Enum.map(&get_number_code.(&1))
@@ -72,7 +72,7 @@ defmodule NeoFaker.HttpTest do
 
         status_code =
           :default
-          |> fetch_cache!(NeoFaker.Http, "status_code.exs")
+          |> fetch!(NeoFaker.Http, "status_code.exs")
           |> Map.get(group_string)
 
         assert Http.status_code(group: group) in status_code

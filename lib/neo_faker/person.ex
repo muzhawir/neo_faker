@@ -7,7 +7,7 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Data.Generator, only: [random_data: 4]
+  import NeoFaker.Data.Generator, only: [random_value: 4]
   import NeoFaker.Person.FullName
   import NeoFaker.Person.Name
 
@@ -166,7 +166,7 @@ defmodule NeoFaker.Person do
 
   """
   @spec prefix(Keyword.t()) :: String.t()
-  def prefix(opts \\ []), do: random_data(__MODULE__, @name_affixes_file, "prefixes", opts)
+  def prefix(opts \\ []), do: random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
 
   @doc """
   Generates a random name suffix.
@@ -175,7 +175,7 @@ defmodule NeoFaker.Person do
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
-  def suffix(opts \\ []), do: random_data(__MODULE__, @name_affixes_file, "suffixes", opts)
+  def suffix(opts \\ []), do: random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
 
   @doc """
   Generates a random binary gender.
@@ -203,7 +203,7 @@ defmodule NeoFaker.Person do
 
   """
   @spec binary_gender(Keyword.t()) :: String.t()
-  def binary_gender(opts \\ []), do: random_data(__MODULE__, @gender_file, "binary", opts)
+  def binary_gender(opts \\ []), do: random_value(__MODULE__, @gender_file, "binary", opts)
 
   @doc """
   Generates a random short binary gender.
@@ -212,7 +212,7 @@ defmodule NeoFaker.Person do
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
   def short_binary_gender(opts \\ []) do
-    random_data(__MODULE__, @gender_file, "short_binary", opts)
+    random_value(__MODULE__, @gender_file, "short_binary", opts)
   end
 
   @doc """
@@ -221,7 +221,8 @@ defmodule NeoFaker.Person do
   This function behaves the same way as `binary_gender/1`. See `binary_gender/1` for more details.
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
-  def non_binary_gender(opts \\ []), do: random_data(__MODULE__, @gender_file, "non_binary", opts)
+  def non_binary_gender(opts \\ []),
+    do: random_value(__MODULE__, @gender_file, "non_binary", opts)
 
   @doc """
   Generates a random age.

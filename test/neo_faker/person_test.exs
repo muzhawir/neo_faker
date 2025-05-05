@@ -1,8 +1,7 @@
 defmodule NeoFaker.PersonTest do
   use ExUnit.Case, async: true
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
-
+  alias NeoFaker.Data.Cache
   alias NeoFaker.Person
 
   @module NeoFaker.Person
@@ -10,7 +9,7 @@ defmodule NeoFaker.PersonTest do
   defp valid_name?(name), do: is_binary(name) and String.valid?(name) and name != ""
 
   defp generate_word_list(locale, module, file) do
-    locale |> fetch_cache!(module, file) |> Map.values() |> List.flatten()
+    locale |> Cache.fetch!(module, file) |> Map.values() |> List.flatten()
   end
 
   describe "first_name/1" do

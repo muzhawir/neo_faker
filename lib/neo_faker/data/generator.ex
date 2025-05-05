@@ -2,9 +2,8 @@ defmodule NeoFaker.Data.Generator do
   @moduledoc false
 
   alias NeoFaker.Data.Cache
+  alias NeoFaker.Data.Disk
   alias NeoFaker.Data.Resolver
-
-  @data_path Path.join([File.cwd!(), "priv", "data"])
 
   @doc """
   Generates a random value from the specified locale data file.
@@ -22,13 +21,13 @@ defmodule NeoFaker.Data.Generator do
   ### Options
 
   - `:locale` - Specifies the locale to use, e.g., `:id_id`. If not provided, `nil` will be used,
-  which loads the default locale.
+    which loads the default locale.
   """
-  @spec random_data(atom(), String.t(), String.t(), Keyword.t()) :: any()
-  def random_data(module, file, key, opts \\ []) do
+  @spec random_value(atom(), String.t(), String.t(), Keyword.t()) :: any()
+  def random_value(module, file, key, opts \\ []) do
     locale_name = opts |> Keyword.get(:locale, nil) |> Resolver.resolve_locale_config()
     module_name = module |> Module.split() |> List.last() |> String.downcase()
-    file_path = Path.join([@data_path, Atom.to_string(locale_name), module_name, file])
+    file_path = Path.join([Disk.data_path(), Atom.to_string(locale_name), module_name, file])
 
     if File.exists?(file_path) do
       generate_random_value(locale_name, module, file, key)
@@ -38,10 +37,10 @@ defmodule NeoFaker.Data.Generator do
   end
 
   defp generate_random_value(locale, module, file, key) do
-    Cache.create_cache!(locale, module, file)
+    Cache.generate!(locale, module, file)
 
     locale
-    |> Cache.create_persistent_term_key(module, file)
+    |> Cache.generate_key(module, file)
     |> :persistent_term.get()
     |> Map.get(key)
     |> Enum.random()

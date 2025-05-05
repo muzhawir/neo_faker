@@ -1,7 +1,7 @@
 defmodule NeoFaker.Lorem.Utils do
   @moduledoc false
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
+  alias NeoFaker.Data.Cache
 
   @module NeoFaker.Lorem
   @new_line_regexp ~r/(?<!\n)\n(?!\n)/
@@ -18,7 +18,7 @@ defmodule NeoFaker.Lorem.Utils do
 
     opts
     |> Keyword.get(:locale, :default)
-    |> fetch_cache!(@module, file)
+    |> Cache.fetch!(@module, file)
     |> Map.get("text")
     |> hd()
     |> String.replace(@new_line_regexp, " ")

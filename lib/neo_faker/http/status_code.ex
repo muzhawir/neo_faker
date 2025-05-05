@@ -3,11 +3,13 @@ defmodule NeoFaker.Http.StatusCode do
 
   import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
 
-  @doc """
-  Fetches HTTP status codes from the cache.
+  @type status_code_type :: :detailed | :simple
 
-  Returns a list of HTTP status codes for the specified group. If no group is specified, it
-  returns all status codes.
+  @doc """
+  Retrieves a list of HTTP status codes for the specified group from the cache.
+
+  If `group` is `nil`, returns a flattened list of all status codes across all groups.
+  If `group` is an atom, returns the list of status codes for that group.
   """
   @spec fetch_status_codes!(atom()) :: list(String.t())
   def fetch_status_codes!(nil) do
@@ -20,16 +22,17 @@ defmodule NeoFaker.Http.StatusCode do
   def fetch_status_codes!(group) do
     :default
     |> fetch_cache!(NeoFaker.Http, "status_code.exs")
-    |> Map.fetch!(Atom.to_string(group))
+    |> Map.get(Atom.to_string(group))
   end
 
   @doc """
-  Generates a random HTTP status code.
+  Generates a random HTTP status code string from the provided list.
 
-  Returns a random HTTP status code string wether detailed or simple based on the provided
-  options.
+  If the `:type` option is set to `:detailed`, returns a random full status code string
+  (e.g., "404 Not Found"). If set to `:simple`, returns only the numeric part of a random
+  status code (e.g., "404").
   """
-  @spec generate_status_code(list(), Keyword.t()) :: String.t()
+  @spec generate_status_code([String.t()], type: status_code_type()) :: String.t()
   def generate_status_code(status_codes, type: :detailed), do: Enum.random(status_codes)
 
   def generate_status_code(status_codes, type: :simple) do

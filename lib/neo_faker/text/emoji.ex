@@ -7,6 +7,12 @@ defmodule NeoFaker.Text.Emoji do
   @emoji_file "emoji.exs"
   @module NeoFaker.Text
 
+  @doc """
+  Generates a random emoji.
+
+  Returns a random emoji from the specified category or all categories if `:all` is passed.
+  """
+  @spec generate_emoji(:all) :: String.t()
   def generate_emoji(:all) do
     :default
     |> fetch_cache!(@module, @emoji_file)

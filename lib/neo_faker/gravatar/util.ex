@@ -8,21 +8,21 @@ defmodule NeoFaker.Gravatar.Util do
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
   @doc """
-  Sets the image size for display options.
+  Returns the Gravatar image size, defaulting to 80 if the input is `nil`.
 
-  Parses the given display options to determine the image size, which must be between `1` and
-  `2048` pixels. If no valid size is specified, the default value of `80` pixels is used.
+  If a size is provided, it is returned as-is. The expected valid range is 1 to 2048 pixels.
   """
-  @spec image_size(non_neg_integer()) :: non_neg_integer()
+  @spec image_size(integer() | nil) :: integer()
   def image_size(size) when is_nil(size), do: 80
   def image_size(size) when size in 1..2048, do: size
 
   @doc """
-  Generates a Gravatar URL for the given email address.
+  Generates a Gravatar URL for the specified email, image size, and fallback image type.
 
-  Constructs a Gravatar URL using a hashed email, specified image size, and fallback image type.
+  The email is hashed and incorporated into the URL path, with query parameters for the fallback
+  image and size.
   """
-  @spec generate_gravatar_url(email(), pos_integer(), String.t()) :: String.t()
+  @spec generate_gravatar_url(email(), integer(), String.t()) :: String.t()
   def generate_gravatar_url(email, image_size, default_fallback) do
     @gravatar_url
     |> URI.parse()
@@ -32,8 +32,6 @@ defmodule NeoFaker.Gravatar.Util do
     |> URI.to_string()
   end
 
-  # Hashes an email address into a Base16-encoded string.
-  @spec hash_email!(email()) :: String.t()
   defp hash_email!(email) when is_nil(email) do
     random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
 

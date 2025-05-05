@@ -8,9 +8,9 @@ defmodule NeoFaker.Person.Name do
   @male_name_file "male_name.exs"
 
   @doc """
-  Generates a random name.
+  Generates a random female name for the specified locale and key.
 
-  Returns a random name based on the provided options.
+  Returns a name string selected from female name data corresponding to the given locale and key.
   """
   @spec generate_random_name(atom(), String.t(), atom()) :: String.t()
   def generate_random_name(locale, key, :female) do

@@ -11,10 +11,10 @@ defmodule NeoFaker.Http do
   import NeoFaker.Http.UserAgent
 
   @doc """
-  Generates a random user-agent.
+  Generates a random HTTP user-agent string.
 
-  Returns a random user-agent string from the top 100 HTTP user-agents most used over the Internet
-  by [https://microlink.io/user-agents](https://microlink.io/user-agents).
+  Selects a user-agent from a curated list of the top 100 most common HTTP user-agents, with
+  optional filtering by type.
 
   ## Options
 
@@ -83,10 +83,10 @@ defmodule NeoFaker.Http do
   end
 
   @doc """
-  Generates a random HTTP status code.
+  Generates a random HTTP status code string.
 
-  Returns a random HTTP status code string. If no options are provided, it will return a detailed
-  status code.
+  Returns a random HTTP status code string, which can be either detailed (e.g., `"200 OK"`) or
+  simple (e.g., `"200"`).
 
   ## Options
 
@@ -97,7 +97,7 @@ defmodule NeoFaker.Http do
 
   The values for `:type` can be:
 
-  - `:detailed` - Returns a detailed status code (default).
+  - `:detailed` - Returns a detailed status code (e.g., `"200 OK"`), which is the default.
   - `:simple` - Returns a simple status code (e.g., `"200"` instead of `"200 OK"`).
 
   The values for `:group` can be:

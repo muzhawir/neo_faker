@@ -153,6 +153,12 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.semver(type: :pre_release)
       "1.2.3-beta.1"
 
+      iex> NeoFaker.App.semver(type: :build)
+      "1.2.3+20250325"
+
+      iex> NeoFaker.App.semver(type: :pre_release_build)
+      "1.2.3-rc.1+20250325"
+
   """
   @spec semver(Keyword.t()) :: String.t()
   def semver(opts \\ [])

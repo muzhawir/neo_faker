@@ -60,7 +60,7 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random word.
 
-  This function behaves the same way as `sentence/1`. See `sentence/1` for more details.
+  This function behaves the same way as `paragraph/1`. See `paragraph/1` for more details.
   """
   @spec word(Keyword.t()) :: String.t()
   def word(opts \\ []) do

@@ -10,18 +10,20 @@ defmodule NeoFaker.Date do
   import NeoFaker.Date.Utils
 
   @doc """
-  Generates a random date.
+  Generates a random date within a specified range relative to today.
 
-  Returns a date within the default range of 365 days before and 365 days after today.
+  By default, returns a date between 365 days before and 365 days after the current date.
+  The output format can be either a `Date` struct (`~D` sigil) or an ISO 8601 string, depending
+  on the `:format` option.
 
   ## Options
 
-  - `:format` - Specifies the format of the date.
+  - `:format` - Specifies the output format of the date.
 
   The values for `:format` can be:
 
-  - `:sigil` - Returns the date in sigil `~D` format (default).
-  - `:iso8601` - Returns the date in ISO 8601 format.
+  - `:struct` - Returns a `Date` struct.
+  - `:iso8601` — Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -37,22 +39,23 @@ defmodule NeoFaker.Date do
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
   def add(range \\ -365..365, opts \\ []) do
-    random_add_date(range, Keyword.get(opts, :format, :sigil))
+    random_add_date(range, Keyword.get(opts, :format, :struct))
   end
 
   @doc """
-  Generates a random date between two dates.
+  Generates a random date between two given dates.
 
-  Returns a date between the specified start and finish dates.
+  By default, returns a date between January 1, 1970 and today. The output format can be specified
+  as either a `Date` struct (`:struct`, default) or an ISO 8601 string (`:iso8601`).
 
   ## Options
 
-  - `:format` - Specifies the format of the date.
+  - `:format` - Specifies the output format of the date.
 
   The values for `:format` can be:
 
-  - `:sigil` - Returns the date in sigil `~D` format (default).
-  - `:iso8601` - Returns the date in ISO 8601 format.
+  - `:struct` - Returns a `Date` struct.
+  - `:iso8601` — Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -68,7 +71,7 @@ defmodule NeoFaker.Date do
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
   def between(start \\ ~D[1970-01-01], finish \\ local_date_now(), opts \\ []) do
-    random_between_date(start, finish, Keyword.get(opts, :format, :sigil))
+    random_between_date(start, finish, Keyword.get(opts, :format, :struct))
   end
 
   @doc """
@@ -82,8 +85,8 @@ defmodule NeoFaker.Date do
 
   The values for `:format` can be:
 
-  - `:sigil` - Returns the date in sigil `~D` format (default).
-  - `:iso8601` - Returns the date in ISO 8601 format.
+  - `:struct` - Returns a `Date` struct.
+  - `:iso8601` — Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -98,13 +101,14 @@ defmodule NeoFaker.Date do
 
   """
   @doc since: "0.10.0"
+  @spec birthday(non_neg_integer(), non_neg_integer(), Keyword.t()) :: Date.t() | String.t()
   def birthday(min_age \\ 18, max_age \\ 65, opts \\ []) do
     today = NaiveDateTime.local_now()
 
     random_between_date(
       Date.shift(today, year: -max_age),
       Date.shift(today, year: -min_age),
-      Keyword.get(opts, :format, :sigil)
+      Keyword.get(opts, :format, :struct)
     )
   end
 end

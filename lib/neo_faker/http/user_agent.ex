@@ -10,9 +10,9 @@ defmodule NeoFaker.Http.UserAgent do
   @type user_agent_type :: :all | :browser | :crawler
 
   @doc """
-  Generates a random user-agent.
+  Generates a random user-agent string from all available user-agent data.
 
-  Returns a random browser or crawler user-agent string.
+  Returns a randomly user-agent string, which may represent a browser or crawler.
   """
   @spec generate_user_agent(user_agent_type()) :: String.t()
   def generate_user_agent(:all) do
@@ -24,7 +24,6 @@ defmodule NeoFaker.Http.UserAgent do
   end
 
   def generate_user_agent(:browser), do: random_data(@module, @user_agent_file, "browsers")
-
   def generate_user_agent(:crawler), do: random_data(@module, @user_agent_file, "crawlers")
 
   def generate_user_agent(other) do

@@ -28,8 +28,8 @@ defmodule NeoFaker.Time do
 
   The values for `:format` can be:
 
-  - `:struct`: Returns a `Time` struct (default).
-  - `:iso8601`: Returns the time in ISO 8601 format.
+  - `:struct` - Returns a `Time` struct (default).
+  - `:iso8601` - Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -63,8 +63,8 @@ defmodule NeoFaker.Time do
 
   The values for `:format` can be:
 
-  - `:struct`: Returns a `Time` struct (default).
-  - `:iso8601`: Returns the time in ISO 8601 format.
+  - `:struct` - Returns a `Time` struct (default).
+  - `:iso8601` - Returns an ISO 8601 formatted string.
 
   ## Examples
 

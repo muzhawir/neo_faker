@@ -8,30 +8,25 @@ defmodule NeoFaker.Color do
 
   import NeoFaker.Color.Util
 
+  
+  
   @doc """
-  Generates a CMYK color.
-
-  Returns a CMYK color. If no options are provided, the color is returned in tuple format.
-
+  Generates a random CMYK color as a tuple or W3C-formatted string.
+  
+  By default, returns a tuple `{c, m, y, k}` with each component as an integer percentage. If `format: :w3c` is specified, returns a string in W3C CMYK format (e.g., `"cmyk(0%, 25%, 50%, 100%)"`).
+  
   ## Options
-
-  - `:format` - Specifies the output format.
-
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
-
+  
+    - `:format` – Set to `:w3c` to return a W3C-formatted string; otherwise returns a tuple.
+  
   ## Examples
-
+  
       iex> NeoFaker.Color.cmyk()
       {0, 25, 50, 100}
-
+  
       iex> NeoFaker.Color.cmyk(format: :w3c)
       "cmyk(0%, 25%, 50%, 100%)"
-
   """
-  @spec cmyk(Keyword.t()) :: tuple() | String.t()
   def cmyk(opts \\ []) do
     case Keyword.get(opts, :format) do
       :w3c -> format_cmyk_as_w3c(generate_cmyk_tuple())
@@ -39,32 +34,25 @@ defmodule NeoFaker.Color do
     end
   end
 
+  
+  
   @doc """
-  Generates a HEX color.
-
-  Returns a HEX color. If no options are provided, the color is returned in six-digit format.
-
+  Generates a random HEX color string in various digit formats.
+  
+  By default, returns a six-digit HEX color string (e.g., "#A1B2C3"). The output format can be customized using the `:format` option to produce three-digit, four-digit, or eight-digit HEX strings.
+  
   ## Options
-
-  - `:format` - Specifies the output format.
-
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in six-digit format (default).
-  - `:three_digit` - Returns the color in three-digit format.
-  - `:four_digit` - Returns the color in four-digit format.
-  - `:eight_digit` - Returns the color in eight-digit format.
-
+  
+    - `:format` - Specifies the HEX digit format. Accepts `:three_digit`, `:four_digit`, `:eight_digit`, or `nil` (default is six-digit).
+  
   ## Examples
-
+  
       iex> NeoFaker.Color.hex()
       "#613583"
-
+  
       iex> NeoFaker.Color.hex(format: :three_digit)
       "#365"
-
   """
-  @spec hex(Keyword.t()) :: String.t()
   def hex(opts \\ []) do
     digits =
       case Keyword.get(opts, :format) do
@@ -77,12 +65,13 @@ defmodule NeoFaker.Color do
     "#" <> generate_hex_color(digits)
   end
 
+  
+  
   @doc """
-  Generates an HSL color.
-
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  Generates a random HSL color as a tuple or W3C-formatted string.
+  
+  By default, returns an `{hue, saturation, lightness}` tuple. If `format: :w3c` is specified in the options, returns a string in W3C HSL format (e.g., `"hsl(120, 100%, 50%)"`).
   """
-  @spec hsl(Keyword.t()) :: tuple() | String.t()
   def hsl(opts \\ []) do
     case Keyword.get(opts, :format) do
       :w3c -> format_hsl_as_w3c(generate_hsl_tuple())
@@ -90,12 +79,13 @@ defmodule NeoFaker.Color do
     end
   end
 
+  
+  
   @doc """
-  Generates an HSLA color.
-
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  Generates a random HSLA color as a tuple or W3C-formatted string.
+  
+  By default, returns an `{hue, saturation, lightness, alpha}` tuple. If `format: :w3c` is specified in the options, returns a string in W3C HSLA format (e.g., `"hsla(120, 100%, 50%, 0.5)"`).
   """
-  @spec hsla(Keyword.t()) :: tuple() | String.t()
   def hsla(opts \\ []) do
     case Keyword.get(opts, :format) do
       :w3c -> format_hsla_as_w3c(generate_hsla_tuple())
@@ -103,40 +93,24 @@ defmodule NeoFaker.Color do
     end
   end
 
+  
+  
   @doc """
-  Generates a keyword color.
-
-  Returns a keyword color. If no options are provided, all category colors are returned.
-
-  ## Options
-
-  - `:category` - Specifies the category of keyword colors.
-  - `:locale` - Specifies the locale to use.
-
-  The values for `:category` can be:
-
-  - `nil` - Returns all keyword colors (default).
-  - `:basic` - Returns basic keyword colors.
-  - `:extended` - Returns extended keyword colors.
-
-  The values for `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
-
+  Generates a random keyword color name as a string.
+  
+  By default, returns a color name from all available keyword color categories. The `:category` option can be used to restrict the selection to `:basic` or `:extended` keyword colors. The `:locale` option specifies the locale for the color name, defaulting to `:default` if not provided.
+  
   ## Examples
-
+  
       iex> NeoFaker.Color.keyword()
       "blueviolet"
-
+  
       iex> NeoFaker.Color.keyword(category: :basic)
       "purple"
-
+  
       iex> NeoFaker.Color.keyword(locale: :id_id)
       "ungu"
-
   """
-  @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
     generate_keyword_color(
       Keyword.get(opts, :category),
@@ -144,12 +118,13 @@ defmodule NeoFaker.Color do
     )
   end
 
+  
+  
   @doc """
-  Generates an RGB color.
-
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  Generates a random RGB color as a tuple or W3C-formatted string.
+  
+  By default, returns an `{r, g, b}` tuple. If `format: :w3c` is specified in the options, returns a string in W3C RGB format (e.g., `"rgb(123, 45, 67)"`).
   """
-  @spec rgb(Keyword.t()) :: tuple() | String.t()
   def rgb(opts \\ []) do
     case Keyword.get(opts, :format) do
       :w3c -> format_rgb_as_w3c(generate_rgb_tuple())
@@ -157,12 +132,13 @@ defmodule NeoFaker.Color do
     end
   end
 
+  
+  
   @doc """
-  Generates an RGBA color.
-
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  Generates a random RGBA color as a tuple or W3C-formatted string.
+  
+  By default, returns a tuple `{r, g, b, a}` with integer RGB values and a float alpha value. If `format: :w3c` is specified in the options, returns a W3C-formatted RGBA string.
   """
-  @spec rgba(Keyword.t()) :: tuple() | String.t()
   def rgba(opts \\ []) do
     case Keyword.get(opts, :format) do
       :w3c -> format_rgba_as_w3c(generate_rgba_tuple())

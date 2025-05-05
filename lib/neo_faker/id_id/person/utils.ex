@@ -14,10 +14,13 @@ defmodule NeoFaker.IdId.Person.Utils do
     1 |> Number.between(max_number) |> to_string() |> String.pad_leading(pad_count, "0")
   end
 
+  
+  
   @doc """
-  Generate a random birth date with either the exact day or the day `n+40` (for the female code).
+  Generates a random birth date string in `DDMMYY` format, selecting a date between 90 and 18 years ago.
+  
+  The day component is randomly chosen as either the actual day or the day plus 40 to represent a female code.
   """
-  @spec birth_date() :: String.t()
   def birth_date do
     today = NaiveDateTime.local_now()
 

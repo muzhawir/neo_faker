@@ -17,40 +17,56 @@ defmodule NeoFaker.Text do
   @alphanumeric Enum.shuffle(@alphabet ++ @digits)
   @word_file "word.exs"
 
+  
+  
   @doc """
-  Generates a single random character.
+Generates a single random character, optionally specifying the character type.
 
-  Returns a single alphanumeric character.
+By default, returns a random alphanumeric character. The `:type` option can be used to restrict the result to lowercase letters, uppercase letters, letters of any case, or digits.
 
-  ## Options
+## Options
 
-  The accepted options are:
+  - `:type` (optional):  
+    - `:alphabet_lower` — returns a lowercase letter  
+    - `:alphabet_upper` — returns an uppercase letter  
+    - `:alphabet` — returns a letter (lowercase or uppercase)  
+    - `:digit` — returns a digit (`0`–`9`)
 
-  - `:type` - Specifies the type of character to generate.
+## Examples
 
-  The values for `:type` can be:
+    iex> NeoFaker.Text.character()
+    "a"
 
-  - `:alphabet_lower` - A lowercase letter.
-  - `:alphabet_upper` - An uppercase letter.
-  - `:alphabet` - A letter (either lowercase or uppercase).
-  - `:digit` - A digit (`0`-`9`).
+    iex> NeoFaker.Text.character(type: :digit)
+    "0"
+"""
+def character(opts \\ [])
+  @doc """
+Returns a random alphanumeric character as a string.
 
-  ## Examples
+Selects a single character from the set of uppercase letters, lowercase letters, and digits.
+"""
+def character([]), do: Enum.random(@alphanumeric)
+  @doc """
+Returns a random lowercase alphabetic character.
+"""
+def character(type: :alphabet_lower), do: Enum.random(@alphabet_lower)
+  @doc """
+Returns a random uppercase alphabetic character.
+"""
+def character(type: :alphabet_upper), do: Enum.random(@alphabet_upper)
+  @doc """
+Returns a random alphabetic character (uppercase or lowercase).
 
-      iex> NeoFaker.Text.character()
-      "a"
+Selects a single character from the combined list of uppercase and lowercase English letters.
+"""
+def character(type: :alphabet), do: Enum.random(@alphabet)
+  @doc """
+Returns a random digit character as a string.
 
-      iex> NeoFaker.Text.character(type: :digit)
-      "0"
-
-  """
-  @spec character(Keyword.t()) :: String.t()
-  def character(opts \\ [])
-  def character([]), do: Enum.random(@alphanumeric)
-  def character(type: :alphabet_lower), do: Enum.random(@alphabet_lower)
-  def character(type: :alphabet_upper), do: Enum.random(@alphabet_upper)
-  def character(type: :alphabet), do: Enum.random(@alphabet)
-  def character(type: :digit), do: Enum.random(@digits)
+Selects a single character from the set of digits 0–9.
+"""
+def character(type: :digit), do: Enum.random(@digits)
 
   @doc """
   Generates a string of random characters.
@@ -75,41 +91,36 @@ defmodule NeoFaker.Text do
     Enum.map_join(1..number, fn _ -> character(opts) end)
   end
 
+  
+  
   @doc """
-  Generates a random emoji.
+Generates a random emoji, optionally limited to a specified category.
 
-  Returns a random emoji from any category if no category is specified; otherwise, it selects one
-  from the specified category.
+If no category is provided, returns an emoji from any available category.
 
-  ## Options
+## Options
 
-  The accepted options are:
+  - `:category` (atom) – Restricts the emoji to a specific category. Valid categories include:
+    - `:all` (default)
+    - `:activities`
+    - `:animals_and_nature`
+    - `:food_and_drink`
+    - `:objects`
+    - `:people_and_body`
+    - `:smileys_and_emotion`
+    - `:symbols`
+    - `:travel_and_places`
 
-  - `:category` - Specifies the category from which to generate an emoji.
+## Examples
 
-  The values for `:category` can be:
+    iex> NeoFaker.Text.emoji()
+    "✨"
 
-  - `:all` - An emoji from any category (default).
-  - `:activities` - An emoji related to activities.
-  - `:animals_and_nature` - An emoji related to animals and nature.
-  - `:food_and_drink` - An emoji related to food and drink.
-  - `:objects` - An emoji related to objects.
-  - `:people_and_body` - An emoji related to people and body.
-  - `:smileys_and_emotion` - An emoji related to smileys and emotion.
-  - `:symbols` - An emoji related to symbols.
-  - `:travel_and_places` - An emoji related to travel and places.
-
-  ## Examples
-
-      iex> NeoFaker.Text.emoji()
-      "✨"
-
-      iex> NeoFaker.Text.emoji(category: :activities)
-      "🎉"
-
-  """
-  @spec emoji(Keyword.t()) :: String.t()
-  def emoji(opts \\ []), do: generate_emoji(Keyword.get(opts, :category, :all))
+    iex> NeoFaker.Text.emoji(category: :activities)
+    "🎉"
+"""
+@spec emoji(Keyword.t()) :: String.t()
+def emoji(opts \\ []), do: generate_emoji(Keyword.get(opts, :category, :all))
 
   @doc """
   Generates a random word.

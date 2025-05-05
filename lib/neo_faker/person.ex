@@ -49,8 +49,13 @@ defmodule NeoFaker.Person do
       "Jaka"
 
   """
-  @doc since: "0.7.0"
-  @spec first_name(Keyword.t()) :: String.t()
+  
+  
+  @doc """
+  Generates a random first name.
+  
+  Accepts optional parameters to specify the locale and sex of the name. By default, generates a unisex first name using the default locale.
+  """
   def first_name(opts \\ []) do
     generate_random_name(
       Keyword.get(opts, :locale, :default),
@@ -64,8 +69,13 @@ defmodule NeoFaker.Person do
 
   This function behaves the same way as `first_name/1`. See `first_name/1` for more details.
   """
-  @doc since: "0.7.0"
-  @spec middle_name(Keyword.t()) :: String.t()
+  
+  
+  @doc """
+  Generates a random middle name.
+  
+  Accepts optional parameters to specify the locale and sex for the generated name. By default, the locale is `:default` and the sex is `:unisex`.
+  """
   def middle_name(opts \\ []) do
     generate_random_name(
       Keyword.get(opts, :locale, :default),
@@ -79,8 +89,13 @@ defmodule NeoFaker.Person do
 
   This function behaves the same way as `first_name/1`. See `first_name/1` for more details.
   """
-  @doc since: "0.7.0"
-  @spec last_name(Keyword.t()) :: String.t()
+  
+  
+  @doc """
+  Generates a random last name.
+  
+  Accepts optional parameters to specify the locale (`:locale`) and sex (`:sex`, defaults to `:unisex`).
+  """
   def last_name(opts \\ []) do
     generate_random_name(
       Keyword.get(opts, :locale, :default),
@@ -130,8 +145,24 @@ defmodule NeoFaker.Person do
       "Gabriella Harrison"
 
   """
-  @doc since: "0.7.0"
-  @spec full_name(Keyword.t()) :: String.t()
+  
+  
+  @doc """
+  Generates a random full name, optionally including a middle name.
+  
+  Options:
+    - `:sex` (`:unisex`, `:male`, or `:female`): Specifies the gender context for name selection. Defaults to `:unisex`.
+    - `:locale`: Determines the locale for name generation. Defaults to `:default`.
+    - `:middle_name` (boolean): Whether to include a middle name. Defaults to `true`.
+  
+  ## Examples
+  
+      iex> NeoFaker.Person.full_name()
+      "Alex Morgan Smith"
+  
+      iex> NeoFaker.Person.full_name(sex: :female, middle_name: false)
+      "Emily Johnson"
+  """
   def full_name(opts \\ []) do
     generate_random_full_name(
       Keyword.get(opts, :sex, :unisex),

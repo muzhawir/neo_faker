@@ -8,60 +8,75 @@ defmodule NeoFaker.Color.Util do
   @module NeoFaker.Color
   @hex_digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9 A B C D E F])
 
+  
+  
   @doc """
-  Generates a CMYK color in tuple format.
-  """
-  @spec generate_cmyk_tuple() :: {number(), number(), number(), number()}
-  def generate_cmyk_tuple, do: {between(), between(), between(), between()}
+Generates a tuple representing a random CMYK color, with each component (cyan, magenta, yellow, black) as a number between 0 and 100.
+"""
+def generate_cmyk_tuple, do: {between(), between(), between(), between()}
 
+  
+  
   @doc """
-  Generates a CMYK color as a W3C string format.
-  """
-  @spec format_cmyk_as_w3c({number(), number(), number(), number()}) :: String.t()
-  def format_cmyk_as_w3c({c, m, y, k}), do: "cmyk(#{c}%, #{m}%, #{y}%, #{k}%)"
+Formats a CMYK color tuple as a W3C-compliant string in the form "cmyk(c%, m%, y%, k%)".
 
+## Examples
+
+    iex> format_cmyk_as_w3c({10, 20, 30, 40})
+    "cmyk(10%, 20%, 30%, 40%)"
+"""
+def format_cmyk_as_w3c({c, m, y, k}), do: "cmyk(#{c}%, #{m}%, #{y}%, #{k}%)"
+
+  
+  
   @doc """
-  Generates a HEX color in string format.
+  Generates a random HEX color string of the specified length.
+  
+  The resulting string consists of randomly selected hexadecimal digits (0-9, a-f).
   """
-  @spec generate_hex_color(number()) :: String.t()
   def generate_hex_color(digits) do
     Enum.map_join(1..digits, "", fn _ -> Enum.random(@hex_digits) end)
   end
 
+  
+  
   @doc """
-  Generates a HSL color in tuple format.
-  """
-  @spec generate_hsl_tuple() :: {number(), number(), number()}
-  def generate_hsl_tuple, do: {between(0, 359), between(), between()}
+Generates a random HSL color tuple with hue between 0 and 359, and saturation and lightness between 0 and 100.
+"""
+def generate_hsl_tuple, do: {between(0, 359), between(), between()}
 
+  
+  
   @doc """
-  Generates a HSL color as a W3C string format.
-  """
-  @spec format_hsl_as_w3c({number(), number(), number()}) :: String.t()
-  def format_hsl_as_w3c({h, s, l}), do: "hsl(#{h}, #{s}%, #{l}%)"
+Formats an HSL color tuple as a W3C-compliant string in the form "hsl(h, s%, l%)".
+"""
+def format_hsl_as_w3c({h, s, l}), do: "hsl(#{h}, #{s}%, #{l}%)"
 
+  
+  
   @doc """
-  Generates a HSLA color in tuple format.
+  Generates a random HSLA color tuple with hue (0–359), saturation and lightness (0–100), and alpha (0.0–1.0) rounded to one decimal place.
   """
-  @spec generate_hsla_tuple() :: {number(), number(), number(), number()}
   def generate_hsla_tuple do
     alpha = Float.round(between(0.0, 1.0), 1)
 
     {between(0, 359), between(), between(), alpha}
   end
 
+  
+  
   @doc """
-  Generates a HSLA color as a W3C string format.
-  """
-  @spec format_hsla_as_w3c({number(), number(), number(), number()}) :: String.t()
-  def format_hsla_as_w3c({h, s, l, a}), do: "hsla(#{h}, #{s}%, #{l}%, #{a})"
+Formats an HSLA color tuple as a W3C-compliant string in the form "hsla(h, s%, l%, a)".
+"""
+def format_hsla_as_w3c({h, s, l, a}), do: "hsla(#{h}, #{s}%, #{l}%, #{a})"
 
+  
+  
   @doc """
-  Generates a keyword color based on the given category and locale.
-
-  If no category is provided all keyword colors are returned.
+  Returns a random keyword color string for the specified locale and optional category.
+  
+  If `category` is `nil`, selects a random color from all available keyword colors for the given locale.
   """
-  @spec generate_keyword_color(atom(), atom()) :: String.t()
   def generate_keyword_color(nil, locale) do
     locale
     |> fetch_cache!(@module, "keyword.exs")
@@ -70,35 +85,44 @@ defmodule NeoFaker.Color.Util do
     |> Enum.random()
   end
 
+  @doc """
+  Returns a random keyword color string from the specified category and locale.
+  
+  If `category` is `nil`, selects a random color from all available keyword colors for the given locale.
+  """
   def generate_keyword_color(category, locale) do
     random_data(@module, "keyword.exs", Atom.to_string(category), locale: locale)
   end
 
+  
+  
   @doc """
-  Generates an RGB color in tuple format.
-  """
-  @spec generate_rgb_tuple() :: {number(), number(), number()}
-  def generate_rgb_tuple, do: {between(0, 255), between(0, 255), between(0, 255)}
+Generates a tuple representing an RGB color with each component randomly selected between 0 and 255.
+"""
+def generate_rgb_tuple, do: {between(0, 255), between(0, 255), between(0, 255)}
 
+  
+  
   @doc """
-  Generates an RGB color as a W3C string format.
-  """
-  @spec format_rgb_as_w3c({number(), number(), number()}) :: String.t()
-  def format_rgb_as_w3c({r, g, b}), do: "rgb(#{r}, #{g}, #{b})"
+Formats an RGB color tuple as a W3C-compliant string in the form "rgb(r, g, b)".
+"""
+def format_rgb_as_w3c({r, g, b}), do: "rgb(#{r}, #{g}, #{b})"
 
+  
+  
   @doc """
-  Generates an RGBA color in tuple format.
+  Generates a random RGBA color tuple with red, green, and blue components between 0 and 255, and an alpha value between 0.0 and 1.0 rounded to one decimal place.
   """
-  @spec generate_rgba_tuple() :: {number(), number(), number(), number()}
   def generate_rgba_tuple do
     alpha = Float.round(between(0.0, 1.0), 1)
 
     {between(0, 255), between(0, 255), between(0, 255), alpha}
   end
 
+  
+  
   @doc """
-  Generates an RGBA color as a W3C string format.
-  """
-  @spec format_rgba_as_w3c({number(), number(), number(), number()}) :: String.t()
-  def format_rgba_as_w3c({r, g, b, a}), do: "rgba(#{r}, #{g}, #{b}, #{a})"
+Formats an RGBA color tuple as a W3C-compliant string in the form "rgba(r, g, b, a)".
+"""
+def format_rgba_as_w3c({r, g, b, a}), do: "rgba(#{r}, #{g}, #{b}, #{a})"
 end

@@ -7,28 +7,37 @@ defmodule NeoFaker.Number do
   """
   @moduledoc since: "0.8.0"
 
+  
+  
   @doc """
-  Generates a random number between `min` and `max`.
+Generates a random number between `min` and `max`.
 
-  If both arguments are integers, the result is a random integer within the range. If they are
-  floats, a random float within the range is returned.
+Returns a random integer if both arguments are integers, or a random float if both are floats. Defaults to the range 0 to 100 if no arguments are provided.
 
-  ## Examples
+## Examples
 
-      iex> NeoFaker.Number.between()
-      27
+    iex> NeoFaker.Number.between()
+    27
 
-      iex> NeoFaker.Number.between(1, 100)
-      28
+    iex> NeoFaker.Number.between(1, 100)
+    28
 
-      iex> NeoFaker.Number.between(1.0, 100.0)
-      29.481745280074264
+    iex> NeoFaker.Number.between(1.0, 100.0)
+    29.481745280074264
 
+"""
+def between(min \\ 0, max \\ 100)
+  @doc """
+Returns a random integer between `min` and `max`, inclusive.
+"""
+def between(min, max) when is_integer(min) and is_integer(max), do: Enum.random(min..max)
+
+  @doc """
+  Returns a random float within the inclusive range from `min` to `max`.
+  
+  Both `min` and `max` must be floats.
   """
-  @spec between(number(), number()) :: number()
-  def between(min \\ 0, max \\ 100)
-  def between(min, max) when is_integer(min) and is_integer(max), do: Enum.random(min..max)
-
+  @spec between(float, float) :: float
   def between(min, max) when is_float(min) and is_float(max) do
     :rand.uniform() * (max - min) + min
   end

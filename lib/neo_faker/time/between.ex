@@ -4,10 +4,13 @@ defmodule NeoFaker.Time.Between do
   @type time_format :: :sigil | :iso8601
   @type time_unit :: :hour | :minute | :second
 
+  
+  
   @doc """
-  Generate a random time with a specific between two times.
+  Generates a random `Time` struct between two given `Time` values.
+  
+  Returns a random time between `start` and `finish` as a `Time` struct when the format is `:sigil`.
   """
-  @spec random_between_time(Time.t(), Time.t(), time_format()) :: Time.t() | String.t()
   def random_between_time(start, finish, :sigil) do
     {time_to_seconds_start, _microseconds} = Time.to_seconds_after_midnight(start)
     {time_to_seconds_finish, _microseconds} = Time.to_seconds_after_midnight(finish)
@@ -20,6 +23,11 @@ defmodule NeoFaker.Time.Between do
     Time.add(start, amount_to_add, :second)
   end
 
+  @doc """
+  Returns a random time between `start` and `finish` as an ISO8601-formatted string.
+  
+  Calls the `:sigil` variant to generate a random `Time` struct, then formats it as an ISO8601 string.
+  """
   def random_between_time(start, finish, :iso8601) do
     start |> random_between_time(finish, :sigil) |> Time.to_iso8601()
   end

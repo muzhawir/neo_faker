@@ -6,12 +6,13 @@ defmodule NeoFaker.Lorem.Utils do
   @module NeoFaker.Lorem
   @new_line_regexp ~r/(?<!\n)\n(?!\n)/
 
+  
+  
   @doc """
-  Returns a list of paragraphs from a text source.
-
-  Fetches the paragraphs from the specified text source and returns a list of paragraphs.
+  Returns a shuffled list of paragraphs from the specified lorem ipsum text source.
+  
+  Selects a text source and locale based on the provided options, retrieves the corresponding text, splits it into paragraphs, and returns the paragraphs in random order.
   """
-  @spec lorem_ipsum(keyword()) :: list()
   def lorem_ipsum(opts \\ []) do
     file = text_content(Keyword.get(opts, :text, :lorem))
 

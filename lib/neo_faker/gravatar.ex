@@ -12,46 +12,31 @@ defmodule NeoFaker.Gravatar do
   @typedoc "Email address."
   @type email :: String.t() | nil
 
+  
+  
   @doc """
-  Generates a Gravatar URL from an email address.
-
-  The generated URL includes query parameters for image size and fallback options.
-  If no email address is provided, a random one is used.
-
+  Generates a Gravatar image URL for the given email address with customizable size and fallback options.
+  
+  If no email is provided, a random email is used. The resulting URL includes query parameters for image size (default: 80px) and fallback image type (default: identicon).
+  
   ## Options
-
-  The accepted options are:
-
-  - `:size` - Defines the image size.
-  - `:fallback` - Specifies the default fallback image.
-
-  The values for `:size` can be:
-
-  - `nil` - Uses `80px` (default).
-  - `1` - `2048` - The image size in pixels (valid range: `1` to `2048`).
-
-  The values for `:fallback` can be:
-
-  - `nil` - Generates an "identicon" image (default).
-  - `:identicon` - Generates an "identicon" image.
-  - `:monsterid` - Generates a "monsterid" image.
-  - `:wavatar` - Generates a "wavatar" image.
-  - `:robohash` - Generates a "robohash" image.
-
+  
+    - `:size` (integer): Image size in pixels (1–2048). Defaults to 80 if not specified.
+    - `:fallback` (atom): Fallback image type if the email has no Gravatar. Supported values are `:identicon`, `:monsterid`, `:wavatar`, and `:robohash`. Defaults to `:identicon`.
+  
   ## Examples
-
+  
       iex> NeoFaker.Gravatar.display()
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
-
+  
       iex> NeoFaker.Gravatar.display("john.doe@example.com")
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
-
+  
       iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=100"
-
+  
       iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
       "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
-
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do

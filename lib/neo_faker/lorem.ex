@@ -47,12 +47,14 @@ defmodule NeoFaker.Lorem do
   @spec paragraph(Keyword.t()) :: String.t()
   def paragraph(opts \\ []), do: opts |> lorem_ipsum() |> Enum.random()
 
+  
+  
   @doc """
-  Generates a random sentence.
-
-  This function behaves the same way as `paragraph/1`. See `paragraph/1` for more details.
+  Generates a random sentence from a randomly selected paragraph.
+  
+  Accepts an optional keyword list of options, where the `:type` key specifies the text source (`:lorem` by default or `:meditations`).
+  Returns a single sentence as a string.
   """
-  @spec sentence(Keyword.t()) :: String.t()
   def sentence(opts \\ []) do
     opts |> paragraph() |> String.split(@sentence_delimiter_regexp) |> Enum.random()
   end

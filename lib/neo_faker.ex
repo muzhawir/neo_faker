@@ -1,14 +1,13 @@
 defmodule NeoFaker do
   @moduledoc false
 
+  
+  
   @doc """
-  Start NeoFaker
-
-  Starts the NeoFaker application and sets the locale based on the application environment. If no
-  locale is set, it defaults to `:default`. The function also ensures that the `:neo_faker`
-  application is started before proceeding.
+  Starts the NeoFaker application and ensures a locale is set.
+  
+  If no locale is configured in the application environment, sets the locale to `:default`. Prints the active locale and returns `:ok`.
   """
-  @spec start() :: :ok
   def start do
     Application.ensure_started(:neo_faker)
 
@@ -23,19 +22,19 @@ defmodule NeoFaker do
     :ok
   end
 
+  
+  
   @doc """
-  Returns the current locale.
-
-  Returns the current locale set in the application environment. If no locale is set, it returns
-  `:error`.
-
+  Returns the current locale set for the NeoFaker application.
+  
+  If no locale is configured in the application environment, returns `:error`.
+  
   ## Examples
-
+  
       iex> NeoFaker.locale()
       :default
-
+  
   """
-  @spec locale() :: atom()
   def locale do
     case Application.get_env(:neo_faker, :locale) do
       nil -> :error

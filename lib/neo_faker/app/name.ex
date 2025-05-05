@@ -1,31 +1,72 @@
 defmodule NeoFaker.App.Name do
   @moduledoc false
 
+  
+  
   @doc """
-  Converts a name into the specified case format.
+Formats a tuple of first and last name into a string according to the specified case style.
 
-  This function takes a tuple containing a first name and a last name, then formats it
-  according to the given case style.
+Supported formats include:
+- `nil`: Returns the full name as "first_name last_name" without case transformation.
+- `:camel_case`: Returns the name in camel case (lowercase first name, capitalized last name, no space).
+- `:pascal_case`: Returns the name in Pascal case (both names capitalized, no space).
+- `:dashed`: Returns the name with the first name capitalized and the last name as-is, joined by a dash.
+- `:underscore`: Returns the name in lowercase, joined by an underscore.
+- `:single`: Randomly selects either the first or last name, capitalizes it, and returns it as a single name.
+"""
+def name_case({first_name, last_name}, nil), do: "#{first_name} #{last_name}"
+
+  @doc """
+  Formats a first and last name tuple into camel case, returning the lowercase first name concatenated with the capitalized last name without spaces.
   """
-  @spec name_case({String.t(), String.t()}, atom()) :: String.t()
-  def name_case({first_name, last_name}, nil), do: "#{first_name} #{last_name}"
-
   def name_case({first_name, last_name}, :camel_case) do
     "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
   end
 
+  @doc """
+  Formats the given first and last name tuple into Pascal case, concatenating both names with each capitalized.
+  
+  ## Examples
+  
+      iex> NeoFaker.App.Name.name_case({"john", "doe"}, :pascal_case)
+      "JohnDoe"
+  
+  """
+  @spec name_case({String.t(), String.t()}, :pascal_case) :: String.t()
   def name_case({first_name, last_name}, :pascal_case) do
     "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
   end
 
+  @doc """
+  Formats the given first and last name by capitalizing the first name and joining it with the last name using a dash.
+  
+  ## Examples
+  
+      iex> NeoFaker.App.Name.name_case({"john", "doe"}, :dashed)
+      "John-doe"
+  
+  """
+  @spec name_case({String.t(), String.t()}, :dashed) :: String.t.
   def name_case({first_name, last_name}, :dashed) do
     "#{String.capitalize(first_name)}-#{last_name}"
   end
 
+  @doc """
+  Formats the given first and last name in lowercase, joined by an underscore.
+  
+  ## Examples
+  
+      iex> NeoFaker.App.Name.name_case({"John", "Doe"}, :underscore)
+      "john_doe"
+  
+  """
   def name_case({first_name, last_name}, :underscore) do
     "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
   end
 
+  @doc """
+  Randomly selects either the first or last name from the tuple and returns it capitalized.
+  """
   def name_case({first_name, last_name}, :single) do
     [first_name, last_name] |> Enum.random() |> String.capitalize()
   end

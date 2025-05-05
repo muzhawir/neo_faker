@@ -10,38 +10,26 @@ defmodule NeoFaker.Http do
   import NeoFaker.Http.StatusCode
   import NeoFaker.Http.UserAgent
 
+  
+  
   @doc """
-  Generates a random user-agent.
+Generates a random HTTP user-agent string.
 
-  Returns a random user-agent string from the top 100 HTTP user-agents most used over the Internet
-  by [https://microlink.io/user-agents](https://microlink.io/user-agents).
+Selects a user-agent from a curated list of the top 100 most common HTTP user-agents, with optional filtering by type (`:all`, `:browser`, or `:crawler`). The default is `:all`.
 
-  ## Options
+## Examples
 
-  The accepted options are:
+    iex> NeoFaker.Http.user_agent()
+    "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-  - `:type` - Defines the type of user-agent to generate.
+    iex> NeoFaker.Http.user_agent(type: :browser)
+    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-  The values for `:type` can be:
-
-  - `:all` - Returns a random user-agent from both browsers and crawlers (default).
-  - `:browser` - Returns a random browser user-agent.
-  - `:crawler` - Returns a random crawler user-agent.
-
-  ## Examples
-
-      iex> NeoFaker.Internet.user_agent()
-      "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
-
-      iex> NeoFaker.Internet.user_agent(type: :browser)
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
-
-      iex> NeoFaker.Internet.user_agent(type: :crawler)
-      "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
-
-  """
-  @spec user_agent() :: String.t()
-  def user_agent(opts \\ []), do: generate_user_agent(Keyword.get(opts, :type, :all))
+    iex> NeoFaker.Http.user_agent(type: :crawler)
+    "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
+"""
+@spec user_agent(Keyword.t()) :: String.t()
+def user_agent(opts \\ []), do: generate_user_agent(Keyword.get(opts, :type, :all))
 
   @doc """
   Generates a random HTTP request method.
@@ -82,46 +70,29 @@ defmodule NeoFaker.Http do
     ])
   end
 
+  
+  
   @doc """
-  Generates a random HTTP status code.
-
-  Returns a random HTTP status code string. If no options are provided, it will return a detailed
-  status code.
-
+  Generates a random HTTP status code string, optionally filtered by type or status code group.
+  
+  By default, returns a detailed status code (e.g., `"200 OK"`). You can specify the format (`:detailed` or `:simple`) and restrict the selection to a specific status code group (such as informational, success, redirection, client error, or server error).
+  
   ## Options
-
-  The accepted options are:
-
-  - `:type` - Defines the type of status code to generate.
-  - `:group` - Specifies the group of status codes to generate.
-
-  The values for `:type` can be:
-
-  - `:detailed` - Returns a detailed status code (default).
-  - `:simple` - Returns a simple status code (e.g., `"200"` instead of `"200 OK"`).
-
-  The values for `:group` can be:
-
-  - `nil` - All status codes (default).
-  - `:information` - 1xx status codes (Informational).
-  - `:success` - 2xx status codes (Success).
-  - `:redirection` - 3xx status codes (Redirection).
-  - `:client_error` - 4xx status codes (Client Error).
-  - `:server_error` - 5xx status codes (Server Error).
-
+  
+    - `:type` (`:detailed` | `:simple`) – Format of the status code string. Defaults to `:detailed`.
+    - `:group` (`:information` | `:success` | `:redirection` | `:client_error` | `:server_error` | `nil`) – Restricts the selection to a specific group of status codes. Defaults to `nil` (all codes).
+  
   ## Examples
-
+  
       iex> NeoFaker.Http.status_code()
       "200 OK"
-
+  
       iex> NeoFaker.Http.status_code(type: :simple)
       "200"
-
+  
       iex> NeoFaker.Http.status_code(group: :client_error)
       "404 Not Found"
-
   """
-  @spec status_code(opts :: Keyword.t()) :: String.t()
   def status_code(opts \\ []) do
     type = Keyword.get(opts, :type, :detailed)
     status_codes = fetch_status_codes!(Keyword.get(opts, :group))

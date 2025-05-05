@@ -124,57 +124,71 @@ defmodule NeoFaker.App do
     name_case({first_name, last_name}, Keyword.get(opts, :style))
   end
 
+  
+  
   @doc """
-  Returns a semantic version number.
+Generates a random semantic version string following the SemVer standard.
 
-  The generated version number follows the Semantic Versioning (SemVer) standard. By default, it
-  generates a core version (`MAJOR.MINOR.PATCH`). Additional versioning details can be specified
-  using the `:type` option.
+By default, returns a core version in the format `MAJOR.MINOR.PATCH`. The `:type` option allows inclusion of pre-release and/or build metadata.
 
-  ## Options
+## Options
 
-  The accepted options are:
+  - `:type` (optional) — Specifies the version format:
+    - `nil` (default): Core version (e.g., `"1.2.3"`).
+    - `:pre_release`: Adds a pre-release label (e.g., `"1.2.3-beta.1"`).
+    - `:build`: Adds build metadata (e.g., `"1.2.3+20250325"`).
+    - `:pre_release_build`: Includes both pre-release and build metadata (e.g., `"1.2.3-rc.1+20250325"`).
 
-  - `:type` - Specifies the type of version format.
+## Examples
 
-  The values for `:type` can be:
+    iex> NeoFaker.App.semver()
+    "1.2.3"
 
-  - `nil` (default) - Uses core SemVer format (e.g., `"1.2.3"`).
-  - `:pre_release` - Includes a pre-release label (e.g., `"1.2.3-beta.1")`.
-  - `:build` - Includes a build metadata label (e.g., `"1.2.3+20250325"`).
-  - `:pre_release_build` - Includes both pre-release and build metadata (e.g.,
-    `"1.2.3-rc.1+20250325"`).
+    iex> NeoFaker.App.semver(type: :pre_release)
+    "1.2.3-beta.1"
+"""
+@spec semver(Keyword.t()) :: String.t()
+def semver(opts \\ [])
+  @doc """
+Generates a semantic version string in the format `MAJOR.MINOR.PATCH`.
 
-  ## Examples
+Returns a core semantic version without pre-release or build metadata.
+"""
+def semver([]), do: semver_core()
+  @doc """
+Generates a semantic version string with a pre-release label, following the format `MAJOR.MINOR.PATCH-PRERELEASE`.
 
-      iex> NeoFaker.App.semver()
-      "1.2.3"
+The pre-release label is appended to the core semantic version, producing values like `1.2.3-beta.1`.
+"""
+def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
+  @doc """
+Generates a semantic version string with build metadata in the format `MAJOR.MINOR.PATCH+BUILD`.
 
-      iex> NeoFaker.App.semver(type: :pre_release)
-      "1.2.3-beta.1"
+The build metadata is appended to the core semantic version, following the SemVer specification.
+"""
+def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
 
+  @doc """
+  Generates a semantic version string with both pre-release and build metadata, following the format `MAJOR.MINOR.PATCH-PRERELEASE+BUILD`.
+  
+  Returns a version string such as `1.2.3-rc.1+20250325`.
   """
-  @spec semver(Keyword.t()) :: String.t()
-  def semver(opts \\ [])
-  def semver([]), do: semver_core()
-  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
-  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
-
   def semver(type: :pre_release_build) do
     "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
   end
 
+  
+  
   @doc """
-  Returns a simple version number.
+Returns a version string in `MAJOR.MINOR` format.
 
-  This version format follows `MAJOR.MINOR`.
+Generates a simplified version number by extracting the major and minor components from a full semantic version.
 
-  ## Examples
+## Examples
 
-      iex> NeoFaker.App.version()
-      "1.2"
+    iex> NeoFaker.App.version()
+    "1.2"
 
-  """
-  @spec version() :: String.t()
-  def version, do: [] |> semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+"""
+def version, do: [] |> semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 end

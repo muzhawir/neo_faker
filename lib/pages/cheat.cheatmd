@@ -340,10 +340,10 @@ iex> NeoFaker.Person.age(7, 44)
 ### [`binary_gender(opts \\ [])`](`NeoFaker.Person.binary_gender/1`)
 
 ```elixir
-NeoFaker.Person.binary_gender()
+iex> NeoFaker.Person.binary_gender()
 "Male"
 
-NeoFaker.Person.binary_gender(locale: :id_id)
+iex> NeoFaker.Person.binary_gender(locale: :id_id)
 "Perempuan"
 ```
 
@@ -359,7 +359,7 @@ iex> NeoFaker.Person.first_name()
 iex> NeoFaker.Person.first_name(sex: :male)
 "José"
 
-NeoFaker.Person.first_name(locale: :id_id)
+iex> NeoFaker.Person.first_name(locale: :id_id)
 "Jaka"
 ```
 
@@ -389,7 +389,7 @@ iex> NeoFaker.Person.prefix(locale: :id_id)
 "Tn."
 ```
 
-`NeoFaker.Person.suffix/1` behave the same way as this function.
+`NeoFaker.Person.suffix/1` behaves the same way as this function.
 
 ## [Text](`NeoFaker.Text`)
 

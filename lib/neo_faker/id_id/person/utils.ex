@@ -21,6 +21,7 @@ defmodule NeoFaker.IdId.Person.Utils do
   The day component is randomly chosen as either the actual day or the day plus 40 to represent a
   female code.
   """
+  @spec birth_date() :: String.t()
   def birth_date do
     today = NaiveDateTime.local_now()
 

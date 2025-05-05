@@ -165,7 +165,6 @@ defmodule NeoFaker.Person do
       "Tn."
 
   """
-
   @spec prefix(Keyword.t()) :: String.t()
   def prefix(opts \\ []), do: random_data(__MODULE__, @name_affixes_file, "prefixes", opts)
 

@@ -18,6 +18,9 @@ iex> NeoFaker.App.author()
 ```elixir
 iex> NeoFaker.App.description()
 "Elixir library for generating fake data in tests and development."
+
+iex> NeoFaker.App.description(locale: :id_id)
+"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 ```
 
 ### [`license()`](`NeoFaker.App.license/0`)
@@ -35,6 +38,9 @@ iex> NeoFaker.App.name()
 
 iex> NeoFaker.App.name(style: :camel_case)
 "neoFaker"
+
+iex> NeoFaker.App.name(locale: :id_id)
+"Garuda Web"
 ```
 
 ### [`semver(opts \\ [])`](`NeoFaker.App.semver/1`)
@@ -45,6 +51,12 @@ iex> NeoFaker.App.semver()
 
 iex> NeoFaker.App.semver(type: :pre_release)
 "1.2.3-beta.1"
+
+iex> NeoFaker.App.semver(type: :build)
+"1.2.3+20250325"
+
+iex> NeoFaker.App.semver(type: :pre_release_build)
+"1.2.3-rc.1+20250325"
 ```
 
 ### [`version()`](`NeoFaker.App.version/0`)
@@ -104,7 +116,8 @@ iex> NeoFaker.Color.cmyk(format: :w3c)
 ```
 
 `NeoFaker.Color.hsl/1`, `NeoFaker.Color.hsla/1`, `NeoFaker.Color.rgb/1` and
-`NeoFaker.Color.rgba/1` behave the same way as `NeoFaker.Color.cmyk/1`.
+`NeoFaker.Color.rgba/1` follow the same pattern, returning their respective color values in tuples
+or formatted strings.
 
 ### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
 
@@ -124,6 +137,9 @@ iex> NeoFaker.Color.keyword()
 
 iex> NeoFaker.Color.keyword(category: :basic)
 "purple"
+
+iex> NeoFaker.Color.keyword(locale: :id_id)
+"ungu"
 ```
 
 ## [Crypto](`NeoFaker.Crypto`)
@@ -134,14 +150,14 @@ iex> NeoFaker.Color.keyword(category: :basic)
 
 ```elixir
 iex> NeoFaker.Crypto.md5()
-"e35cb102765cfc56df21ba4c16e6a636"
+"afc4c626c55e4166421d82732163857d"
 
 iex> NeoFaker.Crypto.md5(case: :upper)
-"E35CB102765CFC56DF21BA4C16E6A636"
+"AFC4C626C55E4166421D82732163857D"
 ```
 
-`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave the same way as
-`NeoFaker.Crypto.md5/1`.
+`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` follow the same pattern, generating their
+respective hash types with the same formatting options.
 
 ## [Date](`NeoFaker.Date`)
 
@@ -153,15 +169,21 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 iex> NeoFaker.Date.add()
 ~D[2025-03-25]
 
+iex> NeoFaker.Date.add(0..31)
+~D[2025-03-30]
+
 iex> NeoFaker.Date.add(0..31, format: :iso8601)
 "2025-03-25"
 ```
 
-### [`between(start \\ ~D[1970-01-01], finish \\ NeoFaker.Date.Utils.local_date_now(), opts \\ [])`](`NeoFaker.Date.between/3`)
+### [`between(start \\ ~D[1970-01-01], finish \\ NaiveDateTime.to_date(NaiveDateTime.local_now()), opts \\ [])`](`NeoFaker.Date.between/3`)
 
 ```elixir
 iex> NeoFaker.Date.between()
 ~D[2025-03-25]
+
+iex> NeoFaker.Date.between(~D[2020-01-01], ~D[2025-01-01])
+~D[2022-08-17]
 
 iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
 "2025-03-25"
@@ -172,6 +194,9 @@ iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
 ```elixir
 iex> NeoFaker.Date.birthday()
 ~D[1997-01-02]
+
+iex> NeoFaker.Date.birthday(18, 65)
+~D[1998-03-04]
 
 iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
 "1999-05-06"
@@ -187,19 +212,58 @@ iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
 iex> NeoFaker.Gravatar.display()
 "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
+iex> NeoFaker.Gravatar.display("john.doe@example.com")
+"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
+
+iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
+"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=100"
+
 iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 ```
 
-## [Internet](`NeoFaker.Internet`)
+## [HTTP](`NeoFaker.Http`)
 
-{: .col-1}
+{: .col-2}
 
-### [`user_agent()`](`NeoFaker.Internet.user_agent/0`)
+### [`referrer_policy()`](`NeoFaker.Http.referrer_policy/0`)
 
 ```elixir
-iex> NeoFaker.Internet.user_agent()
-"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
+iex> NeoFaker.Http.referrer_policy()
+"no-referrer"
+```
+
+### [`request_method()`](`NeoFaker.Http.request_method/0`)
+
+```elixir
+iex> NeoFaker.Http.request_method()
+"GET"
+```
+
+### [`status_code(opts \\ [])`](`NeoFaker.Http.status_code/1`)
+
+```elixir
+iex> NeoFaker.Http.status_code()
+"200 OK"
+
+iex> NeoFaker.Http.status_code(type: :simple)
+"200"
+
+iex> NeoFaker.Http.status_code(group: :client_error)
+"404 Not Found"
+```
+
+### [`user_agent(opts \\ [])`](`NeoFaker.Http.user_agent/1`)
+
+```elixir
+iex> NeoFaker.Http.user_agent()
+"Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+iex> NeoFaker.Http.user_agent(type: :browser)
+"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+iex> NeoFaker.Http.user_agent(type: :crawler)
+"Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 ```
 
 ## [Lorem](`NeoFaker.Lorem`)
@@ -222,8 +286,8 @@ by their activity, and yet have no object to which to direct every movement, and
 all their thoughts."
 ```
 
-`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way as
-`NeoFaker.Lorem.paragraph/1`.
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` follow the same pattern, supporting the
+same types and format options but generate different text lengths.
 
 ## [Number](`NeoFaker.Number`)
 
@@ -238,7 +302,10 @@ iex> NeoFaker.Number.between()
 iex> NeoFaker.Number.between(1, 100)
 28
 
-iex> NeoFaker.Number.between(1.0, 100.0)
+iex> NeoFaker.Number.between(20, 100.0)
+29.481745280074264
+
+iex> NeoFaker.Number.between(10.0, 100.0)
 29.481745280074264
 ```
 
@@ -249,7 +316,7 @@ iex> NeoFaker.Number.digit()
 5
 ```
 
-### [`float(left_digit \\ 10..100, right_digit \\ 10000..100_000)`](`NeoFaker.Number.float/2`)
+### [`float(left_digit \\ 10..100, right_digit \\ 10_000..100_000)`](`NeoFaker.Number.float/2`)
 
 ```elixir
 iex> NeoFaker.Number.float()
@@ -273,12 +340,18 @@ iex> NeoFaker.Person.age(7, 44)
 27
 ```
 
-### [`binary_gender()`](`NeoFaker.Person.binary_gender/0`)
+### [`binary_gender(opts \\ [])`](`NeoFaker.Person.binary_gender/1`)
 
 ```elixir
 iex> NeoFaker.Person.binary_gender()
 "Male"
+
+iex> NeoFaker.Person.binary_gender(locale: :id_id)
+"Perempuan"
 ```
+
+`NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` accept the same
+options and follow the same pattern, but generate different gender values.
 
 ### [`first_name(opts \\ [])`](`NeoFaker.Person.first_name/1`)
 
@@ -286,12 +359,15 @@ iex> NeoFaker.Person.binary_gender()
 iex> NeoFaker.Person.first_name()
 "Julia"
 
-iex> NeoFaker.Person.first_name(type: :male)
+iex> NeoFaker.Person.first_name(sex: :male)
 "José"
+
+iex> NeoFaker.Person.first_name(locale: :id_id)
+"Jaka"
 ```
 
-`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave the same way as
-`NeoFaker.Person.first_name/1`.
+`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` accept the same options and
+follow the same pattern, but generate middle or last names respectively.
 
 ### [`full_name(opts \\ [])`](`NeoFaker.Person.full_name/1`)
 
@@ -306,33 +382,18 @@ iex> NeoFaker.Person.full_name(middle_name: false)
 "Gabriella Harrison"
 ```
 
-### [`non_binary_gender(opts \\ [])`](`NeoFaker.Person.non_binary_gender/1`)
-
-```elixir
-iex> NeoFaker.Person.non_binary_gender()
-"Agender"
-```
-
 ### [`prefix(opts \\ [])`](`NeoFaker.Person.prefix/1`)
 
 ```elixir
 iex> NeoFaker.Person.prefix()
 "Mr."
+
+iex> NeoFaker.Person.prefix(locale: :id_id)
+"Tn."
 ```
 
-### [`short_binary_gender(opts \\ [])`](`NeoFaker.Person.short_binary_gender/1`)
-
-```elixir
-iex> NeoFaker.Person.short_binary_gender()
-"F"
-```
-
-### [`suffix(opts \\ [])`](`NeoFaker.Person.suffix/1`)
-
-```elixir
-iex> NeoFaker.Person.suffix()
-"IV"
-```
+`NeoFaker.Person.suffix/1` accepts the same options and follows the same pattern, but generates
+name suffixes instead of prefixes.
 
 ## [Text](`NeoFaker.Text`)
 
@@ -397,6 +458,9 @@ iex> NeoFaker.Time.add(0..10, format: :iso8601)
 ```elixir
 iex> NeoFaker.Time.between()
 ~T[15:22:10]
+
+iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
+~T[19:30:11]
 
 iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
 "15:22:10"

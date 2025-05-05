@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.10.0",
+      version: "0.11.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),

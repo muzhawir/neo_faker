@@ -27,7 +27,7 @@ defmodule NeoFaker.App.Semver do
   @spec semver_build_number() :: String.t()
   def semver_build_number do
     NaiveDateTime.local_now()
-    |> Date.add(Enum.random(-365..365))
+    |> Date.add(Enum.random(-365..0))
     |> Date.to_string()
     |> String.replace("-", "")
   end

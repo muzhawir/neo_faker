@@ -254,13 +254,13 @@ iex> NeoFaker.Http.status_code(group: :client_error)
 ### [`user_agent(opts \\ [])`](`NeoFaker.Http.user_agent/1`)
 
 ```elixir
-iex> NeoFaker.Internet.user_agent()
+iex> NeoFaker.Http.user_agent()
 "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-iex> NeoFaker.Internet.user_agent(type: :browser)
+iex> NeoFaker.Http.user_agent(type: :browser)
 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-iex> NeoFaker.Internet.user_agent(type: :crawler)
+iex> NeoFaker.Http.user_agent(type: :crawler)
 "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 ```
 

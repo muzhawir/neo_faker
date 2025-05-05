@@ -24,7 +24,6 @@ defmodule NeoFaker.Http.UserAgent do
   end
 
   def generate_user_agent(:browser), do: random_data(@module, @user_agent_file, "browsers")
-
   def generate_user_agent(:crawler), do: random_data(@module, @user_agent_file, "crawlers")
 
   def generate_user_agent(other) do

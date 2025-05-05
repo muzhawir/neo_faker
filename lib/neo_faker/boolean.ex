@@ -27,7 +27,7 @@ defmodule NeoFaker.Boolean do
       1
 
   """
-  @spec boolean(number(), Keyword.t()) :: boolean() | non_neg_integer()
+  @spec boolean(1..100, Keyword.t()) :: boolean() | non_neg_integer()
   def boolean(true_ratio \\ 50, opts \\ [])
 
   def boolean(true_ratio, []) when true_ratio in 0..100 do

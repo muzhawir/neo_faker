@@ -8,12 +8,11 @@ defmodule NeoFaker.Boolean do
   @moduledoc since: "0.5.0"
 
   @doc """
-  Generates a random boolean value.
+  Generates a random boolean value with a configurable probability of returning `true`.
 
-  By default, this function returns `true` or `false` with equal probability (50% each).
-  An optional `true_ratio` argument can be provided to adjust the probability of returning `true`.
-
-  If the `integer: true` option is set, the function returns `1` for `true` and `0` for `false`.
+  By default, returns `true` or `false` with equal probability. The `true_ratio` parameter sets
+  the percentage chance (0–100) of returning `true`. If the `integer: true` option is provided,
+  returns `1` for `true` and `0` for `false`.
 
   ## Examples
 

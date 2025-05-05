@@ -54,10 +54,25 @@ defmodule NeoFaker.Gravatar do
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
+    fallback = Keyword.get(opts, :fallback, :identicon)
+
+    fallback_string =
+      cond do
+        is_atom(fallback) ->
+          Atom.to_string(fallback)
+
+        is_binary(fallback) ->
+          fallback
+
+        true ->
+          raise ArgumentError,
+                "invalid :fallback, expected atom or string, got: #{inspect(fallback)}"
+      end
+
     generate_gravatar_url(
       email,
       image_size(Keyword.get(opts, :size)),
-      Atom.to_string(Keyword.get(opts, :fallback, :identicon))
+      fallback_string
     )
   end
 end

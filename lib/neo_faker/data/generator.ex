@@ -38,10 +38,10 @@ defmodule NeoFaker.Data.Generator do
   end
 
   defp generate_random_value(locale, module, file, key) do
-    Cache.create_cache!(locale, module, file)
+    Cache.generate_cache!(locale, module, file)
 
     locale
-    |> Cache.create_persistent_term_key(module, file)
+    |> Cache.generate_persistent_term_key(module, file)
     |> :persistent_term.get()
     |> Map.get(key)
     |> Enum.random()

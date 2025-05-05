@@ -10,8 +10,10 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random number between `min` and `max`.
 
-  If both arguments are integers, the result is a random integer within the range. If they are
-  floats, a random float within the range is returned.
+  Generates a random number within the range of `min` to `max`. The type of the result depends
+  on the type of the arguments. If both arguments are integers, the result is an integer.
+  If they are floats or a mix of integers and floats, the result is a float.
+  If no arguments are provided, the default range is `0` to `100`.
 
   ## Examples
 
@@ -21,7 +23,10 @@ defmodule NeoFaker.Number do
       iex> NeoFaker.Number.between(1, 100)
       28
 
-      iex> NeoFaker.Number.between(1.0, 100.0)
+      iex> NeoFaker.Number.between(20, 100.0)
+      29.481745280074264
+
+      iex> NeoFaker.Number.between(10.0, 100.0)
       29.481745280074264
 
   """
@@ -31,6 +36,10 @@ defmodule NeoFaker.Number do
 
   def between(min, max) when is_float(min) and is_float(max) do
     :rand.uniform() * (max - min) + min
+  end
+
+  def between(min, max) do
+    between(min + 0.0, max + 0.0)
   end
 
   @doc """

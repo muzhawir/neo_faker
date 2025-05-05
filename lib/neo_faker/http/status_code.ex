@@ -20,7 +20,7 @@ defmodule NeoFaker.Http.StatusCode do
   def fetch_status_codes!(group) do
     :default
     |> fetch_cache!(NeoFaker.Http, "status_code.exs")
-    |> Map.get(Atom.to_string(group))
+    |> Map.fetch!(Atom.to_string(group))
   end
 
   @doc """

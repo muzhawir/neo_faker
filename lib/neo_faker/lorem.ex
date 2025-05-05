@@ -24,7 +24,7 @@ defmodule NeoFaker.Lorem do
 
   - `:text` - Specifies the text source.
 
-  Values for option `:type` can be:
+  Values for option `:text` can be:
 
   - `:lorem` - A standard Lorem Ipsum text (default).
   - `:meditations` - A meditation text by Marcus Aurelius.
@@ -36,7 +36,7 @@ defmodule NeoFaker.Lorem do
       risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
       convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
 
-      iex> NeoFaker.Lorem.paragraph(type: :meditations)
+      iex> NeoFaker.Lorem.paragraph(text: :meditations)
       "Do the things external which fall upon thee distract thee? Give thyself time to learn
       something new and good, and cease to be whirled around. But then thou must also avoid being
       carried about the other way. For those too are triflers who have wearied themselves in life

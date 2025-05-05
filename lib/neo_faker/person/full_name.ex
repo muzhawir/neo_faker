@@ -4,9 +4,9 @@ defmodule NeoFaker.Person.FullName do
   alias NeoFaker.Person
 
   @doc """
-  Generates a random full name.
+  Generates a random full name for a specified gender and locale.
 
-  If no options are provided, it returns a default random unisex full name.
+  If `:unisex` is provided as the gender, randomly selects between a male or female full name.
   """
   @spec generate_random_full_name(atom(), Keyword.t(), boolean()) :: String.t()
   def generate_random_full_name(:unisex, locale, include_middle_name?) do

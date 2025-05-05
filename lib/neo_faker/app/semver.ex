@@ -4,30 +4,31 @@ defmodule NeoFaker.App.Semver do
   @pre_release_label ~w[alpha beta rc]
 
   @doc """
-  Generates a core semantic version number.
-  Returns a randomly generated semantic version number following the `MAJOR.MINOR.PATCH` format.
+  Generates a random semantic version string in the `MAJOR.MINOR.PATCH` format.
+
+  Each segment is randomly selected: MAJOR from 0–9, MINOR from 0–20, and PATCH from 1–30.
   """
-  @spec semver_core() :: String.t()
   def semver_core, do: Enum.map_join([0..9, 0..20, 1..30], ".", &Enum.random/1)
 
   @doc """
-  Generates a random pre-release identifier.
-  Returns a string in one of the following formats:
+  Generates a random semantic version pre-release identifier.
 
-  - `"alpha.N"` - Early development stage.
-  - `"beta.N"` - Testing phase before release.
-  - `"rc.N"` - Release Candidate.
+  The result is a string in the format `"alpha.N"`, `"beta.N"`, or `"rc.N"`, where the label is
+  randomly chosen from `"alpha"`, `"beta"`, or `"rc"`, and `N` is a random integer between 1 and
+  10.
   """
-  @spec semver_pre_release() :: String.t()
   def semver_pre_release, do: "#{Enum.random(@pre_release_label)}.#{Enum.random(1..10)}"
 
   @doc """
-  Generates a build number based on the current date (YYYYMMDD).
+  Generates a semantic version build number string based on a randomly offset local date in
+  `YYYYMMDD` format.
+
+  The function takes the current local date, adds a random number of days between -365 and 365,
+  and returns the resulting date as a string without dashes.
   """
-  @spec semver_build_number() :: String.t()
   def semver_build_number do
     NaiveDateTime.local_now()
-    |> Date.add(Enum.random(-365..0))
+    |> Date.add(Enum.random(-365..365))
     |> Date.to_string()
     |> String.replace("-", "")
   end

@@ -13,7 +13,7 @@ defmodule NeoFaker.Lorem.Utils do
   """
   @spec lorem_ipsum(keyword()) :: list()
   def lorem_ipsum(opts \\ []) do
-    file = text_content(Keyword.get(opts, :text))
+    file = text_content(Keyword.get(opts, :text, :lorem))
 
     opts
     |> Keyword.get(:locale, :default)
@@ -25,6 +25,6 @@ defmodule NeoFaker.Lorem.Utils do
     |> Enum.shuffle()
   end
 
-  defp text_content(nil), do: "lorem_ipsum.exs"
+  defp text_content(:lorem), do: "lorem_ipsum.exs"
   defp text_content(:meditations), do: "meditations.exs"
 end

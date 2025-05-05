@@ -7,11 +7,15 @@ defmodule NeoFaker.Text do
   """
   @moduledoc since: "0.8.0"
 
+  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
   import NeoFaker.Data.Generator, only: [random_data: 3]
 
-  alias NeoFaker.Text.Character
-  alias NeoFaker.Text.Emoji
-
+  @alphabet_lower Enum.shuffle(~w[a b c d e f g h i j k l m n o p q r s t u v w x y z])
+  @alphabet_upper Enum.shuffle(~w[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z])
+  @alphabet Enum.shuffle(@alphabet_lower ++ @alphabet_upper)
+  @digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9])
+  @alphanumeric Enum.shuffle(@alphabet ++ @digits)
+  @emoji_file "emoji.exs"
   @word_file "word.exs"
 
   @doc """
@@ -42,7 +46,12 @@ defmodule NeoFaker.Text do
 
   """
   @spec character(Keyword.t()) :: String.t()
-  defdelegate character(opts \\ []), to: Character, as: :character
+  def character(opts \\ [])
+  def character([]), do: Enum.random(@alphanumeric)
+  def character(type: :alphabet_lower), do: Enum.random(@alphabet_lower)
+  def character(type: :alphabet_upper), do: Enum.random(@alphabet_upper)
+  def character(type: :alphabet), do: Enum.random(@alphabet)
+  def character(type: :digit), do: Enum.random(@digits)
 
   @doc """
   Generates a string of random characters.
@@ -100,7 +109,34 @@ defmodule NeoFaker.Text do
 
   """
   @spec emoji(Keyword.t()) :: String.t()
-  defdelegate emoji(opts \\ []), to: Emoji, as: :emoji
+  def emoji([]) do
+    :default
+    |> fetch_cache!(__MODULE__, @emoji_file)
+    |> Map.values()
+    |> List.flatten()
+    |> Enum.random()
+  end
+
+  def emoji(category: :activities), do: random_data(__MODULE__, @emoji_file, "activities")
+  def emoji(category: :food_and_drink), do: random_data(__MODULE__, @emoji_file, "food_and_drink")
+  def emoji(category: :objects), do: random_data(__MODULE__, @emoji_file, "objects")
+
+  def emoji(category: :people_and_body),
+    do: random_data(__MODULE__, @emoji_file, "people_and_body")
+
+  def emoji(category: :animals_and_nature) do
+    random_data(__MODULE__, @emoji_file, "animals_and_nature")
+  end
+
+  def emoji(category: :smileys_and_emotion) do
+    random_data(__MODULE__, @emoji_file, "smileys_and_emotion")
+  end
+
+  def emoji(category: :symbols), do: random_data(__MODULE__, @emoji_file, "symbols")
+
+  def emoji(category: :travel_and_places) do
+    random_data(__MODULE__, @emoji_file, "travel_and_places")
+  end
 
   @doc """
   Generates a random word.

@@ -26,6 +26,7 @@ defmodule NeoFaker.Lorem do
 
   Values for option `:type` can be:
 
+  - `:lorem` - A standard Lorem Ipsum text (default).
   - `:meditations` - A meditation text by Marcus Aurelius.
 
   ## Examples

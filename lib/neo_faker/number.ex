@@ -10,10 +10,8 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random number between `min` and `max`.
 
-  Generates a random number within the range of `min` to `max`. The type of the result depends
-  on the type of the arguments. If both arguments are integers, the result is an integer.
-  If they are floats or a mix of integers and floats, the result is a float.
-  If no arguments are provided, the default range is `0` to `100`.
+  Returns a random integer if both arguments are integers, or a random float if either argument
+  is a float. Defaults to the range 0 to 100 if no arguments are provided.
 
   ## Examples
 

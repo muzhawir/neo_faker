@@ -42,7 +42,7 @@ defmodule NeoFaker.Boolean do
     if result == true, do: 1, else: 0
   end
 
-  def boolean(true_ratio, _opts) when not (true_ratio in 0..100) do
+  def boolean(true_ratio, _opts) when true_ratio not in 0..100 do
     raise ArgumentError, "true_ratio must be between 0 and 100, got: #{true_ratio}"
   end
 end

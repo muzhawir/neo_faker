@@ -50,7 +50,7 @@ defmodule NeoFaker.Color do
 
   The values for `:format` can be:
 
-  - `nil` - Returns the color in six-digit format (default).
+  - `:six_digit` - Returns the color in six-digit format (default).
   - `:three_digit` - Returns the color in three-digit format.
   - `:four_digit` - Returns the color in four-digit format.
   - `:eight_digit` - Returns the color in eight-digit format.
@@ -70,6 +70,7 @@ defmodule NeoFaker.Color do
       case Keyword.get(opts, :format) do
         :three_digit -> 3
         :four_digit -> 4
+        :six_digit -> 6
         :eight_digit -> 8
         _ -> 6
       end
@@ -115,7 +116,7 @@ defmodule NeoFaker.Color do
 
   The values for `:category` can be:
 
-  - `nil` - Returns all keyword colors (default).
+  - `:all` - Returns all keyword colors (default).
   - `:basic` - Returns basic keyword colors.
   - `:extended` - Returns extended keyword colors.
 
@@ -139,7 +140,7 @@ defmodule NeoFaker.Color do
   @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
     generate_keyword_color(
-      Keyword.get(opts, :category),
+      Keyword.get(opts, :category, :all),
       Keyword.get(opts, :locale, :default)
     )
   end

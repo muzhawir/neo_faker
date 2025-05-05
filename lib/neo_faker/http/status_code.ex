@@ -29,7 +29,7 @@ defmodule NeoFaker.Http.StatusCode do
   Returns a random HTTP status code string wether detailed or simple based on the provided
   options.
   """
-  @spec generate_status_code(list(), atom()) :: String.t()
+  @spec generate_status_code(list(), Keyword.t()) :: String.t()
   def generate_status_code(status_codes, type: :detailed), do: Enum.random(status_codes)
 
   def generate_status_code(status_codes, type: :simple) do

@@ -1,9 +1,8 @@
 defmodule NeoFaker.ColorTest do
   use ExUnit.Case, async: true
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
-
   alias NeoFaker.Color
+  alias NeoFaker.Data.Cache
 
   @module NeoFaker.Color
   @cmyk_format_regexp ~r/^cmyk\((\d{1,3})%, (\d{1,3})%, (\d{1,3})%, (\d{1,3})%\)$/
@@ -15,7 +14,7 @@ defmodule NeoFaker.ColorTest do
 
   defp fetch_color_keyword_cache!(locale) do
     locale
-    |> fetch_cache!(@module, "keyword.exs")
+    |> Cache.fetch!(@module, "keyword.exs")
     |> Map.values()
     |> List.flatten()
   end

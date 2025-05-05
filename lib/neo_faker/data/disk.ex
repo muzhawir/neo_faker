@@ -15,4 +15,10 @@ defmodule NeoFaker.Data.Disk do
       raise File.Error, reason: :enoent
     end
   end
+
+  @doc """
+  Returns the path to the data directory.
+  """
+  @spec data_path() :: String.t()
+  def data_path, do: Path.join([File.cwd!(), "priv", "data"])
 end

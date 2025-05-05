@@ -1,15 +1,14 @@
 defmodule NeoFaker.TextTest do
   use ExUnit.Case, async: true
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
-
+  alias NeoFaker.Data.Cache
   alias NeoFaker.Text
 
   @alphanumeric_regexp ~r/[a-zA-Z0-9]/
 
   defp emojis do
     :default
-    |> fetch_cache!(NeoFaker.Text, "emoji.exs")
+    |> Cache.fetch!(NeoFaker.Text, "emoji.exs")
     |> Map.values()
     |> List.flatten()
   end

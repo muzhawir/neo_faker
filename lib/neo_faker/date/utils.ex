@@ -6,6 +6,9 @@ defmodule NeoFaker.Date.Utils do
 
   @doc """
   Generate a random date with sepecified range.
+
+  Returns a random date as a `Date` struct when the format is `:sigil` or a string in the format
+  `YYYY-MM-DD` when the format is `:iso8601`.
   """
   @spec random_add_date(Range.t(), date_format()) :: Date.t() | String.t()
   def random_add_date(range, :sigil), do: Date.add(NaiveDateTime.local_now(), Enum.random(range))
@@ -16,6 +19,9 @@ defmodule NeoFaker.Date.Utils do
 
   @doc """
   Generate a random date with a specific between two dates.
+
+  Returns a random date between `start` and `finish` as a `Date` struct when the format is
+  `:sigil` or a string in the format `YYYY-MM-DD` when the format is `:iso8601`.
   """
   @spec random_between_date(Date.t(), Date.t(), date_format()) :: Date.t() | String.t()
   def random_between_date(start, finish, :sigil), do: start |> Date.range(finish) |> Enum.random()
@@ -25,7 +31,7 @@ defmodule NeoFaker.Date.Utils do
   end
 
   @doc """
-  Generate naive date now.
+  Returns the current local date as a `Date` struct.
   """
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())
 end

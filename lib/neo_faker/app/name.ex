@@ -1,6 +1,8 @@
 defmodule NeoFaker.App.Name do
   @moduledoc false
 
+  @type case_style :: nil | :camel_case | :pascal_case | :dashed | :underscore | :single
+
   @doc """
   Formats a tuple of first and last name into a string according to the specified case style.
 
@@ -15,7 +17,7 @@ defmodule NeoFaker.App.Name do
   - `:single`: Randomly selects either the first or last name, capitalizes it, and returns it as
     a single name.
   """
-  @spec name_case({String.t(), String.t()}, :pascal_case) :: String.t()
+  @spec name_case({String.t(), String.t()}, case_style()) :: String.t()
   def name_case({first_name, last_name}, nil), do: "#{first_name} #{last_name}"
 
   def name_case({first_name, last_name}, :camel_case) do

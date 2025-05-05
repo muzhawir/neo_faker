@@ -1,25 +1,32 @@
-# Changelog for v0.10
+# Changelog for v0.11
 
-## v0.10.0 (2025-04-11)
+## v0.11.0 (2025-05-05)
 
-### New Generators
+### Module Rename
 
-This release introduces several new generators.
+[BREAKING CHANGES] This release renames the `NeoFaker.Internet` module to `NeoFaker.Http` with
+enhanced functionality.
 
-#### `NeoFaker.Date.birthday/3`
+#### `NeoFaker.Http` (previously `NeoFaker.Internet`)
 
-Generates a random birthday within a specified age range.
+- Added `NeoFaker.Http.request_method/0` - Generates a random HTTP request method.
+- Added `NeoFaker.Http.referrer_policy/0` - Generates a random HTTP referrer policy.
+- Added `NeoFaker.Http.status_code/1` - Generates a random HTTP status code with optional
+  filtering.
+- Enhanced `NeoFaker.Http.user_agent/1` - Now accepts a `:type` option to filter by `:browser` or
+  `:crawler`.
 
-#### `NeoFaker.Internet.user_agent/0`
+### Standardized Default Arguments
 
-Generates a random user agent string.
+[BREAKING CHANGES] Several functions now use explicit atoms instead of `nil` for default
+arguments:
 
-#### `NeoFaker.Time`
+- `NeoFaker.Color.hex/1` - Now defaults to `:six_digit` format instead of `nil`.
+- `NeoFaker.Color.keyword/1` - Now uses `:all` instead of `nil` for the default category.
 
-- `NeoFaker.Time.add/2` - Adds a random amount of time within a specified range.
-- `NeoFaker.Time.between/3` - Generates a random time between two specified times.
+### Code Organization
 
-### Fixes
-
-`NeoFaker.Person.full_name/1` now returns a correctly gendered full name instead of a randomly
-mixed one.
+- Improved module organization by moving function implementations from large utility modules to
+  smaller, focused modules.
+- Enhanced documentation and examples throughout the codebase.
+- Added Indonesian locale support for various generators.

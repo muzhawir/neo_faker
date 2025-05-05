@@ -32,8 +32,7 @@ defmodule NeoFaker.Gravatar do
 
   The values for `:fallback` can be:
 
-  - `nil` - Generates an "identicon" image (default).
-  - `:identicon` - Generates an "identicon" image.
+  - `:identicon` - Generates an "identicon" image (default).
   - `:monsterid` - Generates a "monsterid" image.
   - `:wavatar` - Generates a "wavatar" image.
   - `:robohash` - Generates a "robohash" image.

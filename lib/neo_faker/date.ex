@@ -37,7 +37,7 @@ defmodule NeoFaker.Date do
       "2025-03-25"
 
   """
-  @spec add(-365..365, Keyword.t()) :: Date.t() | String.t()
+  @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
   def add(range \\ -365..365, opts \\ []) do
     random_add_date(range, Keyword.get(opts, :format, :sigil))
   end

@@ -40,7 +40,7 @@ defmodule NeoFaker.Http do
       "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 
   """
-  @spec user_agent() :: String.t()
+  @spec user_agent(Keyword.t()) :: String.t()
   def user_agent(opts \\ []), do: generate_user_agent(Keyword.get(opts, :type, :all))
 
   @doc """
@@ -121,7 +121,7 @@ defmodule NeoFaker.Http do
       "404 Not Found"
 
   """
-  @spec status_code(opts :: Keyword.t()) :: String.t()
+  @spec status_code(Keyword.t()) :: String.t()
   def status_code(opts \\ []) do
     type = Keyword.get(opts, :type, :detailed)
     status_codes = fetch_status_codes!(Keyword.get(opts, :group))

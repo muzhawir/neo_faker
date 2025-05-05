@@ -7,7 +7,8 @@ defmodule NeoFaker.Time do
   """
   @moduledoc since: "0.10.0"
 
-  import NeoFaker.Time.Utils
+  import NeoFaker.Time.Add
+  import NeoFaker.Time.Between
 
   @doc """
   Generates a random time.

@@ -8,9 +8,13 @@ defmodule NeoFaker.Text do
   @moduledoc since: "0.8.0"
 
   import NeoFaker.Data.Generator, only: [random_data: 3]
+  import NeoFaker.Text.Emoji
 
-  alias NeoFaker.Text.Util
-
+  @alphabet_lower Enum.shuffle(~w[a b c d e f g h i j k l m n o p q r s t u v w x y z])
+  @alphabet_upper Enum.shuffle(~w[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z])
+  @alphabet Enum.shuffle(@alphabet_lower ++ @alphabet_upper)
+  @digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9])
+  @alphanumeric Enum.shuffle(@alphabet ++ @digits)
   @word_file "word.exs"
 
   @doc """
@@ -41,7 +45,12 @@ defmodule NeoFaker.Text do
 
   """
   @spec character(Keyword.t()) :: String.t()
-  defdelegate character(opts \\ []), to: Util, as: :character
+  def character(opts \\ [])
+  def character([]), do: Enum.random(@alphanumeric)
+  def character(type: :alphabet_lower), do: Enum.random(@alphabet_lower)
+  def character(type: :alphabet_upper), do: Enum.random(@alphabet_upper)
+  def character(type: :alphabet), do: Enum.random(@alphabet)
+  def character(type: :digit), do: Enum.random(@digits)
 
   @doc """
   Generates a string of random characters.
@@ -80,6 +89,7 @@ defmodule NeoFaker.Text do
 
   The values for `:category` can be:
 
+  - `:all` - An emoji from any category (default).
   - `:activities` - An emoji related to activities.
   - `:animals_and_nature` - An emoji related to animals and nature.
   - `:food_and_drink` - An emoji related to food and drink.
@@ -99,7 +109,7 @@ defmodule NeoFaker.Text do
 
   """
   @spec emoji(Keyword.t()) :: String.t()
-  defdelegate emoji(opts \\ []), to: Util, as: :emoji
+  def emoji(opts \\ []), do: generate_emoji(Keyword.get(opts, :category, :all))
 
   @doc """
   Generates a random word.

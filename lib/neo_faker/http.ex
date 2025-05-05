@@ -7,12 +7,8 @@ defmodule NeoFaker.Http do
   """
   @moduledoc since: "0.11.0"
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
-  import NeoFaker.Data.Generator, only: [random_data: 3]
-
-  @user_agent_file "user_agent.exs"
-
-  # import NeoFaker.Internet.Util
+  import NeoFaker.Http.StatusCode
+  import NeoFaker.Http.UserAgent
 
   @doc """
   Generates a random user-agent.
@@ -20,13 +16,32 @@ defmodule NeoFaker.Http do
   Returns a random user-agent string from the top 100 HTTP user-agents most used over the Internet
   by [https://microlink.io/user-agents](https://microlink.io/user-agents).
 
+  ## Options
+
+  The accepted options are:
+
+  - `:type` - Defines the type of user-agent to generate.
+
+  The values for `:type` can be:
+
+  - `:all` - Returns a random user-agent from both browsers and crawlers (default).
+  - `:browser` - Returns a random browser user-agent.
+  - `:crawler` - Returns a random crawler user-agent.
+
   ## Examples
 
       iex> NeoFaker.Internet.user_agent()
-      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0"
+      "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+      iex> NeoFaker.Internet.user_agent(type: :browser)
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+      iex> NeoFaker.Internet.user_agent(type: :crawler)
+      "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 
   """
-  def user_agent, do: random_data(__MODULE__, @user_agent_file, "user_agents")
+  @spec user_agent(Keyword.t()) :: String.t()
+  def user_agent(opts \\ []), do: generate_user_agent(Keyword.get(opts, :type, :all))
 
   @doc """
   Generates a random HTTP request method.
@@ -106,32 +121,11 @@ defmodule NeoFaker.Http do
       "404 Not Found"
 
   """
-  @spec status_code(opts :: Keyword.t()) :: String.t()
+  @spec status_code(Keyword.t()) :: String.t()
   def status_code(opts \\ []) do
     type = Keyword.get(opts, :type, :detailed)
-    status_codes = fetch_status_code_values!(Keyword.get(opts, :group))
+    status_codes = fetch_status_codes!(Keyword.get(opts, :group))
 
     generate_status_code(status_codes, type: type)
-  end
-
-  defp fetch_status_code_values!(nil) do
-    :default
-    |> fetch_cache!(NeoFaker.Http, "status_code.exs")
-    |> Map.values()
-    |> List.flatten()
-  end
-
-  defp fetch_status_code_values!(group) do
-    :default
-    |> fetch_cache!(NeoFaker.Http, "status_code.exs")
-    |> Map.get(Atom.to_string(group))
-  end
-
-  defp generate_status_code(status_codes, type: :detailed), do: Enum.random(status_codes)
-
-  defp generate_status_code(status_codes, type: :simple) do
-    get_status_number = fn code -> code |> String.split(" ", parts: 2) |> List.first() end
-
-    status_codes |> Enum.map(&get_status_number.(&1)) |> Enum.random()
   end
 end

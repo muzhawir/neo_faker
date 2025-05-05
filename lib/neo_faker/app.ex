@@ -7,7 +7,8 @@ defmodule NeoFaker.App do
   """
   @moduledoc since: "0.4.0"
 
-  import NeoFaker.App.Util
+  import NeoFaker.App.Name
+  import NeoFaker.App.Semver
   import NeoFaker.Data.Generator, only: [random_data: 3, random_data: 4]
 
   alias NeoFaker.Person
@@ -110,7 +111,7 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
-      iex> NeoFaker.App.name(locale: "id_id")
+      iex> NeoFaker.App.name(locale: :id_id)
       "Garuda Web"
 
   """
@@ -138,23 +139,30 @@ defmodule NeoFaker.App do
 
   The values for `:type` can be:
 
-  - `nil` (default) - Uses core SemVer format, e.g., `"1.2.3"`.
-  - `:pre_release` - Includes a pre-release label, e.g., `"1.2.3-beta.1"`.
-  - `:build` - Includes a build metadata label, e.g., `"1.2.3+20250325"`.
-  - `:pre_release_build` - Includes both pre-release and build metadata, e.g.,
-    `"1.2.3-rc.1+20250325"`.
+  - `nil` (default) - Uses core SemVer format (e.g., `"1.2.3"`).
+  - `:pre_release` - Includes a pre-release label (e.g., `"1.2.3-beta.1")`.
+  - `:build` - Includes a build metadata label (e.g., `"1.2.3+20250325"`).
+  - `:pre_release_build` - Includes both pre-release and build metadata (e.g.,
+    `"1.2.3-rc.1+20250325"`).
 
   ## Examples
 
       iex> NeoFaker.App.semver()
       "1.2.3"
 
-      iex> NeoFaker.App.semver(:pre_release)
+      iex> NeoFaker.App.semver(type: :pre_release)
       "1.2.3-beta.1"
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  defdelegate semver(opts \\ []), to: NeoFaker.App.Util, as: :semver
+  def semver(opts \\ [])
+  def semver([]), do: semver_core()
+  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
+  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
+
+  def semver(type: :pre_release_build) do
+    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
+  end
 
   @doc """
   Returns a simple version number.
@@ -168,5 +176,5 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version, do: [] |> semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
 end

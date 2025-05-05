@@ -32,8 +32,7 @@ defmodule NeoFaker.Gravatar do
 
   The values for `:fallback` can be:
 
-  - `nil` - Generates an "identicon" image (default).
-  - `:identicon` - Generates an "identicon" image.
+  - `:identicon` - Generates an "identicon" image (default).
   - `:monsterid` - Generates a "monsterid" image.
   - `:wavatar` - Generates a "wavatar" image.
   - `:robohash` - Generates a "robohash" image.
@@ -55,9 +54,25 @@ defmodule NeoFaker.Gravatar do
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    image_size = opts |> Keyword.get(:size) |> image_size()
-    default_fallback = opts |> Keyword.get(:fallback) |> default_fallback()
+    fallback = Keyword.get(opts, :fallback, :identicon)
 
-    generate_gravatar_url(email, image_size, default_fallback)
+    fallback_string =
+      cond do
+        is_atom(fallback) ->
+          Atom.to_string(fallback)
+
+        is_binary(fallback) ->
+          fallback
+
+        true ->
+          raise ArgumentError,
+                "invalid :fallback, expected atom or string, got: #{inspect(fallback)}"
+      end
+
+    generate_gravatar_url(
+      email,
+      image_size(Keyword.get(opts, :size)),
+      fallback_string
+    )
   end
 end

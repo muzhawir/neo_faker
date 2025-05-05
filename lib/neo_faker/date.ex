@@ -37,9 +37,7 @@ defmodule NeoFaker.Date do
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
   def add(range \\ -365..365, opts \\ []) do
-    format = Keyword.get(opts, :format, :sigil)
-
-    random_add_date(range, format)
+    random_add_date(range, Keyword.get(opts, :format, :sigil))
   end
 
   @doc """
@@ -70,9 +68,7 @@ defmodule NeoFaker.Date do
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
   def between(start \\ ~D[1970-01-01], finish \\ local_date_now(), opts \\ []) do
-    format = Keyword.get(opts, :format, :sigil)
-
-    random_between_date(start, finish, format)
+    random_between_date(start, finish, Keyword.get(opts, :format, :sigil))
   end
 
   @doc """

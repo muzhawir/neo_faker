@@ -34,8 +34,8 @@ defmodule NeoFaker.Person.FullName do
   end
 
   defp generate_full_name(sex, locale, false) do
-    [first_name, _middle_name, last_name] =
-      sex |> generate_full_name(locale, true) |> String.split(" ")
+    first_name = Person.first_name(sex: sex, locale: locale)
+    last_name = Person.last_name(sex: sex, locale: locale)
 
     "#{first_name} #{last_name}"
   end

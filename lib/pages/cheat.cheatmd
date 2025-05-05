@@ -116,7 +116,8 @@ iex> NeoFaker.Color.cmyk(format: :w3c)
 ```
 
 `NeoFaker.Color.hsl/1`, `NeoFaker.Color.hsla/1`, `NeoFaker.Color.rgb/1` and
-`NeoFaker.Color.rgba/1` behave the same way as this function.
+`NeoFaker.Color.rgba/1` follow the same pattern, returning their respective color values in tuples
+or formatted strings.
 
 ### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
 
@@ -155,7 +156,8 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 "AFC4C626C55E4166421D82732163857D"
 ```
 
-`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` behave the same way as this function.
+`NeoFaker.Crypto.sha1/1` and `NeoFaker.Crypto.sha256/1` follow the same pattern, generating their
+respective hash types with the same formatting options.
 
 ## [Date](`NeoFaker.Date`)
 
@@ -284,7 +286,8 @@ by their activity, and yet have no object to which to direct every movement, and
 all their thoughts."
 ```
 
-`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way as this function.
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` follow the same pattern, supporting the
+same types and format options but generate different text lengths.
 
 ## [Number](`NeoFaker.Number`)
 
@@ -347,8 +350,8 @@ iex> NeoFaker.Person.binary_gender(locale: :id_id)
 "Perempuan"
 ```
 
-`NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` behave the same
-way as this function.
+`NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` accept the same
+options and follow the same pattern, but generate different gender values.
 
 ### [`first_name(opts \\ [])`](`NeoFaker.Person.first_name/1`)
 
@@ -363,8 +366,8 @@ iex> NeoFaker.Person.first_name(locale: :id_id)
 "Jaka"
 ```
 
-`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave the same way as this
-function.
+`NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` accept the same options and
+follow the same pattern, but generate middle or last names respectively.
 
 ### [`full_name(opts \\ [])`](`NeoFaker.Person.full_name/1`)
 
@@ -389,7 +392,8 @@ iex> NeoFaker.Person.prefix(locale: :id_id)
 "Tn."
 ```
 
-`NeoFaker.Person.suffix/1` behaves the same way as this function.
+`NeoFaker.Person.suffix/1` accepts the same options and follows the same pattern, but generates
+name suffixes instead of prefixes.
 
 ## [Text](`NeoFaker.Text`)
 

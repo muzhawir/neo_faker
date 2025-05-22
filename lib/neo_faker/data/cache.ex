@@ -4,6 +4,9 @@ defmodule NeoFaker.Data.Cache do
   alias NeoFaker.Data.Disk
   alias NeoFaker.Data.Resolver
 
+  @doc """
+  Fetches a persistent term value or generates it if not found.
+  """
   @spec fetch!(atom(), atom(), String.t()) :: map()
   def fetch!(locale, module, file) do
     key = generate_key(locale, module, file)
@@ -30,7 +33,7 @@ defmodule NeoFaker.Data.Cache do
 
     if File.exists?(file_path) do
       file_path
-      |> Disk.evaluate_file!()
+      |> Disk.fetch_file!()
       |> Map.new(fn {key, value} -> {key, Enum.shuffle(value)} end)
       |> put_in_persistent_term(resolved_locale, module, file)
     else

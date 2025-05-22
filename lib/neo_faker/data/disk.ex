@@ -4,15 +4,24 @@ defmodule NeoFaker.Data.Disk do
   @doc """
   Evaluates the contents of a file and returns the result.
   """
-  @spec evaluate_file!(String.t()) :: any()
-  def evaluate_file!(path) do
+  @spec fetch_file!(String.t()) :: any()
+  def fetch_file!(path) do
     if File.exists?(path) do
-      path
-      |> File.read!()
-      |> Code.eval_string()
-      |> elem(0)
+      path |> File.read!() |> Code.eval_string() |> elem(0)
     else
       raise File.Error, reason: :enoent
+    end
+  end
+
+  @doc """
+  Evaluates the contents of a file and returns the result.
+  """
+  @spec fetch_file(String.t()) :: {:ok, any()} | :error
+  def fetch_file(path) do
+    if File.exists?(path) do
+      {:ok, path |> File.read!() |> Code.eval_string() |> elem(0)}
+    else
+      :error
     end
   end
 

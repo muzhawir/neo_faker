@@ -29,5 +29,9 @@ defmodule NeoFaker.Data.Disk do
   Returns the path to the data directory.
   """
   @spec data_path() :: String.t()
-  def data_path, do: Path.join([File.cwd!(), "priv", "data"])
+  def data_path do
+    application_directory = :neo_faker |> :code.priv_dir() |> to_string()
+
+    Path.join([application_directory, "data"])
+  end
 end

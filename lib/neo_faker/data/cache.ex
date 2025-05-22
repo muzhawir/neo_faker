@@ -4,47 +4,52 @@ defmodule NeoFaker.Data.Cache do
   alias NeoFaker.Data.Disk
   alias NeoFaker.Data.Resolver
 
-  @data_path Path.join([File.cwd!(), "priv", "data"])
+  @doc """
+  Fetches a persistent term value or generates it if not found.
+  """
+  @spec fetch!(atom(), atom(), String.t()) :: map()
+  def fetch!(locale, module, file) do
+    key = generate_key(locale, module, file)
 
-  @spec fetch_cache!(atom(), atom(), String.t()) :: map()
-  def fetch_cache!(locale, module, file) do
-    key = create_persistent_term_key(locale, module, file)
+    case :persistent_term.get(key, nil) do
+      nil ->
+        generate!(locale, module, file)
 
-    if :persistent_term.get(key, nil) == nil do
-      create_cache!(locale, module, file)
+        :persistent_term.get(key)
 
-      :persistent_term.get(key)
-    else
-      :persistent_term.get(key)
+      value ->
+        value
     end
   end
 
   @doc """
-  Create a persistent term with value in locale data file.
+  Creates a persistent term with the value from the locale data file.
   """
-  @spec create_cache!(atom(), atom(), String.t()) :: :ok | File.Error
-  def create_cache!(locale, module, file) do
-    locale_name = Resolver.resolve_locale_config(locale)
+  @spec generate!(atom(), atom(), String.t()) :: :ok | File.Error
+  def generate!(locale, module, file) do
+    resolved_locale = Resolver.resolve_locale_config(locale)
     module_name = module |> Module.split() |> List.last() |> String.downcase()
-    file_path = Path.join([@data_path, Atom.to_string(locale_name), module_name, file])
+    file_path = Path.join([Disk.data_path(), Atom.to_string(resolved_locale), module_name, file])
 
     if File.exists?(file_path) do
-      value =
-        file_path
-        |> Disk.evaluate_file!()
-        |> Map.new(fn {key, val} -> {key, Enum.shuffle(val)} end)
-
-      :persistent_term.put(create_persistent_term_key(locale_name, module, file), value)
+      file_path
+      |> Disk.fetch_file!()
+      |> Map.new(fn {key, value} -> {key, Enum.shuffle(value)} end)
+      |> put_in_persistent_term(resolved_locale, module, file)
     else
       raise File.Error, reason: :enoent
     end
   end
 
+  defp put_in_persistent_term(value, locale, module, file) do
+    :persistent_term.put(generate_key(locale, module, file), value)
+  end
+
   @doc """
-  Creates a persistent term key based on the given locale, module, and file name.
+  Generates a persistent term key based on the given locale, module, and file name.
   """
-  @spec create_persistent_term_key(atom(), atom(), String.t()) :: atom()
-  def create_persistent_term_key(locale, module, file) do
+  @spec generate_key(atom(), atom(), String.t()) :: atom()
+  def generate_key(locale, module, file) do
     module_name = module |> Module.split() |> Enum.map_join("_", &String.downcase/1)
     file_name = file |> String.split(".") |> List.first()
     locale_name = locale |> Atom.to_string() |> String.downcase()

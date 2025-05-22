@@ -7,8 +7,9 @@ defmodule NeoFaker.Lorem do
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Lorem.Utils
+  import NeoFaker.Data.Generator, only: [random_value: 4]
 
+  @new_line_regexp ~r/(?<!\n)\n(?!\n)/
   @punctuation_regexp ~r/[[:punct:]]/
   @sentence_delimiter_regexp ~r/(?<=[.!?])\s+/
 
@@ -45,7 +46,20 @@ defmodule NeoFaker.Lorem do
 
   """
   @spec paragraph(Keyword.t()) :: String.t()
-  def paragraph(opts \\ []), do: opts |> lorem_ipsum() |> Enum.random()
+  def paragraph(opts \\ []) do
+    file =
+      case Keyword.get(opts, :text, :lorem) do
+        :lorem -> "lorem_ipsum.exs"
+        _ -> "meditations.exs"
+      end
+
+    __MODULE__
+    |> random_value(file, "text", opts)
+    |> String.replace(@new_line_regexp, " ")
+    |> String.split("\n\n")
+    |> Enum.shuffle()
+    |> List.first()
+  end
 
   @doc """
   Generates a random sentence.

@@ -9,7 +9,7 @@ defmodule NeoFaker.App do
 
   import NeoFaker.App.Name
   import NeoFaker.App.Semver
-  import NeoFaker.Data.Generator, only: [random_data: 3, random_data: 4]
+  import NeoFaker.Data.Generator, only: [random_value: 3, random_value: 4]
 
   alias NeoFaker.Person
 
@@ -58,7 +58,7 @@ defmodule NeoFaker.App do
   """
   @spec description(Keyword.t()) :: String.t()
   def description(opts \\ []) do
-    random_data(__MODULE__, @description_file, "descriptions", opts)
+    random_value(__MODULE__, @description_file, "descriptions", opts)
   end
 
   @doc """
@@ -74,7 +74,7 @@ defmodule NeoFaker.App do
 
   """
   @spec license() :: String.t()
-  def license, do: random_data(__MODULE__, @license_file, "licenses")
+  def license, do: random_value(__MODULE__, @license_file, "licenses")
 
   @doc """
   Generates a random app name.
@@ -118,8 +118,8 @@ defmodule NeoFaker.App do
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
     locale = Keyword.get(opts, :locale)
-    first_name = random_data(__MODULE__, @name_file, "first_names", locale: locale)
-    last_name = random_data(__MODULE__, @name_file, "last_names", locale: locale)
+    first_name = random_value(__MODULE__, @name_file, "first_names", locale: locale)
+    last_name = random_value(__MODULE__, @name_file, "last_names", locale: locale)
 
     name_case({first_name, last_name}, Keyword.get(opts, :style))
   end

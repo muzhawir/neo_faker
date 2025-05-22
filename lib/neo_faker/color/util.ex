@@ -1,9 +1,10 @@
 defmodule NeoFaker.Color.Util do
   @moduledoc false
 
-  import NeoFaker.Data.Cache, only: [fetch_cache!: 3]
-  import NeoFaker.Data.Generator, only: [random_data: 4]
+  import NeoFaker.Data.Generator, only: [random_value: 4]
   import NeoFaker.Number, only: [between: 0, between: 2]
+
+  alias NeoFaker.Data.Cache
 
   @module NeoFaker.Color
   @hex_digits Enum.shuffle(~w[0 1 2 3 4 5 6 7 8 9 A B C D E F])
@@ -61,14 +62,14 @@ defmodule NeoFaker.Color.Util do
   """
   def generate_keyword_color(:all, locale) do
     locale
-    |> fetch_cache!(@module, "keyword.exs")
+    |> Cache.fetch!(@module, "keyword.exs")
     |> Map.values()
     |> List.flatten()
     |> Enum.random()
   end
 
   def generate_keyword_color(category, locale) do
-    random_data(@module, "keyword.exs", Atom.to_string(category), locale: locale)
+    random_value(@module, "keyword.exs", Atom.to_string(category), locale: locale)
   end
 
   @doc """

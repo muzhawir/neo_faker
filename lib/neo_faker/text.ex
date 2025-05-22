@@ -7,8 +7,9 @@ defmodule NeoFaker.Text do
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Data.Generator, only: [random_data: 3]
   import NeoFaker.Text.Emoji
+
+  alias NeoFaker.Data.Generator
 
   @alphabet_lower Enum.shuffle(~w[a b c d e f g h i j k l m n o p q r s t u v w x y z])
   @alphabet_upper Enum.shuffle(~w[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z])
@@ -124,5 +125,5 @@ defmodule NeoFaker.Text do
   """
   @doc since: "0.9.0"
   @spec word() :: String.t()
-  def word, do: random_data(__MODULE__, @word_file, "words")
+  def word, do: Generator.random_value(__MODULE__, @word_file, "words")
 end

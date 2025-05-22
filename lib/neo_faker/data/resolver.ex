@@ -34,7 +34,7 @@ defmodule NeoFaker.Data.Resolver do
   @spec locale_available?(atom()) :: boolean()
   def locale_available?(locale) do
     if is_nil(:persistent_term.get(:available_locales, nil)) do
-      available_locales = @locale_file |> Disk.evaluate_file!() |> MapSet.new()
+      available_locales = @locale_file |> Disk.fetch_file!() |> MapSet.new()
 
       :persistent_term.put(:available_locales, available_locales)
     end

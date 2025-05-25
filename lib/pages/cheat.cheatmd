@@ -465,3 +465,10 @@ iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
 iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
 "15:22:10"
 ```
+
+### [`time_zone()`](`NeoFaker.Time.time_zone/0`)
+
+```elixir
+iex> NeoFaker.Time.time_zone()
+"Asia/Makassar"
+```

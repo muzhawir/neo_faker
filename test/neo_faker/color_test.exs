@@ -19,15 +19,15 @@ defmodule NeoFaker.ColorTest do
     |> List.flatten()
   end
 
+  defp assert_tuple_of(value, size, type_fun) do
+    assert is_tuple(value)
+    assert tuple_size(value) == size
+    assert Enum.all?(Tuple.to_list(value), type_fun)
+  end
+
   describe "cmyk/1" do
     test "returns a CMYK color in tuple format" do
-      cmyk_color = Color.cmyk()
-
-      assert is_tuple(cmyk_color)
-
-      assert tuple_size(cmyk_color) == 4
-
-      assert Enum.all?(Tuple.to_list(cmyk_color), &is_integer/1)
+      assert_tuple_of(Color.cmyk(), 4, &is_integer/1)
     end
 
     test "returns a CMYK color in W3C format" do
@@ -41,23 +41,15 @@ defmodule NeoFaker.ColorTest do
     end
 
     test "returns a HEX color with options" do
-      digit = [:three_digit, :four_digit, :eight_digit]
-
-      for format <- digit do
+      Enum.each([:three_digit, :four_digit, :eight_digit], fn format ->
         assert Regex.match?(@hex_format_regexp, Color.hex(format: format))
-      end
+      end)
     end
   end
 
   describe "hsl/1" do
     test "returns a HSL color in tuple format" do
-      hsl_color = Color.hsl()
-
-      assert is_tuple(hsl_color)
-
-      assert tuple_size(hsl_color) == 3
-
-      assert Enum.all?(Tuple.to_list(hsl_color), &is_integer/1)
+      assert_tuple_of(Color.hsl(), 3, &is_integer/1)
     end
 
     test "returns a HSL color in W3C format" do
@@ -67,13 +59,7 @@ defmodule NeoFaker.ColorTest do
 
   describe "hsla/1" do
     test "returns a HSLA color in tuple format" do
-      hsla_color = Color.hsla()
-
-      assert is_tuple(hsla_color)
-
-      assert tuple_size(hsla_color) == 4
-
-      assert Enum.all?(Tuple.to_list(hsla_color), &is_number/1)
+      assert_tuple_of(Color.hsla(), 4, &is_number/1)
     end
 
     test "returns a HSLA color in W3C format" do
@@ -87,9 +73,9 @@ defmodule NeoFaker.ColorTest do
     end
 
     test "returns a color keyword with option" do
-      for option <- [:basic, :extended] do
+      Enum.each([:basic, :extended], fn option ->
         assert Color.keyword(category: option) in fetch_color_keyword_cache!(:default)
-      end
+      end)
     end
 
     test "returns a color keyword with locale option" do
@@ -99,13 +85,7 @@ defmodule NeoFaker.ColorTest do
 
   describe "rgb/1" do
     test "returns a RGB color in tuple format" do
-      rgb_color = Color.rgb()
-
-      assert is_tuple(rgb_color)
-
-      assert tuple_size(rgb_color) == 3
-
-      assert Enum.all?(Tuple.to_list(rgb_color), &is_integer/1)
+      assert_tuple_of(Color.rgb(), 3, &is_integer/1)
     end
 
     test "returns a RGB color in W3C format" do
@@ -115,13 +95,7 @@ defmodule NeoFaker.ColorTest do
 
   describe "rgba/1" do
     test "returns a RGBA color in tuple format" do
-      rgba_color = Color.rgba()
-
-      assert is_tuple(rgba_color)
-
-      assert tuple_size(rgba_color) == 4
-
-      assert Enum.all?(Tuple.to_list(rgba_color), &is_number/1)
+      assert_tuple_of(Color.rgba(), 4, &is_number/1)
     end
 
     test "returns a RGBA color in W3C format" do

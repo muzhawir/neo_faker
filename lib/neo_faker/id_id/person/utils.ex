@@ -30,8 +30,8 @@ defmodule NeoFaker.IdId.Person.Utils do
 
     date_range =
       today
-      |> Date.add(@min_age_years * 365)
-      |> Date.range(Date.add(today, @max_age_years * 365))
+      |> Date.shift(year: @min_age_years)
+      |> Date.range(Date.shift(today, year: @max_age_years))
 
     %Date{year: year, month: month, day: day} = Enum.random(date_range)
 

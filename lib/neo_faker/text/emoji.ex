@@ -5,6 +5,17 @@ defmodule NeoFaker.Text.Emoji do
 
   alias NeoFaker.Data.Cache
 
+  @type category ::
+          :all
+          | :activities
+          | :animals_and_nature
+          | :food_and_drink
+          | :objects
+          | :people_and_body
+          | :smileys_and_emotion
+          | :symbols
+          | :travel_and_places
+
   @emoji_file "emoji.exs"
   @module NeoFaker.Text
 
@@ -13,7 +24,7 @@ defmodule NeoFaker.Text.Emoji do
 
   Returns a random emoji from the specified category or all categories if `:all` is passed.
   """
-  @spec generate_emoji(:all) :: String.t()
+  @spec generate_emoji(category()) :: String.t()
   def generate_emoji(:all) do
     :default
     |> Cache.fetch!(@module, @emoji_file)

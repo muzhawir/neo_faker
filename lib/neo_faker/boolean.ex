@@ -26,7 +26,7 @@ defmodule NeoFaker.Boolean do
       1
 
   """
-  @spec boolean(1..100, Keyword.t()) :: boolean() | non_neg_integer()
+  @spec boolean(0..100, Keyword.t()) :: boolean() | non_neg_integer()
   def boolean(true_ratio \\ 50, opts \\ [])
 
   def boolean(true_ratio, opts) when true_ratio in 0..100 do
@@ -39,7 +39,7 @@ defmodule NeoFaker.Boolean do
     end
   end
 
-  def boolean(true_ratio, _opts) when true_ratio not in 0..100 do
+  def boolean(true_ratio, _opts) do
     raise ArgumentError, "true_ratio must be between 0 and 100, got: #{true_ratio}"
   end
 end

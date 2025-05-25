@@ -8,23 +8,29 @@ defmodule NeoFaker.Person.Name do
   @male_name_file "male_name.exs"
 
   @doc """
-  Generates a random female name for the specified locale and key.
+  Generates a random name for the specified locale, key, and gender.
 
-  Returns a name string selected from female name data corresponding to the given locale and key.
+  Returns a name string selected from the appropriate name data file for the given gender.
+  If `:unisex` is provided, randomly selects from both male and female names.
   """
   @spec generate_random_name(atom(), String.t(), atom()) :: String.t()
-  def generate_random_name(locale, key, :female) do
-    random_value(@module, @female_name_file, key, locale: locale)
-  end
+  def generate_random_name(locale, key, gender) do
+    case gender do
+      :female ->
+        random_value(@module, @female_name_file, key, locale: locale)
 
-  def generate_random_name(locale, key, :male) do
-    random_value(@module, @male_name_file, key, locale: locale)
-  end
+      :male ->
+        random_value(@module, @male_name_file, key, locale: locale)
 
-  def generate_random_name(locale, key, :unisex) do
-    Enum.random([
-      random_value(@module, @female_name_file, key, locale: locale),
-      random_value(@module, @male_name_file, key, locale: locale)
-    ])
+      :unisex ->
+        Enum.random([
+          random_value(@module, @female_name_file, key, locale: locale),
+          random_value(@module, @male_name_file, key, locale: locale)
+        ])
+
+      other ->
+        raise ArgumentError,
+              "Invalid gender: #{inspect(other)}. Expected :female, :male, or :unisex."
+    end
   end
 end

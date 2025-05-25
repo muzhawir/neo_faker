@@ -10,33 +10,32 @@ defmodule NeoFaker.Person.FullName do
   """
   @spec generate_random_full_name(atom(), Keyword.t(), boolean()) :: String.t()
   def generate_random_full_name(:unisex, locale, include_middle_name?) do
-    Enum.random([
-      generate_full_name(:male, locale, include_middle_name?),
-      generate_full_name(:female, locale, include_middle_name?)
-    ])
+    sex = Enum.random([:male, :female])
+
+    generate_full_name(sex, locale, include_middle_name?)
   end
 
-  def generate_random_full_name(:male, locale, include_middle_name?) do
-    generate_full_name(:male, locale, include_middle_name?)
-  end
-
-  def generate_random_full_name(:female, locale, include_middle_name?) do
-    generate_full_name(:female, locale, include_middle_name?)
+  def generate_random_full_name(sex, locale, include_middle_name?) when sex in [:male, :female] do
+    generate_full_name(sex, locale, include_middle_name?)
   end
 
   # Generates a full name with or without a middle name.
   defp generate_full_name(sex, locale, true) do
-    first_name = Person.first_name(sex: sex, locale: locale)
-    middle_name = Person.middle_name(sex: sex, locale: locale)
-    last_name = Person.last_name(sex: sex, locale: locale)
+    full_name = [
+      Person.first_name(sex: sex, locale: locale),
+      Person.middle_name(sex: sex, locale: locale),
+      Person.last_name(sex: sex, locale: locale)
+    ]
 
-    "#{first_name} #{middle_name} #{last_name}"
+    Enum.join(full_name, " ")
   end
 
   defp generate_full_name(sex, locale, false) do
-    first_name = Person.first_name(sex: sex, locale: locale)
-    last_name = Person.last_name(sex: sex, locale: locale)
+    full_name = [
+      Person.first_name(sex: sex, locale: locale),
+      Person.last_name(sex: sex, locale: locale)
+    ]
 
-    "#{first_name} #{last_name}"
+    Enum.join(full_name, " ")
   end
 end

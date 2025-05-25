@@ -12,20 +12,16 @@ defmodule NeoFaker.Time.Between do
   - a string in the format `"HH:MM:SS"` when the format is `:iso8601`
   """
   @spec random_between_time(Time.t(), Time.t(), time_format()) :: Time.t() | String.t()
+  def random_between_time(start, finish, format) do
+    {start_seconds, _} = Time.to_seconds_after_midnight(start)
+    {finish_seconds, _} = Time.to_seconds_after_midnight(finish)
+    {min_sec, max_sec} = Enum.min_max([start_seconds, finish_seconds])
+    amount_to_add = Enum.random(min_sec..max_sec) - min_sec
+    time = Time.add(start, amount_to_add, :second)
 
-  def random_between_time(start, finish, :struct) do
-    {time_to_seconds_start, _microseconds} = Time.to_seconds_after_midnight(start)
-    {time_to_seconds_finish, _microseconds} = Time.to_seconds_after_midnight(finish)
-
-    {start_seconds, finish_seconds} =
-      Enum.min_max([time_to_seconds_start, time_to_seconds_finish])
-
-    amount_to_add = Enum.random(start_seconds..finish_seconds) - start_seconds
-
-    Time.add(start, amount_to_add, :second)
-  end
-
-  def random_between_time(start, finish, :iso8601) do
-    start |> random_between_time(finish, :struct) |> Time.to_iso8601()
+    case format do
+      :struct -> time
+      :iso8601 -> Time.to_iso8601(time)
+    end
   end
 end

@@ -36,8 +36,8 @@ defmodule NeoFaker.Http.StatusCode do
   def generate(status_codes, type: :detailed), do: Enum.random(status_codes)
 
   def generate(status_codes, type: :simple) do
-    get_status_number = fn code -> code |> String.split(" ", parts: 2) |> List.first() end
-
-    status_codes |> Enum.map(&get_status_number.(&1)) |> Enum.random()
+    status_codes
+    |> Enum.map(&(&1 |> String.split(" ", parts: 2) |> List.first()))
+    |> Enum.random()
   end
 end

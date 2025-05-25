@@ -1,7 +1,7 @@
 defmodule NeoFaker.App.Semver do
   @moduledoc false
 
-  @pre_release_label ~w[alpha beta rc]
+  @pre_release_labels ~w[alpha beta rc]
 
   @doc """
   Generates a random semantic version string in the `MAJOR.MINOR.PATCH` format.
@@ -9,7 +9,13 @@ defmodule NeoFaker.App.Semver do
   Each segment is randomly selected: MAJOR from 0–9, MINOR from 0–20, and PATCH from 1–30.
   """
   @spec semver_core() :: String.t()
-  def semver_core, do: Enum.map_join([0..9, 0..20, 1..30], ".", &Enum.random/1)
+  def semver_core do
+    major = Enum.random(0..9)
+    minor = Enum.random(0..20)
+    patch = Enum.random(1..30)
+
+    "#{major}.#{minor}.#{patch}"
+  end
 
   @doc """
   Generates a random semantic version pre-release identifier.
@@ -19,7 +25,12 @@ defmodule NeoFaker.App.Semver do
   10.
   """
   @spec semver_pre_release() :: String.t()
-  def semver_pre_release, do: "#{Enum.random(@pre_release_label)}.#{Enum.random(1..10)}"
+  def semver_pre_release do
+    label = Enum.random(@pre_release_labels)
+    n = Enum.random(1..10)
+
+    "#{label}.#{n}"
+  end
 
   @doc """
   Generates a semantic version build number string based on a randomly offset local date in
@@ -30,7 +41,7 @@ defmodule NeoFaker.App.Semver do
   """
   @spec semver_build_number() :: String.t()
   def semver_build_number do
-    NaiveDateTime.local_now()
+    Date.utc_today()
     |> Date.add(Enum.random(-365..365))
     |> Date.to_string()
     |> String.replace("-", "")

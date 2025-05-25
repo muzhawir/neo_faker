@@ -1,6 +1,7 @@
 defmodule NeoFaker.TimeTest do
   use ExUnit.Case, async: true
 
+  alias NeoFaker.Data.Cache
   alias NeoFaker.Time, as: FakeTime
 
   describe "add/0" do
@@ -35,6 +36,14 @@ defmodule NeoFaker.TimeTest do
 
       assert FakeTime.between(local_now, local_now, format: :iso8601) ==
                Time.to_iso8601(local_now)
+    end
+  end
+
+  describe "time_zone/0" do
+    test "returns a random time zone" do
+      time_zone = :default |> Cache.fetch!(NeoFaker.Time, "time_zone.exs") |> Map.get("time_zone")
+
+      assert FakeTime.time_zone() in time_zone
     end
   end
 end

@@ -10,6 +10,10 @@ defmodule NeoFaker.Time do
   import NeoFaker.Time.Add
   import NeoFaker.Time.Between
 
+  alias NeoFaker.Data.Generator
+
+  @time_zone_file "time_zone.exs"
+
   @doc """
   Generates a random time.
 
@@ -82,4 +86,19 @@ defmodule NeoFaker.Time do
   def between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59], opts \\ []) do
     random_between_time(start, finish, Keyword.get(opts, :format, :struct))
   end
+
+  @doc """
+  Generates a random time zone.
+
+  Returns a random time zone from the predefined list of time zones.
+
+  ## Examples
+
+      iex> NeoFaker.Time.time_zone()
+      "Asia/Makassar"
+
+  """
+  @doc since: "0.12.0"
+  @spec time_zone() :: String.t()
+  def time_zone, do: Generator.random_value(__MODULE__, @time_zone_file, "time_zone")
 end

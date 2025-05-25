@@ -2,11 +2,11 @@ name: Lint & Test
 
 on:
   pull_request:
+    branches-ignore: [ "main" ]
   workflow_dispatch:
 
 jobs:
   lint:
-    if: github.ref != 'refs/heads/main'
     name: Lint & Test
     runs-on: ubuntu-latest
 

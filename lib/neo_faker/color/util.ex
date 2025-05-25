@@ -25,7 +25,7 @@ defmodule NeoFaker.Color.Util do
   The resulting string consists of randomly selected hexadecimal digits (0-9, a-f).
   """
   def generate_hex_color(digits) do
-    Enum.map_join(1..digits, "", fn _ -> Enum.random(@hex_digits) end)
+    Enum.map_join(1..digits, fn _ -> Enum.random(@hex_digits) end)
   end
 
   @doc """
@@ -44,9 +44,7 @@ defmodule NeoFaker.Color.Util do
   and alpha (0.0–1.0) rounded to one decimal place.
   """
   def generate_hsla_tuple do
-    alpha = Float.round(between(0.0, 1.0), 1)
-
-    {between(0, 359), between(), between(), alpha}
+    {between(0, 359), between(), between(), Float.round(between(0.0, 1.0), 1)}
   end
 
   @doc """
@@ -88,9 +86,7 @@ defmodule NeoFaker.Color.Util do
   and an alpha value between 0.0 and 1.0 rounded to one decimal place.
   """
   def generate_rgba_tuple do
-    alpha = Float.round(between(0.0, 1.0), 1)
-
-    {between(0, 255), between(0, 255), between(0, 255), alpha}
+    {between(0, 255), between(0, 255), between(0, 255), Float.round(between(0.0, 1.0), 1)}
   end
 
   @doc """

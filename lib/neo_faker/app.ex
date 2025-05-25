@@ -161,13 +161,17 @@ defmodule NeoFaker.App do
 
   """
   @spec semver(Keyword.t()) :: String.t()
-  def semver(opts \\ [])
-  def semver([]), do: semver_core()
-  def semver(type: :pre_release), do: "#{semver_core()}-#{semver_pre_release()}"
-  def semver(type: :build), do: "#{semver_core()}+#{semver_build_number()}"
+  def semver(opts \\ []) do
+    type = Keyword.get(opts, :type)
+    core = semver_core()
 
-  def semver(type: :pre_release_build) do
-    "#{semver_core()}-#{semver_pre_release()}+#{semver_build_number()}"
+    case type do
+      nil -> core
+      :pre_release -> "#{core}-#{semver_pre_release()}"
+      :build -> "#{core}+#{semver_build_number()}"
+      :pre_release_build -> "#{core}-#{semver_pre_release()}+#{semver_build_number()}"
+      other -> raise ArgumentError, "Invalid semver type: #{inspect(other)}"
+    end
   end
 
   @doc """
@@ -182,5 +186,7 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: [] |> semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version do
+    semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  end
 end

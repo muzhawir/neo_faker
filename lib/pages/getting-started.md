@@ -2,7 +2,7 @@
 
 ![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-**NeoFaker** is an Elixir library used to generate fake data for testing and development.
+Elixir library for generating random fake data in testing and development.
 
 ## Requirements
 
@@ -62,10 +62,10 @@ iex> NeoFaker.App.name()
 "Neo Faker"
 
 iex> NeoFaker.App.description()
-"An Elixir library for generating fake data in tests and development."
+"Elixir library for generating random fake data in testing and development."
 
 iex> NeoFaker.App.description(locale: :id_id)
-"Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+"Pustaka Elixir untuk menghasilkan data palsu secara acak dalam pengujian dan pengembangan."
 ```
 
 For detailed documentation, visit the

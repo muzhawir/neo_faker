@@ -24,10 +24,10 @@ defmodule NeoFaker.Crypto.Util do
   - `:upper` - uses upper case characters
   """
   @spec generate_hash(atom(), Keyword.t()) :: String.t()
-  def generate_hash(hash_type, opts) do
+  def generate_hash(hash_type, opts \\ []) do
     case_type = Keyword.get(opts, :case, :lower)
-    random_byte = :crypto.strong_rand_bytes(16)
+    random_bytes = :crypto.strong_rand_bytes(16)
 
-    hash_type |> :crypto.hash(random_byte) |> Base.encode16(case: case_type)
+    hash_type |> :crypto.hash(random_bytes) |> Base.encode16(case: case_type)
   end
 end

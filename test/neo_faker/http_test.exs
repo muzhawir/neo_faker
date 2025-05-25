@@ -4,6 +4,8 @@ defmodule NeoFaker.HttpTest do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Http
 
+  defp fetch_status_codes, do: Cache.fetch!(:default, NeoFaker.Http, "status_code.exs")
+
   describe "user_agent/0" do
     test "returns a random user agent" do
       assert is_binary(Http.user_agent()) and String.valid?(Http.user_agent())
@@ -35,11 +37,7 @@ defmodule NeoFaker.HttpTest do
 
   describe "status_code/1" do
     test "returns a random status code" do
-      status_code =
-        :default
-        |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
-        |> Map.values()
-        |> List.flatten()
+      status_code = fetch_status_codes() |> Map.values() |> List.flatten()
 
       assert Http.status_code(type: :detailed) in status_code
     end
@@ -48,8 +46,7 @@ defmodule NeoFaker.HttpTest do
       get_number_code = fn code -> code |> String.split(" ", parts: 2) |> List.first() end
 
       status_code =
-        :default
-        |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
+        fetch_status_codes()
         |> Map.values()
         |> List.flatten()
         |> Enum.map(&get_number_code.(&1))
@@ -58,21 +55,9 @@ defmodule NeoFaker.HttpTest do
     end
 
     test "returns a random status code with specific group" do
-      group_status_code = [
-        :information,
-        :success,
-        :redirection,
-        :client_error,
-        :server_error
-      ]
-
-      for group <- group_status_code do
+      for group <- [:information, :success, :redirection, :client_error, :server_error] do
         group_string = Atom.to_string(group)
-
-        status_code =
-          :default
-          |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
-          |> Map.get(group_string)
+        status_code = Map.get(fetch_status_codes(), group_string)
 
         assert Http.status_code(group: group) in status_code
       end

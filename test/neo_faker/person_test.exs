@@ -71,14 +71,16 @@ defmodule NeoFaker.PersonTest do
   end
 
   describe "age/2" do
-    test "returns a random age", do: assert(Person.age() in 0..120)
+    test "returns a random age" do
+      assert Person.age() in 0..120
+    end
   end
 
   describe "binary_gender/1" do
     test "returns a binary gender" do
-      world_list = generate_word_list(:default, @module, "gender.exs")
+      word_list = generate_word_list(:default, @module, "gender.exs")
 
-      assert Person.binary_gender(locale: :default) in world_list
+      assert Person.binary_gender(locale: :default) in word_list
     end
 
     test "returns a binary gender with option" do

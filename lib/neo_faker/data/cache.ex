@@ -9,11 +9,11 @@ defmodule NeoFaker.Data.Cache do
   """
   @spec fetch!(atom(), atom(), String.t()) :: map()
   def fetch!(locale, module, file) do
-    key = generate_key(locale, module, file)
+    key = cache_key(locale, module, file)
 
     case :persistent_term.get(key, nil) do
       nil ->
-        generate!(locale, module, file)
+        put_cache!(locale, module, file)
 
         :persistent_term.get(key)
 
@@ -23,35 +23,33 @@ defmodule NeoFaker.Data.Cache do
   end
 
   @doc """
-  Creates a persistent term with the value from the locale data file.
+  Loads and caches the locale data file into persistent_term.
   """
-  @spec generate!(atom(), atom(), String.t()) :: :ok | File.Error
-  def generate!(locale, module, file) do
+  @spec put_cache!(atom(), atom(), String.t()) :: :ok
+  def put_cache!(locale, module, file) do
     resolved_locale = Resolver.resolve_locale_config(locale)
     module_name = module |> Module.split() |> List.last() |> String.downcase()
     file_path = Path.join([Disk.data_path(), Atom.to_string(resolved_locale), module_name, file])
 
-    if File.exists?(file_path) do
-      file_path
-      |> Disk.fetch_file!()
-      |> Map.new(fn {key, value} -> {key, Enum.shuffle(value)} end)
-      |> put_in_persistent_term(resolved_locale, module, file)
-    else
+    if !File.exists?(file_path) do
       raise File.Error, reason: :enoent
     end
-  end
 
-  defp put_in_persistent_term(value, locale, module, file) do
-    :persistent_term.put(generate_key(locale, module, file), value)
+    data =
+      file_path
+      |> Disk.fetch_file!()
+      |> Map.new(fn {k, v} -> {k, Enum.shuffle(v)} end)
+
+    :persistent_term.put(cache_key(resolved_locale, module, file), data)
   end
 
   @doc """
-  Generates a persistent term key based on the given locale, module, and file name.
+  Generates a unique persistent_term key for the given locale, module, and file.
   """
-  @spec generate_key(atom(), atom(), String.t()) :: atom()
-  def generate_key(locale, module, file) do
+  @spec cache_key(atom(), atom(), String.t()) :: atom()
+  def cache_key(locale, module, file) do
     module_name = module |> Module.split() |> Enum.map_join("_", &String.downcase/1)
-    file_name = file |> String.split(".") |> List.first()
+    file_name = file |> String.split(".") |> hd()
     locale_name = locale |> Atom.to_string() |> String.downcase()
 
     String.to_atom("#{module_name}_#{file_name}_#{locale_name}")

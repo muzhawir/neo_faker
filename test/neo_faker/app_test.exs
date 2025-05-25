@@ -3,52 +3,51 @@ defmodule NeoFaker.AppTest do
 
   alias NeoFaker.App
 
-  # Helper function for validate core version
-  defp validate_version_core(version) do
+  defp valid_core_version?(version) do
+    integer_in_range? = fn part ->
+      case Integer.parse(part) do
+        {int, ""} when int in 0..30 -> true
+        _ -> false
+      end
+    end
+
     version
     |> String.split(".")
-    |> Enum.map(&String.to_integer/1)
-    |> Enum.map(&(&1 in 0..30))
-    |> Enum.all?()
+    |> Enum.all?(integer_in_range?)
   end
 
-  # Helper function for validate pre-release identifier
-  defp validate_pre_release_identifier(identifier) do
-    [label, number] = String.split(identifier, ".")
-    valid_label? = label in ~w[alpha beta rc]
-    valid_number? = String.to_integer(number) in 1..10
+  defp valid_pre_release_identifier?(identifier) do
+    case String.split(identifier, ".") do
+      [label, number] ->
+        label in ~w[alpha beta rc] and
+          match?({n, ""} when n in 1..10, Integer.parse(number))
 
-    valid_label? and valid_number?
-  end
-
-  # Helper function for validate build number
-  defp validate_build_number(number) do
-    build_date =
-      number
-      |> String.split_at(4)
-      |> then(fn {year, rest} -> {year, String.split_at(rest, 2)} end)
-      |> then(fn {year, {month, day}} -> "#{year}-#{month}-#{day}" end)
-
-    case Date.from_iso8601(build_date) do
-      {:ok, _} -> true
-      :error -> false
+      _ ->
+        false
     end
   end
 
-  # Helper function for validate name function with options
-  defp validate_name_app(opts \\ nil) do
-    case_regexp = case_regexp(opts)
-    app_name = App.name(style: opts)
-
-    Regex.match?(case_regexp, app_name)
+  defp valid_build_number?(number) do
+    with <<year::binary-size(4), month::binary-size(2), day::binary-size(2)>> <- number,
+         {:ok, _} <- Date.from_iso8601("#{year}-#{month}-#{day}") do
+      true
+    else
+      _ -> false
+    end
   end
 
-  # Case regexp for validate name function
-  defp case_regexp(nil), do: ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
-  defp case_regexp(:camel_case), do: ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
-  defp case_regexp(:pascal_case), do: ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
-  defp case_regexp(:dashed), do: ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
-  defp case_regexp(:single), do: ~r/^[A-Z]?[a-z0-9]+$/
+  defp valid_app_name?(opts \\ nil) do
+    regex =
+      case opts do
+        nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
+        :camel_case -> ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
+        :pascal_case -> ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
+        :dashed -> ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
+        :single -> ~r/^[A-Z]?[a-z0-9]+$/
+      end
+
+    Regex.match?(regex, App.name(style: opts))
+  end
 
   describe "author/0" do
     test "returns a full name of an app author" do
@@ -70,61 +69,60 @@ defmodule NeoFaker.AppTest do
 
   describe "name/2" do
     test "returns an app name" do
-      assert validate_name_app()
+      assert valid_app_name?()
     end
 
     test "returns an app name with option" do
-      options = [:camel_case, :pascal_case, :dashed, :single]
-
-      for option <- options do
-        assert validate_name_app(option)
+      for option <- [:camel_case, :pascal_case, :dashed, :single] do
+        assert valid_app_name?(option)
       end
     end
   end
 
   describe "semver/1" do
     test "returns a semantic version number" do
-      assert validate_version_core(App.semver())
+      assert valid_core_version?(App.semver())
     end
 
     test "returns a semantic version number with pre-release type" do
-      semver = App.semver(type: :pre_release)
-      [core_version, pre_release_identifier] = String.split(semver, "-")
-      valid_core_version? = validate_version_core(core_version)
-      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release_identifier)
-
-      assert valid_core_version? and valid_pre_release_identifier?
+      assert_semver(:pre_release)
     end
 
     test "returns a semantic version number with build number type" do
-      semver = App.semver(type: :build)
-      [core_version, build_number] = String.split(semver, "+")
-      valid_core_version? = validate_version_core(core_version)
-      valid_build_number? = validate_build_number(build_number)
-
-      assert valid_core_version? and valid_build_number?
+      assert_semver(:build)
     end
 
     test "returns a semantic version number with pre-release and build number type" do
-      semver = App.semver(type: :pre_release_build)
+      assert_semver(:pre_release_build)
+    end
 
-      [core_version, pre_release, build_number] =
-        semver
-        |> String.split("-")
-        |> then(fn [core, rest] -> [core, String.split(rest, "+")] end)
-        |> then(fn [core, [pre_release, build_number]] -> [core, pre_release, build_number] end)
+    defp assert_semver(:pre_release) do
+      [core, pre] = String.split(App.semver(type: :pre_release), "-")
 
-      valid_core_version? = validate_version_core(core_version)
-      valid_pre_release_identifier? = validate_pre_release_identifier(pre_release)
-      valid_build_number? = validate_build_number(build_number)
+      assert valid_core_version?(core)
+      assert valid_pre_release_identifier?(pre)
+    end
 
-      assert Enum.all?([valid_core_version?, valid_pre_release_identifier?, valid_build_number?])
+    defp assert_semver(:build) do
+      [core, build] = String.split(App.semver(type: :build), "+")
+
+      assert valid_core_version?(core)
+      assert valid_build_number?(build)
+    end
+
+    defp assert_semver(:pre_release_build) do
+      [core, rest] = String.split(App.semver(type: :pre_release_build), "-")
+      [pre, build] = String.split(rest, "+")
+
+      assert valid_core_version?(core)
+      assert valid_pre_release_identifier?(pre)
+      assert valid_build_number?(build)
     end
   end
 
   describe "version/0" do
     test "returns a version number" do
-      assert validate_version_core(App.version())
+      assert valid_core_version?(App.version())
     end
   end
 end

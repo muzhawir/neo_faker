@@ -18,7 +18,7 @@ defmodule NeoFaker.MixProject do
   end
 
   defp description do
-    "NeoFaker is an Elixir library that generates fake data for testing and development."
+    "Elixir library for generating random fake data in testing and development."
   end
 
   defp package do

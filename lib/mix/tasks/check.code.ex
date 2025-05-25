@@ -58,7 +58,7 @@ defmodule Mix.Tasks.Check.Code do
 
   defp get_terminal_width do
     case :io.columns() do
-      {:ok, width} -> width
+      {:ok, width} when width > 20 -> min(width, 120)
       _ -> 80
     end
   end
@@ -85,7 +85,7 @@ defmodule Mix.Tasks.Check.Code do
 
       IO.puts(IO.ANSI.format([:red, "Please fix the issues above before continuing.\n"]))
 
-      System.halt(1)
+      Mix.raise("#{description} failed. Please fix the issues above before continuing.")
     end
   end
 
@@ -112,7 +112,7 @@ defmodule Mix.Tasks.Check.Code do
 
         IO.puts(IO.ANSI.format([:red, "Please fix the issues above before continuing.\n"]))
 
-        System.halt(1)
+        Mix.raise("#{description} failed. Please fix the issues above before continuing.")
     end
   end
 end

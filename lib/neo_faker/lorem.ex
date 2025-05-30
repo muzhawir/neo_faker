@@ -12,6 +12,8 @@ defmodule NeoFaker.Lorem do
   @new_line_regexp ~r/(?<!\n)\n(?!\n)/
   @punctuation_regexp ~r/[[:punct:]]/
   @sentence_delimiter_regexp ~r/(?<=[.!?])\s+/
+  @lorem_ipsum_file "lorem_ipsum.exs"
+  @meditations_file "meditations.exs"
 
   @doc """
   Generates a random paragraph.
@@ -49,8 +51,8 @@ defmodule NeoFaker.Lorem do
   def paragraph(opts \\ []) do
     file =
       case Keyword.get(opts, :text, :lorem) do
-        :lorem -> "lorem_ipsum.exs"
-        _ -> "meditations.exs"
+        :lorem -> @lorem_ipsum_file
+        _ -> @meditations_file
       end
 
     __MODULE__

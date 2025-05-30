@@ -47,7 +47,6 @@
     "Anchorage",
     "Andalusia",
     "Anderson",
-    "Anderson",
     "Andersonville",
     "Andover",
     "Ann Arbor",

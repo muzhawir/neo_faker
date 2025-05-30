@@ -12,6 +12,7 @@ defmodule NeoFaker.Address do
   alias NeoFaker.Number
 
   @city_file "city.exs"
+  @country_file "country.exs"
 
   @doc """
   Generates a random building number within a specified range.
@@ -77,4 +78,12 @@ defmodule NeoFaker.Address do
   """
   @spec city(Keyword.t()) :: String.t()
   def city(opts \\ []), do: random_value(__MODULE__, @city_file, "city", opts)
+
+  @doc """
+  Generates a random country name.
+
+  This function behaves similarly to `city/1`, but it generates a random country name instead.
+  """
+  @spec country(Keyword.t()) :: String.t()
+  def country(opts \\ []), do: random_value(__MODULE__, @country_file, "country", opts)
 end

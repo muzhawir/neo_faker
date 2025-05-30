@@ -111,7 +111,7 @@ defmodule NeoFaker.Address do
   ## Examples
 
       iex> NeoFaker.Address.coordinate()
-      {11.5831672, 165.3662683
+      {11.5831672, 165.3662683}
 
       iex> NeoFaker.Address.coordinate(type: :latitude)
       11.5831672

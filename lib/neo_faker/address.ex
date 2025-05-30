@@ -7,9 +7,11 @@ defmodule NeoFaker.Address do
   """
   @moduledoc since: "0.12.0"
 
-  import NeoFaker.Data.Generator, only: [random_value: 3, random_value: 4]
+  import NeoFaker.Data.Generator, only: [random_value: 4]
 
   alias NeoFaker.Number
+
+  @city_file "city.exs"
 
   @doc """
   Generates a random building number within a specified range.
@@ -46,4 +48,33 @@ defmodule NeoFaker.Address do
         Number.between(range.first, range.last)
     end
   end
+
+  @doc """
+  Generates a random city name.
+
+  Returns a string representing a city name. If an option is provided, it uses the specified
+  locale for generating the city name.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:locale` - Specifies the locale to use.
+
+  Values for option `:locale` can be:
+
+  - `nil` - Uses the default locale `:default`.
+  - `:id_id` - Uses the Indonesian locale, for example.
+
+  ## Examples
+
+      iex> NeoFaker.Address.city()
+      "Saint Marys City"
+
+      iex> NeoFaker.Address.city(locale: :id_id)
+      "Palu"
+
+  """
+  @spec city(Keyword.t()) :: String.t()
+  def city(opts \\ []), do: random_value(__MODULE__, @city_file, "city", opts)
 end

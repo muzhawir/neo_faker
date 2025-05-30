@@ -52,4 +52,21 @@ defmodule NeoFaker.AddressTest do
       assert NeoFaker.Address.country(locale: :id_id) in country_list
     end
   end
+
+  describe "coordinate/1" do
+    test "returns a random coordinate" do
+      assert is_tuple(NeoFaker.Address.coordinate())
+      {latitude, longitude} = NeoFaker.Address.coordinate()
+
+      assert is_float(latitude)
+      assert is_float(longitude)
+      assert latitude >= -90.0 and latitude <= 90.0
+      assert longitude >= -180.0 and longitude <= 180.0
+    end
+
+    test "retuns only a random latitude/longitude" do
+      assert is_float(NeoFaker.Address.coordinate(type: :latitude))
+      assert is_float(NeoFaker.Address.coordinate(type: :longitude))
+    end
+  end
 end

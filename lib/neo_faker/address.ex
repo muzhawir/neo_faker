@@ -86,4 +86,55 @@ defmodule NeoFaker.Address do
   """
   @spec country(Keyword.t()) :: String.t()
   def country(opts \\ []), do: random_value(__MODULE__, @country_file, "country", opts)
+
+  @doc """
+  Generates random geographic coordinates.
+
+  Return a tuple of latitude and longitude, or a single value based on the specified type.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:type` - Specifies which coordinate(s) to return.
+  - `:precision` - Number of decimal places.
+
+  The values for `:type` can be:
+
+  - `:full` (default) - Returns `{latitude, longitude}` tuple.
+  - `:latitude` - Returns only the latitude as a float.
+  - `:longitude` - Returns only the longitude as a float.
+
+  The value for `:precision` can be any integer (default: 6), which determines the number of
+  decimal places in the returned coordinates.
+
+  ## Examples
+
+      iex> NeoFaker.Address.coordinate()
+      {11.5831672, 165.3662683
+
+      iex> NeoFaker.Address.coordinate(type: :latitude)
+      11.5831672
+
+      iex> NeoFaker.Address.coordinate(type: :longitude)
+      165.3662683
+
+      iex> NeoFaker.Address.coordinate(precision: 2)
+      {11.58, 165.37}
+
+  """
+  @spec coordinate(keyword()) :: {float(), float()} | float()
+  def coordinate(opts \\ []) do
+    precision = Keyword.get(opts, :precision, 6)
+    type = Keyword.get(opts, :type, :full)
+
+    latitude = Float.round(:rand.uniform() * 180 - 90, precision)
+    longitude = Float.round(:rand.uniform() * 360 - 180, precision)
+
+    case type do
+      :latitude -> latitude
+      :longitude -> longitude
+      _ -> {latitude, longitude}
+    end
+  end
 end

@@ -1,11 +1,9 @@
 defmodule NeoFaker.AddressTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   alias NeoFaker.Data.Cache
 
   @module NeoFaker.Address
-  @city_file "city.exs"
-  @country_file "country.exs"
 
   defp fetch_cache!(locale, module, file) do
     locale |> Cache.fetch!(module, file) |> Map.values() |> List.flatten()
@@ -27,13 +25,13 @@ defmodule NeoFaker.AddressTest do
 
   describe "city/1" do
     test "returns a random city name" do
-      city_list = fetch_cache!(:default, @module, @city_file)
+      city_list = fetch_cache!(:default, @module, "city.exs")
 
-      assert NeoFaker.Address.city() in city_list
+      assert NeoFaker.Address.city(locale: :default) in city_list
     end
 
     test "returns a random city name with locale" do
-      city_list = fetch_cache!(:id_id, @module, @city_file)
+      city_list = fetch_cache!(:id_id, @module, "city.exs")
 
       assert NeoFaker.Address.city(locale: :id_id) in city_list
     end
@@ -41,13 +39,13 @@ defmodule NeoFaker.AddressTest do
 
   describe "country/1" do
     test "returns a random country name" do
-      country_list = fetch_cache!(:default, @module, @country_file)
+      country_list = fetch_cache!(:default, @module, "country.exs")
 
-      assert NeoFaker.Address.country() in country_list
+      assert NeoFaker.Address.country(locale: :default) in country_list
     end
 
     test "returns a random country name with locale" do
-      country_list = fetch_cache!(:id_id, @module, @country_file)
+      country_list = fetch_cache!(:id_id, @module, "country.exs")
 
       assert NeoFaker.Address.country(locale: :id_id) in country_list
     end

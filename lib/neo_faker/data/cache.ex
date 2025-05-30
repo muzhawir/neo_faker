@@ -38,7 +38,7 @@ defmodule NeoFaker.Data.Cache do
     data =
       file_path
       |> Disk.fetch_file!()
-      |> Map.new(fn {k, v} -> {k, Enum.shuffle(v)} end)
+      |> Map.new(fn {k, v} -> {k, Stream.uniq(Enum.shuffle(v))} end)
 
     :persistent_term.put(cache_key(resolved_locale, module, file), data)
   end

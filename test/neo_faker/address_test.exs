@@ -64,7 +64,7 @@ defmodule NeoFaker.AddressTest do
       assert longitude >= -180.0 and longitude <= 180.0
     end
 
-    test "retuns only a random latitude/longitude" do
+    test "returns only a random latitude/longitude" do
       assert is_float(NeoFaker.Address.coordinate(type: :latitude))
       assert is_float(NeoFaker.Address.coordinate(type: :longitude))
     end

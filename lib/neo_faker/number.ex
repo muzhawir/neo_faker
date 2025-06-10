@@ -43,10 +43,10 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random floating-point number within the given range.
 
-  Returns a floating-point number with a random left digit and a random right digit. The left
-  digit is chosen from the `left_digit` range, and the right digit is chosen from the
-  `right_digit` range. If no arguments are given, defaults to a left digit in the range `10..100`
-  and a right digit in the range `10_000..100_000`.
+  Returns a floating-point number composed of a randomly selected integer part and a fractional
+  part. The integer part is chosen from the `left_digit` range, and the fractional part is
+  composed of digits chosen from the `right_digit` range. If no arguments are given, defaults to
+  a left digit in the range `10..100` and a right digit in the range `10_000..100_000`.
 
   ## Examples
 

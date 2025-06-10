@@ -21,7 +21,8 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a single random character.
 
-  Returns a single alphanumeric character.
+  Returns a single alphanumeric character such as a letter or digit. If no options are provided,
+  it randomly selects from the full alphanumeric set.
 
   ## Options
 
@@ -60,7 +61,16 @@ defmodule NeoFaker.Text do
 
   ## Options
 
-  See `character/1` for available options.
+  The accepted options are:
+
+  - `:type` - Specifies the type of character to generate.
+
+  The values for `:type` can be:
+
+  - `:alphabet_lower` - A lowercase letter.
+  - `:alphabet_upper` - An uppercase letter.
+  - `:alphabet` - A letter (either lowercase or uppercase).
+  - `:digit` - A digit (`0`-`9`).
 
   ## Examples
 

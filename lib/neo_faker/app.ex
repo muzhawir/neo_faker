@@ -20,7 +20,7 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app author name.
 
-  The author name is randomly generated as a full name.
+  Returns a string representing the full name of the app author.
 
   ## Examples
 
@@ -34,7 +34,7 @@ defmodule NeoFaker.App do
   @doc """
   Generates a short app description.
 
-  The description provides a brief summary of the app's purpose.
+  Returns a string representing the app description.
 
   ## Options
 
@@ -64,7 +64,7 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random open-source license.
 
-  The license is randomly selected from a predefined list based on
+  Returns a random open-source license name selected from a predefined list based on
   [ChooseALicense](https://choosealicense.com/appendix).
 
   ## Examples
@@ -79,8 +79,8 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app name.
 
-  By default, the app name follows a standard format. You can specify a different case style
-  using the `:style` option.
+  Returns a string representing the app name, which is a combination of a first name and a last
+  name.
 
   ## Options
 
@@ -125,11 +125,10 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Returns a semantic version number.
+  Generates a semantic version number.
 
-  The generated version number follows the Semantic Versioning (SemVer) standard. By default, it
-  generates a core version (`MAJOR.MINOR.PATCH`). Additional versioning details can be specified
-  using the `:type` option.
+  Returns a version number following the Semantic Versioning (SemVer) standard. By default, it
+  generates a core version (`MAJOR.MINOR.PATCH`).
 
   ## Options
 
@@ -175,9 +174,9 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Returns a simple version number.
+  Generates a simple version number.
 
-  This version format follows `MAJOR.MINOR`.
+  Returns a version number in the format `MAJOR.MINOR`.
 
   ## Examples
 

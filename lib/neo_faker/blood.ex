@@ -12,8 +12,8 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood group.
 
-  A blood group consists of a blood type (`A`, `B`, `AB`, or `O`) combined with an Rh factor
-  (`+` or `-`), forming a complete blood group.
+  Returns a blood group, which consists of a blood type (`A`, `B`, `AB`, or `O`) combined with an
+  Rh factor (`+` or `-`), forming a complete blood group.
 
   ## Examples
 
@@ -27,7 +27,7 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood type.
 
-  A blood type is one of `A`, `B`, `AB`, or `O`, without the Rh factor.
+  Returns a string representing a blood type without the Rh factor.
 
   ## Examples
 
@@ -41,7 +41,7 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random Rh factor.
 
-  The Rh factor is either `+` (positive) or `-` (negative).
+  Returns a string representing the Rh factor, which can be either `+` or `-`.
 
   ## Examples
 

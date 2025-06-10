@@ -11,7 +11,8 @@ defmodule NeoFaker.Color do
   @doc """
   Generates a CMYK color.
 
-  Returns a CMYK color. If no options are provided, the color is returned in tuple format.
+  Returns a CMYK color as a tuple of four integers representing the cyan, magenta, yellow, and
+  black components.
 
   ## Options
 
@@ -81,7 +82,7 @@ defmodule NeoFaker.Color do
   @doc """
   Generates an HSL color.
 
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  This function behaves the same way as `cmyk/1`, but it generates an HSL color instead.
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
   def hsl(opts \\ []) do
@@ -148,7 +149,7 @@ defmodule NeoFaker.Color do
   @doc """
   Generates an RGB color.
 
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  This function behaves the same way as `cmyk/1`, but it generates an RGB color instead.
   """
   @spec rgb(Keyword.t()) :: tuple() | String.t()
   def rgb(opts \\ []) do
@@ -161,7 +162,7 @@ defmodule NeoFaker.Color do
   @doc """
   Generates an RGBA color.
 
-  This function behaves the same way as `cmyk/1`. See `cmyk/1` for more details.
+  This function behaves the same way as `cmyk/1`, but it generates an RGBA color instead.
   """
   @spec rgba(Keyword.t()) :: tuple() | String.t()
   def rgba(opts \\ []) do

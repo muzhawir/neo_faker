@@ -90,7 +90,7 @@ defmodule NeoFaker.Time do
   @doc """
   Generates a random time zone.
 
-  Returns a random time zone from the predefined list of time zones.
+  Returns a random time zone from a predefined list of time zones.
 
   ## Examples
 

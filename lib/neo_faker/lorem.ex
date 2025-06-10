@@ -19,7 +19,7 @@ defmodule NeoFaker.Lorem do
   Generates a random paragraph.
 
   Returns a random Lorem Ipsum paragraph. If an option is provided, the paragraph is sourced from
-  a specific text.
+  a specific text file.
 
   ## Options
 
@@ -66,7 +66,8 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random sentence.
 
-  This function behaves the same way as `paragraph/1`. See `paragraph/1` for more details.
+  This function behaves the same way as `paragraph/1`, but returns a single random
+  sentence instead.
   """
   @spec sentence(Keyword.t()) :: String.t()
   def sentence(opts \\ []) do
@@ -76,7 +77,8 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random word.
 
-  This function behaves the same way as `paragraph/1`. See `paragraph/1` for more details.
+  This function behaves the same way as `paragraph/1`, but it returns a single random word
+  instead.
   """
   @spec word(Keyword.t()) :: String.t()
   def word(opts \\ []) do

@@ -17,7 +17,8 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random first name.
 
-  If no options are provided, it returns a random unisex first name.
+  Returns a random first name string. If no options are provided, it returns a random
+  unisex first name by default.
 
   ## Options
 
@@ -62,7 +63,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random middle name.
 
-  This function behaves the same way as `first_name/1`. See `first_name/1` for more details.
+  This function behaves the same way as `first_name/1`, but it generates a middle name instead.
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
@@ -77,7 +78,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random last name.
 
-  This function behaves the same way as `first_name/1`. See `first_name/1` for more details.
+  This function behaves the same way as `first_name/1`, but it generates a last name instead.
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
@@ -92,7 +93,8 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random full name.
 
-  If no options are provided, it returns a default random unisex full name.
+  Returns a full name string, which is a combination of a first name, an optional middle name, and
+  a last name.
 
   ## Options
 
@@ -171,7 +173,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random name suffix.
 
-  This function behaves the same way as `prefix/1`. See `prefix/1` for more details.
+  This function behaves the same way as `prefix/1`, but it generates a name suffix instead.
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
@@ -208,7 +210,8 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random short binary gender.
 
-  This function behaves the same way as `binary_gender/1`. See `binary_gender/1` for more details.
+  This function behaves the same way as `binary_gender/1`, but it returns a shorter version
+  instead.
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
   def short_binary_gender(opts \\ []) do
@@ -218,7 +221,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random non-binary gender.
 
-  This function behaves the same way as `binary_gender/1`. See `binary_gender/1` for more details.
+  This function behaves the same way as `binary_gender/1`, but it returns a non-binary instead.
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
   def non_binary_gender(opts \\ []),
@@ -227,7 +230,7 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random age.
 
-  The age is a non-negative integer between `0` and `120` by default.
+  Returns an age as a non-negative integer between `0` and `120` by default.
 
   ## Examples
 

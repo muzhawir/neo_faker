@@ -10,8 +10,8 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random number between `min` and `max`.
 
-  Returns a random integer if both arguments are integers, or a random float if either argument
-  is a float. Defaults to the range 0 to 100 if no arguments are provided.
+  Returns a random integer when both arguments are integers, or a random float when either
+  argument is a float. If no arguments are given, returns a random value in the range 0 to 100.
 
   ## Examples
 
@@ -43,9 +43,10 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random floating-point number within the given range.
 
-  The integer part is selected from `left_digit`, and the fractional part from `right_digit`.
-  Both arguments are ranges, and the function returns a float by combining a random value from
-  each.
+  Returns a float-point number with a random left digit and a random right digit. The left digit
+  is chosen from the `left_digit` range, and the right digit is chosen from the `right_digit`
+  range. If no arguments are given, defaults to a left digit in the range `10..100` and a right
+  digit in the range `10_000..100_000`.
 
   ## Examples
 

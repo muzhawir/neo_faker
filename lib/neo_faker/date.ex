@@ -13,8 +13,6 @@ defmodule NeoFaker.Date do
   Generates a random date within a specified range relative to today.
 
   By default, returns a date between 365 days before and 365 days after the current date.
-  The output format can be either a `Date` struct (`~D` sigil) or an ISO 8601 string, depending
-  on the `:format` option.
 
   ## Options
 
@@ -45,8 +43,7 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date between two given dates.
 
-  By default, returns a date between January 1, 1970 and today. The output format can be specified
-  as either a `Date` struct (`:struct`, default) or an ISO 8601 string (`:iso8601`).
+  By default, returns a date between January 1, 1970 and today.
 
   ## Options
 

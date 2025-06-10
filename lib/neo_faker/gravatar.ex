@@ -13,11 +13,11 @@ defmodule NeoFaker.Gravatar do
   @type email :: String.t() | nil
 
   @doc """
-  Generates a Gravatar image URL for the given email address with customizable size and fallback
-  options.
+  Generates a Gravatar image URL.
 
-  If no email is provided, a random email is used. The resulting URL includes query parameters
-  for image size and fallback image type.
+  Returns a string representing the Gravatar URL for the given email address. If an email is not
+  provided, a random email is generated. The URL includes query parameters for image size and
+  fallback image type.
 
   ## Options
 

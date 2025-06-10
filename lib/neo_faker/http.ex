@@ -13,8 +13,8 @@ defmodule NeoFaker.Http do
   @doc """
   Generates a random HTTP user-agent string.
 
-  Selects a user-agent from a curated list of the top 100 most common HTTP user-agents, with
-  optional filtering by type.
+  Returns a random user-agent string representing either a browser or a crawler from the top
+  100 most common user-agents.
 
   ## Options
 
@@ -46,7 +46,8 @@ defmodule NeoFaker.Http do
   @doc """
   Generates a random HTTP request method.
 
-  Returns a random HTTP request method string.
+  Returns a random HTTP request method string (e.g., `"GET"`, `"POST"`, `"PUT"`, `"DELETE"`, or
+  `"PATCH"`).
 
   ## Examples
 
@@ -60,7 +61,8 @@ defmodule NeoFaker.Http do
   @doc """
   Generates a random HTTP referrer policy.
 
-  Returns a random HTTP referrer policy string.
+  Returns a random HTTP referrer policy string (e.g., `"no-referrer"`, `"same-origin"`,
+  `"strict-origin-when-cross-origin"`).
 
   ## Examples
 

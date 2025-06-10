@@ -1,4 +1,21 @@
-# Changelog for v0.11
+# Changelog
+
+## v0.12.0 (2025-06-10)
+
+### New Features
+
+- Added `NeoFaker.Address` module for generating random address such as building numbers, cities,
+countries, and coordinates.
+- Added `NeoFaker.Time.time_zone/0` function to generate random time zones.
+
+### Refactoring
+
+- Refactored all public functions documentation for consistency and clarity.
+- Refactored `NeoFaker.Data.Cache`, `NeoFaker.Data.Disk`, `NeoFaker.Data.Generator`, and
+  `NeoFaker.Data.Resolver` modules to improve code organization and readability.
+- Refactored `NeoFaker.Data.Cache.put_cache!/3` to use `Stream.uniq/1` for removing duplicates
+  before caching data.
+- Updated mix dependencies to the latest versions.
 
 ## v0.11.0 (2025-05-05)
 

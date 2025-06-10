@@ -393,7 +393,7 @@ iex> NeoFaker.Person.binary_gender(locale: :id_id)
 ```
 
 `NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` behave the same
-way, generating non-binary or short binary.
+way, generating non-binary or short binary genders.
 
 ### [`first_name(opts \\ [])`](`NeoFaker.Person.first_name/1`)
 

@@ -4,8 +4,8 @@
 
 ### New Features
 
-- Added `NeoFaker.Address` module for generating random address such as building numbers, cities,
-countries, and coordinates.
+- Added `NeoFaker.Address` module for generating random address components, such as building
+  numbers, cities, countries, and coordinates.
 - Added `NeoFaker.Time.time_zone/0` function to generate random time zones.
 
 ### Refactoring

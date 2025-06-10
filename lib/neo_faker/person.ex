@@ -221,7 +221,8 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random non-binary gender.
 
-  This function behaves the same way as `binary_gender/1`, but it returns a non-binary instead.
+  This function behaves the same way as `binary_gender/1`, but it returns a non-binary gender
+  string instead.
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
   def non_binary_gender(opts \\ []),

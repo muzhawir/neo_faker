@@ -35,12 +35,12 @@ defmodule NeoFaker.Data.Cache do
       raise File.Error, reason: :enoent
     end
 
-    emit_duplicate_data_and_shuffle = fn data -> data |> Stream.uniq() |> Enum.shuffle() end
+    remove_duplicates_and_shuffle = fn data -> data |> Stream.uniq() |> Enum.shuffle() end
 
     data =
       file_path
       |> Disk.fetch_file!()
-      |> Map.new(fn {k, v} -> {k, emit_duplicate_data_and_shuffle.(v)} end)
+      |> Map.new(fn {k, v} -> {k, remove_duplicates_and_shuffle.(v)} end)
 
     :persistent_term.put(cache_key(resolved_locale, module, file), data)
   end

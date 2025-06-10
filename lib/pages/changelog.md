@@ -12,7 +12,7 @@ countries, and coordinates.
 
 - Refactored all public functions documentation for consistency and clarity.
 - Refactored `NeoFaker.Data.Cache`, `NeoFaker.Data.Disk`, `NeoFaker.Data.Generator`, and
-  `NeoFaker.Data.Resolver` modules to improve code organization and readability.
+  `NeoFaker.Data.Resolver` generator modules to improve code organization and readability.
 - Refactored `NeoFaker.Data.Cache.put_cache!/3` to use `Stream.uniq/1` for removing duplicates
   before caching data.
 - Updated mix dependencies to the latest versions.

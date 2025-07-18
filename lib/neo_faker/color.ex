@@ -74,12 +74,11 @@ defmodule NeoFaker.Color do
   @spec hex(Keyword.t()) :: String.t()
   def hex(opts \\ []) do
     digits =
-      case Keyword.get(opts, :format) do
+      case Keyword.get(opts, :format, :six_digit) do
         :three_digit -> 3
         :four_digit -> 4
         :six_digit -> 6
         :eight_digit -> 8
-        _ -> 6
       end
 
     "#" <> HEX.color(digits)

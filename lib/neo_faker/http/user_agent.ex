@@ -4,7 +4,7 @@ defmodule NeoFaker.HTTP.UserAgent do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Data.Generator
 
-  @module NeoFaker.Http
+  @module NeoFaker.HTTP
   @user_agent_file "user_agent.exs"
 
   @type type :: :all | :browser | :crawler

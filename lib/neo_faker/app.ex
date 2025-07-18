@@ -121,7 +121,7 @@ defmodule NeoFaker.App do
     first_name = random_value(__MODULE__, @name_file, "first_names", locale: locale)
     last_name = random_value(__MODULE__, @name_file, "last_names", locale: locale)
 
-    name_case({first_name, last_name}, Keyword.get(opts, :style))
+    format_text({first_name, last_name}, Keyword.get(opts, :style))
   end
 
   @doc """

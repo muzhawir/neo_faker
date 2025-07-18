@@ -4,7 +4,7 @@ defmodule NeoFaker.HttpTest do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Http
 
-  defp fetch_status_codes, do: Cache.fetch!(:default, NeoFaker.Http, "status_code.exs")
+  defp fetch_status_codes, do: Cache.fetch!(:default, Http, "status_code.exs")
 
   describe "user_agent/0" do
     test "returns a random user agent" do

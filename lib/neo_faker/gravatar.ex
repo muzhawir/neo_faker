@@ -7,7 +7,7 @@ defmodule NeoFaker.Gravatar do
   """
   @moduledoc since: "0.3.1"
 
-  import NeoFaker.Gravatar.Util
+  alias NeoFaker.Gravatar.Generator
 
   @typedoc "Email address."
   @type email :: String.t() | nil
@@ -70,9 +70,9 @@ defmodule NeoFaker.Gravatar do
                 "invalid :fallback, expected atom or string, got: #{inspect(fallback)}"
       end
 
-    generate_gravatar_url(
+    Generator.gravatar_url(
       email,
-      image_size(Keyword.get(opts, :size)),
+      Generator.image_size(Keyword.get(opts, :size)),
       fallback_string
     )
   end

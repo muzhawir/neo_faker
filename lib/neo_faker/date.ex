@@ -100,7 +100,7 @@ defmodule NeoFaker.Date do
   @doc since: "0.10.0"
   @spec birthday(non_neg_integer(), non_neg_integer(), Keyword.t()) :: Date.t() | String.t()
   def birthday(min_age \\ 18, max_age \\ 65, opts \\ []) do
-    today = NaiveDateTime.local_now()
+    today = Generator.local_date_now()
 
     Generator.between(
       Date.shift(today, year: -max_age),

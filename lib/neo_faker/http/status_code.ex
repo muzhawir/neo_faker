@@ -14,7 +14,7 @@ defmodule NeoFaker.HTTP.StatusCode do
   @spec generates!(atom()) :: list(String.t())
   def generates!(nil) do
     :default
-    |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
+    |> Cache.fetch!(NeoFaker.HTTP, "status_code.exs")
     |> Map.values()
     |> List.flatten()
   end

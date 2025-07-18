@@ -1,4 +1,4 @@
-defmodule NeoFaker.Date.Utils do
+defmodule NeoFaker.Date.Generator do
   @moduledoc false
 
   @typedoc "Date format either `Date` struct or iso8601 `YYYY-MM-DD`"
@@ -10,8 +10,8 @@ defmodule NeoFaker.Date.Utils do
   Returns a random date as a `Date` struct when the format is `:struct` or a string in the format
   `YYYY-MM-DD` when the format is `:iso8601`.
   """
-  @spec random_add_date(Range.t(), date_format()) :: Date.t() | String.t()
-  def random_add_date(range, format) do
+  @spec add(Range.t(), date_format()) :: Date.t() | String.t()
+  def add(range, format) do
     date = NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.add(Enum.random(range))
 
     case format do
@@ -26,8 +26,8 @@ defmodule NeoFaker.Date.Utils do
   Returns a random date between `start` and `finish` as a `Date` struct when the format is
   `:struct` or a string in the format `YYYY-MM-DD` when the format is `:iso8601`.
   """
-  @spec random_between_date(Date.t(), Date.t(), date_format()) :: Date.t() | String.t()
-  def random_between_date(start, finish, format) do
+  @spec between(Date.t(), Date.t(), date_format()) :: Date.t() | String.t()
+  def between(start, finish, format) do
     date = start |> Date.range(finish) |> Enum.random()
 
     case format do

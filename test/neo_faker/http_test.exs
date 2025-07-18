@@ -1,20 +1,20 @@
-defmodule NeoFaker.HttpTest do
+defmodule NeoFaker.HTTPTest do
   use ExUnit.Case, async: true
 
   alias NeoFaker.Data.Cache
-  alias NeoFaker.Http
+  alias NeoFaker.HTTP
 
-  defp fetch_status_codes, do: Cache.fetch!(:default, Http, "status_code.exs")
+  defp fetch_status_codes, do: Cache.fetch!(:default, HTTP, "status_code.exs")
 
   describe "user_agent/0" do
     test "returns a random user agent" do
-      assert is_binary(Http.user_agent()) and String.valid?(Http.user_agent())
+      assert is_binary(HTTP.user_agent()) and String.valid?(HTTP.user_agent())
     end
   end
 
   describe "request_method/0" do
     test "returns a random request method" do
-      assert Http.request_method() in ["GET", "POST", "PUT", "DELETE", "PATCH"]
+      assert HTTP.request_method() in ["GET", "POST", "PUT", "DELETE", "PATCH"]
     end
   end
 
@@ -31,7 +31,7 @@ defmodule NeoFaker.HttpTest do
         "unsafe-url"
       ]
 
-      assert Http.referrer_policy() in referrer_policies
+      assert HTTP.referrer_policy() in referrer_policies
     end
   end
 
@@ -39,7 +39,7 @@ defmodule NeoFaker.HttpTest do
     test "returns a random status code" do
       status_code = fetch_status_codes() |> Map.values() |> List.flatten()
 
-      assert Http.status_code(type: :detailed) in status_code
+      assert HTTP.status_code(type: :detailed) in status_code
     end
 
     test "returns a simple random status code number" do
@@ -51,7 +51,7 @@ defmodule NeoFaker.HttpTest do
         |> List.flatten()
         |> Enum.map(&get_number_code.(&1))
 
-      assert Http.status_code(type: :simple) in status_code
+      assert HTTP.status_code(type: :simple) in status_code
     end
 
     test "returns a random status code with specific group" do
@@ -59,7 +59,7 @@ defmodule NeoFaker.HttpTest do
         group_string = Atom.to_string(group)
         status_code = Map.get(fetch_status_codes(), group_string)
 
-        assert Http.status_code(group: group) in status_code
+        assert HTTP.status_code(group: group, type: :detailed) in status_code
       end
     end
   end

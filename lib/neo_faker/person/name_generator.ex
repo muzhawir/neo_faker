@@ -1,4 +1,4 @@
-defmodule NeoFaker.Person.Name do
+defmodule NeoFaker.Person.NameGenerator do
   @moduledoc false
 
   import NeoFaker.Data.Generator, only: [random_value: 4]
@@ -13,8 +13,8 @@ defmodule NeoFaker.Person.Name do
   Returns a name string selected from the appropriate name data file for the given gender.
   If `:unisex` is provided, randomly selects from both male and female names.
   """
-  @spec generate_random_name(atom(), String.t(), atom()) :: String.t()
-  def generate_random_name(locale, key, gender) do
+  @spec name(atom(), String.t(), atom()) :: String.t()
+  def name(locale, key, gender) do
     case gender do
       :female ->
         random_value(@module, @female_name_file, key, locale: locale)

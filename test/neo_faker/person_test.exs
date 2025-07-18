@@ -4,7 +4,7 @@ defmodule NeoFaker.PersonTest do
   alias NeoFaker.Data.Cache
   alias NeoFaker.Person
 
-  @module NeoFaker.Person
+  @module Person
 
   defp valid_name?(name), do: is_binary(name) and String.valid?(name) and name != ""
 

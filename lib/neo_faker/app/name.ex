@@ -17,8 +17,8 @@ defmodule NeoFaker.App.Name do
   - `:single`: Randomly selects either the first or last name, capitalizes it, and returns it as
   a single name.
   """
-  @spec name_case({String.t(), String.t()}, case_style()) :: String.t()
-  def name_case({first_name, last_name}, style) do
+  @spec format_text({String.t(), String.t()}, case_style()) :: String.t()
+  def format_text({first_name, last_name}, style) do
     case style do
       nil ->
         "#{first_name} #{last_name}"

@@ -4,7 +4,7 @@ defmodule NeoFaker.ColorTest do
   alias NeoFaker.Color
   alias NeoFaker.Data.Cache
 
-  @module NeoFaker.Color
+  @module Color
   @cmyk_format_regexp ~r/^cmyk\((\d{1,3})%, (\d{1,3})%, (\d{1,3})%, (\d{1,3})%\)$/
   @hex_format_regexp ~r/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/
   @hsl_format_regexp ~r/^hsl\((\d{1,3}), (\d{1,3})%, (\d{1,3})%\)$/

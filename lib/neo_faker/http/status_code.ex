@@ -1,4 +1,4 @@
-defmodule NeoFaker.Http.StatusCode do
+defmodule NeoFaker.HTTP.StatusCode do
   @moduledoc false
 
   alias NeoFaker.Data.Cache
@@ -6,20 +6,20 @@ defmodule NeoFaker.Http.StatusCode do
   @type status_code_type :: :detailed | :simple
 
   @doc """
-  Retrieves a list of HTTP status codes for the specified group from the cache.
+  Generates a list of HTTP status codes for the specified group from the cache.
 
   If `group` is `nil`, returns a flattened list of all status codes across all groups.
   If `group` is an atom, returns the list of status codes for that group.
   """
-  @spec fetch!(atom()) :: list(String.t())
-  def fetch!(nil) do
+  @spec generates!(atom()) :: list(String.t())
+  def generates!(nil) do
     :default
-    |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
+    |> Cache.fetch!(NeoFaker.HTTP, "status_code.exs")
     |> Map.values()
     |> List.flatten()
   end
 
-  def fetch!(group) do
+  def generates!(group) do
     :default
     |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
     |> Map.get(Atom.to_string(group))
@@ -32,10 +32,10 @@ defmodule NeoFaker.Http.StatusCode do
   (e.g., "404 Not Found"). If set to `:simple`, returns only the numeric part of a random
   status code (e.g., "404").
   """
-  @spec generate([String.t()], type: status_code_type()) :: String.t()
-  def generate(status_codes, type: :detailed), do: Enum.random(status_codes)
+  @spec number([String.t()], type: status_code_type()) :: String.t()
+  def number(status_codes, type: :detailed), do: Enum.random(status_codes)
 
-  def generate(status_codes, type: :simple) do
+  def number(status_codes, type: :simple) do
     status_codes
     |> Enum.map(&(&1 |> String.split(" ", parts: 2) |> List.first()))
     |> Enum.random()

@@ -41,7 +41,7 @@ defmodule NeoFaker.TimeTest do
     test "returns a random time zone" do
       time_zone =
         :default
-        |> Cache.fetch!(NeoFaker.Time, "time_zone.exs")
+        |> Cache.fetch!(FakeTime, "time_zone.exs")
         |> Map.get("time_zone")
 
       assert FakeTime.time_zone() in time_zone

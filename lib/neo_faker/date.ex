@@ -7,7 +7,7 @@ defmodule NeoFaker.Date do
   """
   @moduledoc since: "0.9.0"
 
-  import NeoFaker.Date.Utils
+  alias NeoFaker.Date.Generator
 
   @doc """
   Generates a random date within a specified range relative to today.
@@ -37,7 +37,7 @@ defmodule NeoFaker.Date do
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
   def add(range \\ -365..365, opts \\ []) do
-    random_add_date(range, Keyword.get(opts, :format, :struct))
+    Generator.add(range, Keyword.get(opts, :format, :struct))
   end
 
   @doc """
@@ -67,8 +67,8 @@ defmodule NeoFaker.Date do
 
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
-  def between(start \\ ~D[1970-01-01], finish \\ local_date_now(), opts \\ []) do
-    random_between_date(start, finish, Keyword.get(opts, :format, :struct))
+  def between(start \\ ~D[1970-01-01], finish \\ Generator.local_date_now(), opts \\ []) do
+    Generator.between(start, finish, Keyword.get(opts, :format, :struct))
   end
 
   @doc """
@@ -100,9 +100,9 @@ defmodule NeoFaker.Date do
   @doc since: "0.10.0"
   @spec birthday(non_neg_integer(), non_neg_integer(), Keyword.t()) :: Date.t() | String.t()
   def birthday(min_age \\ 18, max_age \\ 65, opts \\ []) do
-    today = NaiveDateTime.local_now()
+    today = Generator.local_date_now()
 
-    random_between_date(
+    Generator.between(
       Date.shift(today, year: -max_age),
       Date.shift(today, year: -min_age),
       Keyword.get(opts, :format, :struct)

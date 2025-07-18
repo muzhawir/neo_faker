@@ -1,4 +1,4 @@
-defmodule NeoFaker.Gravatar.Util do
+defmodule NeoFaker.Gravatar.Generator do
   @moduledoc false
 
   @typedoc "Email address."
@@ -22,8 +22,8 @@ defmodule NeoFaker.Gravatar.Util do
   The email is hashed and incorporated into the URL path, with query parameters for the fallback
   image and size.
   """
-  @spec generate_gravatar_url(email(), integer(), String.t()) :: String.t()
-  def generate_gravatar_url(email, image_size, default_fallback) do
+  @spec gravatar_url(email(), integer(), String.t()) :: String.t()
+  def gravatar_url(email, image_size, default_fallback) do
     email_hash = hash_email!(email)
 
     @gravatar_url

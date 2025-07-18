@@ -1,10 +1,10 @@
-defmodule NeoFaker.Http.UserAgent do
+defmodule NeoFaker.HTTP.UserAgent do
   @moduledoc false
 
   alias NeoFaker.Data.Cache
   alias NeoFaker.Data.Generator
 
-  @module NeoFaker.Http
+  @module NeoFaker.HTTP
   @user_agent_file "user_agent.exs"
 
   @type type :: :all | :browser | :crawler
@@ -14,8 +14,8 @@ defmodule NeoFaker.Http.UserAgent do
 
   Returns a randomly selected user-agent string, which may represent a browser or crawler.
   """
-  @spec generate(type()) :: String.t()
-  def generate(type) do
+  @spec name(type()) :: String.t()
+  def name(type) do
     case type do
       :all ->
         :default

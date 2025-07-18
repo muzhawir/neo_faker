@@ -1,4 +1,4 @@
-defmodule NeoFaker.Http do
+defmodule NeoFaker.HTTP do
   @moduledoc """
   Functions for generating HTTP-related information.
 
@@ -7,8 +7,8 @@ defmodule NeoFaker.Http do
   """
   @moduledoc since: "0.11.0"
 
-  alias NeoFaker.Http.StatusCode
-  alias NeoFaker.Http.UserAgent
+  alias NeoFaker.HTTP.StatusCode
+  alias NeoFaker.HTTP.UserAgent
 
   @doc """
   Generates a random HTTP user-agent string.
@@ -41,7 +41,7 @@ defmodule NeoFaker.Http do
 
   """
   @spec user_agent(Keyword.t()) :: String.t()
-  def user_agent(opts \\ []), do: UserAgent.generate(Keyword.get(opts, :type, :all))
+  def user_agent(opts \\ []), do: UserAgent.name(Keyword.get(opts, :type, :all))
 
   @doc """
   Generates a random HTTP request method.
@@ -125,9 +125,11 @@ defmodule NeoFaker.Http do
   """
   @spec status_code(Keyword.t()) :: String.t()
   def status_code(opts \\ []) do
-    type = Keyword.get(opts, :type, :detailed)
-    status_codes = StatusCode.fetch!(Keyword.get(opts, :group))
+    type = Keyword.get(opts, :type, :simple)
 
-    StatusCode.generate(status_codes, type: type)
+    opts
+    |> Keyword.get(:group)
+    |> StatusCode.generates!()
+    |> StatusCode.number(type: type)
   end
 end

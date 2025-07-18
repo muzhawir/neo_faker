@@ -8,7 +8,7 @@ defmodule NeoFaker.TextTest do
 
   defp emojis do
     :default
-    |> Cache.fetch!(NeoFaker.Text, "emoji.exs")
+    |> Cache.fetch!(Text, "emoji.exs")
     |> Map.values()
     |> List.flatten()
   end

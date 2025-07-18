@@ -7,10 +7,8 @@ defmodule NeoFaker.Time do
   """
   @moduledoc since: "0.10.0"
 
-  import NeoFaker.Time.Add
-  import NeoFaker.Time.Between
-
   alias NeoFaker.Data.Generator
+  alias NeoFaker.Time.Generator, as: TimeGenerator
 
   @time_zone_file "time_zone.exs"
 
@@ -49,7 +47,7 @@ defmodule NeoFaker.Time do
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
   def add(range \\ -24..24, opts \\ []) do
-    random_add_time(
+    TimeGenerator.add(
       range,
       Keyword.get(opts, :unit, :hour),
       Keyword.get(opts, :format, :struct)
@@ -84,7 +82,7 @@ defmodule NeoFaker.Time do
   """
   @spec between(Time.t(), Time.t(), Keyword.t()) :: Time.t() | String.t()
   def between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59], opts \\ []) do
-    random_between_time(start, finish, Keyword.get(opts, :format, :struct))
+    TimeGenerator.between(start, finish, Keyword.get(opts, :format, :struct))
   end
 
   @doc """

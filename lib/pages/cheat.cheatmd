@@ -264,47 +264,47 @@ iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
 "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
 ```
 
-## [HTTP](`NeoFaker.Http`)
+## [HTTP](`NeoFaker.HTTP`)
 
 {: .col-2}
 
-### [`referrer_policy()`](`NeoFaker.Http.referrer_policy/0`)
+### [`referrer_policy()`](`NeoFaker.HTTP.referrer_policy/0`)
 
 ```elixir
-iex> NeoFaker.Http.referrer_policy()
+iex> NeoFaker.HTTP.referrer_policy()
 "no-referrer"
 ```
 
-### [`request_method()`](`NeoFaker.Http.request_method/0`)
+### [`request_method()`](`NeoFaker.HTTP.request_method/0`)
 
 ```elixir
-iex> NeoFaker.Http.request_method()
+iex> NeoFaker.HTTP.request_method()
 "GET"
 ```
 
-### [`status_code(opts \\ [])`](`NeoFaker.Http.status_code/1`)
+### [`status_code(opts \\ [])`](`NeoFaker.HTTP.status_code/1`)
 
 ```elixir
-iex> NeoFaker.Http.status_code()
+iex> NeoFaker.HTTP.status_code()
 "200 OK"
 
-iex> NeoFaker.Http.status_code(type: :simple)
+iex> NeoFaker.HTTP.status_code(type: :simple)
 "200"
 
-iex> NeoFaker.Http.status_code(group: :client_error)
+iex> NeoFaker.HTTP.status_code(group: :client_error)
 "404 Not Found"
 ```
 
-### [`user_agent(opts \\ [])`](`NeoFaker.Http.user_agent/1`)
+### [`user_agent(opts \\ [])`](`NeoFaker.HTTP.user_agent/1`)
 
 ```elixir
-iex> NeoFaker.Http.user_agent()
+iex> NeoFaker.HTTP.user_agent()
 "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-iex> NeoFaker.Http.user_agent(type: :browser)
+iex> NeoFaker.HTTP.user_agent(type: :browser)
 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
-iex> NeoFaker.Http.user_agent(type: :crawler)
+iex> NeoFaker.HTTP.user_agent(type: :crawler)
 "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 ```
 

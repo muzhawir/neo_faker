@@ -28,21 +28,21 @@ defmodule NeoFaker.Data.Cache do
   @spec put_cache!(atom(), atom(), String.t()) :: :ok
   def put_cache!(locale, module, file) do
     resolved_locale = Resolver.resolve_locale_config(locale)
+
     module_name = module |> Module.split() |> List.last() |> String.downcase()
+
     file_path = Path.join([Disk.data_path(), Atom.to_string(resolved_locale), module_name, file])
 
-    if !File.exists?(file_path) do
-      raise File.Error, reason: :enoent
+    if File.exists?(file_path) do
+      data =
+        file_path
+        |> Disk.fetch_file!()
+        |> Map.new(fn {key, val} -> {key, Enum.uniq(val)} end)
+
+      :persistent_term.put(cache_key(resolved_locale, module, file), data)
+    else
+      raise(File.Error, reason: :enoent)
     end
-
-    remove_duplicates_and_shuffle = fn data -> data |> Stream.uniq() |> Enum.shuffle() end
-
-    data =
-      file_path
-      |> Disk.fetch_file!()
-      |> Map.new(fn {k, v} -> {k, remove_duplicates_and_shuffle.(v)} end)
-
-    :persistent_term.put(cache_key(resolved_locale, module, file), data)
   end
 
   @doc """
@@ -51,7 +51,9 @@ defmodule NeoFaker.Data.Cache do
   @spec cache_key(atom(), atom(), String.t()) :: atom()
   def cache_key(locale, module, file) do
     module_name = module |> Module.split() |> Enum.map_join("_", &String.downcase/1)
+
     file_name = file |> String.split(".") |> hd()
+
     locale_name = locale |> Atom.to_string() |> String.downcase()
 
     String.to_atom("#{module_name}_#{file_name}_#{locale_name}")

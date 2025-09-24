@@ -1,4 +1,14 @@
 [tools]
 
-erlang = '27.3.4'
-elixir = '1.18.4-otp-27'
+erlang = "27.3.4"
+elixir = "1.18.4-otp-27"
+
+[tasks.fix]
+
+description = "Format, analyze, test, and lint the codebase"
+run = [
+  "mix format",
+  "mix dialyzer",
+  "mix test",
+  "mix credo"
+]

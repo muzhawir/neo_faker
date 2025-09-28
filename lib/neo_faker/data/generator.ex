@@ -27,6 +27,7 @@ defmodule NeoFaker.Data.Generator do
     |> Enum.random()
   end
 
+  # Ensures the specified locale has the requested data file; otherwise, falls back to :default.
   defp ensure_locale_file_exists(locale, module, file) do
     module_name = module |> Module.split() |> List.last() |> String.downcase()
 

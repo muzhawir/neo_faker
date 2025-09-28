@@ -6,6 +6,9 @@ defmodule NeoFaker.Data.Cache do
 
   @doc """
   Fetches a persistent term value or generates it if not found.
+
+  If the value is not found in `:persistent_term`, it calls `put_cache!/3` to load and cache the
+  data, then retrieves it again.
   """
   @spec fetch!(atom(), atom(), String.t()) :: map()
   def fetch!(locale, module, file) do
@@ -24,6 +27,8 @@ defmodule NeoFaker.Data.Cache do
 
   @doc """
   Loads and caches the locale data file into persistent_term.
+
+  Raises `File.Error` if the file does not exist.
   """
   @spec put_cache!(atom(), atom(), String.t()) :: :ok
   def put_cache!(locale, module, file) do
@@ -34,10 +39,12 @@ defmodule NeoFaker.Data.Cache do
     file_path = Path.join([Disk.data_path(), Atom.to_string(resolved_locale), module_name, file])
 
     if File.exists?(file_path) do
+      :rand.seed(:exsplus, :os.timestamp())
+
       data =
         file_path
         |> Disk.fetch_file!()
-        |> Map.new(fn {key, val} -> {key, Enum.uniq(val)} end)
+        |> Map.new(fn {key, val} -> {key, val |> Stream.uniq() |> Enum.shuffle()} end)
 
       :persistent_term.put(cache_key(resolved_locale, module, file), data)
     else
@@ -47,6 +54,9 @@ defmodule NeoFaker.Data.Cache do
 
   @doc """
   Generates a unique persistent_term key for the given locale, module, and file.
+
+  The key is constructed by combining the lowercase module name, file name (without extension),
+  and locale name, separated by underscores.
   """
   @spec cache_key(atom(), atom(), String.t()) :: atom()
   def cache_key(locale, module, file) do

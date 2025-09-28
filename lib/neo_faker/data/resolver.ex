@@ -26,19 +26,19 @@ defmodule NeoFaker.Data.Resolver do
   """
   @spec locale_available?(atom()) :: boolean()
   def locale_available?(locale) do
-    available_locales =
-      case :persistent_term.get(:available_locales, nil) do
+    locales =
+      :available_locales
+      |> :persistent_term.get(nil)
+      |> case do
         nil ->
-          locales = @locale_file |> Disk.fetch_file!() |> MapSet.new()
+          loaded = @locale_file |> Disk.fetch_file!() |> MapSet.new()
+          :persistent_term.put(:available_locales, loaded)
+          loaded
 
-          :persistent_term.put(:available_locales, locales)
-
-          locales
-
-        locales ->
-          locales
+        loaded ->
+          loaded
       end
 
-    MapSet.member?(available_locales, Atom.to_string(locale))
+    MapSet.member?(locales, Atom.to_string(locale))
   end
 end

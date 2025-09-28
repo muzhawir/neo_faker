@@ -7,7 +7,6 @@ defmodule NeoFaker.Internet do
   """
   @moduledoc since: "0.13.0"
 
-  alias NeoFaker.Internet.Email
   alias NeoFaker.Internet.TLD
   alias NeoFaker.Internet.UserName
 
@@ -116,13 +115,70 @@ defmodule NeoFaker.Internet do
     end
   end
 
+  @doc """
+  Generates a random popular domain.
+
+  Returns a random popular domain string.
+
+  ## Options
+
+  - `:type` - Specifies the  type of popular domain to generate.
+
+  The values for `:type` can be:
+
+  - `:all` - Returns a domain from all popular domains (default).
+  - `:ecommerce` - Returns a domain from popular e-commerce domains.
+  - `:email` - Returns a domain from popular email service providers.
+  - `:search` - Returns a domain from popular search engines.
+  - `:social` - Returns a domain from popular social media platforms.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.popular_domain()
+      "google.com"
+
+      iex> NeoFaker.Internet.popular_domain(type: :ecommerce)
+      "amazon.com"
+
+  """
+  @spec popular_domain() :: String.t()
+  def popular_domain(opts \\ []) do
+    NeoFaker.Internet.Domain.generate_popular_domain(Keyword.get(opts, :type, :all))
+  end
+
+  @doc """
+  Generates a random email domain based on the provided options.
+
+  ## Options
+
+    - `:name` - Specifies the type of domain to generate. Can be `:random`, `:popular`, or `:custom`.
+    - `:domain_name` - The custom domain name to use when `:name` is set to `:custom`.
+
+    The values for `:name` can be:
+
+    - `:random` (default) - Generates a random word as the domain name.
+    - `:popular` - Selects a domain from a predefined list of popular domains.
+    - `:custom` - Uses a custom domain name provided via the `:domain_name` option.
+
+  """
+  @spec domain(keyword()) :: String.t()
+  def domain(opts) do
+    case Keyword.get(opts, :name, :random) do
+      :random -> String.downcase(NeoFaker.Text.word())
+      :popular -> popular_domain()
+      :custom -> Keyword.get(opts, :domain_name, "example.com")
+      _ -> String.downcase(NeoFaker.Text.word())
+    end
+  end
+
+  @spec email(Keyword.t()) :: String.t()
   def email(opts \\ []) do
     user_name =
       user_name(
         Keyword.take(opts, [:word_count, :separator, :username_type, :number, :number_range])
       )
 
-    domain_name = Email.generate_domain(Keyword.take(opts, [:name]))
+    domain_name = domain(Keyword.take(opts, [:name]))
 
     case Keyword.get(opts, :tld_type, :all_except_safe) do
       :all_except_safe ->
@@ -144,11 +200,11 @@ defmodule NeoFaker.Internet do
         user_name <> "@" <> domain_name <> tld(type: :country_code)
 
       :popular ->
-        user_name <> "@" <> Email.generate_domain(name: :popular)
+        user_name <> "@" <> domain(name: :popular)
 
       :custom ->
         domain_name =
-          Email.generate_domain(
+          domain(
             name: :custom,
             domain_name: Keyword.get(opts, :custom_domain, "example.com")
           )

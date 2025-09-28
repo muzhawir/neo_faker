@@ -36,8 +36,8 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
-- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html)
+For detailed documentation, see the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
+For a quick overview, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
 
 ## License
 

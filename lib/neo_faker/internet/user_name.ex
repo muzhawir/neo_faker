@@ -23,10 +23,10 @@ defmodule NeoFaker.Internet.UserName do
   end
 
   @doc """
-  Returns a separator string based on the specified type.
+  Returns a joiner string based on the specified type.
   """
-  @spec separator(separator_type()) :: String.t()
-  def separator(type) do
+  @spec joiner(separator_type()) :: String.t()
+  def joiner(type) do
     case type do
       :all -> Enum.random([".", "_", "-"])
       :dot -> "."

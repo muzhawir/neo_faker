@@ -3,33 +3,11 @@ defmodule NeoFaker.InternetTest do
 
   alias NeoFaker.Internet
 
-  describe "tld/1" do
-    test "returns a TLD with a dot by default" do
-      tld = Internet.tld()
-
-      assert String.starts_with?(tld, ".") && String.valid?(tld)
-    end
-
-    test "returns a TLD without a dot when :dot option is false" do
-      tld = Internet.tld(dot: false)
-
-      assert not String.starts_with?(tld, ".") && String.valid?(tld)
-    end
-
-    test "returns a TLD with specified type" do
-      Enum.each([:all, :safe, :generic, :sponsored, :country_code], fn type ->
-        tld = Internet.tld(type: type)
-
-        assert String.starts_with?(tld, ".") && String.valid?(tld)
-      end)
-    end
-  end
-
   describe "username/1" do
     test "returns a username with the specified word count" do
       username = Internet.username(word_count: 3)
 
-      assert user_name |> String.split([".", "-", "_"]) |> length() == 3
+      assert username |> String.split([".", "-", "_"]) |> length() == 3
     end
 
     test "returns a username with the specified joiner" do
@@ -104,6 +82,60 @@ defmodule NeoFaker.InternetTest do
     end
   end
 
+  describe "tld/1" do
+    test "returns a TLD with a dot by default" do
+      tld = Internet.tld()
+
+      assert String.starts_with?(tld, ".") && String.valid?(tld)
+    end
+
+    test "returns a TLD without a dot when :dot option is false" do
+      tld = Internet.tld(dot: false)
+
+      assert not String.starts_with?(tld, ".") && String.valid?(tld)
+    end
+
+    test "returns a TLD with specified type" do
+      Enum.each([:all, :safe, :generic, :sponsored, :country_code], fn type ->
+        tld = Internet.tld(type: type)
+
+        assert String.starts_with?(tld, ".") && String.valid?(tld)
+      end)
+    end
+  end
+
+  describe "email/1" do
+    test "returns a valid email address with default options (random domain)" do
+      email = Internet.email()
+      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
+    end
+
+    test "returns a valid email address with popular domain type" do
+      email = Internet.email(domain_type: :popular)
+      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
+      refute String.contains?(email, "..")
+    end
+
+    test "returns a valid email address with custom domain type and domain_name" do
+      email = Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
+
+      assert String.ends_with?(email, "@elixir-lang.org") or
+               String.match?(email, ~r/^[^@]+@elixir-lang\.org$/)
+    end
+
+    test "returns a valid email address with custom domain type and no domain_name" do
+      email = Internet.email(domain_type: :custom)
+
+      assert String.ends_with?(email, "@example.com") or
+               String.match?(email, ~r/^[^@]+@example\.com$/)
+    end
+
+    test "returns a valid email address with custom username and domain options" do
+      email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
+      assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
+    end
+  end
+
   test "ipv4/0" do
     ip = Internet.ipv4()
     parts = String.split(ip, ".")
@@ -151,38 +183,6 @@ defmodule NeoFaker.InternetTest do
       mac = Internet.mac_address()
       assert String.length(mac) == 17
       assert mac |> String.split(":") |> length() == 6
-    end
-  end
-
-  describe "email/1" do
-    test "returns a valid email address with default options (random domain)" do
-      email = Internet.email()
-      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
-    end
-
-    test "returns a valid email address with popular domain type" do
-      email = Internet.email(domain_type: :popular)
-      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
-      refute String.contains?(email, "..")
-    end
-
-    test "returns a valid email address with custom domain type and domain_name" do
-      email = Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
-
-      assert String.ends_with?(email, "@elixir-lang.org") or
-               String.match?(email, ~r/^[^@]+@elixir-lang\.org$/)
-    end
-
-    test "returns a valid email address with custom domain type and no domain_name" do
-      email = Internet.email(domain_type: :custom)
-
-      assert String.ends_with?(email, "@example.com") or
-               String.match?(email, ~r/^[^@]+@example\.com$/)
-    end
-
-    test "returns a valid email address with custom username and domain options" do
-      email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
-      assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
     end
   end
 end

@@ -13,53 +13,6 @@ defmodule NeoFaker.Internet do
   alias NeoFaker.Internet.Username
 
   @doc """
-  Generates a random top-level domain (TLD).
-
-  Returns a random TLD string.
-
-  ## Options
-
-  The accepted options are:
-
-  - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
-  - `:type` - Specifies the type of TLD to generate.
-
-  The values for `:type` can be:
-
-  - `:all_except_safe` - Returns a TLD from all types except safe TLDs. This is the default.
-  - `:all` - Returns a TLD from all available types, including safe TLDs.
-  - `:safe` - Returns a safe TLD, e.g. `.example`.
-  - `:generic` - Returns a generic TLD, e.g. `.com`.
-  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
-  - `:country_code` - Returns a country code TLD, e.g. `.id`.
-
-  ## Examples
-
-      iex> NeoFaker.Internet.tld()
-      ".com"
-
-      iex> NeoFaker.Internet.tld(dot: false)
-      "org"
-
-      iex> NeoFaker.Internet.tld(type: :safe)
-      ".example"
-
-      iex> NeoFaker.Internet.tld(type: :country_code)
-      ".id"
-
-  """
-  @spec tld(Keyword.t()) :: String.t()
-  def tld(opts \\ []) do
-    type = Keyword.get(opts, :type, :all_except_safe)
-
-    if Keyword.get(opts, :dot, true) do
-      "." <> TLD.generate_name(type)
-    else
-      TLD.generate_name(type)
-    end
-  end
-
-  @doc """
   Generates a random username.
 
   Returns a random username string.
@@ -85,7 +38,7 @@ defmodule NeoFaker.Internet do
 
   The values for `:username_type` can be:
 
-  - `:person` - Uses random first or last names for the username, which is the default.
+  - `:person` - Uses random first or last names for the username (default).
   - `:word` - Uses random words for the username.
 
   ## Examples
@@ -182,6 +135,53 @@ defmodule NeoFaker.Internet do
   end
 
   @doc """
+  Generates a random top-level domain (TLD).
+
+  Returns a random TLD string.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
+  - `:type` - Specifies the type of TLD to generate.
+
+  The values for `:type` can be:
+
+  - `:all_except_safe` - Returns a TLD from all types except safe TLDs. This is the default.
+  - `:all` - Returns a TLD from all available types, including safe TLDs.
+  - `:safe` - Returns a safe TLD, e.g. `.example`.
+  - `:generic` - Returns a generic TLD, e.g. `.com`.
+  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
+  - `:country_code` - Returns a country code TLD, e.g. `.id`.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.tld()
+      ".com"
+
+      iex> NeoFaker.Internet.tld(dot: false)
+      "org"
+
+      iex> NeoFaker.Internet.tld(type: :safe)
+      ".example"
+
+      iex> NeoFaker.Internet.tld(type: :country_code)
+      ".id"
+
+  """
+  @spec tld(Keyword.t()) :: String.t()
+  def tld(opts \\ []) do
+    type = Keyword.get(opts, :type, :all_except_safe)
+
+    if Keyword.get(opts, :dot, true) do
+      "." <> TLD.generate_name(type)
+    else
+      TLD.generate_name(type)
+    end
+  end
+
+  @doc """
   Generates a random email address.
 
   Returns a random email address string based on the specified options.
@@ -195,7 +195,85 @@ defmodule NeoFaker.Internet do
   - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
   - `:joiner` - Defines the joiner to use between words in the username.
   - `:username_type` - Specifies the type of words to use in the username.
-  - `:number` - A boolean indicating whether to append a random number to the username
+  - `:number` - A boolean indicating whether to append a random number to the username.
+    Defaults to `false`, if set to `true`, a number will be appended between `1` and `1000`, for
+    define a custom range, use the `:number_range` option.
+  - `:number_range` - Defines the range of numbers to choose from when appending a number.
+    Defaults to `1..1000`.
+
+  The values for `:joiner` can be:
+
+  - `:all` - Uses any of the joiners (default).
+  - `:dot` - Uses a dot (`.`) as the joiner.
+  - `:underscore` - Uses an underscore (`_`) as the joiner.
+  - `:dash` - Uses a dash (`-`) as the joiner.
+
+  The values for `:username_type` can be:
+
+  - `:person` - Uses random first or last names for the username (default).
+  - `:word` - Uses random words for the username.
+
+  ### Domain Name Options
+
+  The accepted options for domain name generation are:
+
+  - `:word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
+  - `:domain_type` - Specifies the type of domain name to generate.
+  - `:popular_type` - When `:domain_type` is set to `:popular`, this option defines the category
+    of popular domains to select from. Defaults to `:all`.
+  - `:domain_name` - When `:domain_type` is set to `:custom`, this option allows the user to
+    provide a custom domain name. If not provided, defaults to "example.com".
+
+  The values for `:domain_type` can be:
+
+  - `:random` - Generates a random domain name using a random word (default).
+  - `:popular` - Selects a domain name from a list of popular domains, with the specific category
+    defined by the `:popular_type` option. For this option, the output will be a full domain name
+    like "gmail.com".
+  - `:custom` - Uses a custom domain name provided by the user via the `:domain_name` option. If
+    not provided, defaults to "example.com".
+
+  If `:domain_type` is set to `:popular`, the `:popular_type` option can be used to specify the
+  category of popular domains to select from. The values for `:popular_type` can be:
+
+  - `:all` - Selects from all popular domains (default).
+  - `:ecommerce` - Selects from popular e-commerce domains.
+  - `:email` - Selects from popular email service domains.
+  - `:search` - Selects from popular search engine domains.
+  - `:social` - Selects from popular social media domains.
+
+  ### TLD Options
+
+  The accepted options for TLD generation are:
+
+  - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
+  - `:tld_type` - Specifies the type of TLD to generate.
+
+  The values for `:tld_type` can be:
+
+  - `:all_except_safe` - Returns a TLD from all types except safe TLDs. This is the default.
+  - `:all` - Returns a TLD from all available types, including safe TLDs.
+  - `:safe` - Returns a safe TLD, e.g. `.example`.
+  - `:generic` - Returns a generic TLD, e.g. `.com`.
+  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
+  - `:country_code` - Returns a country code TLD, e.g. `.id`.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.email()
+      "josé@example.com"
+
+      iex> NeoFaker.Internet.email(word_count: 3, joiner: :dot, number: true)
+      "abigail.bethany.crawford_202"
+
+      iex> NeoFaker.Internet.email(domain_type: :popular, popular_type: :email)
+      "jane.doe@gmail.com"
+
+      iex> NeoFaker.Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
+      "josé@elixir-lang.org"
+
+      iex> NeoFaker.Internet.email(tld_type: :country_code, dot: false)
+      "josé@example.id"
 
   """
   @spec email(Keyword.t()) :: String.t()

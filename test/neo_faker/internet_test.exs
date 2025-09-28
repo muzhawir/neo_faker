@@ -32,14 +32,14 @@ defmodule NeoFaker.InternetTest do
       assert user_name |> String.split([".", "-", "_"]) |> length() == 3
     end
 
-    test "returns a user_name with the specified separator" do
+    test "returns a user_name with the specified joiner" do
       Enum.each(%{dot: ".", underscore: "_", dash: "-"}, fn {key, val} ->
-        username = Internet.user_name(separator: key)
+        username = Internet.user_name(joiner: key)
 
         assert String.contains?(username, val)
       end)
 
-      assert [separator: :all] |> Internet.user_name() |> String.contains?([".", "_", "-"])
+      assert [joiner: :all] |> Internet.user_name() |> String.contains?([".", "_", "-"])
     end
 
     test "returns a user_name with the specified username type" do
@@ -59,6 +59,48 @@ defmodule NeoFaker.InternetTest do
         |> String.to_integer()
 
       assert extracted_number in 100..200
+    end
+  end
+
+  describe "domain_name/1" do
+    test "returns a single random word by default" do
+      domain = Internet.domain_name()
+      assert is_binary(domain)
+      assert String.match?(domain, ~r/^[a-z]+$/)
+    end
+
+    test "returns multiple words joined by dash when word_count > 1" do
+      domain = Internet.domain_name(word_count: 3)
+      assert is_binary(domain)
+      assert String.split(domain, "-") |> length() == 3
+    end
+
+    test "returns a popular domain name when type: :popular" do
+      domain = Internet.domain_name(type: :popular)
+      assert is_binary(domain)
+      assert String.contains?(domain, ".")
+    end
+
+    test "returns a popular email domain when type: :popular and popular_type: :email" do
+      domain = Internet.domain_name(type: :popular, popular_type: :email)
+      assert is_binary(domain)
+      assert String.contains?(domain, ".")
+    end
+
+    test "returns a custom domain name when type: :custom and domain_name is provided" do
+      domain = Internet.domain_name(type: :custom, domain_name: "elixir-lang.org")
+      assert domain == "elixir-lang.org"
+    end
+
+    test "returns default custom domain when type: :custom and domain_name is not provided" do
+      domain = Internet.domain_name(type: :custom)
+      assert domain == "example.com"
+    end
+
+    test "returns a random word for unknown type" do
+      domain = Internet.domain_name(type: :unknown)
+      assert is_binary(domain)
+      assert String.match?(domain, ~r/^[a-z]+$/)
     end
   end
 end

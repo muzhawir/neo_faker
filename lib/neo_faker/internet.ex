@@ -7,6 +7,7 @@ defmodule NeoFaker.Internet do
   """
   @moduledoc since: "0.13.0"
 
+  alias NeoFaker.Internet.Domain
   alias NeoFaker.Internet.TLD
   alias NeoFaker.Internet.UserName
 
@@ -67,19 +68,19 @@ defmodule NeoFaker.Internet do
   The accepted options are:
 
   - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
-  - `:separator` - Defines the separator to use between words in the username.
+  - `:joiner` - Defines the joiner to use between words in the username.
   - `:username_type` - Specifies the type of words to use in the username.
   - `:number` - A boolean indicating whether to append a random number to the username.
      Defaults to `false`.
   - `:number_range` - Defines the range of numbers to choose from when appending a number.
      Defaults to `1..1000`.
 
-  The values for `:separator` can be:
+  The values for `:joiner` can be:
 
-  - `:all` - Uses any of the separators (default).
-  - `:dot` - Uses a dot (`.`) as the separator.
-  - `:underscore` - Uses an underscore (`_`) as the separator.
-  - `:dash` - Uses a dash (`-`) as the separator.
+  - `:all` - Uses any of the joiners (default).
+  - `:dot` - Uses a dot (`.`) as the joiner.
+  - `:underscore` - Uses an underscore (`_`) as the joiner.
+  - `:dash` - Uses a dash (`-`) as the joiner.
 
   The values for `:username_type` can be:
 
@@ -91,7 +92,7 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.user_name()
       "josé_valim"
 
-      iex> NeoFaker.Internet.user_name(word_count: 3, separator: :dot)
+      iex> NeoFaker.Internet.user_name(word_count: 3, joiner: :dot)
       "abigail.bethany.crawford"
 
       iex> NeoFaker.Internet.user_name(username_type: :word, number: true, number_range: 1..2025)
@@ -101,73 +102,81 @@ defmodule NeoFaker.Internet do
   @spec user_name(Keyword.t()) :: String.t()
   def user_name(opts \\ []) do
     word_count = 1..Keyword.get(opts, :word_count, 2)
-    separator = opts |> Keyword.get(:separator, :all) |> UserName.separator()
+    joiner = opts |> Keyword.get(:joiner, :all) |> UserName.joiner()
 
     base =
-      Enum.map_join(word_count, separator, fn _ ->
+      Enum.map_join(word_count, joiner, fn _ ->
         UserName.word(Keyword.get(opts, :username_type, :person))
       end)
 
     if Keyword.get(opts, :number, false) do
-      base <> separator <> "#{Enum.random(Keyword.get(opts, :number_range, 1..1000))}"
+      base <> joiner <> "#{Enum.random(Keyword.get(opts, :number_range, 1..1000))}"
     else
       base
     end
   end
 
   @doc """
-  Generates a random popular domain.
+  Generates a random domain name.
 
-  Returns a random popular domain string.
+  Returns a random domain name string based on the specified options.
 
   ## Options
 
-  - `:type` - Specifies the  type of popular domain to generate.
+  The accepted options are:
+
+  - `:word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
+  - `:type` - Specifies the type of domain name to generate.
 
   The values for `:type` can be:
 
-  - `:all` - Returns a domain from all popular domains (default).
-  - `:ecommerce` - Returns a domain from popular e-commerce domains.
-  - `:email` - Returns a domain from popular email service providers.
-  - `:search` - Returns a domain from popular search engines.
-  - `:social` - Returns a domain from popular social media platforms.
+  - `:random` - Generates a random domain name using a random word (default).
+  - `:popular` - Selects a domain name from a list of popular domains, with the specific category
+    defined by the `:popular_type` option. For this option, the output will be a full domain name
+    like "gmail.com".
+  - `:custom` - Uses a custom domain name provided by the user via the `:domain_name` option. If
+    not provided, defaults to "example.com".
+
+  If `:type` is set to `:popular`, the `:popular_type` option can be used to specify the category
+  of popular domains to select from. The values for `:popular_type` can be:
+
+  - `:all` - Selects from all popular domains (default).
+  - `:ecommerce` - Selects from popular e-commerce domains.
+  - `:email` - Selects from popular email service domains.
+  - `:search` - Selects from popular search engine domains.
+  - `:social` - Selects from popular social media domains.
 
   ## Examples
 
-      iex> NeoFaker.Internet.popular_domain()
-      "google.com"
+      iex> NeoFaker.Internet.domain_name()
+      "example"
 
-      iex> NeoFaker.Internet.popular_domain(type: :ecommerce)
-      "amazon.com"
+      iex> NeoFaker.Internet.domain_name(word_count: 3)
+      "alpha-beta-gamma"
 
-  """
-  @spec popular_domain() :: String.t()
-  def popular_domain(opts \\ []) do
-    NeoFaker.Internet.Domain.generate_popular_domain(Keyword.get(opts, :type, :all))
-  end
+      iex> NeoFaker.Internet.domain_name(type: :popular, popular_type: :email)
+      "gmail.com"
 
-  @doc """
-  Generates a random email domain based on the provided options.
-
-  ## Options
-
-    - `:name` - Specifies the type of domain to generate. Can be `:random`, `:popular`, or `:custom`.
-    - `:domain_name` - The custom domain name to use when `:name` is set to `:custom`.
-
-    The values for `:name` can be:
-
-    - `:random` (default) - Generates a random word as the domain name.
-    - `:popular` - Selects a domain from a predefined list of popular domains.
-    - `:custom` - Uses a custom domain name provided via the `:domain_name` option.
+      iex> NeoFaker.Internet.domain_name(type: :custom, domain_name: "elixir-lang.org")
+      "elixir-lang.org"
 
   """
-  @spec domain(keyword()) :: String.t()
-  def domain(opts) do
-    case Keyword.get(opts, :name, :random) do
-      :random -> String.downcase(NeoFaker.Text.word())
-      :popular -> popular_domain()
-      :custom -> Keyword.get(opts, :domain_name, "example.com")
-      _ -> String.downcase(NeoFaker.Text.word())
+  @spec domain_name(keyword()) :: String.t()
+  def domain_name(opts \\ []) do
+    word_count = Keyword.get(opts, :word_count, 1)
+
+    case Keyword.get(opts, :type, :random) do
+      :random ->
+        Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
+
+      :popular ->
+        Domain.generate_popular_domain_name(Keyword.get(opts, :popular_type, :all))
+
+      :custom ->
+        Keyword.get(opts, :domain_name, "example.com")
+
+      _ ->
+        String.downcase(NeoFaker.Text.word())
     end
   end
 
@@ -175,10 +184,10 @@ defmodule NeoFaker.Internet do
   def email(opts \\ []) do
     user_name =
       user_name(
-        Keyword.take(opts, [:word_count, :separator, :username_type, :number, :number_range])
+        Keyword.take(opts, [:word_count, :joiner, :username_type, :number, :number_range])
       )
 
-    domain_name = domain(Keyword.take(opts, [:name]))
+    domain_name = domain_name(Keyword.take(opts, [:type, :popular_type, :domain_name, :dot]))
 
     case Keyword.get(opts, :tld_type, :all_except_safe) do
       :all_except_safe ->
@@ -200,11 +209,11 @@ defmodule NeoFaker.Internet do
         user_name <> "@" <> domain_name <> tld(type: :country_code)
 
       :popular ->
-        user_name <> "@" <> domain(name: :popular)
+        user_name <> "@" <> domain_name(type: :popular)
 
       :custom ->
         domain_name =
-          domain(
+          domain_name(
             name: :custom,
             domain_name: Keyword.get(opts, :custom_domain, "example.com")
           )

@@ -1,0 +1,49 @@
+%{
+  "ecommerce" => [
+    "aliexpress.com",
+    "amazon.com",
+    "bestbuy.com",
+    "ebay.com",
+    "etsy.com",
+    "overstock.com",
+    "rakuten.com",
+    "shopify.com",
+    "walmart.com",
+    "wayfair.com"
+  ],
+  "email" => [
+    "aol.com",
+    "gmail.com",
+    "hotmail.com",
+    "icloud.com",
+    "mail.com",
+    "outlook.com",
+    "protonmail.com",
+    "yahoo.com",
+    "zoho.com"
+  ],
+  "search" => [
+    "ask.com",
+    "baidu.com",
+    "bing.com",
+    "duckduckgo.com",
+    "ecosia.org",
+    "google.com",
+    "qwant.com",
+    "startpage.com",
+    "yahoo.com",
+    "yandex.com"
+  ],
+  "social" => [
+    "facebook.com",
+    "instagram.com",
+    "linkedin.com",
+    "pinterest.com",
+    "reddit.com",
+    "snapchat.com",
+    "tiktok.com",
+    "tumblr.com",
+    "whatsapp.com",
+    "x.com"
+  ]
+}

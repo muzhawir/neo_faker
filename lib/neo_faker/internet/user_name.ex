@@ -8,6 +8,8 @@ defmodule NeoFaker.Internet.UserName do
 
   @doc """
   Generates a username by combining words with a specified separator.
+
+  Returns a username string.
   """
   @spec word(word_type()) :: String.t()
   def word(type) do
@@ -26,22 +28,11 @@ defmodule NeoFaker.Internet.UserName do
   @spec separator(separator_type()) :: String.t()
   def separator(type) do
     case type do
-      :all ->
-        Enum.random([".", "_", "-"])
-
-      :dot ->
-        "."
-
-      :underscore ->
-        "_"
-
-      :dash ->
-        "-"
-
-      other ->
-        raise ArgumentError,
-              "Invalid separator type: #{inspect(other)}. " <>
-                "Expected :all, :dot, :underscore, or :dash."
+      :all -> Enum.random([".", "_", "-"])
+      :dot -> "."
+      :underscore -> "_"
+      :dash -> "-"
+      _ -> Enum.random([".", "_", "-"])
     end
   end
 end

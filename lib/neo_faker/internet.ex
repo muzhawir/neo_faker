@@ -7,6 +7,7 @@ defmodule NeoFaker.Internet do
   """
   @moduledoc since: "0.13.0"
 
+  alias NeoFaker.Internet.Email
   alias NeoFaker.Internet.TLD
   alias NeoFaker.Internet.UserName
 
@@ -51,9 +52,9 @@ defmodule NeoFaker.Internet do
     type = Keyword.get(opts, :type, :all_except_safe)
 
     if Keyword.get(opts, :dot, true) do
-      "." <> TLD.name(type)
+      "." <> TLD.generate_name(type)
     else
-      TLD.name(type)
+      TLD.generate_name(type)
     end
   end
 
@@ -115,5 +116,47 @@ defmodule NeoFaker.Internet do
     end
   end
 
-  # def popular_email_domain, do: Generator.random_value(__MODULE__, "email_provider.exs", "domain")
+  def email(opts \\ []) do
+    user_name =
+      user_name(
+        Keyword.take(opts, [:word_count, :separator, :username_type, :number, :number_range])
+      )
+
+    domain_name = Email.generate_domain(Keyword.take(opts, [:name]))
+
+    case Keyword.get(opts, :tld_type, :all_except_safe) do
+      :all_except_safe ->
+        user_name <> "@" <> domain_name <> tld(type: :all_except_safe)
+
+      :all ->
+        user_name <> "@" <> domain_name <> tld(type: :all)
+
+      :safe ->
+        user_name <> "@" <> domain_name <> tld(type: :safe)
+
+      :generic ->
+        user_name <> "@" <> domain_name <> tld(type: :generic)
+
+      :sponsored ->
+        user_name <> "@" <> domain_name <> tld(type: :sponsored)
+
+      :country_code ->
+        user_name <> "@" <> domain_name <> tld(type: :country_code)
+
+      :popular ->
+        user_name <> "@" <> Email.generate_domain(name: :popular)
+
+      :custom ->
+        domain_name =
+          Email.generate_domain(
+            name: :custom,
+            domain_name: Keyword.get(opts, :custom_domain, "example.com")
+          )
+
+        user_name <> "@" <> domain_name
+
+      _ ->
+        user_name <> "@" <> domain_name <> tld(type: :all_except_safe)
+    end
+  end
 end

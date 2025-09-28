@@ -12,9 +12,11 @@ defmodule NeoFaker.Internet.TLD do
 
   @doc """
   Generates a random top-level domain (TLD) based on the specified type.
+
+  Returns a random TLD string.
   """
-  @spec name(tld_type()) :: String.t()
-  def name(type) do
+  @spec generate_name(tld_type()) :: String.t()
+  def generate_name(type) do
     case type do
       :all_except_safe ->
         :default
@@ -43,10 +45,8 @@ defmodule NeoFaker.Internet.TLD do
       :country_code ->
         Generator.random_value(@module, @tld_file, "country_code")
 
-      other ->
-        raise ArgumentError,
-              "Invalid TLD type: #{inspect(other)}. " <>
-                "Expected :all, :safe, :generic, :sponsored, or :country_code."
+      _ ->
+        Generator.random_value(@module, @tld_file, "all_except_safe")
     end
   end
 end

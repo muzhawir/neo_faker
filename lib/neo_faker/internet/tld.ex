@@ -19,12 +19,7 @@ defmodule NeoFaker.Internet.TLD do
   def generate_name(type) do
     case type do
       :all_except_safe ->
-        :default
-        |> Cache.fetch!(@module, @tld_file)
-        |> Map.delete("safe")
-        |> Map.values()
-        |> List.flatten()
-        |> Enum.random()
+        generate_default_name()
 
       :all ->
         :default
@@ -46,7 +41,15 @@ defmodule NeoFaker.Internet.TLD do
         Generator.random_value(@module, @tld_file, "country_code")
 
       _ ->
-        Generator.random_value(@module, @tld_file, "all_except_safe")
+        generate_default_name()
     end
+  end
+
+  defp generate_default_name do
+    :default
+    |> Cache.fetch!(@module, @tld_file)
+    |> Map.values()
+    |> List.flatten()
+    |> Enum.random()
   end
 end

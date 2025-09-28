@@ -6,15 +6,15 @@ defmodule NeoFaker.Internet.Email do
   @doc """
   Generates a random user name for an email address.
 
-  Returns a random user name string.
+  Returns a random username string.
   """
-  @spec generate_user_name(Keyword.t()) :: String.t()
-  def generate_user_name(opts) do
-    user_name_opts =
+  @spec generate_username(Keyword.t()) :: String.t()
+  def generate_username(opts) do
+    username_opts =
       Keyword.take(opts, [:word_count, :joiner, :username_type, :number, :number_range])
 
-    Internet.user_name(
-      Keyword.put(user_name_opts, :word_count, Keyword.get(opts, :user_name_word_count, 2))
+    Internet.username(
+      Keyword.put(username_opts, :word_count, Keyword.get(opts, :username_word_count, 2))
     )
   end
 

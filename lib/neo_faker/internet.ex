@@ -8,8 +8,9 @@ defmodule NeoFaker.Internet do
   @moduledoc since: "0.13.0"
 
   alias NeoFaker.Internet.Domain
+  alias NeoFaker.Internet.Email
   alias NeoFaker.Internet.TLD
-  alias NeoFaker.Internet.UserName
+  alias NeoFaker.Internet.Username
 
   @doc """
   Generates a random top-level domain (TLD).
@@ -89,24 +90,24 @@ defmodule NeoFaker.Internet do
 
   ## Examples
 
-      iex> NeoFaker.Internet.user_name()
+      iex> NeoFaker.Internet.username()
       "josé_valim"
 
-      iex> NeoFaker.Internet.user_name(word_count: 3, joiner: :dot)
+      iex> NeoFaker.Internet.username(word_count: 3, joiner: :dot)
       "abigail.bethany.crawford"
 
-      iex> NeoFaker.Internet.user_name(username_type: :word, number: true, number_range: 1..2025)
+      iex> NeoFaker.Internet.username(username_type: :word, number: true, number_range: 1..2025)
       "elixir_alchemist_2012"
 
   """
-  @spec user_name(Keyword.t()) :: String.t()
-  def user_name(opts \\ []) do
+  @spec username(Keyword.t()) :: String.t()
+  def username(opts \\ []) do
     word_count = 1..Keyword.get(opts, :word_count, 2)
-    joiner = opts |> Keyword.get(:joiner, :all) |> UserName.joiner()
+    joiner = opts |> Keyword.get(:joiner, :all) |> Username.joiner()
 
     base =
       Enum.map_join(word_count, joiner, fn _ ->
-        UserName.word(Keyword.get(opts, :username_type, :person))
+        Username.word(Keyword.get(opts, :username_type, :person))
       end)
 
     if Keyword.get(opts, :number, false) do
@@ -180,48 +181,119 @@ defmodule NeoFaker.Internet do
     end
   end
 
+  @doc """
+  Generates a random email address.
+
+  Returns a random email address string based on the specified options.
+
+  ## Options
+
+  ### Username Options
+
+  The accepted options for username generation are:
+
+  - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
+  - `:joiner` - Defines the joiner to use between words in the username.
+  - `:username_type` - Specifies the type of words to use in the username.
+  - `:number` - A boolean indicating whether to append a random number to the username
+
+  """
   @spec email(Keyword.t()) :: String.t()
   def email(opts \\ []) do
-    user_name =
-      user_name(
-        Keyword.take(opts, [:word_count, :joiner, :username_type, :number, :number_range])
-      )
+    username = Email.generate_username(opts)
+    domain_name = Email.generate_domain_name(opts)
+    tld = Email.generate_tld(opts)
 
-    domain_name = domain_name(Keyword.take(opts, [:type, :popular_type, :domain_name, :dot]))
+    if Keyword.get(opts, :domain_type, :random) in [:popular, :custom] do
+      "#{username}@#{domain_name}"
+    else
+      "#{username}@#{domain_name}#{tld}"
+    end
+  end
 
-    case Keyword.get(opts, :tld_type, :all_except_safe) do
-      :all_except_safe ->
-        user_name <> "@" <> domain_name <> tld(type: :all_except_safe)
+  @doc """
+  Generates a random IPv4 address.
 
-      :all ->
-        user_name <> "@" <> domain_name <> tld(type: :all)
+  Returns a random IPv4 address string.
 
-      :safe ->
-        user_name <> "@" <> domain_name <> tld(type: :safe)
+  ## Examples
 
-      :generic ->
-        user_name <> "@" <> domain_name <> tld(type: :generic)
+      iex> NeoFaker.Internet.ipv4()
+      "183.235.34.108"
 
-      :sponsored ->
-        user_name <> "@" <> domain_name <> tld(type: :sponsored)
+  """
+  @spec ipv4() :: String.t()
+  def ipv4, do: Enum.map_join(1..4, ".", fn _ -> :rand.uniform(255) - 1 end)
 
-      :country_code ->
-        user_name <> "@" <> domain_name <> tld(type: :country_code)
+  @doc """
+  Generates a random IPv6 address.
 
-      :popular ->
-        user_name <> "@" <> domain_name(type: :popular)
+  Returns a random IPv6 address string.
 
-      :custom ->
-        domain_name =
-          domain_name(
-            name: :custom,
-            domain_name: Keyword.get(opts, :custom_domain, "example.com")
-          )
+  ## Options
 
-        user_name <> "@" <> domain_name
+  The accepted options are:
 
-      _ ->
-        user_name <> "@" <> domain_name <> tld(type: :all_except_safe)
+  - `:uppercase` - A boolean indicating whether to return the address in uppercase.
+    Defaults to `true`.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.ipv6()
+      "E0E6:7E24:EC6E:E44C:FC69:9C25:CD85:CE08"
+
+      iex> NeoFaker.Internet.ipv6(uppercase: false)
+      "e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
+
+  """
+  @spec ipv6(Keyword.t()) :: String.t()
+  def ipv6(opts \\ []) do
+    ip_address =
+      Enum.map_join(1..8, ":", fn _ ->
+        Integer.to_string(:rand.uniform(0xFFFF) - 1, 16)
+      end)
+
+    if Keyword.get(opts, :uppercase, true) do
+      String.upcase(ip_address)
+    else
+      String.downcase(ip_address)
+    end
+  end
+
+  @doc """
+  Generates a random MAC address.
+
+  Returns a random MAC address string.
+
+  ## Options
+
+  The accepted options are:
+
+  - `:uppercase` - A boolean indicating whether to return the MAC address in uppercase.
+    Defaults to `true`.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.mac_address()
+      "74:4E:44:B0:D0:93"
+
+      iex> NeoFaker.Internet.mac_address(uppercase: false)
+      "74:4e:44:b0:d0:93"
+
+  """
+  @spec mac_address(Keyword.t()) :: String.t()
+  def mac_address(opts \\ []) do
+    mac_address =
+      Enum.map_join(1..6, ":", fn _ ->
+        (:rand.uniform(0xFF) - 1)
+        |> Integer.to_string(16)
+        |> String.pad_leading(2, "0")
+      end)
+
+    if Keyword.get(opts, :uppercase, true) do
+      String.upcase(mac_address)
+    else
+      String.downcase(mac_address)
     end
   end
 end

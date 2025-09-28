@@ -1,4 +1,4 @@
-defmodule NeoFaker.Internet.UserName do
+defmodule NeoFaker.Internet.Username do
   @moduledoc false
 
   alias NeoFaker.Person

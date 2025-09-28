@@ -25,35 +25,35 @@ defmodule NeoFaker.InternetTest do
     end
   end
 
-  describe "user_name/1" do
-    test "returns a user_name with the specified word count" do
-      user_name = Internet.user_name(word_count: 3)
+  describe "username/1" do
+    test "returns a username with the specified word count" do
+      username = Internet.username(word_count: 3)
 
       assert user_name |> String.split([".", "-", "_"]) |> length() == 3
     end
 
-    test "returns a user_name with the specified joiner" do
+    test "returns a username with the specified joiner" do
       Enum.each(%{dot: ".", underscore: "_", dash: "-"}, fn {key, val} ->
-        username = Internet.user_name(joiner: key)
+        username = Internet.username(joiner: key)
 
         assert String.contains?(username, val)
       end)
 
-      assert [joiner: :all] |> Internet.user_name() |> String.contains?([".", "_", "-"])
+      assert [joiner: :all] |> Internet.username() |> String.contains?([".", "_", "-"])
     end
 
-    test "returns a user_name with the specified username type" do
+    test "returns a username with the specified username type" do
       Enum.each([:person, :word], fn type ->
-        user_name = Internet.user_name(username_type: type)
+        username = Internet.username(username_type: type)
 
-        assert String.contains?(user_name, [".", "-", "_"]) && String.valid?(user_name)
+        assert String.contains?(username, [".", "-", "_"]) && String.valid?(username)
       end)
     end
 
-    test "returns a user_name with appended number and specific range" do
+    test "returns a username with appended number and specific range" do
       extracted_number =
         [number: true, number_range: 100..200]
-        |> Internet.user_name()
+        |> Internet.username()
         |> String.split([".", "-", "_"])
         |> List.last()
         |> String.to_integer()
@@ -72,7 +72,7 @@ defmodule NeoFaker.InternetTest do
     test "returns multiple words joined by dash when word_count > 1" do
       domain = Internet.domain_name(word_count: 3)
       assert is_binary(domain)
-      assert String.split(domain, "-") |> length() == 3
+      assert domain |> String.split("-") |> length() == 3
     end
 
     test "returns a popular domain name when type: :popular" do
@@ -105,16 +105,84 @@ defmodule NeoFaker.InternetTest do
   end
 
   test "ipv4/0" do
-    ip = NeoFaker.Internet.ipv4()
+    ip = Internet.ipv4()
     parts = String.split(ip, ".")
 
     assert length(parts) == 4
 
     assert Enum.all?(parts, fn part ->
-      case Integer.parse(part) do
-        {num, ""} -> num >= 0 and num <= 254
-        _ -> false
-      end
-    end)
+             case Integer.parse(part) do
+               {num, ""} -> num >= 0 and num <= 254
+               _ -> false
+             end
+           end)
+  end
+
+  describe "ipv6/1" do
+    test "returns an IPv6 address in uppercase by default" do
+      ip = Internet.ipv6()
+      assert String.match?(ip, ~r/^([0-9A-F]{1,4}:){7}[0-9A-F]{1,4}$/)
+    end
+
+    test "returns an IPv6 address in lowercase when :uppercase is false" do
+      ip = Internet.ipv6(uppercase: false)
+      assert String.match?(ip, ~r/^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/)
+    end
+
+    test "returns an IPv6 address with correct format and length" do
+      ip = Internet.ipv6()
+      assert ip |> String.split(":") |> length() == 8
+      assert String.length(ip) >= 15
+    end
+  end
+
+  describe "mac_address/1" do
+    test "returns a MAC address in uppercase by default" do
+      mac = Internet.mac_address()
+      assert String.match?(mac, ~r/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/)
+    end
+
+    test "returns a MAC address in lowercase when :uppercase is false" do
+      mac = Internet.mac_address(uppercase: false)
+      assert String.match?(mac, ~r/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/)
+    end
+
+    test "returns a MAC address with correct format and length" do
+      mac = Internet.mac_address()
+      assert String.length(mac) == 17
+      assert mac |> String.split(":") |> length() == 6
+    end
+  end
+
+  describe "email/1" do
+    test "returns a valid email address with default options (random domain)" do
+      email = Internet.email()
+      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
+    end
+
+    test "returns a valid email address with popular domain type" do
+      email = Internet.email(domain_type: :popular)
+      assert String.match?(email, ~r/^[^@]+@[^@]+\.[a-z]+$/)
+      refute String.contains?(email, "..")
+    end
+
+    test "returns a valid email address with custom domain type and domain_name" do
+      email = Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
+
+      assert String.ends_with?(email, "@elixir-lang.org") or
+               String.match?(email, ~r/^[^@]+@elixir-lang\.org$/)
+    end
+
+    test "returns a valid email address with custom domain type and no domain_name" do
+      email = Internet.email(domain_type: :custom)
+
+      assert String.ends_with?(email, "@example.com") or
+               String.match?(email, ~r/^[^@]+@example\.com$/)
+    end
+
+    test "returns a valid email address with custom username and domain options" do
+      email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
+      assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
+    end
   end
 end

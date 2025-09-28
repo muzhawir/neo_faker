@@ -5,10 +5,10 @@ elixir = "1.18.4-otp-27"
 
 [tasks.fix]
 
-description = "Format, analyze, test, and lint the codebase"
+description = "Format, lint, analyze, and test the codebase"
 run = [
   "mix format",
+  "mix credo",
   "mix dialyzer",
-  "mix test",
-  "mix credo"
+  "mix test"
 ]

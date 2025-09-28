@@ -103,4 +103,18 @@ defmodule NeoFaker.InternetTest do
       assert String.match?(domain, ~r/^[a-z]+$/)
     end
   end
+
+  test "ipv4/0" do
+    ip = NeoFaker.Internet.ipv4()
+    parts = String.split(ip, ".")
+
+    assert length(parts) == 4
+
+    assert Enum.all?(parts, fn part ->
+      case Integer.parse(part) do
+        {num, ""} -> num >= 0 and num <= 254
+        _ -> false
+      end
+    end)
+  end
 end

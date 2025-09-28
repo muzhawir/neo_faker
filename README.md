@@ -6,24 +6,24 @@
 
 # NeoFaker
 
-![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
+[![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker)](https://hex.pm/packages/neo_faker)
+[![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)](https://hex.pm/packages/neo_faker)
+[![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-Fake data generator for Elixir tests and development environments.
+NeoFaker is a fake data generator for Elixir tests and development environments.
 
 ## Requirements
 
-To use NeoFaker, your environment must meet the following requirements:
-
-- **Erlang**: Version `27.0` or later
-- **Elixir**: Version `1.18.0-otp-27` or later
+- **Erlang**: `27.0` or newer
+- **Elixir**: `1.18.0-otp-27` or newer
 
 ## Installation
 
-To install NeoFaker, follow the instructions in the [Getting Started Guide](https://hexdocs.pm/neo_faker/getting-started.html).
+See the [Getting Started Guide](https://hexdocs.pm/neo_faker/getting-started.html) for installation instructions.
 
 ## Usage
 
-NeoFaker provides functions to generate fake data. Examples:
+Generate fake data with NeoFaker:
 
 ```elixir
 iex> NeoFaker.App.name()
@@ -36,9 +36,9 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-For detailed documentation, visit the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
-For a quick overview, refer to the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
+- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html)
 
 ## License
 
-NeoFaker is licensed under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).
+Licensed under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

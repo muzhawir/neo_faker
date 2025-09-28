@@ -1,19 +1,19 @@
 # Getting Started
 
-![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker) ![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker) [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
+[![Hex.pm Version](https://img.shields.io/hexpm/v/neo_faker)](https://hex.pm/packages/neo_faker)
+[![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)](https://hex.pm/packages/neo_faker)
+[![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-Fake data generator for Elixir tests and development environments.
+NeoFaker is a fake data generator for Elixir tests and development environments.
 
 ## Requirements
 
-To use NeoFaker, your environment must meet the following requirements:
-
-- **Erlang**: Version `27.0` or later
-- **Elixir**: Version `1.18.0-otp-27` or later
+- **Erlang**: `27.0` or newer
+- **Elixir**: `1.18.0-otp-27` or newer
 
 ## Installation
 
-Add NeoFaker to the dependencies in your `mix.exs` file:
+Add NeoFaker to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
@@ -23,7 +23,7 @@ def deps do
 end
 ```
 
-Fetch the dependencies by running:
+Install the dependency:
 
 ```sh
 mix deps.get
@@ -31,31 +31,29 @@ mix deps.get
 
 ## Configuration
 
-Set the default locale in the `config.exs` file:
+Set the default locale in your `config.exs`:
 
 ```elixir
 config :neo_faker, locale: :default
 ```
 
-If the specified locale is not available, NeoFaker will use the `:default` locale. A list of
-supported locales is available on the
-[Available Locales](https://hexdocs.pm/neo_faker/available-locales.html) page.
+If the locale is unavailable, NeoFaker falls back to `:default`. See the
+[list of supported locales](https://hexdocs.pm/neo_faker/available-locales.html).
 
-> ### Setting Configuration in Phoenix {: .tip}
+> ### Phoenix Projects {: .tip}
 >
-> In a [Phoenix Framework](https://hexdocs.pm/phoenix) project, set the locale in `config/dev.exs`
-> or `config/test.exs`.
+> For [Phoenix](https://hexdocs.pm/phoenix) apps, set the locale in `config/dev.exs` or `config/test.exs`.
 >
-> Add the following line to `test/test_helper.exs`:
+> In `test/test_helper.exs`, add:
 >
 > ```elixir
 > ExUnit.start()
-> NeoFaker.start() # Add this line
+> NeoFaker.start()
 > ```
 
 ## Usage
 
-NeoFaker provides functions to generate fake data. Examples:
+Generate fake data with NeoFaker:
 
 ```elixir
 iex> NeoFaker.App.name()
@@ -68,11 +66,9 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-For detailed documentation, visit the
-[API Reference](https://hexdocs.pm/neo_faker/api-reference.html). For a quick overview, refer to
-the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
+- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html)
 
 ## License
 
-NeoFaker is licensed under the
-[MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).
+Licensed under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

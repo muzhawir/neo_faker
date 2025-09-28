@@ -14,8 +14,8 @@ defmodule NeoFaker.Internet.Domain do
 
   Returns a random domain from the selected category.
   """
-  @spec generate_popular_domain(domain_type()) :: String.t()
-  def generate_popular_domain(type) do
+  @spec generate_popular_domain_name(domain_type()) :: String.t()
+  def generate_popular_domain_name(type) do
     case type do
       :all -> fetch_popular_domain(:all)
       :ecommerce -> fetch_popular_domain(:ecommerce)

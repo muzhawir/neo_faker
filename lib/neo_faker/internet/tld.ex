@@ -48,6 +48,7 @@ defmodule NeoFaker.Internet.TLD do
   defp generate_default_name do
     :default
     |> Cache.fetch!(@module, @tld_file)
+    |> Map.delete("safe")
     |> Map.values()
     |> List.flatten()
     |> Enum.random()

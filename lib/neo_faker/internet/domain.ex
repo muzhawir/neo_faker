@@ -7,7 +7,7 @@ defmodule NeoFaker.Internet.Domain do
 
   @module NeoFaker.Internet
 
-  @popular_domin_file "popular_domain.exs"
+  @popular_domain_file "popular_domain.exs"
 
   @doc """
   Generates a popular domain name based on the specified type.
@@ -29,7 +29,7 @@ defmodule NeoFaker.Internet.Domain do
   # Fetch popular domains based on type
   defp fetch_popular_domain(type) when type in [:all, :default] do
     :default
-    |> Cache.fetch!(@module, @popular_domin_file)
+    |> Cache.fetch!(@module, @popular_domain_file)
     |> Map.values()
     |> List.flatten()
     |> Enum.random()
@@ -37,7 +37,7 @@ defmodule NeoFaker.Internet.Domain do
 
   defp fetch_popular_domain(type) do
     :default
-    |> Cache.fetch!(@module, @popular_domin_file)
+    |> Cache.fetch!(@module, @popular_domain_file)
     |> Map.get(Atom.to_string(type))
     |> Enum.random()
   end

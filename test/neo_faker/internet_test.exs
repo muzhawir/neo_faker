@@ -144,7 +144,7 @@ defmodule NeoFaker.InternetTest do
 
     assert Enum.all?(parts, fn part ->
              case Integer.parse(part) do
-               {num, ""} -> num >= 0 and num <= 254
+               {num, ""} -> num >= 0 and num <= 255
                _ -> false
              end
            end)

@@ -301,7 +301,7 @@ defmodule NeoFaker.Internet do
 
   """
   @spec ipv4() :: String.t()
-  def ipv4, do: Enum.map_join(1..4, ".", fn _ -> :rand.uniform(255) - 1 end)
+  def ipv4, do: Enum.map_join(1..4, ".", fn _ -> :rand.uniform(256) - 1 end)
 
   @doc """
   Generates a random IPv6 address.
@@ -328,7 +328,7 @@ defmodule NeoFaker.Internet do
   def ipv6(opts \\ []) do
     ip_address =
       Enum.map_join(1..8, ":", fn _ ->
-        Integer.to_string(:rand.uniform(0xFFFF) - 1, 16)
+        Integer.to_string(:rand.uniform(0x10_000) - 1, 16)
       end)
 
     if Keyword.get(opts, :uppercase, true) do
@@ -363,7 +363,7 @@ defmodule NeoFaker.Internet do
   def mac_address(opts \\ []) do
     mac_address =
       Enum.map_join(1..6, ":", fn _ ->
-        (:rand.uniform(0xFF) - 1)
+        (:rand.uniform(0x100) - 1)
         |> Integer.to_string(16)
         |> String.pad_leading(2, "0")
       end)

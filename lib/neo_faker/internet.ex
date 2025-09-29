@@ -130,7 +130,7 @@ defmodule NeoFaker.Internet do
         Keyword.get(opts, :domain_name, "example.com")
 
       _ ->
-        String.downcase(NeoFaker.Text.word())
+        Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
     end
   end
 
@@ -192,7 +192,7 @@ defmodule NeoFaker.Internet do
 
   The accepted options for username generation are:
 
-  - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
+  - `:username_word_count` - Specifies the number of words to include in the username. Defaults to `2`.
   - `:joiner` - Defines the joiner to use between words in the username.
   - `:username_type` - Specifies the type of words to use in the username.
   - `:number` - A boolean indicating whether to append a random number to the username.
@@ -217,7 +217,8 @@ defmodule NeoFaker.Internet do
 
   The accepted options for domain name generation are:
 
-  - `:word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
+  - `:domain_name_word_count` - Specifies the number of words to include in the domain name.
+    Defaults to `1`.
   - `:domain_type` - Specifies the type of domain name to generate.
   - `:popular_type` - When `:domain_type` is set to `:popular`, this option defines the category
     of popular domains to select from. Defaults to `:all`.
@@ -246,12 +247,11 @@ defmodule NeoFaker.Internet do
 
   The accepted options for TLD generation are:
 
-  - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
   - `:tld_type` - Specifies the type of TLD to generate.
 
   The values for `:tld_type` can be:
 
-  - `:all_except_safe` - Returns a TLD from all types except safe TLDs. This is the default.
+  - `:all_except_safe` - Returns a TLD from all types except safe TLDs (default).
   - `:all` - Returns a TLD from all available types, including safe TLDs.
   - `:safe` - Returns a safe TLD, e.g. `.example`.
   - `:generic` - Returns a generic TLD, e.g. `.com`.

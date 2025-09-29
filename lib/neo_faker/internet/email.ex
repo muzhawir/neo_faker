@@ -11,11 +11,11 @@ defmodule NeoFaker.Internet.Email do
   @spec generate_username(Keyword.t()) :: String.t()
   def generate_username(opts) do
     username_opts =
-      Keyword.take(opts, [:word_count, :joiner, :username_type, :number, :number_range])
+      opts
+      |> Keyword.take([:word_count, :joiner, :username_type, :number, :number_range])
+      |> Keyword.put(:word_count, Keyword.get(opts, :username_word_count, 2))
 
-    Internet.username(
-      Keyword.put(username_opts, :word_count, Keyword.get(opts, :username_word_count, 2))
-    )
+    Internet.username(username_opts)
   end
 
   @doc """
@@ -25,12 +25,11 @@ defmodule NeoFaker.Internet.Email do
   """
   @spec generate_domain_name(Keyword.t()) :: String.t()
   def generate_domain_name(opts) do
-    domain_name_opts = Keyword.take(opts, [:word_count, :type, :popular_type, :domain_name])
-
     domain_name_opts =
-      domain_name_opts
-      |> Keyword.put(:word_count, Keyword.get(opts, :domain_name_word_count, 1))
-      |> Keyword.put(:type, Keyword.get(opts, :domain_type, Keyword.get(domain_name_opts, :type)))
+      opts
+      |> Keyword.take([:word_count, :type, :popular_type, :domain_name])
+      |> Keyword.put(:word_count, Keyword.get(opts, :domain_name_word_count, 2))
+      |> Keyword.put(:type, Keyword.get(opts, :domain_type, Keyword.get(opts, :type, :all)))
 
     Internet.domain_name(domain_name_opts)
   end

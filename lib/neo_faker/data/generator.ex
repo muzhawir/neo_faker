@@ -19,21 +19,20 @@ defmodule NeoFaker.Data.Generator do
   """
   @spec random_value(atom(), String.t(), String.t(), Keyword.t()) :: any()
   def random_value(module, file, key, opts \\ []) do
-    locale = Resolver.resolve_locale_config(opts[:locale])
-    resolved_locale = ensure_locale_file_exists(locale, module, file)
-    data = Cache.fetch!(resolved_locale, module, file)
-
-    data |> Map.fetch!(key) |> Enum.random()
+    opts[:locale]
+    |> Resolver.resolve_locale_config()
+    |> ensure_locale_file_exists(module, file)
+    |> Cache.fetch!(module, file)
+    |> Map.fetch!(key)
+    |> Enum.random()
   end
 
+  # Ensures the specified locale has the requested data file; otherwise, falls back to :default.
   defp ensure_locale_file_exists(locale, module, file) do
     module_name = module |> Module.split() |> List.last() |> String.downcase()
+
     file_path = Path.join([Disk.data_path(), Atom.to_string(locale), module_name, file])
 
-    if File.exists?(file_path) do
-      locale
-    else
-      :default
-    end
+    if File.exists?(file_path), do: locale, else: :default
   end
 end

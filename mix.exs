@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.12.0",
+      version: "0.13.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -24,7 +24,11 @@ defmodule NeoFaker.MixProject do
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/muzhawir/neo_faker"}
+      links: %{
+        "GitHub" => "https://github.com/muzhawir/neo_faker",
+        "Changelog" => "https://hexdocs.pm/neo_faker/changelog.html",
+        "Cheat Sheet" => "https://hexdocs.pm/neo_faker/cheat.html"
+      }
     ]
   end
 

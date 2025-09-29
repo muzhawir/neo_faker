@@ -308,6 +308,101 @@ iex> NeoFaker.HTTP.user_agent(type: :crawler)
 "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 ```
 
+## [Internet](`NeoFaker.Internet`)
+
+{: .col-2}
+
+### [`username(opts \\ [])`](`NeoFaker.Internet.username/1`)
+
+```elixir
+iex> NeoFaker.Internet.username()
+"josé_valim"
+
+iex> NeoFaker.Internet.username(word_count: 3, joiner: :dot)
+"abigail.bethany.crawford"
+
+iex> NeoFaker.Internet.username(username_type: :word, number: true, number_range: 1..2025)
+"elixir_alchemist_2012"
+```
+
+### [`domain_name(opts \\ [])`](`NeoFaker.Internet.domain_name/1`)
+
+```elixir
+iex> NeoFaker.Internet.domain_name()
+"example"
+
+iex> NeoFaker.Internet.domain_name(word_count: 3)
+"alpha-beta-gamma"
+
+iex> NeoFaker.Internet.domain_name(type: :popular, popular_type: :email)
+"gmail.com"
+
+iex> NeoFaker.Internet.domain_name(type: :custom, domain_name: "elixir-lang.org")
+"elixir-lang.org"
+```
+
+### [`tld(opts \\ [])`](`NeoFaker.Internet.tld/1`)
+
+```elixir
+iex> NeoFaker.Internet.tld()
+".com"
+
+iex> NeoFaker.Internet.tld(dot: false)
+"org"
+
+iex> NeoFaker.Internet.tld(type: :safe)
+".example"
+
+iex> NeoFaker.Internet.tld(type: :country_code)
+".id"
+```
+
+### [`email(opts \\ [])`](`NeoFaker.Internet.email/1`)
+
+```elixir
+iex> NeoFaker.Internet.email()
+"josé@example.com"
+
+iex> NeoFaker.Internet.email(word_count: 3, joiner: :dot, number: true)
+"abigail.bethany.crawford_202"
+
+iex> NeoFaker.Internet.email(domain_type: :popular, popular_type: :email)
+"jane.doe@gmail.com"
+
+iex> NeoFaker.Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
+"josé@elixir-lang.org"
+
+iex> NeoFaker.Internet.email(tld_type: :country_code, dot: false)
+"josé@example.id"
+```
+
+### [`ipv4()`](`NeoFaker.Internet.ipv4/0`)
+
+```elixir
+iex> NeoFaker.Internet.ipv4()
+"183.235.34.108"
+```
+
+### [`ipv6(opts \\ [])`](`NeoFaker.Internet.ipv6/1`)
+
+```elixir
+iex> NeoFaker.Internet.ipv6()
+"E0E6:7E24:EC6E:E44C:FC69:9C25:CD85:CE08"
+
+iex> NeoFaker.Internet.ipv6(uppercase: false)
+"e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
+```
+
+### [`mac_address(opts \\ [])`](`NeoFaker.Internet.mac_address/1`)
+
+```elixir
+iex> NeoFaker.Internet.mac_address()
+"74:4E:44:B0:D0:93"
+
+iex> NeoFaker.Internet.mac_address(uppercase: false)
+"74:4e:44:b0:d0:93"
+```
+
 ## [Lorem](`NeoFaker.Lorem`)
 
 {: .col-1}

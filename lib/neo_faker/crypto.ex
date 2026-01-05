@@ -3,22 +3,29 @@ defmodule NeoFaker.Crypto do
   Functions for generating cryptographic hashes.
 
   This module provides utilities to generate cryptographic hash values, such as MD5 and SHA-based
-  hashes.
+  hashes with support for various formatting options.
   """
   @moduledoc since: "0.3.1"
 
+  import Bitwise
   import NeoFaker.Crypto.Hash, only: [generate_hash: 2]
+
+  alias NeoFaker.Helpers.Options
+
+  @valid_case_options [:lower, :upper]
+  @valid_hash_types [:md5, :sha1, :sha256, :sha512]
 
   @doc """
   Generates a random MD5 hash.
 
-  Returns a random MD5 hash string.
+  Returns a random MD5 hash string. MD5 produces a 128-bit (32 character) hash value.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
 
   ## Options
-
-  The accepted options are:
-
-  - `:case` - Specifies the character case of the output.
 
   The values for `:case` can be:
 
@@ -33,23 +40,314 @@ defmodule NeoFaker.Crypto do
       iex> NeoFaker.Crypto.md5(case: :upper)
       "AFC4C626C55E4166421D82732163857D"
 
+      iex> NeoFaker.Crypto.md5(case: :lower)
+      "5d41402abc4b2a76b9719d911017c592"
+
   """
   @spec md5(Keyword.t()) :: String.t()
-  def md5(opts \\ []), do: generate_hash(:md5, opts)
+  def md5(opts \\ []) do
+    validate_case_option!(opts)
+    generate_hash(:md5, opts)
+  end
 
   @doc """
   Generates a random SHA-1 hash.
 
-  This function behaves the same way as `md5/1`, but generates a SHA-1 hash instead.
+  Returns a random SHA-1 hash string. SHA-1 produces a 160-bit (40 character) hash value.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+
+  ## Options
+
+  The values for `:case` can be:
+
+  - `:lower` - Uses lowercase characters (default).
+  - `:upper` - Uses uppercase characters.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.sha1()
+      "356a192b7913b04c54574d18c28d46e6395428ab"
+
+      iex> NeoFaker.Crypto.sha1(case: :upper)
+      "356A192B7913B04C54574D18C28D46E6395428AB"
+
+      iex> NeoFaker.Crypto.sha1(case: :lower)
+      "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+
   """
   @spec sha1(Keyword.t()) :: String.t()
-  def sha1(opts \\ []), do: generate_hash(:sha, opts)
+  def sha1(opts \\ []) do
+    validate_case_option!(opts)
+    generate_hash(:sha, opts)
+  end
 
   @doc """
   Generates a random SHA-256 hash.
 
-  This function behaves the same way as `md5/1`, but generates a SHA-256 hash instead.
+  Returns a random SHA-256 hash string. SHA-256 produces a 256-bit (64 character) hash value.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+
+  ## Options
+
+  The values for `:case` can be:
+
+  - `:lower` - Uses lowercase characters (default).
+  - `:upper` - Uses uppercase characters.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.sha256()
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+      iex> NeoFaker.Crypto.sha256(case: :upper)
+      "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+
+      iex> NeoFaker.Crypto.sha256(case: :lower)
+      "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+
   """
   @spec sha256(Keyword.t()) :: String.t()
-  def sha256(opts \\ []), do: generate_hash(:sha256, opts)
+  def sha256(opts \\ []) do
+    validate_case_option!(opts)
+    generate_hash(:sha256, opts)
+  end
+
+  @doc """
+  Generates a random SHA-512 hash.
+
+  Returns a random SHA-512 hash string. SHA-512 produces a 512-bit (128 character) hash value.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+
+  ## Options
+
+  The values for `:case` can be:
+
+  - `:lower` - Uses lowercase characters (default).
+  - `:upper` - Uses uppercase characters.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.sha512()
+      "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"
+
+      iex> NeoFaker.Crypto.sha512(case: :upper)
+      "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
+
+  """
+  @spec sha512(Keyword.t()) :: String.t()
+  def sha512(opts \\ []) do
+    validate_case_option!(opts)
+    generate_hash(:sha512, opts)
+  end
+
+  @doc """
+  Generates a random hash of the specified type.
+
+  Returns a random hash string of the specified algorithm type with the given formatting options.
+
+  ## Parameters
+
+  - `type` - The hash algorithm to use. Must be one of `:md5`, `:sha1`, `:sha256`, `:sha512`.
+  - `opts` - Keyword list of options:
+    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.hash(:md5)
+      "afc4c626c55e4166421d82732163857d"
+
+      iex> NeoFaker.Crypto.hash(:sha256, case: :upper)
+      "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+
+      iex> NeoFaker.Crypto.hash(:sha1)
+      "356a192b7913b04c54574d18c28d46e6395428ab"
+
+  """
+  @spec hash(atom(), Keyword.t()) :: String.t()
+  def hash(type, opts \\ []) do
+    validate_hash_type!(type)
+    validate_case_option!(opts)
+
+    case type do
+      :md5 -> generate_hash(:md5, opts)
+      :sha1 -> generate_hash(:sha, opts)
+      :sha256 -> generate_hash(:sha256, opts)
+      :sha512 -> generate_hash(:sha512, opts)
+    end
+  end
+
+  @doc """
+  Generates a random cryptographic token.
+
+  Returns a random token string suitable for use as API keys, session tokens, etc.
+  Uses URL-safe base64 encoding.
+
+  ## Parameters
+
+  - `length` - The desired length of the token in bytes. Defaults to `32`.
+  - `opts` - Keyword list of options:
+    - `:encoding` - The encoding format. Defaults to `:base64`.
+
+  ## Options
+
+  The values for `:encoding` can be:
+
+  - `:base64` - URL-safe base64 encoding (default).
+  - `:hex` - Hexadecimal encoding.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.token()
+      "dGVzdF90b2tlbl9oZXJl"
+
+      iex> NeoFaker.Crypto.token(16)
+      "c2hvcnRfdG9rZW4"
+
+      iex> NeoFaker.Crypto.token(32, encoding: :hex)
+      "a1b2c3d4e5f6708192a3b4c5d6e7f8091a2b3c4d5e6f7081"
+
+  """
+  @spec token(pos_integer(), Keyword.t()) :: String.t()
+  def token(length \\ 32, opts \\ [])
+
+  def token(length, opts) when is_integer(length) and length > 0 do
+    encoding = Options.get(opts, :encoding, :base64)
+    validate_encoding!(encoding)
+
+    random_bytes = :crypto.strong_rand_bytes(length)
+
+    case encoding do
+      :base64 -> Base.url_encode64(random_bytes, padding: false)
+      :hex -> Base.encode16(random_bytes, case: :lower)
+    end
+  end
+
+  def token(length, _opts) when is_integer(length) or length < 1 do
+    raise ArgumentError, "length must be a positive integer, got: #{length}"
+  end
+
+  def token(length, _opts) do
+    raise ArgumentError, "length must be a positive integer, got: #{inspect(length)}"
+  end
+
+  @doc """
+  Generates a UUID (Universally Unique Identifier).
+
+  Returns a random UUID v4 string in the standard format.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:format` - The UUID format. Defaults to `:standard`.
+    - `:case` - The character case. Defaults to `:lower`.
+
+  ## Options
+
+  The values for `:format` can be:
+
+  - `:standard` - Standard UUID format with dashes (default).
+  - `:compact` - Compact format without dashes.
+
+  The values for `:case` can be:
+
+  - `:lower` - Uses lowercase characters (default).
+  - `:upper` - Uses uppercase characters.
+
+  ## Examples
+
+      iex> NeoFaker.Crypto.uuid()
+      "550e8400-e29b-41d4-a716-446655440000"
+
+      iex> NeoFaker.Crypto.uuid(format: :compact)
+      "550e8400e29b41d4a716446655440000"
+
+      iex> NeoFaker.Crypto.uuid(case: :upper)
+      "550E8400-E29B-41D4-A716-446655440000"
+
+  """
+  @spec uuid(Keyword.t()) :: String.t()
+  def uuid(opts \\ []) do
+    format = Options.get(opts, :format, :standard)
+    case_opt = Options.get(opts, :case, :lower)
+
+    validate_case_option!(case: case_opt)
+    validate_uuid_format!(format)
+
+    # Generate random bytes
+    <<a::32, b::16, c::16, d::16, e::48>> = :crypto.strong_rand_bytes(16)
+
+    # Set version 4 and variant bits
+    uuid_string =
+      case format do
+        :standard ->
+          "~8.16.0b-~4.16.0b-4~3.16.0b-~4.16.0b-~12.16.0b"
+          |> :io_lib.format([a, b, c &&& 0x0FFF, (d &&& 0x3FFF) ||| 0x8000, e])
+          |> IO.iodata_to_binary()
+
+        :compact ->
+          "~8.16.0b~4.16.0b4~3.16.0b~4.16.0b~12.16.0b"
+          |> :io_lib.format([a, b, c &&& 0x0FFF, (d &&& 0x3FFF) ||| 0x8000, e])
+          |> IO.iodata_to_binary()
+      end
+
+    case case_opt do
+      :lower -> String.downcase(uuid_string)
+      :upper -> String.upcase(uuid_string)
+    end
+  end
+
+  # Private functions
+
+  @spec validate_case_option!(Keyword.t()) :: :ok
+  defp validate_case_option!(opts) do
+    case_opt = Options.get(opts, :case, :lower)
+
+    case Options.validate_enum(:case, case_opt, @valid_case_options) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        raise ArgumentError, reason
+    end
+  end
+
+  @spec validate_hash_type!(atom()) :: :ok
+  defp validate_hash_type!(type) do
+    case Options.validate_enum(:hash_type, type, @valid_hash_types) do
+      :ok ->
+        :ok
+
+      {:error, _reason} ->
+        raise ArgumentError,
+              "Invalid hash type. Expected one of #{inspect(@valid_hash_types)}, got: #{inspect(type)}"
+    end
+  end
+
+  @spec validate_encoding!(atom()) :: :ok
+  defp validate_encoding!(encoding) when encoding in [:base64, :hex], do: :ok
+
+  defp validate_encoding!(encoding) do
+    raise ArgumentError,
+          "Invalid encoding. Expected one of [:base64, :hex], got: #{inspect(encoding)}"
+  end
+
+  @spec validate_uuid_format!(atom()) :: :ok
+  defp validate_uuid_format!(format) when format in [:standard, :compact], do: :ok
+
+  defp validate_uuid_format!(format) do
+    raise ArgumentError,
+          "Invalid UUID format. Expected one of [:standard, :compact], got: #{inspect(format)}"
+  end
 end

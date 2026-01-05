@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.14.0 (2026-01-01)
+
+### Features
+
+- Added `NeoFaker.Person.pronouns/0` for generating random pronouns.
+- Added `NeoFaker.Company.suffix/0` for generating random company suffixes.
+- Added `NeoFaker.Phone.extension/0` for generating random phone number extensions.
+- Added `NeoFaker.Helpers.Constants` for centralized constant values.
+- Added `NeoFaker.Helpers.Formatter` for standardized format conversions.
+- Added `NeoFaker.Helpers.Options` for consistent option extraction and validation.
+
+### Improvements
+
+- Refactored modules to use new helper modules (`Helpers.Constants`, `Helpers.Formatter`, `Helpers.Options`) for improved maintainability and clarity.
+- Improved locale fallback logic for missing translations.
+- Updated module documentation and option descriptions for consistency and detail.
+- Updated documentation for all new modules and functions.
+- Upgraded dependencies for compatibility with Elixir 1.17.
+
+### Bug Fixes
+
+- Fixed issue where `NeoFaker.Address.city/0` could return `nil` for some locales.
+- Resolved crash in `NeoFaker.Time.time_zone/0` when locale data is incomplete.
+
 ## v0.13.0 (2025-10-29)
 
 ### Features

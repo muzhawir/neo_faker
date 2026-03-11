@@ -10,12 +10,10 @@ defmodule NeoFaker.Time do
 
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Time.Generator, as: TimeGenerator
+  alias NeoFaker.Time.Validator, as: TimeValidator
 
   @default_time_range -24..24
-  @valid_datetime_formats [:struct, :iso8601]
-  @valid_time_units [:hour, :minute, :second]
   @time_zone_file "time_zone.exs"
 
   @midnight ~T[00:00:00]
@@ -46,9 +44,9 @@ defmodule NeoFaker.Time do
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
   def add(range \\ @default_time_range, opts \\ []) do
-    validate_range!(range)
-    unit = get_and_validate_unit!(opts)
-    format = get_and_validate_format!(opts)
+    TimeValidator.validate_range!(range)
+    unit = TimeValidator.get_and_validate_unit!(opts)
+    format = TimeValidator.get_and_validate_format!(opts)
 
     time = TimeGenerator.add(range, unit, :struct)
     Formatter.format_time(time, format)
@@ -81,8 +79,8 @@ defmodule NeoFaker.Time do
   """
   @spec between(Time.t(), Time.t(), Keyword.t()) :: Time.t() | String.t()
   def between(start \\ @midnight, finish \\ @end_of_day, opts \\ []) do
-    validate_time_order!(start, finish)
-    format = get_and_validate_format!(opts)
+    TimeValidator.validate_time_order!(start, finish)
+    format = TimeValidator.get_and_validate_format!(opts)
 
     time = TimeGenerator.between(start, finish, :struct)
 
@@ -201,57 +199,6 @@ defmodule NeoFaker.Time do
 
   """
   @spec now(Keyword.t()) :: Time.t() | String.t()
-  def now(opts \\ []), do: Formatter.format_time(Time.utc_now(), get_and_validate_format!(opts))
-
-  # Private functions
-
-  @spec get_and_validate_format!(Keyword.t()) :: atom()
-  defp get_and_validate_format!(opts) do
-    format = Options.get(opts, :format, :struct)
-
-    case Options.validate_enum(:format, format, @valid_datetime_formats) do
-      :ok ->
-        format
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec get_and_validate_unit!(Keyword.t()) :: atom()
-  defp get_and_validate_unit!(opts) do
-    unit = Options.get(opts, :unit, :hour)
-
-    case Options.validate_enum(:unit, unit, @valid_time_units) do
-      :ok ->
-        unit
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_range!(Range.t()) :: :ok
-  defp validate_range!(range) when is_struct(range, Range) do
-    if range.first <= range.last do
-      :ok
-    else
-      raise ArgumentError, "Invalid range: first must be less than or equal to last"
-    end
-  end
-
-  defp validate_range!(invalid) do
-    raise ArgumentError, "Expected a Range, got: #{inspect(invalid)}"
-  end
-
-  @spec validate_time_order!(Time.t(), Time.t()) :: :ok
-  defp validate_time_order!(start, finish) do
-    case Time.compare(start, finish) do
-      :gt ->
-        raise ArgumentError, "start time must be before or equal to finish time"
-
-      _ ->
-        :ok
-    end
-  end
+  def now(opts \\ []),
+    do: Formatter.format_time(Time.utc_now(), TimeValidator.get_and_validate_format!(opts))
 end

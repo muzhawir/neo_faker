@@ -25,11 +25,9 @@ defmodule NeoFaker.Gravatar.Generator do
   """
   @spec gravatar_url(email(), integer(), String.t()) :: String.t()
   def gravatar_url(email, image_size, default_fallback) do
-    email_hash = hash_email!(email)
-
     @gravatar_url
     |> URI.parse()
-    |> URI.append_path("/#{email_hash}")
+    |> URI.append_path("/#{email_hash(email)}")
     |> URI.append_query("d=#{default_fallback}")
     |> URI.append_query("s=#{image_size}")
     |> URI.to_string()
@@ -38,7 +36,7 @@ defmodule NeoFaker.Gravatar.Generator do
   @doc """
   Generates a hash for an email address.
 
-  Returns an MD5 hash of the email address for use in Gravatar URLs.
+  Returns a SHA-256 hash of the email address for use in Gravatar URLs.
   If email is nil, generates a random email address first.
   """
   @spec email_hash(email()) :: String.t()
@@ -48,20 +46,6 @@ defmodule NeoFaker.Gravatar.Generator do
   end
 
   def email_hash(email) when is_binary(email) do
-    if Regex.match?(@w3c_email_regex, email) do
-      email |> String.trim() |> String.downcase() |> hash_string()
-    else
-      raise ArgumentError, "Invalid email address"
-    end
-  end
-
-  defp hash_email!(nil) do
-    random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
-
-    hash_string(random_email)
-  end
-
-  defp hash_email!(email) when is_binary(email) do
     if Regex.match?(@w3c_email_regex, email) do
       email |> String.trim() |> String.downcase() |> hash_string()
     else

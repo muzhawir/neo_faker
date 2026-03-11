@@ -82,8 +82,15 @@ defmodule NeoFaker.Data do
   @spec resolve_locale(atom()) :: atom()
   defp resolve_locale(locale), do: if(locale_available?(locale), do: locale, else: :default)
 
+  @doc """
+  Returns `true` when `locale` is listed in `priv/data/locale.exs` or is the
+  special `:default` sentinel, `false` otherwise.
+
+  The result of reading `locale.exs` is cached in `:persistent_term` on the
+  first call, so subsequent calls are O(1) lookups.
+  """
   @spec locale_available?(atom()) :: boolean()
-  defp locale_available?(locale) do
+  def locale_available?(locale) do
     locales =
       case :persistent_term.get(:available_locales, nil) do
         nil ->

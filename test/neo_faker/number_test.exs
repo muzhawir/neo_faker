@@ -140,5 +140,25 @@ defmodule NeoFaker.NumberTest do
         Number.decimal(50.0, 10.0)
       end
     end
+
+    test "accepts integer bounds and returns a float" do
+      result = Number.decimal(0, 10, 2)
+
+      assert is_float(result)
+      assert result >= 0.0 and result <= 10.0
+    end
+
+    test "accepts mixed integer and float bounds and returns a float" do
+      result = Number.decimal(0, 100.0, 2)
+
+      assert is_float(result)
+      assert result >= 0.0 and result <= 100.0
+    end
+
+    test "raises ArgumentError with a descriptive message when precision is negative" do
+      assert_raise ArgumentError, ~r/precision must be greater than or equal to 0/, fn ->
+        Number.decimal(0.0, 10.0, -1)
+      end
+    end
   end
 end

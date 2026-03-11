@@ -1,5 +1,5 @@
 defmodule NeoFakerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   describe "start/0" do
     test "starts the application and returns :ok" do

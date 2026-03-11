@@ -8,11 +8,12 @@ defmodule NeoFaker.HTTP do
   @moduledoc since: "0.11.0"
 
   alias NeoFaker.Helpers.Options
+  alias NeoFaker.HTTP.Header
   alias NeoFaker.HTTP.StatusCode
   alias NeoFaker.HTTP.UserAgent
+  alias NeoFaker.HTTP.Validator
 
-  @valid_user_agent_types [:all, :browser, :crawler]
-  @valid_request_methods [
+  @request_methods [
     "GET",
     "POST",
     "PUT",
@@ -24,7 +25,7 @@ defmodule NeoFaker.HTTP do
     "CONNECT"
   ]
 
-  @valid_referrer_policies [
+  @referrer_policies [
     "no-referrer",
     "no-referrer-when-downgrade",
     "same-origin",
@@ -34,9 +35,6 @@ defmodule NeoFaker.HTTP do
     "strict-origin-when-cross-origin",
     "unsafe-url"
   ]
-
-  @valid_status_code_types [:detailed, :simple]
-  @valid_status_code_groups [:information, :success, :redirection, :client_error, :server_error]
 
   @doc """
   Generates a random HTTP user-agent string.
@@ -71,7 +69,7 @@ defmodule NeoFaker.HTTP do
   @spec user_agent(Keyword.t()) :: String.t()
   def user_agent(opts \\ []) do
     type = Options.get(opts, :type, :all)
-    validate_user_agent_type!(type)
+    Validator.validate_user_agent_type!(type)
     UserAgent.name(type)
   end
 
@@ -103,7 +101,7 @@ defmodule NeoFaker.HTTP do
       if common_only do
         ["GET", "POST", "PUT", "DELETE", "PATCH"]
       else
-        @valid_request_methods
+        @request_methods
       end
 
     Enum.random(methods)
@@ -124,7 +122,7 @@ defmodule NeoFaker.HTTP do
 
   """
   @spec referrer_policy() :: String.t()
-  def referrer_policy, do: Enum.random(@valid_referrer_policies)
+  def referrer_policy, do: Enum.random(@referrer_policies)
 
   @doc """
   Generates a random HTTP status code.
@@ -174,8 +172,8 @@ defmodule NeoFaker.HTTP do
     type = Options.get(opts, :type, :simple)
     group = Options.get(opts, :group, nil)
 
-    validate_status_code_type!(type)
-    validate_status_code_group!(group)
+    Validator.validate_status_code_type!(type)
+    Validator.validate_status_code_group!(group)
 
     group
     |> StatusCode.generates!()
@@ -250,50 +248,7 @@ defmodule NeoFaker.HTTP do
   @spec header_name(Keyword.t()) :: String.t()
   def header_name(opts \\ []) do
     type = Options.get(opts, :type, :all)
-
-    request_headers = [
-      "Accept",
-      "Accept-Encoding",
-      "Accept-Language",
-      "Authorization",
-      "Cache-Control",
-      "Connection",
-      "Cookie",
-      "Host",
-      "Referer",
-      "User-Agent"
-    ]
-
-    response_headers = [
-      "Access-Control-Allow-Origin",
-      "Content-Encoding",
-      "Content-Length",
-      "Content-Type",
-      "Date",
-      "ETag",
-      "Expires",
-      "Last-Modified",
-      "Server",
-      "Set-Cookie"
-    ]
-
-    headers =
-      case type do
-        :request ->
-          request_headers
-
-        :response ->
-          response_headers
-
-        :all ->
-          request_headers ++ response_headers
-
-        _ ->
-          raise ArgumentError,
-                "Invalid header type. Expected one of [:all, :request, :response], got: #{inspect(type)}"
-      end
-
-    Enum.random(headers)
+    Header.name(type)
   end
 
   @doc """
@@ -306,7 +261,7 @@ defmodule NeoFaker.HTTP do
 
   """
   @spec all_request_methods() :: [String.t()]
-  def all_request_methods, do: @valid_request_methods
+  def all_request_methods, do: @request_methods
 
   @doc """
   Returns the list of all valid referrer policy strings.
@@ -318,44 +273,5 @@ defmodule NeoFaker.HTTP do
 
   """
   @spec all_referrer_policies() :: [String.t()]
-  def all_referrer_policies, do: @valid_referrer_policies
-
-  # Private functions
-
-  @spec validate_user_agent_type!(atom()) :: :ok
-  defp validate_user_agent_type!(type) do
-    case Options.validate_enum(:type, type, @valid_user_agent_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_status_code_type!(atom()) :: :ok
-  defp validate_status_code_type!(type) do
-    case Options.validate_enum(:type, type, @valid_status_code_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_status_code_group!(atom() | nil) :: :ok
-  defp validate_status_code_group!(nil), do: :ok
-
-  defp validate_status_code_group!(group) do
-    valid_groups = [nil | @valid_status_code_groups]
-
-    case Options.validate_enum(:group, group, valid_groups) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
+  def all_referrer_policies, do: @referrer_policies
 end

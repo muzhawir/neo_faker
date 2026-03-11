@@ -7,10 +7,11 @@ defmodule NeoFaker.Boolean do
   """
   @moduledoc since: "0.5.0"
 
+  alias NeoFaker.Boolean.Generator
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
 
-  @valid_ratio_range 0..100
+  @ratio_range 0..100
 
   @doc """
   Generates a random boolean value with a configurable probability of returning `true`.
@@ -45,8 +46,8 @@ defmodule NeoFaker.Boolean do
   @spec boolean(0..100, Keyword.t()) :: boolean() | non_neg_integer()
   def boolean(true_ratio \\ 50, opts \\ [])
 
-  def boolean(true_ratio, opts) when true_ratio in @valid_ratio_range do
-    result = generate_boolean(true_ratio)
+  def boolean(true_ratio, opts) when true_ratio in @ratio_range do
+    result = Generator.boolean(true_ratio)
 
     if Options.get(opts, :integer, false) do
       Formatter.format_boolean(result, :integer)
@@ -58,9 +59,4 @@ defmodule NeoFaker.Boolean do
   def boolean(true_ratio, _opts) do
     raise ArgumentError, "true_ratio must be between 0 and 100, got: #{true_ratio}"
   end
-
-  # Private functions
-
-  @spec generate_boolean(0..100) :: boolean()
-  defp generate_boolean(true_ratio), do: :rand.uniform() <= true_ratio / 100
 end

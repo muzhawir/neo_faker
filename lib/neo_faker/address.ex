@@ -47,12 +47,14 @@ defmodule NeoFaker.Address do
     Validator.validate_range!(range)
 
     type = Options.get(opts, :type, :string)
+
+    Validator.validate_building_number_type!(type)
+
     number = Number.between(range.first, range.last)
 
     case type do
       :string -> Formatter.format_number(number, :string)
       :integer -> number
-      _ -> Formatter.format_number(number, :string)
     end
   end
 
@@ -142,6 +144,7 @@ defmodule NeoFaker.Address do
     type = Options.get(opts, :type, :full)
 
     Validator.validate_precision!(precision)
+    Validator.validate_coordinate_type!(type)
 
     latitude = Generator.latitude(precision)
     longitude = Generator.longitude(precision)
@@ -150,7 +153,6 @@ defmodule NeoFaker.Address do
       :latitude -> latitude
       :longitude -> longitude
       :full -> {latitude, longitude}
-      _ -> {latitude, longitude}
     end
   end
 end

@@ -1,6 +1,37 @@
 defmodule NeoFaker.Address.Validator do
   @moduledoc false
 
+  @building_number_types [:string, :integer]
+  @coordinate_types [:full, :latitude, :longitude]
+
+  @doc """
+  Validates the `:type` option for `building_number/2`.
+
+  Raises `ArgumentError` if the type is not one of `#{inspect([:string, :integer])}`.
+  """
+  @spec validate_building_number_type!(atom()) :: :ok
+  def validate_building_number_type!(type) when type in @building_number_types, do: :ok
+
+  def validate_building_number_type!(other) do
+    raise ArgumentError,
+          "invalid :type for building_number/2. " <>
+            "Expected one of #{inspect(@building_number_types)}, got: #{inspect(other)}"
+  end
+
+  @doc """
+  Validates the `:type` option for `coordinate/1`.
+
+  Raises `ArgumentError` if the type is not one of `#{inspect([:full, :latitude, :longitude])}`.
+  """
+  @spec validate_coordinate_type!(atom()) :: :ok
+  def validate_coordinate_type!(type) when type in @coordinate_types, do: :ok
+
+  def validate_coordinate_type!(other) do
+    raise ArgumentError,
+          "invalid :type for coordinate/1. " <>
+            "Expected one of #{inspect(@coordinate_types)}, got: #{inspect(other)}"
+  end
+
   @doc """
   Validates that the given value is a `Range` with `first <= last`.
 

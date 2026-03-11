@@ -11,6 +11,10 @@ defmodule NeoFaker.AddressTest do
   end
 
   describe "building_number/2" do
+    test "returns a string by default" do
+      assert is_binary(Address.building_number())
+    end
+
     test "returns a random integer building number" do
       assert is_integer(Address.building_number(1..100, type: :integer))
     end
@@ -21,6 +25,18 @@ defmodule NeoFaker.AddressTest do
 
     test "returns a random integer building number within the specified range" do
       assert Address.building_number(1..100, type: :integer) in 1..100
+    end
+
+    test "raises ArgumentError for an unknown :type" do
+      assert_raise ArgumentError, ~r/invalid :type for building_number\/2/, fn ->
+        Address.building_number(1..100, type: :float)
+      end
+    end
+
+    test "raises ArgumentError for a non-atom :type" do
+      assert_raise ArgumentError, ~r/invalid :type for building_number\/2/, fn ->
+        Address.building_number(1..100, type: "string")
+      end
     end
   end
 
@@ -53,6 +69,10 @@ defmodule NeoFaker.AddressTest do
   end
 
   describe "coordinate/1" do
+    test "returns a {latitude, longitude} tuple by default" do
+      assert {_lat, _lng} = Address.coordinate()
+    end
+
     test "returns a random coordinate as a tuple of floats" do
       {latitude, longitude} = Address.coordinate()
 
@@ -68,6 +88,18 @@ defmodule NeoFaker.AddressTest do
 
     test "returns only a random longitude as a float" do
       assert is_float(Address.coordinate(type: :longitude))
+    end
+
+    test "raises ArgumentError for an unknown :type" do
+      assert_raise ArgumentError, ~r/invalid :type for coordinate\/1/, fn ->
+        Address.coordinate(type: :altitude)
+      end
+    end
+
+    test "raises ArgumentError for a non-atom :type" do
+      assert_raise ArgumentError, ~r/invalid :type for coordinate\/1/, fn ->
+        Address.coordinate(type: "full")
+      end
     end
   end
 end

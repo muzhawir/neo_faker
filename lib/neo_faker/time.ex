@@ -13,9 +13,9 @@ defmodule NeoFaker.Time do
   alias NeoFaker.Time.Generator, as: TimeGenerator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
-  @time_range -24..24
   @time_zone_file "time_zone.exs"
 
+  @time_range -24..24
   @midnight ~T[00:00:00]
   @end_of_day ~T[23:59:59]
 

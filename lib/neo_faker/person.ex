@@ -15,9 +15,10 @@ defmodule NeoFaker.Person do
   alias NeoFaker.Person.NameGenerator
   alias NeoFaker.Person.Validator
 
-  @locale :default
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
+
+  @locale :default
   @max_age 120
 
   @doc """

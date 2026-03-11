@@ -14,8 +14,9 @@ defmodule NeoFaker.Text do
   alias NeoFaker.Text.Generator
   alias NeoFaker.Text.Validator
 
-  @character_count 11
   @word_file "word.exs"
+
+  @character_count 11
 
   @doc """
   Generates a single random character.

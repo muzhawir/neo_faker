@@ -10,6 +10,7 @@ defmodule NeoFaker.Address do
   import NeoFaker.Data, only: [random_value: 4]
 
   alias NeoFaker.Address.Generator
+  alias NeoFaker.Address.Validator
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Number
@@ -43,7 +44,7 @@ defmodule NeoFaker.Address do
   """
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
   def building_number(range \\ @building_number_range, opts \\ []) do
-    Generator.validate_range!(range)
+    Validator.validate_range!(range)
 
     type = Options.get(opts, :type, :string)
     number = Number.between(range.first, range.last)
@@ -140,7 +141,7 @@ defmodule NeoFaker.Address do
     precision = Options.get(opts, :precision, @coordinate_precision)
     type = Options.get(opts, :type, :full)
 
-    Generator.validate_precision!(precision)
+    Validator.validate_precision!(precision)
 
     latitude = Generator.latitude(precision)
     longitude = Generator.longitude(precision)

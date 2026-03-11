@@ -13,7 +13,7 @@ defmodule NeoFaker do
       iex> NeoFaker.set_locale(:id_id)
       :ok
 
-      iex> NeoFaker.Person.first_name()          # uses :id_id globally
+      iex> NeoFaker.Person.first_name()  # uses :id_id globally
       "Jaka"
 
       iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
@@ -23,8 +23,6 @@ defmodule NeoFaker do
   for the full list of supported locale codes.
   """
   @moduledoc since: "0.1.0"
-
-  alias NeoFaker.Helpers.Constants
 
   @doc """
   Starts the NeoFaker application and ensures a locale is configured.
@@ -48,8 +46,8 @@ defmodule NeoFaker do
           locale
 
         :error ->
-          set_locale(Constants.default_locale())
-          Constants.default_locale()
+          set_locale(:default)
+          :default
       end
 
     IO.puts("\nNeoFaker started with locale: :#{active_locale}")
@@ -148,7 +146,7 @@ defmodule NeoFaker do
   def get_locale do
     case locale() do
       {:ok, locale} -> locale
-      :error -> Constants.default_locale()
+      :error -> :default
     end
   end
 end

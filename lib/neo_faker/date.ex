@@ -135,7 +135,12 @@ defmodule NeoFaker.Date do
     format = Validator.get_and_validate_format!(opts)
 
     today = Generator.local_date_now()
-    start_date = Date.shift(today, year: -max_age)
+
+    start_date =
+      today
+      |> Date.shift(year: -(max_age + 1))
+      |> Date.add(1)
+
     finish_date = Date.shift(today, year: -min_age)
 
     start_date |> Generator.between(finish_date, :struct) |> Formatter.format_date(format)

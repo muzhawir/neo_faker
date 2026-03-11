@@ -53,19 +53,76 @@ defmodule NeoFaker.DateTest do
   end
 
   describe "birthday/3" do
-    test "returns today when min and max age are both 0" do
-      assert FakeDate.birthday(0, 0) == today()
+    test "returns a Date struct" do
+      assert %Date{} = FakeDate.birthday(18, 65)
     end
 
     test "returns an ISO 8601 string when format: :iso8601" do
-      assert FakeDate.birthday(0, 0, format: :iso8601) == today_iso()
+      result = FakeDate.birthday(18, 65, format: :iso8601)
+
+      assert String.match?(result, ~r/^\d{4}-\d{2}-\d{2}$/)
     end
 
-    test "returns a date in the past for a positive age range" do
-      result = FakeDate.birthday(18, 30)
+    test "result is not in the future" do
+      result = FakeDate.birthday(18, 65)
 
-      assert %Date{} = result
-      assert Date.before?(result, today())
+      refute Date.after?(result, today())
+    end
+
+    test "lower bound is one day after today shifted back by max_age+1 years" do
+      max_age = 30
+      expected_lower = today() |> Date.shift(year: -(max_age + 1)) |> Date.add(1)
+
+      for _ <- 1..30 do
+        result = FakeDate.birthday(max_age, max_age)
+
+        refute Date.before?(result, expected_lower),
+               "#{result} is before the lower bound #{expected_lower} for max_age=#{max_age}"
+      end
+    end
+
+    test "upper bound is today shifted back by min_age years" do
+      min_age = 18
+      expected_upper = Date.shift(today(), year: -min_age)
+
+      for _ <- 1..30 do
+        result = FakeDate.birthday(min_age, min_age)
+
+        refute Date.after?(result, expected_upper),
+               "#{result} is after the upper bound #{expected_upper} for min_age=#{min_age}"
+      end
+    end
+
+    test "result falls within the full age window for default min/max" do
+      result = FakeDate.birthday()
+      lower = today() |> Date.shift(year: -66) |> Date.add(1)
+      upper = Date.shift(today(), year: -18)
+
+      refute Date.before?(result, lower),
+             "#{result} is before lower bound #{lower}"
+
+      refute Date.after?(result, upper),
+             "#{result} is after upper bound #{upper}"
+    end
+
+    test "window covers exactly one year when min_age equals max_age" do
+      age = 25
+      lower = today() |> Date.shift(year: -(age + 1)) |> Date.add(1)
+      upper = Date.shift(today(), year: -age)
+
+      assert Date.diff(upper, lower) in 364..365,
+             "expected window of ~365 days for age=#{age}, got #{Date.diff(upper, lower)}"
+    end
+
+    test "birthday(0, 0) returns a date within the last year" do
+      result = FakeDate.birthday(0, 0)
+      lower = today() |> Date.shift(year: -1) |> Date.add(1)
+
+      refute Date.before?(result, lower),
+             "#{result} is before lower bound #{lower} for age=0"
+
+      refute Date.after?(result, today()),
+             "#{result} is after today for age=0"
     end
   end
 end

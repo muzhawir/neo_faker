@@ -11,24 +11,11 @@ defmodule NeoFaker.Text do
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Text.EmojiGenerator
+  alias NeoFaker.Text.Generator
+  alias NeoFaker.Text.Validator
 
-  @default_character_count 11
-  @valid_character_types [:alphabet_lower, :alphabet_upper, :alphabet, :digit]
-  @valid_emoji_categories [
-    :all,
-    :activities,
-    :animals_and_nature,
-    :food_and_drink,
-    :objects,
-    :people_and_body,
-    :smileys_and_emotion,
-    :symbols,
-    :travel_and_places
-  ]
+  @character_count 11
   @word_file "word.exs"
-  @alphabet_lower ~w[a b c d e f g h i j k l m n o p q r s t u v w x y z]
-  @alphabet_upper ~w[A B C D E F G H I J K L M N O P Q R S T U V W X Y Z]
-  @digits ~w[0 1 2 3 4 5 6 7 8 9]
 
   @doc """
   Generates a single random character.
@@ -64,12 +51,12 @@ defmodule NeoFaker.Text do
   """
   @spec character(Keyword.t()) :: String.t()
   def character(opts \\ [])
-  def character([]), do: Enum.random(Enum.shuffle(@alphabet_lower ++ @alphabet_upper ++ @digits))
+  def character([]), do: Generator.character(nil)
 
   def character(opts) when is_list(opts) do
     type = Options.get(opts, :type, nil)
-    validate_character_type!(type)
-    generate_character_by_type(type)
+    Validator.validate_character_type!(type)
+    Generator.character(type)
   end
 
   @doc """
@@ -101,7 +88,7 @@ defmodule NeoFaker.Text do
 
   """
   @spec characters(pos_integer(), Keyword.t()) :: String.t()
-  def characters(number \\ @default_character_count, opts \\ [])
+  def characters(number \\ @character_count, opts \\ [])
 
   def characters(number, opts) when is_integer(number) and number > 0 and is_list(opts) do
     Enum.map_join(1..number, fn _ -> character(opts) end)
@@ -152,7 +139,7 @@ defmodule NeoFaker.Text do
   @spec emoji(Keyword.t()) :: String.t()
   def emoji(opts \\ []) do
     category = Options.get(opts, :category, :all)
-    validate_emoji_category!(category)
+    Validator.validate_emoji_category!(category)
     EmojiGenerator.emoji(category)
   end
 
@@ -217,41 +204,5 @@ defmodule NeoFaker.Text do
 
   def words(count, _opts) do
     raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"
-  end
-
-  # Private functions
-
-  @spec generate_character_by_type(atom() | nil) :: String.t()
-  defp generate_character_by_type(nil),
-    do: Enum.random(Enum.shuffle(@alphabet_lower ++ @alphabet_upper ++ @digits))
-
-  defp generate_character_by_type(:alphabet_lower), do: Enum.random(Enum.shuffle(@alphabet_lower))
-  defp generate_character_by_type(:alphabet_upper), do: Enum.random(Enum.shuffle(@alphabet_upper))
-
-  defp generate_character_by_type(:alphabet),
-    do: Enum.random(Enum.shuffle(@alphabet_lower ++ @alphabet_upper))
-
-  defp generate_character_by_type(:digit), do: Enum.random(Enum.shuffle(@digits))
-
-  @spec validate_character_type!(atom() | nil) :: :ok
-  defp validate_character_type!(nil), do: :ok
-
-  defp validate_character_type!(type) do
-    if type in @valid_character_types do
-      :ok
-    else
-      raise ArgumentError,
-            "Invalid character type. Expected one of #{inspect(@valid_character_types)}, got: #{inspect(type)}"
-    end
-  end
-
-  @spec validate_emoji_category!(atom()) :: :ok
-  defp validate_emoji_category!(category) do
-    if category in @valid_emoji_categories do
-      :ok
-    else
-      raise ArgumentError,
-            "Invalid emoji category. Expected one of #{inspect(@valid_emoji_categories)}, got: #{inspect(category)}"
-    end
   end
 end

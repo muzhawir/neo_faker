@@ -13,7 +13,7 @@ defmodule NeoFaker.Time do
   alias NeoFaker.Time.Generator, as: TimeGenerator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
-  @default_time_range -24..24
+  @time_range -24..24
   @time_zone_file "time_zone.exs"
 
   @midnight ~T[00:00:00]
@@ -43,7 +43,7 @@ defmodule NeoFaker.Time do
 
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
-  def add(range \\ @default_time_range, opts \\ []) do
+  def add(range \\ @time_range, opts \\ []) do
     TimeValidator.validate_range!(range)
     unit = TimeValidator.get_and_validate_unit!(opts)
     format = TimeValidator.get_and_validate_format!(opts)

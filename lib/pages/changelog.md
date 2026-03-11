@@ -34,6 +34,30 @@
 - Resolved crash in `NeoFaker.Time.time_zone/0` when locale data is incomplete.
 - Fixed validator bug surfaced during `Address` refactor.
 
+### Tests
+
+- Full refactor of all test modules to follow Elixir and ExUnit conventions.
+- Fixed critical bug in `NeoFaker.Test` where a bare `assert` lived outside any `test` block inside a `describe`.
+- Fixed wrong `describe` label `"decimal/2"` in `NeoFaker.NumberTest` — it was describing `Number.float/2`.
+- Fixed wrong `describe` label `"words/1"` in `NeoFaker.LoremTest` — it was describing `Lorem.word/1`.
+- Fixed wrong `describe` label `"add/0"` in `NeoFaker.TimeTest` — the function is `add/2`.
+- Fixed incorrect assertion in `NeoFaker.PersonTest` for `short_binary_gender/1`: the result was checked against the full gender word list instead of the short single-character form.
+- Fixed flaky race-condition tests in `NeoFaker.TimeTest` that compared live time snapshots with `==`; replaced with `%Time{}` struct checks, ISO 8601 format checks, and bounded range comparisons.
+- Fixed redundant `String.ends_with?(...) or String.match?(...)` patterns in `NeoFaker.InternetTest`; the regex alone is sufficient.
+- Moved `defp assert_semver/1` helper out of the `describe` block in `NeoFaker.AppTest` — private functions must be defined at module level; split into three clearly named helpers.
+- Wrapped the lone `test "ipv4/0"` block (outside any `describe`) in `NeoFaker.InternetTest` into a proper `describe "ipv4/0"` block for consistency.
+- Added `async: true` to `NeoFaker.AddressTest` which was missing it.
+- Added `alias` for the module under test in every test file that was using fully-qualified calls.
+- Replaced compound `assert a and b` assertions with separate `assert` calls throughout.
+- Replaced `not String.starts_with?` with `refute String.starts_with?` in `NeoFaker.InternetTest`.
+- Replaced `Enum.each(list, fn` with `for item <- list do` in test bodies (idiomatic ExUnit style).
+- Added missing test coverage for `Number.positive/1`, `Number.negative/1`, `Number.decimal/3`, `Number.between/2` error cases, `get_locale/0`, `set_locale/1` error case, `HTTP.status_code/1` per-group simple codes, and `Gravatar.display/2` URL structure.
+- Added format-correctness tests for `Crypto.md5/0`, `Crypto.sha1/0`, and `Crypto.sha256/0` (lowercase hex regex).
+- Added format and bounds tests for `Date.add/2`, `Date.between/3`, and `Date.birthday/3`.
+- Added NIK digits-only format check in `NeoFaker.IdId.PersonTest`.
+- Split compound single-test assertions into focused individual tests across `en_us/person_test.exs` and `id_id/person_test.exs`.
+- Improved test description wording to be precise and consistent across all test files.
+
 ## v0.13.0 (2025-10-29)
 
 ### Features

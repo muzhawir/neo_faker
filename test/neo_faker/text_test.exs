@@ -14,36 +14,43 @@ defmodule NeoFaker.TextTest do
   end
 
   describe "character/1" do
-    test "returns a single random character" do
+    test "returns a single random alphanumeric character" do
       assert Text.character() =~ @alphanumeric_regexp
     end
 
-    test "returns a single random character with option" do
-      for option <- [:alphabet_lower, :alphabet_upper, :alphabet, :digit] do
-        assert Text.character(type: option) =~ @alphanumeric_regexp
+    test "returns a single random character for each supported type" do
+      for type <- [:alphabet_lower, :alphabet_upper, :alphabet, :digit] do
+        assert Text.character(type: type) =~ @alphanumeric_regexp
       end
     end
   end
 
-  describe "characters/1" do
-    test "returns a string of random characters" do
+  describe "characters/2" do
+    test "returns a string of random alphanumeric characters" do
       assert Text.characters() =~ @alphanumeric_regexp
     end
 
-    test "returns a string of random characters with option" do
-      for option <- [:alphabet_lower, :alphabet_upper, :alphabet, :digit] do
-        assert Text.characters(11, type: option) =~ @alphanumeric_regexp
+    test "returns a string of random characters for each supported type" do
+      for type <- [:alphabet_lower, :alphabet_upper, :alphabet, :digit] do
+        assert Text.characters(11, type: type) =~ @alphanumeric_regexp
       end
+    end
+
+    test "returns a string with the specified length" do
+      result = Text.characters(8)
+
+      assert is_binary(result)
+      assert String.length(result) == 8
     end
   end
 
   describe "emoji/1" do
-    test "returns a random emoji" do
+    test "returns a random emoji from the default list" do
       assert Text.emoji() in emojis()
     end
 
-    test "returns a random emoji with option" do
-      for option <- [
+    test "returns a random emoji for each supported category" do
+      for category <- [
             :activities,
             :food_and_drink,
             :objects,
@@ -53,13 +60,13 @@ defmodule NeoFaker.TextTest do
             :symbols,
             :travel_and_places
           ] do
-        assert Text.emoji(category: option) in emojis()
+        assert Text.emoji(category: category) in emojis()
       end
     end
   end
 
   describe "word/0" do
-    test "returns a random word" do
+    test "returns a random alphanumeric word" do
       assert Text.word() =~ @alphanumeric_regexp
     end
   end

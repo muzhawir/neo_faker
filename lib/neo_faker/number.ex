@@ -184,13 +184,16 @@ defmodule NeoFaker.Number do
       iex> NeoFaker.Number.decimal()
       42.73
 
+      iex> NeoFaker.Number.decimal(100.0, 0.0)
+      ** (ArgumentError) min must be less than or equal to max, got: min=100.0, max=0.0
+
   """
   @spec decimal(float(), float(), non_neg_integer()) :: float()
   def decimal(min \\ 0.0, max \\ 100.0, precision \\ 2)
       when is_number(min) and is_number(max) and is_integer(precision) and precision >= 0 do
     min
     |> Generator.to_float()
-    |> Generator.float_between(Generator.to_float(max))
+    |> between(Generator.to_float(max))
     |> Float.round(precision)
   end
 end

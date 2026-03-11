@@ -115,5 +115,30 @@ defmodule NeoFaker.NumberTest do
 
       assert decimal_places <= 4
     end
+
+    test "returns min when min and max are equal" do
+      result = Number.decimal(5.0, 5.0)
+
+      assert result == 5.0
+    end
+
+    test "returns a value within the specified range" do
+      result = Number.decimal(10.0, 20.0)
+
+      assert result >= 10.0
+      assert result <= 20.0
+    end
+
+    test "raises ArgumentError when min is greater than max" do
+      assert_raise ArgumentError, fn ->
+        Number.decimal(100.0, 0.0)
+      end
+    end
+
+    test "raises ArgumentError with a descriptive message when min > max" do
+      assert_raise ArgumentError, ~r/min must be less than or equal to max/, fn ->
+        Number.decimal(50.0, 10.0)
+      end
+    end
   end
 end

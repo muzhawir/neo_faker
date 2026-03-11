@@ -115,10 +115,12 @@ defmodule NeoFaker.Data do
   # Loads (or retrieves from cache) the MapSet of locale strings from locale.exs.
   @spec load_locale_set() :: MapSet.t(String.t())
   defp load_locale_set do
-    case :persistent_term.get(:available_locales, nil) do
+    key = {__MODULE__, :available_locales}
+
+    case :persistent_term.get(key, nil) do
       nil ->
         loaded = @locale_file |> read_data_file!() |> MapSet.new()
-        :persistent_term.put(:available_locales, loaded)
+        :persistent_term.put(key, loaded)
         loaded
 
       loaded ->
@@ -150,13 +152,9 @@ defmodule NeoFaker.Data do
     end
   end
 
-  @spec cache_key(atom(), atom(), String.t()) :: atom()
+  @spec cache_key(atom(), atom(), String.t()) :: tuple()
   defp cache_key(locale, module, file) do
-    module_name = module |> Module.split() |> Enum.map_join("_", &String.downcase/1)
-    file_name = file |> String.split(".") |> hd()
-    locale_name = locale |> Atom.to_string() |> String.downcase()
-
-    String.to_atom("#{module_name}_#{file_name}_#{locale_name}")
+    {__MODULE__, locale, module, Path.rootname(file)}
   end
 
   @spec ensure_locale_file_exists(atom(), atom(), String.t()) :: atom()

@@ -1,10 +1,5 @@
 defmodule NeoFaker.Helpers.Formatter do
-  @moduledoc """
-  Provides utilities for standardizing format conversions across NeoFaker modules.
-
-  This module centralizes common patterns for converting data between different formats,
-  such as structs to strings, tuples to W3C format, etc.
-  """
+  @moduledoc false
   @moduledoc since: "0.14.0"
 
   @doc """

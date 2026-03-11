@@ -1,10 +1,5 @@
 defmodule NeoFaker.Helpers.Options do
-  @moduledoc """
-  Provides utilities for standardized option handling across NeoFaker modules.
-
-  This module centralizes common patterns for extracting and validating options
-  from keyword lists, reducing code duplication and ensuring consistent behavior.
-  """
+  @moduledoc false
   @moduledoc since: "0.14.0"
 
   @doc """

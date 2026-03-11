@@ -31,4 +31,20 @@ defmodule NeoFaker.IdId.Person do
 
     "#{province_number}#{regency_number}#{district_number}#{birth_date()}#{serial_number}"
   end
+
+  @doc """
+  Generates a random NPWP.
+
+  Returns a random NPWP (Nomor Pokok Wajib Pajak), the tax identification number defined by
+  UU No. 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (HPP); it uses the same format as
+  NIK.
+
+  ## Examples
+
+      iex> NeoFaker.IdId.Person.npwp()
+      "7645504903500640"
+
+  """
+  @spec npwp() :: String.t()
+  defdelegate npwp(), to: __MODULE__, as: :nik
 end

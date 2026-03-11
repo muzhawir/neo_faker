@@ -7,11 +7,11 @@ defmodule NeoFaker.Blood do
   """
   @moduledoc since: "0.3.1"
 
+  alias NeoFaker.Blood.Validator
   alias NeoFaker.Helpers.Options
 
   @blood_types ~w[A B AB O]
   @rh_factors ~w[+ -]
-  @valid_formats [:group, :type_only, :rh_only]
 
   @doc """
   Generates a random blood group.
@@ -42,7 +42,7 @@ defmodule NeoFaker.Blood do
   def group(opts \\ []) do
     format = Options.get(opts, :format, :group)
 
-    validate_format!(format)
+    Validator.validate_format!(format)
 
     case format do
       :group -> "#{type()}#{rh_factor()}"
@@ -149,17 +149,4 @@ defmodule NeoFaker.Blood do
   """
   @spec all_rh_factors() :: [String.t()]
   def all_rh_factors, do: @rh_factors
-
-  # Private functions
-
-  @spec validate_format!(atom()) :: :ok
-  defp validate_format!(format) do
-    case Options.validate_enum(:format, format, @valid_formats) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
 end

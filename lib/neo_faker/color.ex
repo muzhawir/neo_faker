@@ -18,8 +18,6 @@ defmodule NeoFaker.Color do
   alias NeoFaker.Color.Validator
   alias NeoFaker.Helpers.Options
 
-  @default_locale :default
-
   @doc """
   Generates a random CMYK color.
 
@@ -174,7 +172,7 @@ defmodule NeoFaker.Color do
   @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
     category = Options.get(opts, :category, :all)
-    locale = Options.get(opts, :locale, @default_locale)
+    locale = Options.get(opts, :locale, :default)
 
     Validator.validate_color_category!(category)
 

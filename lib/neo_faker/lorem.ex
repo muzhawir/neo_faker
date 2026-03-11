@@ -10,8 +10,9 @@ defmodule NeoFaker.Lorem do
 
   import NeoFaker.Data, only: [random_value: 4]
 
-  alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options
+  alias NeoFaker.Lorem.Parser
+  alias NeoFaker.Lorem.Validator
 
   @doc """
   Generates a random paragraph.
@@ -37,14 +38,14 @@ defmodule NeoFaker.Lorem do
   @spec paragraph(Keyword.t()) :: String.t()
   def paragraph(opts \\ []) do
     text_source = Options.get(opts, :text, :lorem)
-    validate_text_source!(text_source)
+    Validator.validate_text_source!(text_source)
 
-    file = get_text_file(text_source)
+    file = Parser.text_file(text_source)
 
     __MODULE__
     |> random_value(file, "text", opts)
-    |> normalize_text()
-    |> extract_paragraph()
+    |> Parser.normalize()
+    |> Parser.extract_paragraph()
   end
 
   @doc """
@@ -68,7 +69,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec sentence(Keyword.t()) :: String.t()
   def sentence(opts \\ []) do
-    opts |> paragraph() |> split_into_sentences() |> Enum.random()
+    opts |> paragraph() |> Parser.split_sentences() |> Enum.random()
   end
 
   @doc """
@@ -94,8 +95,8 @@ defmodule NeoFaker.Lorem do
   def word(opts \\ []) do
     opts
     |> sentence()
-    |> remove_punctuation()
-    |> split_into_words()
+    |> Parser.remove_punctuation()
+    |> Parser.split_words()
     |> Enum.random()
     |> String.downcase()
   end
@@ -202,44 +203,5 @@ defmodule NeoFaker.Lorem do
     else
       words_list
     end
-  end
-
-  # Private functions
-
-  @spec get_text_file(atom()) :: String.t()
-  defp get_text_file(:lorem), do: Constants.lorem_ipsum_file()
-  defp get_text_file(:meditations), do: Constants.meditations_file()
-
-  @spec normalize_text(String.t()) :: String.t()
-  defp normalize_text(text) do
-    String.replace(text, Constants.new_line_regexp(), " ")
-  end
-
-  @spec extract_paragraph(String.t()) :: String.t()
-  defp extract_paragraph(text) do
-    text |> String.split("\n\n") |> Enum.shuffle() |> List.first()
-  end
-
-  @spec split_into_sentences(String.t()) :: [String.t()]
-  defp split_into_sentences(text) do
-    String.split(text, Constants.sentence_delimiter_regexp())
-  end
-
-  @spec remove_punctuation(String.t()) :: String.t()
-  defp remove_punctuation(text) do
-    String.replace(text, Constants.punctuation_regexp(), "")
-  end
-
-  @spec split_into_words(String.t()) :: [String.t()]
-  defp split_into_words(text) do
-    String.split(text)
-  end
-
-  @spec validate_text_source!(atom()) :: :ok
-  defp validate_text_source!(source) when source in [:lorem, :meditations], do: :ok
-
-  defp validate_text_source!(source) do
-    raise ArgumentError,
-          "Invalid text source. Expected one of #{inspect(Constants.valid_text_sources())}, got: #{inspect(source)}"
   end
 end

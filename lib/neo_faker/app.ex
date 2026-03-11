@@ -12,6 +12,7 @@ defmodule NeoFaker.App do
   import NeoFaker.App.Semver
   import NeoFaker.Data, only: [random_value: 3, random_value: 4]
 
+  alias NeoFaker.App.Domain
   alias NeoFaker.App.Validator
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person
@@ -236,12 +237,8 @@ defmodule NeoFaker.App do
     Validator.validate_domain!(domain)
     Validator.validate_name_style_for_bundle!(style)
 
-    # Parse domain into reverse notation
-    [tld | domain_parts] = domain |> String.split(".") |> Enum.reverse()
-    reversed_domain = Enum.join([tld | domain_parts], ".")
-
     app_name = name(style: style)
-    "#{reversed_domain}.#{String.downcase(app_name)}"
+    "#{Domain.reverse_domain!(domain)}.#{String.downcase(app_name)}"
   end
 
   @doc """
@@ -270,13 +267,9 @@ defmodule NeoFaker.App do
 
     Validator.validate_domain!(domain)
 
-    # Parse domain into reverse notation
-    [tld | domain_parts] = domain |> String.split(".") |> Enum.reverse()
-    reversed_domain = Enum.join([tld | domain_parts], ".")
-
     # Package names use lowercase, no special characters
     app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
 
-    "#{reversed_domain}.#{app_name}"
+    "#{Domain.reverse_domain!(domain)}.#{app_name}"
   end
 end

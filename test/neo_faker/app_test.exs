@@ -158,6 +158,26 @@ defmodule NeoFaker.AppTest do
       end
     end
 
+    test "sanitises hyphenated domain labels into alphanumeric-only components" do
+      bundle = App.bundle_id(domain: "my-company.io")
+
+      # "my-company" → "mycompany" after stripping the hyphen
+      assert String.starts_with?(bundle, "io.mycompany.")
+      assert String.match?(bundle, ~r/^io\.mycompany\.[a-z0-9_]+$/)
+    end
+
+    test "sanitises mixed-case domain labels to lowercase" do
+      bundle = App.bundle_id(domain: "MyCompany.IO")
+
+      assert String.starts_with?(bundle, "io.mycompany.")
+    end
+
+    test "sanitises numeric-only domain labels" do
+      bundle = App.bundle_id(domain: "123corp.com")
+
+      assert String.starts_with?(bundle, "com.123corp.")
+    end
+
     test "raises ArgumentError when domain has no dot" do
       assert_raise ArgumentError, fn ->
         App.bundle_id(domain: "nodot")
@@ -173,6 +193,12 @@ defmodule NeoFaker.AppTest do
     test "raises ArgumentError when domain is not a string" do
       assert_raise ArgumentError, fn ->
         App.bundle_id(domain: :example)
+      end
+    end
+
+    test "raises ArgumentError when all domain labels vanish after sanitisation" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "----.----")
       end
     end
   end
@@ -198,6 +224,38 @@ defmodule NeoFaker.AppTest do
       assert String.match?(app_segment, ~r/^[a-z0-9]+$/)
     end
 
+    test "sanitises hyphenated domain labels into alphanumeric-only components" do
+      package = App.package_name(domain: "my-company.io")
+
+      # "my-company" → "mycompany" after stripping the hyphen
+      assert String.starts_with?(package, "io.mycompany.")
+      assert String.match?(package, ~r/^io\.mycompany\.[a-z0-9]+$/)
+    end
+
+    test "sanitises mixed-case domain labels to lowercase" do
+      package = App.package_name(domain: "MyCompany.IO")
+
+      assert String.starts_with?(package, "io.mycompany.")
+    end
+
+    test "sanitises subdomain labels and reverses all of them" do
+      package = App.package_name(domain: "my-app.my-company.io")
+
+      # "my-app" → "myapp", "my-company" → "mycompany", reversed: io.mycompany.myapp
+      assert String.starts_with?(package, "io.mycompany.myapp.")
+      assert String.match?(package, ~r/^io\.mycompany\.myapp\.[a-z0-9]+$/)
+    end
+
+    test "domain labels in package name contain only alphanumeric characters" do
+      package = App.package_name(domain: "my-company.co.id")
+
+      # All label components must be pure [a-z0-9]
+      domain_segments = package |> String.split(".") |> Enum.drop(-1)
+
+      assert Enum.all?(domain_segments, &String.match?(&1, ~r/^[a-z0-9]+$/)),
+             "expected all domain label segments to be alphanumeric, got: #{inspect(domain_segments)}"
+    end
+
     test "raises ArgumentError when domain has no dot" do
       assert_raise ArgumentError, fn ->
         App.package_name(domain: "nodot")
@@ -213,6 +271,12 @@ defmodule NeoFaker.AppTest do
     test "raises ArgumentError when domain is not a string" do
       assert_raise ArgumentError, fn ->
         App.package_name(domain: 42)
+      end
+    end
+
+    test "raises ArgumentError when all domain labels vanish after sanitisation" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "----.----")
       end
     end
   end

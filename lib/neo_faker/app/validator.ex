@@ -5,6 +5,7 @@ defmodule NeoFaker.App.Validator do
 
   @name_styles [:camel_case, :pascal_case, :dashed, :underscore, :single]
   @semver_types [:pre_release, :build, :pre_release_build]
+  @domain_regex ~r/^[^.\s]+\.[^.\s]/
 
   @doc """
   Validates the app name style option.
@@ -38,6 +39,29 @@ defmodule NeoFaker.App.Validator do
   def validate_name_style_for_bundle!(style) do
     raise ArgumentError,
           "Invalid style for bundle_id. Expected one of [:underscore, :dashed], got: #{inspect(style)}"
+  end
+
+  @doc """
+  Validates the `:domain` option for `bundle_id/1` and `package_name/1`.
+
+  Raises `ArgumentError` when the value is blank or does not contain at least one dot
+  with non-empty labels on both sides, which would cause the reverse-domain split to
+  produce a `MatchError` at runtime.
+  """
+  @spec validate_domain!(String.t()) :: :ok
+  def validate_domain!(domain) when is_binary(domain) do
+    if Regex.match?(@domain_regex, domain) do
+      :ok
+    else
+      raise ArgumentError,
+            "Invalid domain #{inspect(domain)}. Expected a domain with at least one dot " <>
+              "and non-empty labels on both sides, e.g. \"example.com\"."
+    end
+  end
+
+  def validate_domain!(domain) do
+    raise ArgumentError,
+          "Invalid domain #{inspect(domain)}. Expected a binary string, e.g. \"example.com\"."
   end
 
   @doc """

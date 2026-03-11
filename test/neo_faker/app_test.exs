@@ -125,4 +125,95 @@ defmodule NeoFaker.AppTest do
       assert valid_core_version?(App.version())
     end
   end
+
+  describe "bundle_id/1" do
+    test "returns a bundle ID in reverse-domain notation with default domain" do
+      bundle = App.bundle_id()
+
+      assert String.starts_with?(bundle, "com.example.")
+      assert String.match?(bundle, ~r/^com\.example\.[a-z0-9_]+$/)
+    end
+
+    test "returns a bundle ID with a custom domain" do
+      bundle = App.bundle_id(domain: "mycompany.io")
+
+      assert String.starts_with?(bundle, "io.mycompany.")
+    end
+
+    test "returns a dashed bundle ID when style: :dashed" do
+      bundle = App.bundle_id(style: :dashed)
+
+      assert String.match?(bundle, ~r/^com\.example\.[a-z0-9-]+$/)
+    end
+
+    test "returns an underscored bundle ID when style: :underscore" do
+      bundle = App.bundle_id(style: :underscore)
+
+      assert String.match?(bundle, ~r/^com\.example\.[a-z0-9_]+$/)
+    end
+
+    test "raises ArgumentError for an invalid style" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(style: :pascal_case)
+      end
+    end
+
+    test "raises ArgumentError when domain has no dot" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "nodot")
+      end
+    end
+
+    test "raises ArgumentError when domain is empty" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "")
+      end
+    end
+
+    test "raises ArgumentError when domain is not a string" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: :example)
+      end
+    end
+  end
+
+  describe "package_name/1" do
+    test "returns a package name in reverse-domain notation with default domain" do
+      package = App.package_name()
+
+      assert String.starts_with?(package, "com.example.")
+      assert String.match?(package, ~r/^com\.example\.[a-z0-9]+$/)
+    end
+
+    test "returns a package name with a custom domain" do
+      package = App.package_name(domain: "mycompany.id")
+
+      assert String.starts_with?(package, "id.mycompany.")
+    end
+
+    test "returns a package name with only lowercase alphanumeric characters" do
+      package = App.package_name()
+      app_segment = package |> String.split(".") |> List.last()
+
+      assert String.match?(app_segment, ~r/^[a-z0-9]+$/)
+    end
+
+    test "raises ArgumentError when domain has no dot" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "nodot")
+      end
+    end
+
+    test "raises ArgumentError when domain is empty" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "")
+      end
+    end
+
+    test "raises ArgumentError when domain is not a string" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: 42)
+      end
+    end
+  end
 end

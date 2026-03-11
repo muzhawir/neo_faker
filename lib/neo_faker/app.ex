@@ -233,6 +233,7 @@ defmodule NeoFaker.App do
     domain = Options.get(opts, :domain, "example.com")
     style = Options.get(opts, :style, :underscore)
 
+    Validator.validate_domain!(domain)
     Validator.validate_name_style_for_bundle!(style)
 
     # Parse domain into reverse notation
@@ -266,6 +267,8 @@ defmodule NeoFaker.App do
   @spec package_name(Keyword.t()) :: String.t()
   def package_name(opts \\ []) do
     domain = Options.get(opts, :domain, "example.com")
+
+    Validator.validate_domain!(domain)
 
     # Parse domain into reverse notation
     [tld | domain_parts] = domain |> String.split(".") |> Enum.reverse()

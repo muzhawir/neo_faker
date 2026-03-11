@@ -61,7 +61,9 @@ defmodule NeoFaker do
   Returns the current locale configured for the NeoFaker application.
 
   Returns `{:ok, locale}` when a locale is set, or `:error` when none has been
-  configured. Raises `ArgumentError` if the stored value is not an atom.
+  configured. Raises `ArgumentError` if the stored value is not an atom, or is
+  an unsupported atom (i.e. not `:default` and not in
+  `NeoFaker.Data.supported_locales/0`).
 
   ## Examples
 
@@ -84,8 +86,22 @@ defmodule NeoFaker do
       nil ->
         :error
 
+      :default ->
+        {:ok, :default}
+
       locale when is_atom(locale) ->
-        {:ok, locale}
+        if Data.locale_available?(locale) do
+          {:ok, locale}
+        else
+          supported =
+            [:default | Data.supported_locales()]
+            |> Enum.sort()
+            |> inspect()
+
+          raise ArgumentError,
+                "Unsupported locale #{inspect(locale)}. Expected :default or one of #{supported} " <>
+                  "or see the available locales documentation."
+        end
 
       invalid ->
         raise ArgumentError,

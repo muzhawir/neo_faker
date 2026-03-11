@@ -12,6 +12,23 @@ defmodule NeoFakerTest do
       assert {:ok, locale} = NeoFaker.locale()
       assert is_atom(locale)
     end
+
+    test "raises ArgumentError when a bogus atom is stored directly in application env" do
+      original = Application.get_env(:neo_faker, :locale)
+
+      on_exit(fn ->
+        case original do
+          nil -> Application.delete_env(:neo_faker, :locale)
+          value -> Application.put_env(:neo_faker, :locale, value)
+        end
+      end)
+
+      Application.put_env(:neo_faker, :locale, :bogus_locale)
+
+      assert_raise ArgumentError, ~r/Unsupported locale :bogus_locale/, fn ->
+        NeoFaker.locale()
+      end
+    end
   end
 
   describe "set_locale/1" do

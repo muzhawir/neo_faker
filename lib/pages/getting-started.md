@@ -8,8 +8,8 @@ NeoFaker is a fake data generator for Elixir tests and development environments.
 
 ## Requirements
 
-- **Erlang**: `27.0` or newer
-- **Elixir**: `1.18.0-otp-27` or newer
+- **Erlang**: `28.0` or newer
+- **Elixir**: `1.18.4-otp-28` or newer
 
 ## Installation
 

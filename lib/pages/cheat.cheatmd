@@ -42,6 +42,9 @@ iex> NeoFaker.Address.coordinate(type: :longitude)
 
 iex> NeoFaker.Address.coordinate(precision: 2)
 {11.58, 165.37}
+
+iex> NeoFaker.Address.coordinate(type: :latitude, precision: 4)
+11.5832
 ```
 
 ## [App](`NeoFaker.App`)
@@ -56,13 +59,16 @@ iex> NeoFaker.App.author()
 
 iex> NeoFaker.App.author(middle_name: true)
 "José Carlos Valim"
+
+iex> NeoFaker.App.author(sex: :female)
+"Juliana Silva"
 ```
 
 ### [`description(opts \\ [])`](`NeoFaker.App.description/1`)
 
 ```elixir
 iex> NeoFaker.App.description()
-"Elixir library for generating fake data in tests and development."
+"Elixir package for generating fake data in tests and development."
 
 iex> NeoFaker.App.description(locale: :id_id)
 "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
@@ -83,6 +89,9 @@ iex> NeoFaker.App.name()
 
 iex> NeoFaker.App.name(style: :camel_case)
 "neoFaker"
+
+iex> NeoFaker.App.name(style: :dashed)
+"neo-faker"
 
 iex> NeoFaker.App.name(locale: :id_id)
 "Garuda Web"
@@ -119,6 +128,9 @@ iex> NeoFaker.App.bundle_id()
 
 iex> NeoFaker.App.bundle_id(style: :dashed)
 "com.example.neo-faker"
+
+iex> NeoFaker.App.bundle_id(domain: "mycompany.io")
+"io.mycompany.neo_faker"
 ```
 
 ### [`package_name(opts \\ [])`](`NeoFaker.App.package_name/1`)
@@ -127,8 +139,8 @@ iex> NeoFaker.App.bundle_id(style: :dashed)
 iex> NeoFaker.App.package_name()
 "com.example.neofaker"
 
-iex> NeoFaker.App.package_name(domain: "mycompany.io")
-"io.mycompany.neofaker"
+iex> NeoFaker.App.package_name(domain: "mycompany.id")
+"id.mycompany.neofaker"
 ```
 
 ## [Blood](`NeoFaker.Blood`)
@@ -156,6 +168,16 @@ iex> NeoFaker.Blood.type()
 ```
 
 `NeoFaker.Blood.rh_factor/0` behaves the same way, returning only the Rh factor.
+
+### [`medical_notation(opts \\ [])`](`NeoFaker.Blood.medical_notation/1`)
+
+```elixir
+iex> NeoFaker.Blood.medical_notation()
+"B positive"
+
+iex> NeoFaker.Blood.medical_notation(verbose: true)
+"Type AB, Rh positive"
+```
 
 ## [Boolean](`NeoFaker.Boolean`)
 
@@ -189,8 +211,8 @@ iex> NeoFaker.Color.cmyk(format: :w3c)
 ```
 
 `NeoFaker.Color.hsl/1`, `NeoFaker.Color.hsla/1`, `NeoFaker.Color.rgb/1`, and
-`NeoFaker.Color.rgba/1` behave the same way, generating colors in HSL, HSLA, RGB, and RGBA
-formats respectively.
+`NeoFaker.Color.rgba/1` behave the same way, generating colors in their respective formats.
+Pass `format: :w3c` to any of them for a CSS string.
 
 ### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
 
@@ -218,6 +240,19 @@ iex> NeoFaker.Color.keyword(locale: :id_id)
 "ungu"
 ```
 
+### [`random(opts \\ [])`](`NeoFaker.Color.random/1`)
+
+```elixir
+iex> NeoFaker.Color.random()
+{255, 128, 64}
+
+iex> NeoFaker.Color.random()
+"#613583"
+
+iex> NeoFaker.Color.random(format: :w3c)
+"rgb(255, 128, 64)"
+```
+
 ## [Crypto](`NeoFaker.Crypto`)
 
 {: .col-2}
@@ -232,8 +267,9 @@ iex> NeoFaker.Crypto.md5(case: :upper)
 "AFC4C626C55E4166421D82732163857D"
 ```
 
-`NeoFaker.Crypto.sha1/1`, `NeoFaker.Crypto.sha256/1`, and `NeoFaker.Crypto.sha512/1` behave the
-same way, generating SHA-1, SHA-256, and SHA-512 hashes respectively.
+`NeoFaker.Crypto.sha1/1`, `NeoFaker.Crypto.sha256/1`, and `NeoFaker.Crypto.sha512/1` behave
+the same way. `NeoFaker.Crypto.hash/2` accepts a `:md5`, `:sha1`, `:sha256`, or `:sha512`
+atom as the first argument.
 
 ### [`uuid(opts \\ [])`](`NeoFaker.Crypto.uuid/1`)
 
@@ -272,14 +308,14 @@ iex> NeoFaker.Date.add(0..31)
 ~D[2025-03-30]
 
 iex> NeoFaker.Date.add(0..31, format: :iso8601)
-"2025-03-25"
+"2025-03-30"
 ```
 
-### [`between(start \\ ~D[1970-01-01], finish \\ Date.utc_today(), opts \\ [])`](`NeoFaker.Date.between/3`)
+### [`between(start, finish, opts \\ [])`](`NeoFaker.Date.between/3`)
 
 ```elixir
 iex> NeoFaker.Date.between()
-~D[2025-03-25]
+~D[2014-07-11]
 
 iex> NeoFaker.Date.between(~D[2020-01-01], ~D[2025-01-01])
 ~D[2022-08-17]
@@ -321,35 +357,70 @@ iex> NeoFaker.Date.future(30, format: :iso8601)
 "2025-04-24"
 ```
 
+### [`today(opts \\ [])`](`NeoFaker.Date.today/1`)
+
+```elixir
+iex> NeoFaker.Date.today()
+~D[2025-03-25]
+
+iex> NeoFaker.Date.today(format: :iso8601)
+"2025-03-25"
+```
+
 ## [Gravatar](`NeoFaker.Gravatar`)
 
-{: .col-1}
+{: .col-2}
 
 ### [`display(email \\ nil, opts \\ [])`](`NeoFaker.Gravatar.display/2`)
 
 ```elixir
 iex> NeoFaker.Gravatar.display()
-"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
-
-iex> NeoFaker.Gravatar.display("john.doe@example.com")
-"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
+"https://gravatar.com/avatar/<hash>?d=identicon&s=80"
 
 iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
-"https://gravatar.com/avatar/<hashed_email>?d=identicon&s=100"
+"https://gravatar.com/avatar/<hash>?d=identicon&s=100"
 
 iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
-"https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
+"https://gravatar.com/avatar/<hash>?d=monsterid&s=80"
+
+iex> NeoFaker.Gravatar.display("user@test.com", rating: :pg)
+"https://gravatar.com/avatar/<hash>?d=identicon&s=80&r=pg"
+
+iex> NeoFaker.Gravatar.display("user@test.com", force_default: true)
+"https://gravatar.com/avatar/<hash>?d=identicon&s=80&f=y"
 ```
+
+### [`profile(email \\ nil, opts \\ [])`](`NeoFaker.Gravatar.profile/2`)
+
+```elixir
+iex> NeoFaker.Gravatar.profile()
+"https://gravatar.com/<hash>"
+
+iex> NeoFaker.Gravatar.profile("user@example.com", format: :json)
+"https://gravatar.com/<hash>.json"
+
+iex> NeoFaker.Gravatar.profile(nil, format: :qr)
+"https://gravatar.com/<hash>.qr"
+```
+
+`NeoFaker.Gravatar.random/0` generates a display URL with a randomly selected size and
+fallback type.
 
 ## [HTTP](`NeoFaker.HTTP`)
 
 {: .col-2}
 
-### [`referrer_policy()`](`NeoFaker.HTTP.referrer_policy/0`)
+### [`user_agent(opts \\ [])`](`NeoFaker.HTTP.user_agent/1`)
 
 ```elixir
-iex> NeoFaker.HTTP.referrer_policy()
-"no-referrer"
+iex> NeoFaker.HTTP.user_agent()
+"Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+iex> NeoFaker.HTTP.user_agent(type: :browser)
+"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+
+iex> NeoFaker.HTTP.user_agent(type: :crawler)
+"Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 ```
 
 ### [`request_method(opts \\ [])`](`NeoFaker.HTTP.request_method/1`)
@@ -374,21 +445,38 @@ iex> NeoFaker.HTTP.status_code(type: :detailed)
 iex> NeoFaker.HTTP.status_code(group: :client_error)
 "404"
 
-iex> NeoFaker.HTTP.status_code(group: :client_error, type: :detailed)
-"404 Not Found"
+iex> NeoFaker.HTTP.status_code(type: :detailed, group: :success)
+"201 Created"
 ```
 
-### [`user_agent(opts \\ [])`](`NeoFaker.HTTP.user_agent/1`)
+### [`referrer_policy()`](`NeoFaker.HTTP.referrer_policy/0`)
 
 ```elixir
-iex> NeoFaker.HTTP.user_agent()
-"Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+iex> NeoFaker.HTTP.referrer_policy()
+"no-referrer"
+```
 
-iex> NeoFaker.HTTP.user_agent(type: :browser)
-"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
+### [`protocol_version(opts \\ [])`](`NeoFaker.HTTP.protocol_version/1`)
 
-iex> NeoFaker.HTTP.user_agent(type: :crawler)
-"Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
+```elixir
+iex> NeoFaker.HTTP.protocol_version()
+"HTTP/1.1"
+
+iex> NeoFaker.HTTP.protocol_version(include_http3: false)
+"HTTP/1.0"
+```
+
+### [`header_name(opts \\ [])`](`NeoFaker.HTTP.header_name/1`)
+
+```elixir
+iex> NeoFaker.HTTP.header_name()
+"Content-Type"
+
+iex> NeoFaker.HTTP.header_name(type: :request)
+"User-Agent"
+
+iex> NeoFaker.HTTP.header_name(type: :response)
+"Server"
 ```
 
 ## [Internet](`NeoFaker.Internet`)
@@ -454,9 +542,6 @@ iex> NeoFaker.Internet.email(domain_type: :popular, popular_type: :email)
 
 iex> NeoFaker.Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
 "josé@elixir-lang.org"
-
-iex> NeoFaker.Internet.email(tld_type: :country_code)
-"user@example.id"
 ```
 
 ### [`ipv4(opts \\ [])`](`NeoFaker.Internet.ipv4/1`)
@@ -467,6 +552,9 @@ iex> NeoFaker.Internet.ipv4()
 
 iex> NeoFaker.Internet.ipv4(private: true)
 "192.168.1.42"
+
+iex> NeoFaker.Internet.ipv4(private: true, class: :a)
+"10.25.30.100"
 ```
 
 ### [`ipv6(opts \\ [])`](`NeoFaker.Internet.ipv6/1`)
@@ -477,6 +565,9 @@ iex> NeoFaker.Internet.ipv6()
 
 iex> NeoFaker.Internet.ipv6(uppercase: false)
 "e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
+
+iex> NeoFaker.Internet.ipv6(compressed: true)
+"2001:db8::8a2e:370:7334"
 ```
 
 ### [`mac_address(opts \\ [])`](`NeoFaker.Internet.mac_address/1`)
@@ -487,6 +578,9 @@ iex> NeoFaker.Internet.mac_address()
 
 iex> NeoFaker.Internet.mac_address(uppercase: false)
 "74:4e:44:b0:d0:93"
+
+iex> NeoFaker.Internet.mac_address(separator: "-")
+"74-4E-44-B0-D0-93"
 ```
 
 ### [`url(opts \\ [])`](`NeoFaker.Internet.url/1`)
@@ -500,6 +594,9 @@ iex> NeoFaker.Internet.url(protocol: :http)
 
 iex> NeoFaker.Internet.url(path: true)
 "https://example.com/users/profile"
+
+iex> NeoFaker.Internet.url(path: true, query: true)
+"https://example.com/api/v1?key=value&id=123"
 ```
 
 ### [`slug(word_count \\ 3, opts \\ [])`](`NeoFaker.Internet.slug/2`)
@@ -507,6 +604,9 @@ iex> NeoFaker.Internet.url(path: true)
 ```elixir
 iex> NeoFaker.Internet.slug()
 "neo-faker-elixir"
+
+iex> NeoFaker.Internet.slug(5)
+"the-quick-brown-fox-jumps"
 
 iex> NeoFaker.Internet.slug(2, separator: "_")
 "hello_world"
@@ -521,16 +621,15 @@ iex> NeoFaker.Internet.slug(2, separator: "_")
 ```elixir
 iex> NeoFaker.Lorem.paragraph()
 "Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Vestibulum urna
-risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
-convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
+risus, egestas ut ultrices non, aliquet eget massa."
 
 iex> NeoFaker.Lorem.paragraph(text: :meditations)
 "Do the things external which fall upon thee distract thee? Give thyself time to learn
 something new and good, and cease to be whirled around."
 ```
 
-`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way, generating random
-sentences or words. `NeoFaker.Lorem.paragraphs/2`, `NeoFaker.Lorem.sentences/2`, and
+`NeoFaker.Lorem.sentence/1` and `NeoFaker.Lorem.word/1` behave the same way, generating a
+random sentence or word. `NeoFaker.Lorem.paragraphs/2`, `NeoFaker.Lorem.sentences/2`, and
 `NeoFaker.Lorem.words/2` return lists and accept a `join: true` option to return a single string.
 
 ## [Number](`NeoFaker.Number`)
@@ -550,7 +649,7 @@ iex> NeoFaker.Number.between(20, 100.0)
 29.481745280074264
 
 iex> NeoFaker.Number.between(10.0, 100.0)
-29.481745280074264
+55.123456789
 ```
 
 ### [`digit()`](`NeoFaker.Number.digit/0`)
@@ -568,6 +667,19 @@ iex> NeoFaker.Number.float()
 
 iex> NeoFaker.Number.float(1..9, 10..90)
 1.44
+```
+
+### [`decimal(min \\ 0.0, max \\ 100.0, precision \\ 2)`](`NeoFaker.Number.decimal/3`)
+
+```elixir
+iex> NeoFaker.Number.decimal()
+42.73
+
+iex> NeoFaker.Number.decimal(0.0, 10.0, 2)
+5.47
+
+iex> NeoFaker.Number.decimal(0.0, 1.0, 4)
+0.7384
 ```
 
 ### [`positive(max \\ 100)`](`NeoFaker.Number.positive/1`)
@@ -594,29 +706,6 @@ iex> NeoFaker.Number.negative(-50)
 
 {: .col-2}
 
-### [`age(min \\ 0, max \\ 120)`](`NeoFaker.Person.age/2`)
-
-```elixir
-iex> NeoFaker.Person.age()
-44
-
-iex> NeoFaker.Person.age(7, 44)
-27
-```
-
-### [`binary_gender(opts \\ [])`](`NeoFaker.Person.binary_gender/1`)
-
-```elixir
-iex> NeoFaker.Person.binary_gender()
-"Male"
-
-iex> NeoFaker.Person.binary_gender(locale: :id_id)
-"Perempuan"
-```
-
-`NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` behave the same
-way, generating non-binary or short binary genders.
-
 ### [`first_name(opts \\ [])`](`NeoFaker.Person.first_name/1`)
 
 ```elixir
@@ -631,7 +720,7 @@ iex> NeoFaker.Person.first_name(locale: :id_id)
 ```
 
 `NeoFaker.Person.middle_name/1` and `NeoFaker.Person.last_name/1` behave the same way,
-generating middle or last names.
+generating a middle or last name with the same options.
 
 ### [`full_name(opts \\ [])`](`NeoFaker.Person.full_name/1`)
 
@@ -644,6 +733,9 @@ iex> NeoFaker.Person.full_name(sex: :male)
 
 iex> NeoFaker.Person.full_name(middle_name: false)
 "Gabriella Harrison"
+
+iex> NeoFaker.Person.full_name(sex: :female, locale: :id_id, middle_name: false)
+"Siti Nurhaliza"
 ```
 
 ### [`full_name_with_title(opts \\ [])`](`NeoFaker.Person.full_name_with_title/1`)
@@ -669,7 +761,34 @@ iex> NeoFaker.Person.prefix(locale: :id_id)
 "Tn."
 ```
 
-`NeoFaker.Person.suffix/1` behaves the same way, generating a suffix for the person's name.
+`NeoFaker.Person.suffix/1` behaves the same way, generating a name suffix such as `"Jr."` or
+`"III"`.
+
+### [`binary_gender(opts \\ [])`](`NeoFaker.Person.binary_gender/1`)
+
+```elixir
+iex> NeoFaker.Person.binary_gender()
+"Male"
+
+iex> NeoFaker.Person.binary_gender(locale: :id_id)
+"Perempuan"
+```
+
+`NeoFaker.Person.non_binary_gender/1` and `NeoFaker.Person.short_binary_gender/1` behave the
+same way.
+
+### [`age(min \\ 0, max \\ 120)`](`NeoFaker.Person.age/2`)
+
+```elixir
+iex> NeoFaker.Person.age()
+44
+
+iex> NeoFaker.Person.age(7, 44)
+27
+
+iex> NeoFaker.Person.age(18, 65)
+35
+```
 
 ## [Text](`NeoFaker.Text`)
 
@@ -686,6 +805,9 @@ iex> NeoFaker.Text.character(type: :digit)
 
 iex> NeoFaker.Text.character(type: :alphabet_upper)
 "A"
+
+iex> NeoFaker.Text.character(type: :alphabet)
+"X"
 ```
 
 ### [`characters(number \\ 11, opts \\ [])`](`NeoFaker.Text.characters/2`)
@@ -699,6 +821,9 @@ iex> NeoFaker.Text.characters(20, type: :alphabet_upper)
 
 iex> NeoFaker.Text.characters(5, type: :digit)
 "74392"
+
+iex> NeoFaker.Text.characters(10, type: :alphabet_lower)
+"xyzabcdefg"
 ```
 
 ### [`emoji(opts \\ [])`](`NeoFaker.Text.emoji/1`)
@@ -711,7 +836,10 @@ iex> NeoFaker.Text.emoji(category: :activities)
 "🎉"
 
 iex> NeoFaker.Text.emoji(category: :smileys_and_emotion)
-"😀"
+"🤖"
+
+iex> NeoFaker.Text.emoji(category: :animals_and_nature)
+"🐶"
 ```
 
 ### [`word()`](`NeoFaker.Text.word/0`)
@@ -721,8 +849,8 @@ iex> NeoFaker.Text.word()
 "computer"
 ```
 
-`NeoFaker.Text.words/2` returns a list of random words and accepts a `join: true` option to
-return a single space-separated string.
+`NeoFaker.Text.words/2` returns a list of random words and accepts `join: true` and
+`separator:` options to return a single joined string.
 
 ## [Time](`NeoFaker.Time`)
 
@@ -741,7 +869,7 @@ iex> NeoFaker.Time.add(0..10, format: :iso8601)
 "15:22:10"
 ```
 
-### [`between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59], opts \\ [])`](`NeoFaker.Time.between/3`)
+### [`between(start, finish, opts \\ [])`](`NeoFaker.Time.between/3`)
 
 ```elixir
 iex> NeoFaker.Time.between()
@@ -751,11 +879,12 @@ iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
 ~T[19:30:11]
 
 iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
-"15:22:10"
+"19:30:11"
 ```
 
-`NeoFaker.Time.morning/1`, `NeoFaker.Time.afternoon/1`, `NeoFaker.Time.evening/1`, and
-`NeoFaker.Time.night/1` are convenience wrappers around `between/3` for named time periods.
+`NeoFaker.Time.morning/1` (06:00–11:59), `NeoFaker.Time.afternoon/1` (12:00–17:59),
+`NeoFaker.Time.evening/1` (18:00–23:59), and `NeoFaker.Time.night/1` (00:00–05:59) are
+convenience wrappers around `between/3` for named time periods.
 
 ### [`time_zone()`](`NeoFaker.Time.time_zone/0`)
 

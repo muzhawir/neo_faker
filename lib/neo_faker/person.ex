@@ -13,11 +13,11 @@ defmodule NeoFaker.Person do
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
+  alias NeoFaker.Person.Validator
 
-  @default_locale :default
+  @locale :default
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
-  @valid_sex_options [:unisex, :male, :female]
   @max_age 120
 
   @doc """
@@ -44,9 +44,9 @@ defmodule NeoFaker.Person do
   @spec first_name(Keyword.t()) :: String.t()
   def first_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @default_locale)
+    locale = Options.get(opts, :locale, @locale)
 
-    validate_sex!(sex)
+    Validator.validate_sex!(sex)
 
     NameGenerator.name(locale, "first_names", sex)
   end
@@ -75,9 +75,9 @@ defmodule NeoFaker.Person do
   @spec middle_name(Keyword.t()) :: String.t()
   def middle_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @default_locale)
+    locale = Options.get(opts, :locale, @locale)
 
-    validate_sex!(sex)
+    Validator.validate_sex!(sex)
 
     NameGenerator.name(locale, "middle_names", sex)
   end
@@ -106,9 +106,9 @@ defmodule NeoFaker.Person do
   @spec last_name(Keyword.t()) :: String.t()
   def last_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @default_locale)
+    locale = Options.get(opts, :locale, @locale)
 
-    validate_sex!(sex)
+    Validator.validate_sex!(sex)
 
     NameGenerator.name(locale, "last_names", sex)
   end
@@ -143,10 +143,10 @@ defmodule NeoFaker.Person do
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @default_locale)
+    locale = Options.get(opts, :locale, @locale)
     include_middle = Options.get(opts, :middle_name, true)
 
-    validate_sex!(sex)
+    Validator.validate_sex!(sex)
 
     FullNameGenerator.name(sex, locale, include_middle)
   end
@@ -287,7 +287,7 @@ defmodule NeoFaker.Person do
   def age(min \\ 0, max \\ @max_age)
 
   def age(min, max) when is_integer(min) and is_integer(max) do
-    validate_age_range!(min, max)
+    Validator.validate_age_range!(min, max)
     Enum.random(min..max)
   end
 
@@ -348,37 +348,5 @@ defmodule NeoFaker.Person do
       end
 
     name_parts |> Enum.reverse() |> Enum.join(" ")
-  end
-
-  # Private functions
-
-  @spec validate_sex!(atom()) :: :ok
-  defp validate_sex!(sex) do
-    valid_sex_options = @valid_sex_options
-
-    case Options.validate_enum(:sex, sex, valid_sex_options) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_age_range!(non_neg_integer(), non_neg_integer()) :: :ok
-  defp validate_age_range!(min, max) when is_integer(min) and is_integer(max) do
-    cond do
-      min < 0 ->
-        raise ArgumentError, "min must be non-negative, got: #{min}"
-
-      max < 0 ->
-        raise ArgumentError, "max must be non-negative, got: #{max}"
-
-      min > max ->
-        raise ArgumentError, "min must be less than or equal to max"
-
-      true ->
-        :ok
-    end
   end
 end

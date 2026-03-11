@@ -12,16 +12,13 @@ defmodule NeoFaker.App do
   import NeoFaker.App.Semver
   import NeoFaker.Data, only: [random_value: 3, random_value: 4]
 
-  alias NeoFaker.Helpers.Constants
+  alias NeoFaker.App.Validator
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person
 
   @description_file "description.exs"
   @license_file "license.exs"
   @name_file "name.exs"
-
-  @valid_name_styles [:camel_case, :pascal_case, :dashed, :underscore, :single]
-  @valid_semver_types [:pre_release, :build, :pre_release_build]
 
   @doc """
   Generates a random app author name.
@@ -132,9 +129,9 @@ defmodule NeoFaker.App do
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
     style = Options.get(opts, :style, nil)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, :default)
 
-    validate_name_style!(style)
+    Validator.validate_name_style!(style)
 
     first_name = random_value(__MODULE__, @name_file, "first_names", locale: locale)
     last_name = random_value(__MODULE__, @name_file, "last_names", locale: locale)
@@ -180,7 +177,7 @@ defmodule NeoFaker.App do
   @spec semver(Keyword.t()) :: String.t()
   def semver(opts \\ []) do
     type = Options.get(opts, :type, nil)
-    validate_semver_type!(type)
+    Validator.validate_semver_type!(type)
 
     core = semver_core()
 
@@ -236,7 +233,7 @@ defmodule NeoFaker.App do
     domain = Options.get(opts, :domain, "example.com")
     style = Options.get(opts, :style, :underscore)
 
-    validate_name_style_for_bundle!(style)
+    Validator.validate_name_style_for_bundle!(style)
 
     # Parse domain into reverse notation
     [tld | domain_parts] = domain |> String.split(".") |> Enum.reverse()
@@ -278,45 +275,5 @@ defmodule NeoFaker.App do
     app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
 
     "#{reversed_domain}.#{app_name}"
-  end
-
-  # Private functions
-
-  @spec validate_name_style!(atom() | nil) :: :ok
-  defp validate_name_style!(nil), do: :ok
-
-  defp validate_name_style!(style) do
-    valid_styles = [nil | @valid_name_styles]
-
-    case Options.validate_enum(:style, style, valid_styles) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_name_style_for_bundle!(atom()) :: :ok
-  defp validate_name_style_for_bundle!(style) when style in [:underscore, :dashed], do: :ok
-
-  defp validate_name_style_for_bundle!(style) do
-    raise ArgumentError,
-          "Invalid style for bundle_id. Expected one of [:underscore, :dashed], got: #{inspect(style)}"
-  end
-
-  @spec validate_semver_type!(atom() | nil) :: :ok
-  defp validate_semver_type!(nil), do: :ok
-
-  defp validate_semver_type!(type) do
-    valid_types = [nil | @valid_semver_types]
-
-    case Options.validate_enum(:type, type, valid_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
   end
 end

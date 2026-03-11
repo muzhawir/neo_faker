@@ -8,10 +8,10 @@ defmodule NeoFaker.Color.Keyword do
   @module NeoFaker.Color
 
   @doc """
-  Returns a random keyword color string for the specified locale and optional category.
+  Returns a random keyword color string for the specified category and locale.
 
   If `category` is `:all`, selects a random color from all available keyword colors for the given
-  locale.
+  locale. Otherwise, selects a random color from the specified category.
   """
   def color(:all, locale) do
     locale

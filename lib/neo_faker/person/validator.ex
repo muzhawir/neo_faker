@@ -5,6 +5,11 @@ defmodule NeoFaker.Person.Validator do
 
   @sex [:unisex, :male, :female]
 
+  @doc """
+  Validates that the given `sex` value is one of `:unisex`, `:male`, or `:female`.
+
+  Raises `ArgumentError` if the value is invalid.
+  """
   @spec validate_sex!(atom()) :: :ok
   def validate_sex!(sex) do
     case Options.validate_enum(:sex, sex, @sex) do
@@ -13,6 +18,11 @@ defmodule NeoFaker.Person.Validator do
     end
   end
 
+  @doc """
+  Validates that `min` and `max` form a valid non-negative age range.
+
+  Raises `ArgumentError` if either value is negative, non-integer, or if `min` exceeds `max`.
+  """
   @spec validate_age_range!(non_neg_integer(), non_neg_integer()) :: :ok
   def validate_age_range!(min, max) when is_integer(min) and is_integer(max) do
     cond do

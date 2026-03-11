@@ -3,6 +3,11 @@ defmodule NeoFaker.Lorem.Validator do
 
   @text_sources [:lorem, :meditations]
 
+  @doc """
+  Validates that the given text source is one of the supported sources.
+
+  Raises `ArgumentError` if the source is not `:lorem` or `:meditations`.
+  """
   @spec validate_text_source!(atom()) :: :ok
   def validate_text_source!(source) when source in [:lorem, :meditations], do: :ok
 

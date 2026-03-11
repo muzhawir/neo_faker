@@ -27,6 +27,17 @@ defmodule NeoFaker.HTTP.Header do
     "Set-Cookie"
   ]
 
+  @doc """
+  Generates a random HTTP header name based on the specified type.
+
+  Returns a randomly selected header name string.
+
+  ## Parameters
+
+  - `:request` - Returns a random request header name.
+  - `:response` - Returns a random response header name.
+  - `:all` - Returns a random header name from both request and response headers.
+  """
   @spec name(atom()) :: String.t()
   def name(:request), do: Enum.random(@request_headers)
   def name(:response), do: Enum.random(@response_headers)

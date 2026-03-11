@@ -14,6 +14,12 @@ defmodule NeoFaker.Text.Validator do
     :travel_and_places
   ]
 
+  @doc """
+  Validates the character type option.
+
+  Accepts `nil` (no restriction) or one of #{inspect(@character_types)}.
+  Raises `ArgumentError` if the type is not valid.
+  """
   @spec validate_character_type!(atom() | nil) :: :ok
   def validate_character_type!(nil), do: :ok
 
@@ -26,6 +32,12 @@ defmodule NeoFaker.Text.Validator do
     end
   end
 
+  @doc """
+  Validates the emoji category option.
+
+  Accepts one of #{inspect(@emoji_categories)}.
+  Raises `ArgumentError` if the category is not valid.
+  """
   @spec validate_emoji_category!(atom()) :: :ok
   def validate_emoji_category!(category) do
     if category in @emoji_categories do

@@ -5,6 +5,11 @@ defmodule NeoFaker.Gravatar.Validator do
   @min_size 1
   @max_size 2048
 
+  @doc """
+  Validates that the given size is either `nil` or an integer within the allowed range (1–2048).
+
+  Raises `ArgumentError` if the size is out of range or not an integer.
+  """
   @spec validate_size!(integer() | nil) :: :ok
   def validate_size!(nil), do: :ok
 
@@ -21,6 +26,14 @@ defmodule NeoFaker.Gravatar.Validator do
           "Size must be an integer between #{@min_size} and #{@max_size}, got: #{inspect(size)}"
   end
 
+  @doc """
+  Validates and formats the fallback image type for a Gravatar URL.
+
+  Accepts either an atom from the known fallback types or a URL string starting with
+  `http://` or `https://`. Returns the fallback as a string on success.
+
+  Raises `ArgumentError` if the fallback is not a valid atom, a valid URL, or not a string/atom.
+  """
   @spec validate_and_format_fallback!(atom() | String.t()) :: String.t()
   def validate_and_format_fallback!(fallback) when is_atom(fallback) do
     if fallback in @fallback_types do
@@ -45,6 +58,13 @@ defmodule NeoFaker.Gravatar.Validator do
           "Invalid fallback type. Expected atom or string, got: #{inspect(fallback)}"
   end
 
+  @doc """
+  Validates the Gravatar content rating option.
+
+  Accepts `nil` or one of `:g`, `:pg`, `:r`, `:x`. Returns `:ok` on success.
+
+  Raises `ArgumentError` if the rating is not a valid value.
+  """
   @spec validate_rating!(atom() | nil) :: :ok
   def validate_rating!(nil), do: :ok
 
@@ -55,6 +75,13 @@ defmodule NeoFaker.Gravatar.Validator do
           "Invalid rating. Expected one of [:g, :pg, :r, :x], got: #{inspect(rating)}"
   end
 
+  @doc """
+  Validates the Gravatar profile format option.
+
+  Accepts one of `:html`, `:json`, `:xml`, `:php`, `:vcf`, or `:qr`. Returns `:ok` on success.
+
+  Raises `ArgumentError` if the format is not a valid value.
+  """
   @spec validate_profile_format!(atom()) :: :ok
   def validate_profile_format!(format) when format in [:html, :json, :xml, :php, :vcf, :qr] do
     :ok

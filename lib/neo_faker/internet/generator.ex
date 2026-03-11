@@ -1,11 +1,23 @@
 defmodule NeoFaker.Internet.Generator do
   @moduledoc false
 
+  @doc """
+  Generates a random public IPv4 address.
+
+  Returns a string in the form `"A.B.C.D"` where each segment is between 0 and 255.
+  """
   @spec public_ipv4() :: String.t()
   def public_ipv4 do
     Enum.map_join(1..4, ".", fn _ -> :rand.uniform(256) - 1 end)
   end
 
+  @doc """
+  Generates a random private IPv4 address for the specified class.
+
+  - `:a` — Returns an address in the `10.0.0.0/8` range.
+  - `:b` — Returns an address in the `172.16.0.0/12` range.
+  - `:c` — Returns an address in the `192.168.0.0/16` range.
+  """
   @spec private_ipv4(atom()) :: String.t()
   def private_ipv4(:a) do
     "10.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}"
@@ -19,6 +31,12 @@ defmodule NeoFaker.Internet.Generator do
     "192.168.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}"
   end
 
+  @doc """
+  Generates a random compressed IPv6 address.
+
+  Returns a string using the compressed notation, collapsing the longest consecutive sequence
+  of all-zero groups into `"::"` where applicable.
+  """
   @spec compressed_ipv6() :: String.t()
   def compressed_ipv6 do
     groups = Enum.map(1..8, fn _ -> :rand.uniform(0x10_000) - 1 end)
@@ -43,6 +61,11 @@ defmodule NeoFaker.Internet.Generator do
     end
   end
 
+  @doc """
+  Generates a random URL path.
+
+  Returns a string of 1 to 3 randomly selected lowercase word segments joined by `"/"`.
+  """
   @spec url_path() :: String.t()
   def url_path do
     path_depth = :rand.uniform(3)
@@ -52,6 +75,12 @@ defmodule NeoFaker.Internet.Generator do
     end)
   end
 
+  @doc """
+  Generates a random URL query string.
+
+  Returns a string of 1 to 3 key-value pairs joined by `"&"`, where each key is a random
+  lowercase word and each value is a random integer between 1 and 1000.
+  """
   @spec query_string() :: String.t()
   def query_string do
     param_count = :rand.uniform(3)

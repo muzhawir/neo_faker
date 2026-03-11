@@ -1,25 +1,38 @@
 # Changelog
 
-## v0.14.0 (2026-01-01)
+## v0.14.0 (2026-03-11)
 
 ### Features
 
 - Added `NeoFaker.Helpers.Formatter` for standardized format conversions.
 - Added `NeoFaker.Helpers.Options` for consistent option extraction and validation.
+- Added `NeoFaker.IdId.Person.npwp/0` for generating random Indonesian tax identification numbers (NPWP), delegating to `nik/0`.
+- Added `NeoFaker.Address.Generator` sub-module with `latitude/1` and `longitude/1` generators.
+- Consolidated all data-access helpers into a unified `NeoFaker.Data` module.
 
 ### Improvements
 
-- Refactored modules to use dedicated `Validator` and `Generator` sub-modules for improved separation of concerns.
+- Extracted dedicated `Validator` and `Generator` sub-modules across all major modules: `Address`, `App`, `Blood`, `Boolean`, `Color`, `Crypto`, `Date`, `Gravatar`, `HTTP`, `Internet`, `Lorem`, `Number`, `Person`, `Text`, and `Time`.
 - Removed `NeoFaker.Helpers.Constants` in favour of module attributes in each module.
-- Improved locale fallback logic for missing translations.
-- Updated module documentation and option descriptions for consistency and detail.
-- Updated documentation for all new modules and functions.
-- Upgraded dependencies for compatibility with Elixir 1.18.
+- Replaced `@default_locale` attribute with the `:default` atom throughout the codebase for consistency.
+- Stripped `@default_` and `@valid_` prefixes from internal module attributes.
+- Extracted `HTTP.Header` and `HTTP.Validator` into dedicated sub-modules.
+- Split `Internet` helpers into `Internet.Generator` and `Internet.Validator` sub-modules.
+- Split `Lorem` into `Lorem.Parser` and `Lorem.Validator` sub-modules.
+- Removed duplicate private `hash_email!/1` from `Gravatar.Generator`.
+- Renamed `Generator.ex` to `generator.ex` for consistent lowercase filenames.
+- Added `@doc` attributes to all sub-module functions for improved autocomplete support.
+- Bumped minimum Erlang to 28.3 and Elixir to 1.19.4-otp-28.
+- Upgraded Hex dependencies.
+- Updated module documentation: replaced "library" with "package", improved option descriptions, and added detailed examples.
+- Added mise tasks and section comments to `mise.toml`.
+- Renamed the "Available Locales" documentation page to "Locales".
 
 ### Bug Fixes
 
 - Fixed issue where `NeoFaker.Address.city/0` could return `nil` for some locales.
 - Resolved crash in `NeoFaker.Time.time_zone/0` when locale data is incomplete.
+- Fixed validator bug surfaced during `Address` refactor.
 
 ## v0.13.0 (2025-10-29)
 

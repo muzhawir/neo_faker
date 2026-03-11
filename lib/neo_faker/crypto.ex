@@ -179,7 +179,7 @@ defmodule NeoFaker.Crypto do
     end
   end
 
-  def token(length, _opts) when is_integer(length) or length < 1 do
+  def token(length, _opts) when is_integer(length) and length < 1 do
     raise ArgumentError, "length must be a positive integer, got: #{length}"
   end
 

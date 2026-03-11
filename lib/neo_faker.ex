@@ -1,6 +1,6 @@
 defmodule NeoFaker do
   @moduledoc """
-  NeoFaker is a library for generating fake data in Elixir.
+  NeoFaker is a package for generating fake data in Elixir.
 
   This module provides the main interface for starting the application and
   managing locale configuration.

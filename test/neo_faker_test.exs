@@ -33,6 +33,15 @@ defmodule NeoFakerTest do
     end
 
     test "returns :default when no locale is set" do
+      original = Application.get_env(:neo_faker, :locale)
+
+      on_exit(fn ->
+        case original do
+          nil -> Application.delete_env(:neo_faker, :locale)
+          value -> Application.put_env(:neo_faker, :locale, value)
+        end
+      end)
+
       Application.delete_env(:neo_faker, :locale)
       assert NeoFaker.get_locale() == :default
     end

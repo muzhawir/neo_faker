@@ -9,16 +9,16 @@ defmodule NeoFaker.Gravatar do
   @moduledoc since: "0.3.1"
 
   alias NeoFaker.Gravatar.Generator
+  alias NeoFaker.Gravatar.Validator
   alias NeoFaker.Helpers.Options
 
   @typedoc "Email address."
   @type email :: String.t() | nil
 
-  @valid_fallback_types [:identicon, :monsterid, :wavatar, :robohash, :retro, :blank, :"404"]
+  @fallback_types [:identicon, :monsterid, :wavatar, :robohash, :retro, :blank, :"404"]
   @min_size 1
   @max_size 2048
-  @default_size 80
-  @default_fallback :identicon
+  @size 80
 
   @doc """
   Generates a Gravatar image URL.
@@ -75,14 +75,14 @@ defmodule NeoFaker.Gravatar do
   """
   @spec display(email(), Keyword.t()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    size = Options.get(opts, :size, @default_size)
-    fallback = Options.get(opts, :fallback, @default_fallback)
+    size = Options.get(opts, :size, @size)
+    fallback = Options.get(opts, :fallback, :identicon)
     rating = Options.get(opts, :rating, nil)
     force_default = Options.get(opts, :force_default, false)
 
-    validate_size!(size)
-    fallback_string = validate_and_format_fallback!(fallback)
-    validate_rating!(rating)
+    Validator.validate_size!(size)
+    fallback_string = Validator.validate_and_format_fallback!(fallback)
+    Validator.validate_rating!(rating)
 
     validated_size = Generator.image_size(size)
 
@@ -141,7 +141,7 @@ defmodule NeoFaker.Gravatar do
   @spec profile(email(), Keyword.t()) :: String.t()
   def profile(email \\ nil, opts \\ []) do
     format = Options.get(opts, :format, :html)
-    validate_profile_format!(format)
+    Validator.validate_profile_format!(format)
 
     hash = Generator.email_hash(email)
     base_url = "https://gravatar.com/#{hash}"
@@ -166,8 +166,8 @@ defmodule NeoFaker.Gravatar do
   """
   @spec random() :: String.t()
   def random do
-    random_size = Enum.random([@default_size, 100, 120, 150, 200, 256])
-    random_fallback = Enum.random(@valid_fallback_types)
+    random_size = Enum.random([@size, 100, 120, 150, 200, 256])
+    random_fallback = Enum.random(@fallback_types)
 
     display(nil, size: random_size, fallback: random_fallback)
   end
@@ -182,7 +182,7 @@ defmodule NeoFaker.Gravatar do
 
   """
   @spec fallback_types() :: [atom()]
-  def fallback_types, do: @valid_fallback_types
+  def fallback_types, do: @fallback_types
 
   @doc """
   Returns the default image size in pixels.
@@ -194,7 +194,7 @@ defmodule NeoFaker.Gravatar do
 
   """
   @spec default_size() :: pos_integer()
-  def default_size, do: @default_size
+  def default_size, do: @size
 
   @doc """
   Returns the valid image size range.
@@ -207,67 +207,4 @@ defmodule NeoFaker.Gravatar do
   """
   @spec size_range() :: Range.t()
   def size_range, do: @min_size..@max_size
-
-  # Private functions
-
-  @spec validate_size!(integer() | nil) :: :ok
-  defp validate_size!(nil), do: :ok
-
-  defp validate_size!(size) when is_integer(size) and size >= @min_size and size <= @max_size do
-    :ok
-  end
-
-  defp validate_size!(size) when is_integer(size) do
-    raise ArgumentError, "Size must be between #{@min_size} and #{@max_size}, got: #{size}"
-  end
-
-  defp validate_size!(size) do
-    raise ArgumentError,
-          "Size must be an integer between #{@min_size} and #{@max_size}, got: #{inspect(size)}"
-  end
-
-  @spec validate_and_format_fallback!(atom() | String.t()) :: String.t()
-  defp validate_and_format_fallback!(fallback) when is_atom(fallback) do
-    if fallback in @valid_fallback_types do
-      Atom.to_string(fallback)
-    else
-      raise ArgumentError,
-            "Invalid fallback type. Expected one of #{inspect(@valid_fallback_types)} or a URL string, got: #{inspect(fallback)}"
-    end
-  end
-
-  defp validate_and_format_fallback!(fallback) when is_binary(fallback) do
-    # Custom URL - validate it's a reasonable URL format
-    if String.starts_with?(fallback, ["http://", "https://"]) do
-      fallback
-    else
-      raise ArgumentError,
-            "Custom fallback URL must start with http:// or https://, got: #{inspect(fallback)}"
-    end
-  end
-
-  defp validate_and_format_fallback!(fallback) do
-    raise ArgumentError,
-          "Invalid fallback type. Expected atom or string, got: #{inspect(fallback)}"
-  end
-
-  @spec validate_rating!(atom() | nil) :: :ok
-  defp validate_rating!(nil), do: :ok
-
-  defp validate_rating!(rating) when rating in [:g, :pg, :r, :x], do: :ok
-
-  defp validate_rating!(rating) do
-    raise ArgumentError,
-          "Invalid rating. Expected one of [:g, :pg, :r, :x], got: #{inspect(rating)}"
-  end
-
-  @spec validate_profile_format!(atom()) :: :ok
-  defp validate_profile_format!(format) when format in [:html, :json, :xml, :php, :vcf, :qr] do
-    :ok
-  end
-
-  defp validate_profile_format!(format) do
-    raise ArgumentError,
-          "Invalid profile format. Expected one of [:html, :json, :xml, :php, :vcf, :qr], got: #{inspect(format)}"
-  end
 end

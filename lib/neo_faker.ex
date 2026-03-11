@@ -17,7 +17,7 @@ defmodule NeoFaker do
       "Jaka"
 
       iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
-      "Julia"
+      "José"
 
   See the [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
   for the full list of supported locale codes.

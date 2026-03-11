@@ -1,7 +1,11 @@
+# Tools configurations
+
 [tools]
 
 erlang = "28.3"
 elixir = "1.19.4-otp-28"
+
+# Task definitions
 
 [tasks.format]
 

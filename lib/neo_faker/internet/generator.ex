@@ -82,6 +82,46 @@ defmodule NeoFaker.Internet.Generator do
   @first_octet_total elem(@first_octet_table, 1)
 
   @doc """
+  Returns `true` when the address `a.b.c.x` falls inside any IANA special-purpose
+  block that `public_ipv4/0` excludes; `false` when the address is publicly routable.
+
+  Only the first three octets are required because every reserved block that is
+  narrower than a /24 is fully identified by `{a, b, c}` — the fourth octet never
+  changes the classification.
+
+  Reserved ranges checked (RFC references match the module-level comment):
+
+  - `0.x.x.x`          — "This" network (RFC 791)
+  - `10.x.x.x`         — RFC 1918 private class A
+  - `100.64–127.x.x`   — Carrier-grade NAT / CGN (RFC 6598)
+  - `127.x.x.x`        — Loopback (RFC 1122)
+  - `169.254.x.x`      — Link-local (RFC 3927)
+  - `172.16–31.x.x`    — RFC 1918 private class B
+  - `192.0.x.x`        — IETF protocol assignments + TEST-NET-1 (RFC 6890 / RFC 5737)
+  - `192.88.99.x`      — Deprecated 6to4 relay anycast (RFC 7526)
+  - `192.168.x.x`      — RFC 1918 private class C
+  - `198.18–19.x.x`    — Benchmarking (RFC 2544)
+  - `198.51.100.x`     — TEST-NET-2 (RFC 5737)
+  - `203.0.113.x`      — TEST-NET-3 (RFC 5737)
+  - `224–255.x.x.x`    — Multicast + reserved / broadcast (RFC 3171 / RFC 1112)
+  """
+  @spec reserved_ipv4?(non_neg_integer(), non_neg_integer(), non_neg_integer()) :: boolean()
+  def reserved_ipv4?(a, _b, _c) when a == 0, do: true
+  def reserved_ipv4?(a, _b, _c) when a == 10, do: true
+  def reserved_ipv4?(a, b, _c) when a == 100 and b in 64..127, do: true
+  def reserved_ipv4?(a, _b, _c) when a == 127, do: true
+  def reserved_ipv4?(a, b, _c) when a == 169 and b == 254, do: true
+  def reserved_ipv4?(a, b, _c) when a == 172 and b in 16..31, do: true
+  def reserved_ipv4?(a, b, _c) when a == 192 and b == 0, do: true
+  def reserved_ipv4?(a, b, c) when a == 192 and b == 88 and c == 99, do: true
+  def reserved_ipv4?(a, b, _c) when a == 192 and b == 168, do: true
+  def reserved_ipv4?(a, b, _c) when a == 198 and b in 18..19, do: true
+  def reserved_ipv4?(a, b, c) when a == 198 and b == 51 and c == 100, do: true
+  def reserved_ipv4?(a, b, c) when a == 203 and b == 0 and c == 113, do: true
+  def reserved_ipv4?(a, _b, _c) when a in 224..255, do: true
+  def reserved_ipv4?(_a, _b, _c), do: false
+
+  @doc """
   Generates a random publicly routable IPv4 address.
 
   Returns a string in the form `"A.B.C.D"` where the address is guaranteed to

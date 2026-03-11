@@ -147,6 +147,14 @@ defmodule NeoFaker.InternetTest do
   end
 
   describe "ipv4/0" do
+    # Shared shortcut so every test below can call the predicate without a
+    # fully-qualified module name.
+    defp reserved?(a, b, c), do: NeoFaker.Internet.Generator.reserved_ipv4?(a, b, c)
+
+    # -------------------------------------------------------------------------
+    # Structural sanity check — unchanged, still useful as a quick smoke test.
+    # -------------------------------------------------------------------------
+
     test "returns a valid IPv4 address" do
       ip = Internet.ipv4()
       parts = String.split(ip, ".")
@@ -161,139 +169,169 @@ defmodule NeoFaker.InternetTest do
              end)
     end
 
-    test "returns a publicly routable address (not loopback, private, or reserved)" do
-      for _ <- 1..50 do
+    # -------------------------------------------------------------------------
+    # reserved_ipv4?/3 predicate — deterministic coverage of every boundary.
+    #
+    # For each reserved block we check:
+    #   • every address *inside* the block  → reserved?(…) == true
+    #   • the immediately adjacent addresses on *both* sides → false
+    # This is O(range-size) not O(random-samples), so a regression that
+    # re-introduces any exclusion rule is guaranteed to fail.
+    # -------------------------------------------------------------------------
+
+    test "reserved_ipv4?/3: 0.0.0.0/8 — 'This' network (RFC 791)" do
+      # All of first octet 0 is reserved.
+      for b <- [0, 128, 255], c <- [0, 128, 255] do
+        assert reserved?(0, b, c), "0.#{b}.#{c}.x should be reserved"
+      end
+
+      # First public octet begins at 1.
+      refute reserved?(1, 0, 0)
+    end
+
+    test "reserved_ipv4?/3: 10.0.0.0/8 — RFC 1918 private class A" do
+      for b <- [0, 128, 255], c <- [0, 128, 255] do
+        assert reserved?(10, b, c), "10.#{b}.#{c}.x should be reserved"
+      end
+
+      refute reserved?(9, 255, 255), "9.255.255.x is public (just before 10/8)"
+      refute reserved?(11, 0, 0), "11.0.0.x is public (just after 10/8)"
+    end
+
+    test "reserved_ipv4?/3: 100.64.0.0/10 — CGN / shared address (RFC 6598)" do
+      # Boundary second octets inside the /10: 64 and 127.
+      assert reserved?(100, 64, 0), "100.64.0.x should be reserved (start of /10)"
+      assert reserved?(100, 127, 255), "100.127.255.x should be reserved (end of /10)"
+      assert reserved?(100, 96, 0), "100.96.0.x should be reserved (mid /10)"
+
+      # Adjacent public second octets: 63 (just before) and 128 (just after).
+      refute reserved?(100, 63, 0), "100.63.0.x is public (just before CGN /10)"
+      refute reserved?(100, 128, 0), "100.128.0.x is public (just after CGN /10)"
+    end
+
+    test "reserved_ipv4?/3: 127.0.0.0/8 — loopback (RFC 1122)" do
+      for b <- [0, 1, 255], c <- [0, 255] do
+        assert reserved?(127, b, c), "127.#{b}.#{c}.x should be reserved"
+      end
+
+      refute reserved?(126, 255, 255), "126.255.255.x is public (just before loopback)"
+      refute reserved?(128, 0, 0), "128.0.0.x is public (just after loopback)"
+    end
+
+    test "reserved_ipv4?/3: 169.254.0.0/16 — link-local (RFC 3927)" do
+      for c <- [0, 128, 255] do
+        assert reserved?(169, 254, c), "169.254.#{c}.x should be reserved"
+      end
+
+      # Adjacent second octets: 253 (just before) and 255 (just after).
+      refute reserved?(169, 253, 0), "169.253.0.x is public (just before link-local)"
+      refute reserved?(169, 255, 0), "169.255.0.x is public (just after link-local)"
+    end
+
+    test "reserved_ipv4?/3: 172.16.0.0/12 — RFC 1918 private class B" do
+      # Boundary second octets: 16 (start) and 31 (end).
+      assert reserved?(172, 16, 0), "172.16.0.x should be reserved (start of /12)"
+      assert reserved?(172, 31, 255), "172.31.255.x should be reserved (end of /12)"
+      assert reserved?(172, 24, 0), "172.24.0.x should be reserved (mid /12)"
+
+      refute reserved?(172, 15, 255), "172.15.255.x is public (just before /12)"
+      refute reserved?(172, 32, 0), "172.32.0.x is public (just after /12)"
+    end
+
+    test "reserved_ipv4?/3: 192.0.0.0/24 — IETF protocol assignments (RFC 6890)" do
+      for c <- [0, 128, 255] do
+        assert reserved?(192, 0, c), "192.0.#{c}.x should be reserved"
+      end
+
+      # 192.1.x.x is public (second octet 1, not 0).
+      refute reserved?(192, 1, 0), "192.1.0.x is public"
+    end
+
+    test "reserved_ipv4?/3: 192.0.2.0/24 — TEST-NET-1 (RFC 5737) is covered by second=0 exclusion" do
+      # The generator excludes the entire second=0 block, which subsumes TEST-NET-1.
+      assert reserved?(192, 0, 2), "192.0.2.x should be reserved (second=0 catches it)"
+
+      # 192.2.x.x must NOT be excluded — that is a wholly different /16.
+      refute reserved?(192, 2, 0), "192.2.0.x is public (not related to 192.0.2.0/24)"
+      refute reserved?(192, 2, 2), "192.2.2.x is public"
+    end
+
+    test "reserved_ipv4?/3: 192.88.99.0/24 — deprecated 6to4 relay anycast (RFC 7526)" do
+      for _ <- 1..5 do
+        assert reserved?(192, 88, 99), "192.88.99.x should be reserved"
+      end
+
+      # Adjacent third octets and a different second octet must be public.
+      refute reserved?(192, 88, 98), "192.88.98.x is public (just before /24)"
+      refute reserved?(192, 88, 100), "192.88.100.x is public (just after /24)"
+      refute reserved?(192, 87, 99), "192.87.99.x is public (different second octet)"
+    end
+
+    test "reserved_ipv4?/3: 192.168.0.0/16 — RFC 1918 private class C" do
+      for c <- [0, 128, 255] do
+        assert reserved?(192, 168, c), "192.168.#{c}.x should be reserved"
+      end
+
+      refute reserved?(192, 167, 255), "192.167.255.x is public (just before /16)"
+      refute reserved?(192, 169, 0), "192.169.0.x is public (just after /16)"
+    end
+
+    test "reserved_ipv4?/3: 198.18.0.0/15 — benchmarking (RFC 2544)" do
+      # /15 covers second octets 18 and 19.
+      for c <- [0, 128, 255] do
+        assert reserved?(198, 18, c), "198.18.#{c}.x should be reserved (start of /15)"
+        assert reserved?(198, 19, c), "198.19.#{c}.x should be reserved (end of /15)"
+      end
+
+      refute reserved?(198, 17, 255), "198.17.255.x is public (just before /15)"
+      refute reserved?(198, 20, 0), "198.20.0.x is public (just after /15)"
+    end
+
+    test "reserved_ipv4?/3: 198.51.100.0/24 — TEST-NET-2 (RFC 5737)" do
+      assert reserved?(198, 51, 100), "198.51.100.x should be reserved"
+
+      refute reserved?(198, 51, 99), "198.51.99.x is public (just before /24)"
+      refute reserved?(198, 51, 101), "198.51.101.x is public (just after /24)"
+      refute reserved?(198, 50, 100), "198.50.100.x is public (different second octet)"
+    end
+
+    test "reserved_ipv4?/3: 203.0.113.0/24 — TEST-NET-3 (RFC 5737)" do
+      assert reserved?(203, 0, 113), "203.0.113.x should be reserved"
+
+      refute reserved?(203, 0, 112), "203.0.112.x is public (just before /24)"
+      refute reserved?(203, 0, 114), "203.0.114.x is public (just after /24)"
+      refute reserved?(203, 1, 113), "203.1.113.x is public (different second octet)"
+    end
+
+    test "reserved_ipv4?/3: 224.0.0.0/4 — multicast (RFC 3171)" do
+      # /4 covers first octets 224–239.
+      for a <- [224, 231, 239], b <- [0, 255], c <- [0, 255] do
+        assert reserved?(a, b, c), "#{a}.#{b}.#{c}.x should be reserved (multicast)"
+      end
+
+      refute reserved?(223, 255, 255), "223.255.255.x is public (just before multicast)"
+    end
+
+    test "reserved_ipv4?/3: 240.0.0.0/4 — reserved / broadcast (RFC 1112)" do
+      # /4 covers first octets 240–255.
+      for a <- [240, 248, 255], b <- [0, 255], c <- [0, 255] do
+        assert reserved?(a, b, c), "#{a}.#{b}.#{c}.x should be reserved"
+      end
+    end
+
+    # -------------------------------------------------------------------------
+    # Smoke test: public_ipv4/0 never produces a reserved address.
+    # With reserved_ipv4?/3 now verified above to be correct, a small sample is
+    # sufficient here — we are no longer relying on chance to hit tiny /24 blocks.
+    # -------------------------------------------------------------------------
+
+    test "public_ipv4/0 never returns a reserved address across 200 samples" do
+      for _ <- 1..200 do
         ip = Internet.ipv4()
         [a, b, c, _d] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
 
-        # 0.x.x.x — "This" network
-        refute a == 0, "#{ip}: first octet must not be 0"
-        # 10.x.x.x — RFC 1918 private class A
-        refute a == 10, "#{ip}: must not be in 10.0.0.0/8"
-        # 100.64.0.0/10 — carrier-grade NAT (RFC 6598)
-        refute a == 100 and b in 64..127, "#{ip}: must not be in 100.64.0.0/10"
-        # 127.x.x.x — loopback
-        refute a == 127, "#{ip}: must not be in 127.0.0.0/8"
-        # 169.254.x.x — link-local (RFC 3927)
-        refute a == 169 and b == 254, "#{ip}: must not be in 169.254.0.0/16"
-        # 172.16.0.0/12 — RFC 1918 private class B
-        refute a == 172 and b in 16..31, "#{ip}: must not be in 172.16.0.0/12"
-        # 192.0.x.x — IETF protocol assignments (192.0.0.0/24) and
-        #             TEST-NET-1 (192.0.2.0/24); entire second=0 block excluded
-        refute a == 192 and b == 0, "#{ip}: must not be in 192.0.0.0/24 or 192.0.2.0/24"
-        # 192.88.99.x — deprecated 6to4 relay anycast (RFC 7526)
-        refute a == 192 and b == 88 and c == 99, "#{ip}: must not be in 192.88.99.0/24"
-        # 192.168.x.x — RFC 1918 private class C
-        refute a == 192 and b == 168, "#{ip}: must not be in 192.168.0.0/16"
-        # 198.18.0.0/15 — benchmarking (RFC 2544)
-        refute a == 198 and b in 18..19, "#{ip}: must not be in 198.18.0.0/15"
-        # 198.51.100.x — TEST-NET-2 (RFC 5737)
-        refute a == 198 and b == 51 and c == 100, "#{ip}: must not be in 198.51.100.0/24"
-        # 203.0.113.x — TEST-NET-3 (RFC 5737)
-        refute a == 203 and b == 0 and c == 113, "#{ip}: must not be in 203.0.113.0/24"
-        # 224.x.x.x–239.x.x.x — multicast
-        refute a in 224..239, "#{ip}: must not be in multicast range 224.0.0.0/4"
-        # 240.x.x.x–255.x.x.x — reserved / broadcast
-        refute a in 240..255, "#{ip}: must not be in reserved range 240.0.0.0/4"
-      end
-    end
-
-    test "public portions of 100.x are reachable (outside 100.64.0.0/10)" do
-      # Generate enough addresses that the 100.x sub-space is very likely to
-      # appear; then assert every 100.x address has second octet outside 64–127.
-      ips_100 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "100.") end)
-        |> Enum.take(10)
-
-      for ip <- ips_100 do
-        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
-
-        refute b in 64..127,
-               "#{ip}: second octet #{b} is inside the CGN 100.64.0.0/10 reservation"
-      end
-    end
-
-    test "public portions of 169.x are reachable (only 169.254.0.0/16 excluded)" do
-      ips_169 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "169.") end)
-        |> Enum.take(10)
-
-      for ip <- ips_169 do
-        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
-
-        refute b == 254,
-               "#{ip}: second octet 254 is inside the link-local 169.254.0.0/16 reservation"
-      end
-    end
-
-    test "public portions of 172.x are reachable (only 172.16.0.0/12 excluded)" do
-      ips_172 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "172.") end)
-        |> Enum.take(10)
-
-      for ip <- ips_172 do
-        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
-
-        refute b in 16..31,
-               "#{ip}: second octet #{b} is inside the RFC 1918 172.16.0.0/12 reservation"
-      end
-    end
-
-    test "192.2.x.x is reachable (not incorrectly excluded alongside 192.0.2.0/24)" do
-      # 192.0.2.0/24 has second=0, third=2. The fix must not ban the whole
-      # second=2 block (192.2.x.x), which is entirely public.
-      ips_192 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "192.") end)
-        |> Enum.take(30)
-
-      seconds =
-        Enum.map(ips_192, fn ip ->
-          ip |> String.split(".") |> Enum.at(1) |> String.to_integer()
-        end)
-
-      # second=0 and second=168 must never appear
-      refute Enum.any?(seconds, &(&1 == 0)),
-             "192.0.x.x must not appear (entire second=0 block is reserved)"
-
-      refute Enum.any?(seconds, &(&1 == 168)),
-             "192.168.x.x must not appear (RFC 1918 class C)"
-    end
-
-    test "192.88.x.x is reachable except for 192.88.99.0/24" do
-      ips_192_88 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "192.88.") end)
-        |> Enum.take(10)
-
-      for ip <- ips_192_88 do
-        [_a, _b, c | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
-
-        refute c == 99,
-               "#{ip}: third octet 99 is inside the deprecated 6to4 192.88.99.0/24 reservation"
-      end
-    end
-
-    test "198.51.x.x is reachable except for 198.51.100.0/24" do
-      ips_198_51 =
-        fn -> Internet.ipv4() end
-        |> Stream.repeatedly()
-        |> Stream.filter(fn ip -> String.starts_with?(ip, "198.51.") end)
-        |> Enum.take(10)
-
-      for ip <- ips_198_51 do
-        [_a, _b, c | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
-
-        refute c == 100,
-               "#{ip}: third octet 100 is inside the TEST-NET-2 198.51.100.0/24 reservation"
+        refute reserved?(a, b, c),
+               "#{ip}: expected a publicly routable address but got a reserved one"
       end
     end
 

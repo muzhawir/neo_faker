@@ -201,6 +201,36 @@ defmodule NeoFaker.AppTest do
         App.bundle_id(domain: "----.----")
       end
     end
+
+    test "raises ArgumentError when domain has a trailing dot" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "example.com.")
+      end
+    end
+
+    test "raises ArgumentError when domain contains a path separator" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "example.com/path")
+      end
+    end
+
+    test "raises ArgumentError when domain contains a port suffix" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "example.com:443")
+      end
+    end
+
+    test "raises ArgumentError when a domain label starts with a hyphen" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "-example.com")
+      end
+    end
+
+    test "raises ArgumentError when a domain label ends with a hyphen" do
+      assert_raise ArgumentError, fn ->
+        App.bundle_id(domain: "example-.com")
+      end
+    end
   end
 
   describe "package_name/1" do
@@ -277,6 +307,36 @@ defmodule NeoFaker.AppTest do
     test "raises ArgumentError when all domain labels vanish after sanitisation" do
       assert_raise ArgumentError, fn ->
         App.package_name(domain: "----.----")
+      end
+    end
+
+    test "raises ArgumentError when domain has a trailing dot" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "example.com.")
+      end
+    end
+
+    test "raises ArgumentError when domain contains a path separator" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "example.com/path")
+      end
+    end
+
+    test "raises ArgumentError when domain contains a port suffix" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "example.com:443")
+      end
+    end
+
+    test "raises ArgumentError when a domain label starts with a hyphen" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "-example.com")
+      end
+    end
+
+    test "raises ArgumentError when a domain label ends with a hyphen" do
+      assert_raise ArgumentError, fn ->
+        App.package_name(domain: "example-.com")
       end
     end
   end

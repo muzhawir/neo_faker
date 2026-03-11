@@ -5,7 +5,10 @@ defmodule NeoFaker.App.Validator do
 
   @name_styles [:camel_case, :pascal_case, :dashed, :underscore, :single]
   @semver_types [:pre_release, :build, :pre_release_build]
-  @domain_regex ~r/^[^.\s]+\.[^.\s]/
+  # RFC 1123 label: starts and ends with alphanumeric, allows internal hyphens,
+  # 1–63 characters. A valid domain requires at least two such labels (SLD + TLD)
+  # and no trailing dot, path separator, port, or other non-label character.
+  @domain_label_regex ~r/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/
 
   @doc """
   Validates the app name style option.
@@ -44,18 +47,29 @@ defmodule NeoFaker.App.Validator do
   @doc """
   Validates the `:domain` option for `bundle_id/1` and `package_name/1`.
 
-  Raises `ArgumentError` when the value is blank or does not contain at least one dot
-  with non-empty labels on both sides, which would cause the reverse-domain split to
-  produce a `MatchError` at runtime.
+  Raises `ArgumentError` when the value is not a valid domain name. A valid domain
+  must consist of at least two dot-separated labels, each matching the RFC 1123
+  format: starts and ends with an alphanumeric character, contains only letters,
+  digits, and hyphens, and is between 1 and 63 characters long. Values with
+  trailing dots, path separators (`/`), port suffixes (`:`), or any other
+  non-label characters are rejected.
   """
   @spec validate_domain!(String.t()) :: :ok
   def validate_domain!(domain) when is_binary(domain) do
-    if Regex.match?(@domain_regex, domain) do
+    labels = String.split(domain, ".", trim: false)
+
+    valid =
+      length(labels) >= 2 and
+        not String.ends_with?(domain, ".") and
+        Enum.all?(labels, &Regex.match?(@domain_label_regex, &1))
+
+    if valid do
       :ok
     else
       raise ArgumentError,
-            "Invalid domain #{inspect(domain)}. Expected a domain with at least one dot " <>
-              "and non-empty labels on both sides, e.g. \"example.com\"."
+            "Invalid domain #{inspect(domain)}. Expected a valid domain with at least two " <>
+              "dot-separated labels (e.g. \"example.com\"). Each label must start and end " <>
+              "with an alphanumeric character and contain only letters, digits, and hyphens."
     end
   end
 

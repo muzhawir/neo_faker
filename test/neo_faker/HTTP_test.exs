@@ -1,10 +1,10 @@
 defmodule NeoFaker.HTTPTest do
   use ExUnit.Case, async: true
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
   alias NeoFaker.HTTP
 
-  defp fetch_status_codes, do: Cache.fetch!(:default, HTTP, "status_code.exs")
+  defp fetch_status_codes, do: Data.fetch!(:default, HTTP, "status_code.exs")
 
   describe "user_agent/0" do
     test "returns a random user agent" do

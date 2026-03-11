@@ -1,12 +1,12 @@
 defmodule NeoFaker.AddressTest do
   use ExUnit.Case
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @module NeoFaker.Address
 
   defp fetch_cache!(locale, module, file) do
-    locale |> Cache.fetch!(module, file) |> Map.values() |> List.flatten()
+    locale |> Data.fetch!(module, file) |> Map.values() |> List.flatten()
   end
 
   describe "building_number/2" do

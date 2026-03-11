@@ -1,8 +1,7 @@
 defmodule NeoFaker.Internet.TLD do
   @moduledoc false
 
-  alias NeoFaker.Data.Cache
-  alias NeoFaker.Data.Generator
+  alias NeoFaker.Data
 
   @type tld_type :: :all | :all_except_safe | :safe | :generic | :sponsored | :country_code
 
@@ -23,22 +22,22 @@ defmodule NeoFaker.Internet.TLD do
 
       :all ->
         :default
-        |> Cache.fetch!(@module, @tld_file)
+        |> Data.fetch!(@module, @tld_file)
         |> Map.values()
         |> List.flatten()
         |> Enum.random()
 
       :safe ->
-        Generator.random_value(@module, @tld_file, "safe")
+        Data.random_value(@module, @tld_file, "safe")
 
       :generic ->
-        Generator.random_value(@module, @tld_file, "generic")
+        Data.random_value(@module, @tld_file, "generic")
 
       :sponsored ->
-        Generator.random_value(@module, @tld_file, "sponsored")
+        Data.random_value(@module, @tld_file, "sponsored")
 
       :country_code ->
-        Generator.random_value(@module, @tld_file, "country_code")
+        Data.random_value(@module, @tld_file, "country_code")
 
       _ ->
         generate_default_name()
@@ -47,7 +46,7 @@ defmodule NeoFaker.Internet.TLD do
 
   defp generate_default_name do
     :default
-    |> Cache.fetch!(@module, @tld_file)
+    |> Data.fetch!(@module, @tld_file)
     |> Map.delete("safe")
     |> Map.values()
     |> List.flatten()

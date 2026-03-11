@@ -7,7 +7,7 @@ defmodule NeoFaker.Lorem do
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
   alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options

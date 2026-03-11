@@ -75,10 +75,10 @@ defmodule NeoFaker.InternetTest do
       assert domain == "example.com"
     end
 
-    test "returns a random word for unknown type" do
-      domain = Internet.domain_name(type: :unknown)
-      assert is_binary(domain)
-      assert String.match?(domain, ~r/^[a-z]+$/)
+    test "raises ArgumentError for unknown type" do
+      assert_raise ArgumentError, fn ->
+        Internet.domain_name(type: :unknown)
+      end
     end
   end
 

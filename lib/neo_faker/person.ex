@@ -7,7 +7,7 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
   alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options
@@ -412,7 +412,7 @@ defmodule NeoFaker.Person do
 
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
-  def age(min, max \\ @max_age)
+  def age(min \\ 0, max \\ @max_age)
 
   def age(min, max) when is_integer(min) and is_integer(max) do
     validate_age_range!(min, max)

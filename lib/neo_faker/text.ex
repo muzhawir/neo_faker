@@ -7,7 +7,7 @@ defmodule NeoFaker.Text do
   """
   @moduledoc since: "0.8.0"
 
-  alias NeoFaker.Data.Generator
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Text.EmojiGenerator
@@ -173,7 +173,7 @@ defmodule NeoFaker.Text do
   """
   @spec word() :: String.t()
   def word do
-    Generator.random_value(__MODULE__, Constants.word_file(), "words")
+    Data.random_value(__MODULE__, Constants.word_file(), "words")
   end
 
   @doc """

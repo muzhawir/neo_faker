@@ -7,7 +7,7 @@ defmodule NeoFaker.Time do
   """
   @moduledoc since: "0.10.0"
 
-  alias NeoFaker.Data.Generator
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
@@ -127,7 +127,7 @@ defmodule NeoFaker.Time do
   """
   @spec time_zone() :: String.t()
   def time_zone do
-    Generator.random_value(__MODULE__, Constants.time_zone_file(), "time_zone")
+    Data.random_value(__MODULE__, Constants.time_zone_file(), "time_zone")
   end
 
   @doc """

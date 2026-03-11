@@ -10,7 +10,7 @@ defmodule NeoFaker.App do
 
   import NeoFaker.App.Name
   import NeoFaker.App.Semver
-  import NeoFaker.Data.Generator, only: [random_value: 3, random_value: 4]
+  import NeoFaker.Data, only: [random_value: 3, random_value: 4]
 
   alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options

@@ -1,8 +1,7 @@
 defmodule NeoFaker.HTTP.UserAgent do
   @moduledoc false
 
-  alias NeoFaker.Data.Cache
-  alias NeoFaker.Data.Generator
+  alias NeoFaker.Data
 
   @module NeoFaker.HTTP
   @user_agent_file "user_agent.exs"
@@ -19,16 +18,16 @@ defmodule NeoFaker.HTTP.UserAgent do
     case type do
       :all ->
         :default
-        |> Cache.fetch!(@module, @user_agent_file)
+        |> Data.fetch!(@module, @user_agent_file)
         |> Map.values()
         |> List.flatten()
         |> Enum.random()
 
       :browser ->
-        Generator.random_value(@module, @user_agent_file, "browsers")
+        Data.random_value(@module, @user_agent_file, "browsers")
 
       :crawler ->
-        Generator.random_value(@module, @user_agent_file, "crawlers")
+        Data.random_value(@module, @user_agent_file, "crawlers")
 
       other ->
         raise ArgumentError,

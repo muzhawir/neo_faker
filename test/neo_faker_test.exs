@@ -7,7 +7,8 @@ defmodule NeoFakerTest do
 
   describe "locale/0" do
     test "returns current locale" do
-      assert is_atom(NeoFaker.locale())
+      assert {:ok, locale} = NeoFaker.locale()
+      assert is_atom(locale)
     end
   end
 

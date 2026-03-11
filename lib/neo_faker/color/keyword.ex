@@ -1,9 +1,9 @@
 defmodule NeoFaker.Color.Keyword do
   @moduledoc false
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @module NeoFaker.Color
 
@@ -15,7 +15,7 @@ defmodule NeoFaker.Color.Keyword do
   """
   def color(:all, locale) do
     locale
-    |> Cache.fetch!(@module, "keyword.exs")
+    |> Data.fetch!(@module, "keyword.exs")
     |> Map.values()
     |> List.flatten()
     |> Enum.random()

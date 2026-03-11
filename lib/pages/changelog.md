@@ -4,17 +4,17 @@
 
 ### Features
 
-- Added `NeoFaker.Helpers.Constants` for centralized constant values.
 - Added `NeoFaker.Helpers.Formatter` for standardized format conversions.
 - Added `NeoFaker.Helpers.Options` for consistent option extraction and validation.
 
 ### Improvements
 
-- Refactored modules to use new helper modules (`Helpers.Constants`, `Helpers.Formatter`, `Helpers.Options`) for improved maintainability and clarity.
+- Refactored modules to use dedicated `Validator` and `Generator` sub-modules for improved separation of concerns.
+- Removed `NeoFaker.Helpers.Constants` in favour of module attributes in each module.
 - Improved locale fallback logic for missing translations.
 - Updated module documentation and option descriptions for consistency and detail.
 - Updated documentation for all new modules and functions.
-- Upgraded dependencies for compatibility with Elixir 1.17.
+- Upgraded dependencies for compatibility with Elixir 1.18.
 
 ### Bug Fixes
 

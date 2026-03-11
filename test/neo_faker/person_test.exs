@@ -8,8 +8,8 @@ defmodule NeoFaker.PersonTest do
 
   defp valid_name?(name), do: is_binary(name) and String.valid?(name) and name != ""
 
-  defp fetch_word_list(locale, file) do
-    locale |> Data.fetch!(@module, file) |> Map.values() |> List.flatten()
+  defp fetch_key(locale, file, key) do
+    locale |> Data.fetch!(@module, file) |> Map.fetch!(key)
   end
 
   describe "first_name/1" do
@@ -44,13 +44,13 @@ defmodule NeoFaker.PersonTest do
 
   describe "prefix/1" do
     test "returns a prefix from the default locale word list" do
-      word_list = fetch_word_list(:default, "name_affixes.exs")
+      word_list = fetch_key(:default, "name_affixes.exs", "prefixes")
 
       assert Person.prefix(locale: :default) in word_list
     end
 
     test "returns a prefix from the id_id locale word list" do
-      word_list = fetch_word_list(:id_id, "name_affixes.exs")
+      word_list = fetch_key(:id_id, "name_affixes.exs", "prefixes")
 
       assert Person.prefix(locale: :id_id) in word_list
     end
@@ -58,13 +58,13 @@ defmodule NeoFaker.PersonTest do
 
   describe "suffix/1" do
     test "returns a suffix from the default locale word list" do
-      word_list = fetch_word_list(:default, "name_affixes.exs")
+      word_list = fetch_key(:default, "name_affixes.exs", "suffixes")
 
       assert Person.suffix(locale: :default) in word_list
     end
 
     test "returns a suffix from the id_id locale word list" do
-      word_list = fetch_word_list(:id_id, "name_affixes.exs")
+      word_list = fetch_key(:id_id, "name_affixes.exs", "suffixes")
 
       assert Person.suffix(locale: :id_id) in word_list
     end
@@ -78,13 +78,13 @@ defmodule NeoFaker.PersonTest do
 
   describe "binary_gender/1" do
     test "returns a binary gender from the default locale word list" do
-      word_list = fetch_word_list(:default, "gender.exs")
+      word_list = fetch_key(:default, "gender.exs", "binary")
 
       assert Person.binary_gender(locale: :default) in word_list
     end
 
     test "returns a binary gender from the id_id locale word list" do
-      word_list = fetch_word_list(:id_id, "gender.exs")
+      word_list = fetch_key(:id_id, "gender.exs", "binary")
 
       assert Person.binary_gender(locale: :id_id) in word_list
     end
@@ -108,13 +108,13 @@ defmodule NeoFaker.PersonTest do
 
   describe "non_binary_gender/1" do
     test "returns a non-binary gender from the default locale word list" do
-      word_list = fetch_word_list(:default, "gender.exs")
+      word_list = fetch_key(:default, "gender.exs", "non_binary")
 
       assert Person.non_binary_gender(locale: :default) in word_list
     end
 
     test "returns a non-binary gender from the id_id locale word list" do
-      word_list = fetch_word_list(:id_id, "gender.exs")
+      word_list = fetch_key(:id_id, "gender.exs", "non_binary")
 
       assert Person.non_binary_gender(locale: :id_id) in word_list
     end

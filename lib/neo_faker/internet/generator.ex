@@ -2,66 +2,78 @@ defmodule NeoFaker.Internet.Generator do
   @moduledoc false
 
   # ---------------------------------------------------------------------------
-  # IANA-reserved first-octet ranges excluded from public_ipv4/0:
+  # IANA special-purpose blocks excluded from public_ipv4/0 (iana.org):
   #
-  #   0          – "This" network (RFC 1122)
-  #   10         – RFC 1918 private class A
-  #   100        – 100.64.0.0/10 shared address / carrier-grade NAT (RFC 6598)
-  #               (100.64–100.127 are reserved; we exclude the whole octet 100
-  #                for simplicity since all of 100.x.x.x is CGN or otherwise
-  #                unroutable in practice)
-  #   127        – Loopback (RFC 1122)
-  #   169        – 169.254.0.0/16 link-local (RFC 3927)
-  #   172        – 172.16.0.0/12 RFC 1918 private class B
-  #   192        – Several sub-ranges (RFC 1918 class C, TEST-NET, 6to4 relay,
-  #               IETF protocol assignments) – handled per second octet below
-  #   198        – 198.18.0.0/15 benchmarking (RFC 2544) and
-  #               198.51.100.0/24 TEST-NET-2 (RFC 5737) – handled below
-  #   203        – 203.0.113.0/24 TEST-NET-3 (RFC 5737) – handled below
-  #   224–239    – Multicast (RFC 3171)
-  #   240–255    – Reserved / broadcast (RFC 1112)
+  #   0.0.0.0/8        – "This" network (RFC 791 / RFC 1122)
+  #   10.0.0.0/8       – RFC 1918 private class A
+  #   100.64.0.0/10    – Shared address / CGN (RFC 6598); second octets 64–127
+  #   127.0.0.0/8      – Loopback (RFC 1122)
+  #   169.254.0.0/16   – Link-local (RFC 3927); second octet 254 only
+  #   172.16.0.0/12    – RFC 1918 private class B; second octets 16–31
+  #   192.0.0.0/24     – IETF protocol assignments (RFC 6890); second=0, all thirds
+  #   192.0.2.0/24     – TEST-NET-1 (RFC 5737); second=0, third=2 (covered above)
+  #   192.88.99.0/24   – Deprecated 6to4 relay (RFC 7526); second=88, third=99
+  #   192.168.0.0/16   – RFC 1918 private class C; second=168, all thirds
+  #   198.18.0.0/15    – Benchmarking (RFC 2544); second octets 18–19
+  #   198.51.100.0/24  – TEST-NET-2 (RFC 5737); second=51, third=100
+  #   203.0.113.0/24   – TEST-NET-3 (RFC 5737); second=0, third=113
+  #   224.0.0.0/4      – Multicast (RFC 3171)
+  #   240.0.0.0/4      – Reserved / broadcast (RFC 1112)
   #
-  # Strategy: build a compact list of {first_octet, weight} pairs that cover
-  # only the genuinely public /8 blocks, then select uniformly. For the three
-  # first octets that have mixed public/reserved sub-ranges (192, 198, 203) we
-  # pick them with the correct probability and then validate the sub-range with
-  # a guard on the remaining octets.
+  # Strategy: the first-octet table covers every /8 that contains at least one
+  # public address. Octets with mixed public/reserved sub-ranges (100, 169, 172,
+  # 192, 198, 203) are weighted by their count of valid second octets and then
+  # have their narrow reserved sub-ranges excluded in pick_public_second_octet/1
+  # or pick_public_third_octet/2.
   # ---------------------------------------------------------------------------
 
-  # Each entry is {first_octet, count_of_valid_second_octets_0_to_255}.
-  # Pure-public /8 blocks each contribute weight 1 (normalised).
-  # 192: out of 256 possible second octets, the reserved ones are:
-  #   0   (192.0.0.0/24  – IETF protocol assignments)
-  #   2   (192.0.2.0/24  – TEST-NET-1)
-  #   88  (192.88.99.0/24 – deprecated 6to4; whole /24 reserved)
-  #   168 (192.168.0.0/16 – RFC 1918 class C)
-  #   → 252 valid second octets out of 256
-  # 198: reserved second octets are 18, 19 (benchmarking /15) and 51 (TEST-NET-2).
-  #   → 253 valid second octets out of 256
-  # 203: only 203.0.113.x is reserved.
-  #   → all second octets are valid (we check the sub-range inline)
+  # Weights for mixed-range first octets (valid second-octet counts out of 256):
+  #
+  #   100 – 100.64–127 reserved (/10 = 64 second octets); 256 − 64 = 192 valid
+  #   169 – 169.254 reserved (/16 = 1 second octet);      256 −  1 = 255 valid
+  #   172 – 172.16–31 reserved (/12 = 16 second octets);  256 − 16 = 240 valid
+  #   192 – second=0 (/24, IETF) and second=168 (/16, RFC1918) fully excluded;
+  #         second=88 and second=51 are public but need third-octet guards → 254 valid
+  #   198 – second=18,19 (/15) fully excluded; second=51 needs third-octet guard → 253 valid (254 − 1 for the /15)
+  #         Wait – 198: exclude 18,19 (fully reserved /15) → 254 valid second octets
+  #   203 – second=0, third=113 only; all 256 second octets valid (guard in third)
+  #
+  # Re-deriving 192: exclude second=0 (covers both 192.0.0.0/24 and 192.0.2.0/24)
+  # and second=168 (192.168.0.0/16). second=88 stays (only /24 reserved, handled
+  # in pick_public_third_octet). → 256 − 2 = 254 valid second octets.
+  #
+  # Re-deriving 198: exclude second=18 and second=19 (198.18.0.0/15). second=51
+  # stays (only one /24 reserved, handled in pick_public_third_octet).
+  # → 256 − 2 = 254 valid second octets.
 
-  # Public /8 blocks: 1–9, 11–99, 101–126, 128–168, 170–171, 173–191,
-  #                   193–197, 199–202, 204–223
-  # We encode this as a flat list of inclusive ranges of first octets:
+  # The table is a list of {weight, lo, hi} ranges of first octets.
+  # Pure-public /8 blocks each have weight 256 (all second octets valid).
+  # Mixed blocks carry their actual valid-second-octet count as weight.
   @public_first_octet_ranges [
-    {1, 9},
-    {11, 99},
-    {101, 126},
-    {128, 168},
-    {170, 171},
-    {173, 191},
-    {193, 197},
-    {199, 202},
-    {204, 223}
+    # weight, lo, hi
+    {256, 1, 9},
+    {256, 11, 99},
+    {192, 100, 100},
+    {256, 101, 126},
+    {256, 128, 168},
+    {255, 169, 169},
+    {240, 172, 172},
+    {256, 173, 191},
+    {254, 192, 192},
+    {256, 193, 197},
+    {254, 198, 198},
+    {256, 199, 202},
+    {256, 203, 203},
+    {256, 204, 223}
   ]
 
   # Pre-compute the cumulative weight table at compile time so public_ipv4/0
   # costs only a single :rand.uniform/1 call for the first octet.
   {entries, total} =
-    Enum.map_reduce(@public_first_octet_ranges, 0, fn {lo, hi}, cumulative ->
-      new_cumulative = cumulative + (hi - lo + 1)
-      {{new_cumulative, lo, hi}, new_cumulative}
+    Enum.map_reduce(@public_first_octet_ranges, 0, fn {weight, lo, hi}, cumulative ->
+      range_weight = weight * (hi - lo + 1)
+      new_cumulative = cumulative + range_weight
+      {{new_cumulative, weight, lo, hi}, new_cumulative}
     end)
 
   @first_octet_table {entries, total}
@@ -73,23 +85,27 @@ defmodule NeoFaker.Internet.Generator do
   Generates a random publicly routable IPv4 address.
 
   Returns a string in the form `"A.B.C.D"` where the address is guaranteed to
-  fall outside all IANA-reserved ranges, including:
+  fall outside all IANA special-purpose ranges, including:
 
-  - `0.0.0.0/8` — "This" network
+  - `0.0.0.0/8` — "This" network (RFC 791)
   - `10.0.0.0/8` — RFC 1918 private class A
   - `100.64.0.0/10` — Shared address / carrier-grade NAT (RFC 6598)
-  - `127.0.0.0/8` — Loopback
+  - `127.0.0.0/8` — Loopback (RFC 1122)
   - `169.254.0.0/16` — Link-local (RFC 3927)
   - `172.16.0.0/12` — RFC 1918 private class B
-  - `192.0.0.0/24` — IETF protocol assignments
+  - `192.0.0.0/24` — IETF protocol assignments (RFC 6890)
   - `192.0.2.0/24` — TEST-NET-1 (RFC 5737)
   - `192.88.99.0/24` — Deprecated 6to4 relay anycast (RFC 7526)
   - `192.168.0.0/16` — RFC 1918 private class C
   - `198.18.0.0/15` — Benchmarking (RFC 2544)
   - `198.51.100.0/24` — TEST-NET-2 (RFC 5737)
   - `203.0.113.0/24` — TEST-NET-3 (RFC 5737)
-  - `224.0.0.0/4` — Multicast
-  - `240.0.0.0/4` — Reserved / broadcast
+  - `224.0.0.0/4` — Multicast (RFC 3171)
+  - `240.0.0.0/4` — Reserved / broadcast (RFC 1112)
+
+  All other addresses in `1.0.0.0`–`223.255.255.255` are eligible, including
+  the public portions of `100.x`, `169.x`, `172.x`, `192.x`, `198.x`, and
+  `203.x` that fall outside the reserved sub-blocks above.
   """
   @spec public_ipv4() :: String.t()
   def public_ipv4 do
@@ -108,41 +124,77 @@ defmodule NeoFaker.Internet.Generator do
     find_octet_in_table(@first_octet_entries, n)
   end
 
+  # Each table entry is {cumulative_weight, per_octet_weight, lo, hi}.
+  # Within a range all first octets are equally weighted, so we first find
+  # which range n falls into, then pick uniformly within that range.
   @spec find_octet_in_table(list(), pos_integer()) :: non_neg_integer()
-  defp find_octet_in_table([{cumulative, lo, hi} | rest], n) do
+  defp find_octet_in_table([{cumulative, weight, lo, hi} | rest], n) do
     if n <= cumulative do
-      # prev_cumulative is the total weight of all ranges before this one.
-      # offset (0-based) into this range = n - prev_cumulative - 1
-      prev_cumulative = cumulative - (hi - lo + 1)
-      lo + (n - prev_cumulative - 1)
+      # How far into this range is n?  Subtract the weight of all previous
+      # ranges, then divide by per-octet weight to get the range offset.
+      prev_cumulative = cumulative - weight * (hi - lo + 1)
+      offset = div(n - prev_cumulative - 1, weight)
+      lo + offset
     else
       find_octet_in_table(rest, n)
     end
   end
 
-  # For the mixed-public/reserved first octets we restrict the second octet to
-  # avoid their reserved sub-ranges. All other first octets allow any second
-  # octet (0–255).
+  # ---------------------------------------------------------------------------
+  # Second-octet guards for mixed public/reserved first octets.
+  # Pure-public first octets fall through to the catch-all clause.
+  # ---------------------------------------------------------------------------
   @spec pick_public_second_octet(non_neg_integer()) :: non_neg_integer()
 
-  # 192: avoid 0 (IETF protocol assignments), 2 (TEST-NET-1),
-  #      88 (deprecated 6to4 relay anycast), and 168 (RFC 1918 class C).
-  defp pick_public_second_octet(192) do
-    Enum.random(Enum.reject(0..255, &(&1 in [0, 2, 88, 168])))
+  # 100.64.0.0/10 — second octets 64–127 are CGN (RFC 6598).
+  # 100.0–100.63 and 100.128–100.255 are public.
+  defp pick_public_second_octet(100) do
+    Enum.random(Enum.reject(0..255, &(&1 in 64..127)))
   end
 
-  # 198: avoid 18 and 19 (benchmarking /15) and 51 (TEST-NET-2).
+  # 169.254.0.0/16 — only second octet 254 is link-local (RFC 3927).
+  defp pick_public_second_octet(169) do
+    Enum.random(Enum.reject(0..255, &(&1 == 254)))
+  end
+
+  # 172.16.0.0/12 — second octets 16–31 are RFC 1918 private (RFC 1918).
+  defp pick_public_second_octet(172) do
+    Enum.random(Enum.reject(0..255, &(&1 in 16..31)))
+  end
+
+  # 192: exclude second=0 entirely (covers 192.0.0.0/24 IETF assignments and
+  #      192.0.2.0/24 TEST-NET-1 — both have second=0).
+  #      Exclude second=168 (192.168.0.0/16 RFC 1918 class C).
+  #      second=88 is kept; 192.88.99.0/24 is handled in pick_public_third_octet.
+  defp pick_public_second_octet(192) do
+    Enum.random(Enum.reject(0..255, &(&1 in [0, 168])))
+  end
+
+  # 198: exclude second=18 and second=19 (198.18.0.0/15 benchmarking, RFC 2544).
+  #      second=51 is kept; 198.51.100.0/24 TEST-NET-2 is handled in
+  #      pick_public_third_octet.
   defp pick_public_second_octet(198) do
-    Enum.random(Enum.reject(0..255, &(&1 in [18, 19, 51])))
+    Enum.random(Enum.reject(0..255, &(&1 in 18..19)))
   end
 
   defp pick_public_second_octet(_first), do: :rand.uniform(256) - 1
 
-  # For the 203.0.113.0/24 TEST-NET-3 sub-range the reserved bits span two
-  # octets (second=0, third=113), so we guard the third octet here.
-  # All other first/second combinations allow any third octet (0–255).
+  # ---------------------------------------------------------------------------
+  # Third-octet guards for sub-/16 reservations.
+  # ---------------------------------------------------------------------------
   @spec pick_public_third_octet(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
 
+  # 192.88.99.0/24 — deprecated 6to4 relay anycast (RFC 7526).
+  defp pick_public_third_octet(192, 88) do
+    Enum.random(Enum.reject(0..255, &(&1 == 99)))
+  end
+
+  # 198.51.100.0/24 — TEST-NET-2 (RFC 5737).
+  defp pick_public_third_octet(198, 51) do
+    Enum.random(Enum.reject(0..255, &(&1 == 100)))
+  end
+
+  # 203.0.113.0/24 — TEST-NET-3 (RFC 5737).
   defp pick_public_third_octet(203, 0) do
     Enum.random(Enum.reject(0..255, &(&1 == 113)))
   end

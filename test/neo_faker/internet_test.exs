@@ -178,10 +178,9 @@ defmodule NeoFaker.InternetTest do
         refute a == 169 and b == 254, "#{ip}: must not be in 169.254.0.0/16"
         # 172.16.0.0/12 — RFC 1918 private class B
         refute a == 172 and b in 16..31, "#{ip}: must not be in 172.16.0.0/12"
-        # 192.0.0.x — IETF protocol assignments
-        refute a == 192 and b == 0 and c == 0, "#{ip}: must not be in 192.0.0.0/24"
-        # 192.0.2.x — TEST-NET-1 (RFC 5737)
-        refute a == 192 and b == 0 and c == 2, "#{ip}: must not be in 192.0.2.0/24"
+        # 192.0.x.x — IETF protocol assignments (192.0.0.0/24) and
+        #             TEST-NET-1 (192.0.2.0/24); entire second=0 block excluded
+        refute a == 192 and b == 0, "#{ip}: must not be in 192.0.0.0/24 or 192.0.2.0/24"
         # 192.88.99.x — deprecated 6to4 relay anycast (RFC 7526)
         refute a == 192 and b == 88 and c == 99, "#{ip}: must not be in 192.88.99.0/24"
         # 192.168.x.x — RFC 1918 private class C
@@ -196,6 +195,105 @@ defmodule NeoFaker.InternetTest do
         refute a in 224..239, "#{ip}: must not be in multicast range 224.0.0.0/4"
         # 240.x.x.x–255.x.x.x — reserved / broadcast
         refute a in 240..255, "#{ip}: must not be in reserved range 240.0.0.0/4"
+      end
+    end
+
+    test "public portions of 100.x are reachable (outside 100.64.0.0/10)" do
+      # Generate enough addresses that the 100.x sub-space is very likely to
+      # appear; then assert every 100.x address has second octet outside 64–127.
+      ips_100 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "100.") end)
+        |> Enum.take(10)
+
+      for ip <- ips_100 do
+        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+        refute b in 64..127,
+               "#{ip}: second octet #{b} is inside the CGN 100.64.0.0/10 reservation"
+      end
+    end
+
+    test "public portions of 169.x are reachable (only 169.254.0.0/16 excluded)" do
+      ips_169 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "169.") end)
+        |> Enum.take(10)
+
+      for ip <- ips_169 do
+        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+        refute b == 254,
+               "#{ip}: second octet 254 is inside the link-local 169.254.0.0/16 reservation"
+      end
+    end
+
+    test "public portions of 172.x are reachable (only 172.16.0.0/12 excluded)" do
+      ips_172 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "172.") end)
+        |> Enum.take(10)
+
+      for ip <- ips_172 do
+        [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+        refute b in 16..31,
+               "#{ip}: second octet #{b} is inside the RFC 1918 172.16.0.0/12 reservation"
+      end
+    end
+
+    test "192.2.x.x is reachable (not incorrectly excluded alongside 192.0.2.0/24)" do
+      # 192.0.2.0/24 has second=0, third=2. The fix must not ban the whole
+      # second=2 block (192.2.x.x), which is entirely public.
+      ips_192 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "192.") end)
+        |> Enum.take(30)
+
+      seconds =
+        Enum.map(ips_192, fn ip ->
+          ip |> String.split(".") |> Enum.at(1) |> String.to_integer()
+        end)
+
+      # second=0 and second=168 must never appear
+      refute Enum.any?(seconds, &(&1 == 0)),
+             "192.0.x.x must not appear (entire second=0 block is reserved)"
+
+      refute Enum.any?(seconds, &(&1 == 168)),
+             "192.168.x.x must not appear (RFC 1918 class C)"
+    end
+
+    test "192.88.x.x is reachable except for 192.88.99.0/24" do
+      ips_192_88 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "192.88.") end)
+        |> Enum.take(10)
+
+      for ip <- ips_192_88 do
+        [_a, _b, c | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+        refute c == 99,
+               "#{ip}: third octet 99 is inside the deprecated 6to4 192.88.99.0/24 reservation"
+      end
+    end
+
+    test "198.51.x.x is reachable except for 198.51.100.0/24" do
+      ips_198_51 =
+        fn -> Internet.ipv4() end
+        |> Stream.repeatedly()
+        |> Stream.filter(fn ip -> String.starts_with?(ip, "198.51.") end)
+        |> Enum.take(10)
+
+      for ip <- ips_198_51 do
+        [_a, _b, c | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+        refute c == 100,
+               "#{ip}: third octet 100 is inside the TEST-NET-2 198.51.100.0/24 reservation"
       end
     end
 

@@ -111,22 +111,6 @@ defmodule NeoFaker.Blood do
   end
 
   @doc """
-  Returns all 8 possible blood group combinations in the ABO and Rh systems.
-
-  ## Examples
-
-      iex> NeoFaker.Blood.all_groups()
-      ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
-
-  """
-  @spec all_groups() :: [String.t()]
-  def all_groups do
-    for blood_type <- @blood_types, rh <- @rh_factors do
-      "#{blood_type}#{rh}"
-    end
-  end
-
-  @doc """
   Returns all 4 blood types in the ABO system.
 
   ## Examples

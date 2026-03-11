@@ -10,10 +10,8 @@ defmodule NeoFaker.Crypto do
   import Bitwise
   import NeoFaker.Crypto.Hash, only: [generate_hash: 2]
 
+  alias NeoFaker.Crypto.Validator
   alias NeoFaker.Helpers.Options
-
-  @valid_case_options [:lower, :upper]
-  @valid_hash_types [:md5, :sha1, :sha256, :sha512]
 
   @doc """
   Generates a random MD5 hash.
@@ -35,7 +33,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec md5(Keyword.t()) :: String.t()
   def md5(opts \\ []) do
-    validate_case_option!(opts)
+    Validator.validate_case_option!(opts)
     generate_hash(:md5, opts)
   end
 
@@ -59,7 +57,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha1(Keyword.t()) :: String.t()
   def sha1(opts \\ []) do
-    validate_case_option!(opts)
+    Validator.validate_case_option!(opts)
     generate_hash(:sha, opts)
   end
 
@@ -83,7 +81,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha256(Keyword.t()) :: String.t()
   def sha256(opts \\ []) do
-    validate_case_option!(opts)
+    Validator.validate_case_option!(opts)
     generate_hash(:sha256, opts)
   end
 
@@ -107,7 +105,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha512(Keyword.t()) :: String.t()
   def sha512(opts \\ []) do
-    validate_case_option!(opts)
+    Validator.validate_case_option!(opts)
     generate_hash(:sha512, opts)
   end
 
@@ -133,8 +131,8 @@ defmodule NeoFaker.Crypto do
   """
   @spec hash(atom(), Keyword.t()) :: String.t()
   def hash(type, opts \\ []) do
-    validate_hash_type!(type)
-    validate_case_option!(opts)
+    Validator.validate_hash_type!(type)
+    Validator.validate_case_option!(opts)
 
     case type do
       :md5 -> generate_hash(:md5, opts)
@@ -171,7 +169,7 @@ defmodule NeoFaker.Crypto do
 
   def token(length, opts) when is_integer(length) and length > 0 do
     encoding = Options.get(opts, :encoding, :base64)
-    validate_encoding!(encoding)
+    Validator.validate_encoding!(encoding)
 
     random_bytes = :crypto.strong_rand_bytes(length)
 
@@ -214,8 +212,8 @@ defmodule NeoFaker.Crypto do
     format = Options.get(opts, :format, :standard)
     case_opt = Options.get(opts, :case, :lower)
 
-    validate_case_option!(case: case_opt)
-    validate_uuid_format!(format)
+    Validator.validate_case_option!(case: case_opt)
+    Validator.validate_uuid_format!(format)
 
     # Generate random bytes
     <<a::32, b::16, c::16, d::16, e::48>> = :crypto.strong_rand_bytes(16)
@@ -238,48 +236,5 @@ defmodule NeoFaker.Crypto do
       :lower -> String.downcase(uuid_string)
       :upper -> String.upcase(uuid_string)
     end
-  end
-
-  # Private functions
-
-  @spec validate_case_option!(Keyword.t()) :: :ok
-  defp validate_case_option!(opts) do
-    case_opt = Options.get(opts, :case, :lower)
-
-    case Options.validate_enum(:case, case_opt, @valid_case_options) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_hash_type!(atom()) :: :ok
-  defp validate_hash_type!(type) do
-    case Options.validate_enum(:hash_type, type, @valid_hash_types) do
-      :ok ->
-        :ok
-
-      {:error, _reason} ->
-        raise ArgumentError,
-              "Invalid hash type. Expected one of #{inspect(@valid_hash_types)}, got: #{inspect(type)}"
-    end
-  end
-
-  @spec validate_encoding!(atom()) :: :ok
-  defp validate_encoding!(encoding) when encoding in [:base64, :hex], do: :ok
-
-  defp validate_encoding!(encoding) do
-    raise ArgumentError,
-          "Invalid encoding. Expected one of [:base64, :hex], got: #{inspect(encoding)}"
-  end
-
-  @spec validate_uuid_format!(atom()) :: :ok
-  defp validate_uuid_format!(format) when format in [:standard, :compact], do: :ok
-
-  defp validate_uuid_format!(format) do
-    raise ArgumentError,
-          "Invalid UUID format. Expected one of [:standard, :compact], got: #{inspect(format)}"
   end
 end

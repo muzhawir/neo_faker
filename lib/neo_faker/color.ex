@@ -15,8 +15,10 @@ defmodule NeoFaker.Color do
   alias NeoFaker.Color.Keyword, as: KeywordColor
   alias NeoFaker.Color.RGB
   alias NeoFaker.Color.RGBA
-  alias NeoFaker.Helpers.Constants
+  alias NeoFaker.Color.Validator
   alias NeoFaker.Helpers.Options
+
+  @default_locale :default
 
   @doc """
   Generates a random CMYK color.
@@ -41,7 +43,7 @@ defmodule NeoFaker.Color do
   def cmyk(opts \\ []) do
     color_tuple = CMYK.color_tuple()
 
-    case get_and_validate_color_format!(opts) do
+    case Validator.get_and_validate_color_format!(opts) do
       :w3c -> CMYK.color_w3c(color_tuple)
       _ -> color_tuple
     end
@@ -73,7 +75,7 @@ defmodule NeoFaker.Color do
   def hex(opts \\ []) do
     format = Options.get(opts, :format, :six_digit)
 
-    validate_hex_format!(format)
+    Validator.validate_hex_format!(format)
 
     digits =
       case format do
@@ -110,7 +112,7 @@ defmodule NeoFaker.Color do
   def hsl(opts \\ []) do
     color_tuple = HSL.color_tuple()
 
-    case get_and_validate_color_format!(opts) do
+    case Validator.get_and_validate_color_format!(opts) do
       :w3c -> HSL.color_w3c(color_tuple)
       _ -> color_tuple
     end
@@ -140,7 +142,7 @@ defmodule NeoFaker.Color do
   def hsla(opts \\ []) do
     color_tuple = HSLA.color_tuple()
 
-    case get_and_validate_color_format!(opts) do
+    case Validator.get_and_validate_color_format!(opts) do
       :w3c -> HSLA.color_w3c(color_tuple)
       _ -> color_tuple
     end
@@ -172,9 +174,9 @@ defmodule NeoFaker.Color do
   @spec keyword(Keyword.t()) :: String.t()
   def keyword(opts \\ []) do
     category = Options.get(opts, :category, :all)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, @default_locale)
 
-    validate_color_category!(category)
+    Validator.validate_color_category!(category)
 
     KeywordColor.color(category, locale)
   end
@@ -202,7 +204,7 @@ defmodule NeoFaker.Color do
   def rgb(opts \\ []) do
     color_tuple = RGB.color_tuple()
 
-    case get_and_validate_color_format!(opts) do
+    case Validator.get_and_validate_color_format!(opts) do
       :w3c -> RGB.color_w3c(color_tuple)
       _ -> color_tuple
     end
@@ -232,7 +234,7 @@ defmodule NeoFaker.Color do
   def rgba(opts \\ []) do
     color_tuple = RGBA.color_tuple()
 
-    case get_and_validate_color_format!(opts) do
+    case Validator.get_and_validate_color_format!(opts) do
       :w3c -> RGBA.color_w3c(color_tuple)
       _ -> color_tuple
     end
@@ -267,56 +269,7 @@ defmodule NeoFaker.Color do
       end
     else
       # Random format selection
-      Enum.random([
-        cmyk(),
-        hex(),
-        hsl(),
-        hsla(),
-        rgb(),
-        rgba()
-      ])
-    end
-  end
-
-  # Private functions
-
-  @spec get_and_validate_color_format!(Keyword.t()) :: atom() | nil
-  defp get_and_validate_color_format!(opts) do
-    format = Options.get(opts, :format, nil)
-    valid_formats = Constants.valid_color_formats()
-
-    case Options.validate_enum(:format, format, valid_formats) do
-      :ok ->
-        format
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_hex_format!(atom()) :: :ok
-  defp validate_hex_format!(format) do
-    valid_formats = Constants.valid_hex_formats()
-
-    case Options.validate_enum(:format, format, valid_formats) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_color_category!(atom()) :: :ok
-  defp validate_color_category!(category) do
-    valid_categories = Constants.valid_color_keyword_categories()
-
-    case Options.validate_enum(:category, category, valid_categories) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
+      Enum.random([cmyk(), hex(), hsl(), hsla(), rgb(), rgba()])
     end
   end
 end

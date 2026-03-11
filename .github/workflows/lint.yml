@@ -2,7 +2,7 @@ name: Lint & Test
 
 on:
   pull_request:
-    branches-ignore: [ "main" ]
+    branches-ignore: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -19,8 +19,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.18.2'
-          otp-version: '27.2.1'
+          elixir-version: "1.19.4"
+          otp-version: "28.3"
 
       - name: Cache dependencies
         uses: actions/cache@v3

@@ -8,6 +8,7 @@ defmodule NeoFaker.Internet.Validator do
   @domain_types [:random, :popular, :custom]
   @popular_domain_types [:all, :ecommerce, :email, :search, :social]
   @tld_types [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]
+  @ipv4_classes [:a, :b, :c]
 
   @doc """
   Validates the username joiner option.
@@ -129,5 +130,21 @@ defmodule NeoFaker.Internet.Validator do
   def validate_protocol!(protocol) do
     raise ArgumentError,
           "Invalid protocol. Expected one of [:http, :https], got: #{inspect(protocol)}"
+  end
+
+  @doc """
+  Validates the private IPv4 class option.
+
+  Raises `ArgumentError` if the class is not one of `#{inspect(@ipv4_classes)}`.
+  """
+  @spec validate_ipv4_class!(atom()) :: :ok
+  def validate_ipv4_class!(class) do
+    case Options.validate_enum(:class, class, @ipv4_classes) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        raise ArgumentError, reason
+    end
   end
 end

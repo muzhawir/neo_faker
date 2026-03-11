@@ -304,6 +304,7 @@ defmodule NeoFaker.Internet do
 
     if private do
       class = Options.get(opts, :class, Enum.random([:a, :b, :c]))
+      Validator.validate_ipv4_class!(class)
       Generator.private_ipv4(class)
     else
       Generator.public_ipv4()

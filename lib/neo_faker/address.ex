@@ -1,71 +1,70 @@
 defmodule NeoFaker.Address do
   @moduledoc """
-  Functions for generating address-related data.
+  Functions for generating random address data.
 
-  This module provides utilities to generate random addresses, including street names, city names,
-  country names, etc.
+  Provides utilities to generate street names, city names, country names, building
+  numbers, and geographic coordinates with support for multiple locales.
   """
   @moduledoc since: "0.12.0"
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
+  alias NeoFaker.Address.Generator
+  alias NeoFaker.Address.Validator
+  alias NeoFaker.Helpers.Formatter
+  alias NeoFaker.Helpers.Options
   alias NeoFaker.Number
 
   @city_file "city.exs"
   @country_file "country.exs"
 
+  @building_number_range 1..100
+  @coordinate_precision 6
+
   @doc """
   Generates a random building number within a specified range.
 
-  Returns an integer or a string representation of the building number.
+  Returns the building number as a string by default, or as an integer when
+  `type: :integer` is passed.
 
-  ## Options
+  ## Parameters
 
-  - `:type` - Specifies the type of the building number to return.
-
-  The values for `:type` can be:
-
-  - `:string` - Returns the building number as a string (default).
-  - `:integer` - Returns the building number as an integer.
+  - `range` - The range of building numbers. Defaults to `1..100`.
+  - `opts` - Keyword list of options:
+    - `:type` - Return type. Either `:string` (default) or `:integer`.
 
   ## Examples
 
-      iex> NeoFaker.Address.building_number(1..100)
-      "25"
+      iex> NeoFaker.Address.building_number()
+      "42"
 
       iex> NeoFaker.Address.building_number(1..100, type: :integer)
       25
 
   """
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
-  def building_number(range \\ 1..100, opts \\ []) do
-    type = Keyword.get(opts, :type, :string)
+  def building_number(range \\ @building_number_range, opts \\ []) do
+    Validator.validate_range!(range)
+
+    type = Options.get(opts, :type, :string)
+
+    Validator.validate_building_number_type!(type)
+
+    number = Number.between(range.first, range.last)
 
     case type do
-      :string ->
-        range.first |> Number.between(range.last) |> Integer.to_string()
-
-      _ ->
-        Number.between(range.first, range.last)
+      :string -> Formatter.format_number(number, :string)
+      :integer -> number
     end
   end
 
   @doc """
   Generates a random city name.
 
-  Returns a string representing a city name. If an option is provided, it uses the specified
-  locale for generating the city name.
-
-  ## Options
-
-  The accepted options are:
-
-  - `:locale` - Specifies the locale to use.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  The city name is selected from locale-specific data. Pass `locale:` to use a
+  different locale. See the
+  [available locales](https://hexdocs.pm/neo_faker/locales.html)
+  for supported codes.
 
   ## Examples
 
@@ -82,31 +81,44 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random country name.
 
-  This function behaves similarly to `city/1`, but it generates a random country name instead.
+  The country name is selected from locale-specific data. Pass `locale:` to use a
+  different locale. See the
+  [available locales](https://hexdocs.pm/neo_faker/locales.html)
+  for supported codes.
+
+  ## Examples
+
+      iex> NeoFaker.Address.country()
+      "United States"
+
+      iex> NeoFaker.Address.country(locale: :id_id)
+      "Indonesia"
+
   """
   @spec country(Keyword.t()) :: String.t()
-  def country(opts \\ []), do: random_value(__MODULE__, @country_file, "country", opts)
+  def country(opts \\ []) do
+    random_value(__MODULE__, @country_file, "country", opts)
+  end
 
   @doc """
   Generates random geographic coordinates.
 
-  Return a tuple of latitude and longitude, or a single value based on the specified type.
+  Returns a `{latitude, longitude}` tuple by default. Use the `:type` option to
+  return a single value, and `:precision` to control decimal places.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:type` - Which coordinate(s) to return. Defaults to `:full`.
+    - `:precision` - Number of decimal places. Defaults to `6`.
 
   ## Options
 
-  The accepted options are:
-
-  - `:type` - Specifies which coordinate(s) to return.
-  - `:precision` - Number of decimal places.
-
   The values for `:type` can be:
 
-  - `:full` (default) - Returns `{latitude, longitude}` tuple.
+  - `:full` - Returns `{latitude, longitude}` tuple (default).
   - `:latitude` - Returns only the latitude as a float.
   - `:longitude` - Returns only the longitude as a float.
-
-  The value for `:precision` can be any integer (default: 6), which determines the number of
-  decimal places in the returned coordinates.
 
   ## Examples
 
@@ -122,19 +134,25 @@ defmodule NeoFaker.Address do
       iex> NeoFaker.Address.coordinate(precision: 2)
       {11.58, 165.37}
 
+      iex> NeoFaker.Address.coordinate(type: :latitude, precision: 4)
+      11.5832
+
   """
   @spec coordinate(keyword()) :: {float(), float()} | float()
   def coordinate(opts \\ []) do
-    precision = Keyword.get(opts, :precision, 6)
-    type = Keyword.get(opts, :type, :full)
+    precision = Options.get(opts, :precision, @coordinate_precision)
+    type = Options.get(opts, :type, :full)
 
-    latitude = Float.round(:rand.uniform() * 180 - 90, precision)
-    longitude = Float.round(:rand.uniform() * 360 - 180, precision)
+    Validator.validate_precision!(precision)
+    Validator.validate_coordinate_type!(type)
+
+    latitude = Generator.latitude(precision)
+    longitude = Generator.longitude(precision)
 
     case type do
       :latitude -> latitude
       :longitude -> longitude
-      _ -> {latitude, longitude}
+      :full -> {latitude, longitude}
     end
   end
 end

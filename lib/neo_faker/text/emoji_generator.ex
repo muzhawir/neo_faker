@@ -1,9 +1,9 @@
 defmodule NeoFaker.Text.EmojiGenerator do
   @moduledoc false
 
-  import NeoFaker.Data.Generator, only: [random_value: 3]
+  import NeoFaker.Data, only: [random_value: 3]
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @type category ::
           :all
@@ -27,7 +27,7 @@ defmodule NeoFaker.Text.EmojiGenerator do
   @spec emoji(category()) :: String.t()
   def emoji(:all) do
     :default
-    |> Cache.fetch!(@module, @emoji_file)
+    |> Data.fetch!(@module, @emoji_file)
     |> Map.values()
     |> List.flatten()
     |> Enum.random()

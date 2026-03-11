@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.13.0",
+      version: "0.14.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -26,8 +26,8 @@ defmodule NeoFaker.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/muzhawir/neo_faker",
-        "Changelog" => "https://hexdocs.pm/neo_faker/changelog.html",
-        "Cheat Sheet" => "https://hexdocs.pm/neo_faker/cheat.html"
+        "Cheatsheet" => "https://hexdocs.pm/neo_faker/cheat.html",
+        "Changelog" => "https://hexdocs.pm/neo_faker/changelog.html"
       }
     ]
   end
@@ -50,8 +50,8 @@ defmodule NeoFaker.MixProject do
 
   defp groups_for_modules do
     [
-      "Locale Random Generator": ~r/^NeoFaker\.[A-Z][a-z][A-Z][a-z]\..+/,
-      "Random Generators": ~r/^NeoFaker/
+      "Random Generators": ~r/^NeoFaker(?!\.[A-Z][a-z][A-Z][a-z]\.)/,
+      "Locale Random Generators": ~r/^NeoFaker\.[A-Z][a-z][A-Z][a-z]\..+/
     ]
   end
 
@@ -67,8 +67,8 @@ defmodule NeoFaker.MixProject do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
-      {:styler, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:ex_doc, "~> 0.40.1", only: :dev, runtime: false},
+      {:styler, "~> 1.11", only: [:dev, :test], runtime: false}
     ]
   end
 end

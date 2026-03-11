@@ -2,15 +2,19 @@ defmodule NeoFaker.App do
   @moduledoc """
   Functions for generating app metadata.
 
-  This module provides utilities to generate random app-related information, including author
-  names, app names, descriptions, versions, and licenses.
+  Provides utilities to generate random app-related information, including author
+  names, app names, descriptions, versions, licenses, bundle identifiers, and
+  package names with support for multiple locales and formatting options.
   """
   @moduledoc since: "0.4.0"
 
   import NeoFaker.App.Name
   import NeoFaker.App.Semver
-  import NeoFaker.Data.Generator, only: [random_value: 3, random_value: 4]
+  import NeoFaker.Data, only: [random_value: 3, random_value: 4]
 
+  alias NeoFaker.App.Domain
+  alias NeoFaker.App.Validator
+  alias NeoFaker.Helpers.Options
   alias NeoFaker.Person
 
   @description_file "description.exs"
@@ -20,32 +24,40 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app author name.
 
-  Returns a string representing the full name of the app author.
+  Delegates to `NeoFaker.Person.full_name/1` with `:middle_name` defaulting to
+  `false` for cleaner attribution strings.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:middle_name` - Include a middle name. Defaults to `false`.
+    - `:sex` - Sex of the generated name. One of `:unisex` (default), `:female`, `:male`.
+    - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
       iex> NeoFaker.App.author()
       "José Valim"
 
+      iex> NeoFaker.App.author(middle_name: true)
+      "José Carlos Valim"
+
+      iex> NeoFaker.App.author(sex: :female)
+      "Juliana Silva"
+
   """
   @spec author(Keyword.t()) :: String.t()
-  defdelegate author(opts \\ [middle_name: false]), to: Person, as: :full_name
+  def author(opts \\ []) do
+    # Set default middle_name to false for cleaner author names
+    opts_with_defaults = Keyword.put_new(opts, :middle_name, false)
+    Person.full_name(opts_with_defaults)
+  end
 
   @doc """
-  Generates a short app description.
+  Generates a random short app description.
 
-  Returns a string representing the app description.
-
-  ## Options
-
-  The accepted options are:
-
-  - `:locale` - Specifies the locale to use.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  Returns a one-line description string selected from locale-specific data.
+  Pass `locale:` to override the application's configured locale.
 
   ## Examples
 
@@ -62,10 +74,11 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Generates a random open-source license.
+  Generates a random open-source license name.
 
-  Returns a random open-source license name selected from a predefined list based on
-  [ChooseALicense](https://choosealicense.com/appendix).
+  Returns a name from a curated list sourced from
+  [ChooseALicense](https://choosealicense.com/appendix), such as
+  `"MIT License"`, `"Apache License 2.0"`, or `"GNU General Public License v3.0"`.
 
   ## Examples
 
@@ -79,29 +92,25 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app name.
 
-  Returns a string representing the app name, which is a combination of a first name and a last
-  name.
+  Combines a random first word and last word from locale-specific data, then
+  formats the result according to the requested style.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:style` - Case style for the name. Defaults to `nil` (title-spaced).
+    - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Options
 
-  The accepted options are:
-
-  - `:style` - Defines the case style of the app name.
-  - `:locale` - Specifies the locale to use.
-
   The values for `:style` can be:
 
-  - `nil` (default) - Uses the standard format, e.g., `"Neo Faker"`.
-  - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
-  - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
-  - `:dashed` - Uses a dashed format, e.g., `"Neo-faker"`.
-  - `:underscore` - Uses an underscore format, e.g., `"neo_faker"`.
-  - `:single` - Uses a single-word format, e.g., `"Faker"`.
-
-  The values for `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  - `nil` - Title-spaced format, e.g. `"Neo Faker"` (default).
+  - `:camel_case` - e.g. `"neoFaker"`.
+  - `:pascal_case` - e.g. `"NeoFaker"`.
+  - `:dashed` - e.g. `"neo-faker"`.
+  - `:underscore` - e.g. `"neo_faker"`.
+  - `:single` - First word only, e.g. `"Faker"`.
 
   ## Examples
 
@@ -111,38 +120,45 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
+      iex> NeoFaker.App.name(style: :dashed)
+      "neo-faker"
+
       iex> NeoFaker.App.name(locale: :id_id)
       "Garuda Web"
 
   """
   @spec name(Keyword.t()) :: String.t()
   def name(opts \\ []) do
-    locale = Keyword.get(opts, :locale)
+    style = Options.get(opts, :style, nil)
+    locale = Options.get(opts, :locale, :default)
+
+    Validator.validate_name_style!(style)
+
     first_name = random_value(__MODULE__, @name_file, "first_names", locale: locale)
     last_name = random_value(__MODULE__, @name_file, "last_names", locale: locale)
 
-    format_text({first_name, last_name}, Keyword.get(opts, :style))
+    format_text({first_name, last_name}, style)
   end
 
   @doc """
-  Generates a semantic version number.
+  Generates a random semantic version number.
 
-  Returns a version number following the Semantic Versioning (SemVer) standard. By default, it
-  generates a core version (`MAJOR.MINOR.PATCH`).
+  Returns a version string following the [Semantic Versioning](https://semver.org)
+  (`MAJOR.MINOR.PATCH`) standard. Use `:type` to append pre-release or build metadata.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:type` - Version format variant. Defaults to `nil` (core only).
 
   ## Options
 
-  The accepted options are:
-
-  - `:type` - Specifies the type of version format.
-
   The values for `:type` can be:
 
-  - `nil` (default) - Uses core SemVer format (e.g., `"1.2.3"`).
-  - `:pre_release` - Includes a pre-release label (e.g., `"1.2.3-beta.1")`.
-  - `:build` - Includes a build metadata label (e.g., `"1.2.3+20250325"`).
-  - `:pre_release_build` - Includes both pre-release and build metadata (e.g.,
-    `"1.2.3-rc.1+20250325"`).
+  - `nil` - Core `MAJOR.MINOR.PATCH` format, e.g. `"1.2.3"` (default).
+  - `:pre_release` - Appends a pre-release label, e.g. `"1.2.3-beta.1"`.
+  - `:build` - Appends build metadata, e.g. `"1.2.3+20250325"`.
+  - `:pre_release_build` - Appends both, e.g. `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 
@@ -161,7 +177,9 @@ defmodule NeoFaker.App do
   """
   @spec semver(Keyword.t()) :: String.t()
   def semver(opts \\ []) do
-    type = Keyword.get(opts, :type)
+    type = Options.get(opts, :type, nil)
+    Validator.validate_semver_type!(type)
+
     core = semver_core()
 
     case type do
@@ -169,14 +187,13 @@ defmodule NeoFaker.App do
       :pre_release -> "#{core}-#{semver_pre_release()}"
       :build -> "#{core}+#{semver_build_number()}"
       :pre_release_build -> "#{core}-#{semver_pre_release()}+#{semver_build_number()}"
-      other -> raise ArgumentError, "Invalid semver type: #{inspect(other)}"
     end
   end
 
   @doc """
-  Generates a simple version number.
+  Generates a simplified `MAJOR.MINOR` version number.
 
-  Returns a version number in the format `MAJOR.MINOR`.
+  Derives the version by taking the first two components of a `semver/1` result.
 
   ## Examples
 
@@ -185,7 +202,74 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version do
-    semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version, do: semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+
+  @doc """
+  Generates a random app bundle identifier.
+
+  Returns a bundle ID in reverse-domain notation, commonly used for iOS and
+  Android apps. The app name portion is generated via `name/1` and formatted
+  with the given `:style`. Only `:underscore` and `:dashed` styles are supported.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:domain` - Base domain. Defaults to `"example.com"`.
+    - `:style` - Name style for the app segment. Either `:underscore` (default) or `:dashed`.
+
+  ## Examples
+
+      iex> NeoFaker.App.bundle_id()
+      "com.example.neo_faker"
+
+      iex> NeoFaker.App.bundle_id(style: :dashed)
+      "com.example.neo-faker"
+
+      iex> NeoFaker.App.bundle_id(domain: "mycompany.io")
+      "io.mycompany.neo_faker"
+
+  """
+  @spec bundle_id(Keyword.t()) :: String.t()
+  def bundle_id(opts \\ []) do
+    domain = Options.get(opts, :domain, "example.com")
+    style = Options.get(opts, :style, :underscore)
+
+    Validator.validate_domain!(domain)
+    Validator.validate_name_style_for_bundle!(style)
+
+    app_name = name(style: style)
+    "#{Domain.reverse_domain!(domain)}.#{String.downcase(app_name)}"
+  end
+
+  @doc """
+  Generates a random app package name.
+
+  Returns a package name in Java reverse-domain notation (e.g. for Android apps).
+  The app name segment is lowercased and stripped of all non-alphanumeric characters.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:domain` - Base domain. Defaults to `"example.com"`.
+
+  ## Examples
+
+      iex> NeoFaker.App.package_name()
+      "com.example.neofaker"
+
+      iex> NeoFaker.App.package_name(domain: "mycompany.id")
+      "id.mycompany.neofaker"
+
+  """
+  @spec package_name(Keyword.t()) :: String.t()
+  def package_name(opts \\ []) do
+    domain = Options.get(opts, :domain, "example.com")
+
+    Validator.validate_domain!(domain)
+
+    # Package names use lowercase, no special characters
+    app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
+
+    "#{Domain.reverse_domain!(domain)}.#{app_name}"
   end
 end

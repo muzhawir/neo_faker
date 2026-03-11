@@ -1,7 +1,7 @@
 defmodule NeoFaker.Person.NameGenerator do
   @moduledoc false
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
   @module NeoFaker.Person
   @female_name_file "female_name.exs"

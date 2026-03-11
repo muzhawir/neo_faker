@@ -1,7 +1,7 @@
 defmodule NeoFaker.HTTP.StatusCode do
   @moduledoc false
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @type status_code_type :: :detailed | :simple
 
@@ -14,14 +14,14 @@ defmodule NeoFaker.HTTP.StatusCode do
   @spec generates!(atom()) :: list(String.t())
   def generates!(nil) do
     :default
-    |> Cache.fetch!(NeoFaker.HTTP, "status_code.exs")
+    |> Data.fetch!(NeoFaker.HTTP, "status_code.exs")
     |> Map.values()
     |> List.flatten()
   end
 
   def generates!(group) do
     :default
-    |> Cache.fetch!(NeoFaker.Http, "status_code.exs")
+    |> Data.fetch!(NeoFaker.HTTP, "status_code.exs")
     |> Map.get(Atom.to_string(group))
   end
 

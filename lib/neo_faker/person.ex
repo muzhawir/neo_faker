@@ -2,42 +2,32 @@ defmodule NeoFaker.Person do
   @moduledoc """
   Functions for generating person-related information.
 
-  This module provides utilities to generate random personal details, such as names, ages, and
-  genders.
+  Provides utilities to generate random personal details including first, middle,
+  and last names, full names, prefixes, suffixes, ages, and genders with support
+  for multiple locales and sex options.
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
+  alias NeoFaker.Helpers.Options
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
+  alias NeoFaker.Person.Validator
 
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
 
+  @locale :default
+  @max_age 120
+
   @doc """
   Generates a random first name.
 
-  Returns a random first name string. If no options are provided, it returns a random
-  unisex first name by default.
-
   ## Options
 
-  The accepted options are:
-
-  - `:sex` - Specifies the sex of the generated name.
-  - `:locale` - Specifies the locale to use.
-
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:female` - Generates a random female name.
-  - `:male` - Generates a random male name.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -54,72 +44,86 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec first_name(Keyword.t()) :: String.t()
   def first_name(opts \\ []) do
-    NameGenerator.name(
-      Keyword.get(opts, :locale, :default),
-      "first_names",
-      Keyword.get(opts, :sex, :unisex)
-    )
+    sex = Options.get(opts, :sex, :unisex)
+    locale = Options.get(opts, :locale, @locale)
+
+    Validator.validate_sex!(sex)
+
+    NameGenerator.name(locale, "first_names", sex)
   end
 
   @doc """
   Generates a random middle name.
 
-  This function behaves the same way as `first_name/1`, but it generates a middle name instead.
+  ## Options
+
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.middle_name()
+      "Anne"
+
+      iex> NeoFaker.Person.middle_name(sex: :male)
+      "James"
+
+      iex> NeoFaker.Person.middle_name(locale: :id_id)
+      "Budi"
+
   """
   @doc since: "0.7.0"
   @spec middle_name(Keyword.t()) :: String.t()
   def middle_name(opts \\ []) do
-    NameGenerator.name(
-      Keyword.get(opts, :locale, :default),
-      "middle_names",
-      Keyword.get(opts, :sex, :unisex)
-    )
+    sex = Options.get(opts, :sex, :unisex)
+    locale = Options.get(opts, :locale, @locale)
+
+    Validator.validate_sex!(sex)
+
+    NameGenerator.name(locale, "middle_names", sex)
   end
 
   @doc """
   Generates a random last name.
 
-  This function behaves the same way as `first_name/1`, but it generates a last name instead.
+  ## Options
+
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.last_name()
+      "Smith"
+
+      iex> NeoFaker.Person.last_name(sex: :male)
+      "Johnson"
+
+      iex> NeoFaker.Person.last_name(locale: :id_id)
+      "Wijaya"
+
   """
   @doc since: "0.7.0"
   @spec last_name(Keyword.t()) :: String.t()
   def last_name(opts \\ []) do
-    NameGenerator.name(
-      Keyword.get(opts, :locale, :default),
-      "last_names",
-      Keyword.get(opts, :sex, :unisex)
-    )
+    sex = Options.get(opts, :sex, :unisex)
+    locale = Options.get(opts, :locale, @locale)
+
+    Validator.validate_sex!(sex)
+
+    NameGenerator.name(locale, "last_names", sex)
   end
 
   @doc """
   Generates a random full name.
 
-  Returns a full name string, which is a combination of a first name, an optional middle name, and
-  a last name.
+  Combines a first name, an optional middle name, and a last name.
 
   ## Options
 
-  The accepted options are:
-
-  - `:locale` - Specifies the locale to use.
-  - `:sex` - Specifies the sex of the generated name.
-  - `:middle_name` - Determines whether to include a middle name in the full name.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
-
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:male` - Generates a random male name.
-  - `:female` - Generates a random female name.
-
-  Values for option `:middle_name` can be:
-
-  - `true` - Includes a random middle name (default).
-  - `false` - Excludes the middle name.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
 
   ## Examples
 
@@ -132,32 +136,28 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.full_name(middle_name: false)
       "Gabriella Harrison"
 
+      iex> NeoFaker.Person.full_name(sex: :female, locale: :id_id, middle_name: false)
+      "Siti Nurhaliza"
+
   """
   @doc since: "0.7.0"
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
-    FullNameGenerator.name(
-      Keyword.get(opts, :sex, :unisex),
-      Keyword.get(opts, :locale, :default),
-      Keyword.get(opts, :middle_name, true)
-    )
+    sex = Options.get(opts, :sex, :unisex)
+    locale = Options.get(opts, :locale, @locale)
+    include_middle = Options.get(opts, :middle_name, true)
+
+    Validator.validate_sex!(sex)
+
+    FullNameGenerator.name(sex, locale, include_middle)
   end
 
   @doc """
-  Generates a random name prefix.
-
-  Returns a name prefix, such as `"Mr."`, `"Ms."`, `"Dr."`, etc.
+  Generates a random name prefix such as `"Mr."`, `"Ms."`, or `"Dr."`.
 
   ## Options
 
-  The accepted options are:
-
-  - `:locale` - Specifies the locale to use.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -168,33 +168,45 @@ defmodule NeoFaker.Person do
       "Tn."
 
   """
+  @doc since: "0.7.0"
   @spec prefix(Keyword.t()) :: String.t()
-  def prefix(opts \\ []), do: random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
+  def prefix(opts \\ []) do
+    random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
+  end
 
   @doc """
-  Generates a random name suffix.
+  Generates a random name suffix such as `"Jr."`, `"Sr."`, or `"III"`.
 
-  This function behaves the same way as `prefix/1`, but it generates a name suffix instead.
+  ## Options
+
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.suffix()
+      "Jr."
+
+      iex> NeoFaker.Person.suffix(locale: :id_id)
+      "S.Kom"
+
+      iex> NeoFaker.Person.suffix(locale: :en_us)
+      "III"
+
   """
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
-  def suffix(opts \\ []), do: random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
+  def suffix(opts \\ []) do
+    random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
+  end
 
   @doc """
   Generates a random binary gender.
 
-  Returns either `"Male"` or `"Female"`.
+  Returns either `"Male"` or `"Female"` in the configured locale.
 
   ## Options
 
-  The accepted options are:
-
-  - `:locale` - Specifies the locale to use.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale, for example.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -206,13 +218,25 @@ defmodule NeoFaker.Person do
 
   """
   @spec binary_gender(Keyword.t()) :: String.t()
-  def binary_gender(opts \\ []), do: random_value(__MODULE__, @gender_file, "binary", opts)
+  def binary_gender(opts \\ []) do
+    random_value(__MODULE__, @gender_file, "binary", opts)
+  end
 
   @doc """
-  Generates a random short binary gender.
+  Generates a random short binary gender such as `"M"` or `"F"`.
 
-  This function behaves the same way as `binary_gender/1`, but it returns a shorter version
-  instead.
+  ## Options
+
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.short_binary_gender()
+      "M"
+
+      iex> NeoFaker.Person.short_binary_gender(locale: :id_id)
+      "P"
+
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
   def short_binary_gender(opts \\ []) do
@@ -220,10 +244,20 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random non-binary gender.
+  Generates a random non-binary gender identity string.
 
-  This function behaves the same way as `binary_gender/1`, but it returns a non-binary gender
-  string instead.
+  ## Options
+
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.non_binary_gender()
+      "Non-binary"
+
+      iex> NeoFaker.Person.non_binary_gender(locale: :id_id)
+      "Non-biner"
+
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
   def non_binary_gender(opts \\ []) do
@@ -231,9 +265,12 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random age.
+  Generates a random age as a non-negative integer.
 
-  Returns an age as a non-negative integer between `0` and `120` by default.
+  ## Parameters
+
+  - `min` - Minimum age, inclusive. Defaults to `0`.
+  - `max` - Maximum age, inclusive. Defaults to `120`.
 
   ## Examples
 
@@ -243,7 +280,62 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.age(7, 44)
       27
 
+      iex> NeoFaker.Person.age(18, 65)
+      35
+
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
-  def age(min \\ 0, max \\ 120) when min >= 0 and min <= max, do: Enum.random(min..max)
+  def age(min \\ 0, max \\ @max_age)
+
+  def age(min, max) when is_integer(min) and is_integer(max) do
+    Validator.validate_age_range!(min, max)
+    Enum.random(min..max)
+  end
+
+  def age(min, _max) when not is_integer(min) do
+    raise ArgumentError, "min must be an integer, got: #{inspect(min)}"
+  end
+
+  def age(_min, max) when not is_integer(max) do
+    raise ArgumentError, "max must be an integer, got: #{inspect(max)}"
+  end
+
+  @doc """
+  Generates a random full name with optional prefix and/or suffix.
+
+  Delegates to `full_name/1` and wraps the result with the requested title parts.
+
+  ## Options
+
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
+  - `:prefix` - When `true`, prepends a name prefix such as `"Mr."` or `"Dr."`. Defaults to `false`.
+  - `:suffix` - When `true`, appends a name suffix such as `"Jr."` or `"III"`. Defaults to `false`.
+
+  ## Examples
+
+      iex> NeoFaker.Person.full_name_with_title(prefix: true)
+      "Dr. Abigail Bethany Crawford"
+
+      iex> NeoFaker.Person.full_name_with_title(suffix: true)
+      "Daniel Edward Fisher Jr."
+
+      iex> NeoFaker.Person.full_name_with_title(prefix: true, suffix: true, middle_name: false)
+      "Mr. John Smith III"
+
+  """
+  @spec full_name_with_title(Keyword.t()) :: String.t()
+  def full_name_with_title(opts \\ []) do
+    include_prefix = Options.get(opts, :prefix, false)
+    include_suffix = Options.get(opts, :suffix, false)
+
+    [
+      if(include_prefix, do: prefix(opts)),
+      full_name(opts),
+      if(include_suffix, do: suffix(opts))
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+  end
 end

@@ -1,7 +1,7 @@
 defmodule NeoFaker.Internet.Domain do
   @moduledoc false
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @type domain_type :: :all | :ecommerce | :email | :search | :social | :default
 
@@ -29,7 +29,7 @@ defmodule NeoFaker.Internet.Domain do
   # Fetch popular domains based on type
   defp fetch_popular_domain(type) when type in [:all, :default] do
     :default
-    |> Cache.fetch!(@module, @popular_domain_file)
+    |> Data.fetch!(@module, @popular_domain_file)
     |> Map.values()
     |> List.flatten()
     |> Enum.random()
@@ -37,7 +37,7 @@ defmodule NeoFaker.Internet.Domain do
 
   defp fetch_popular_domain(type) do
     :default
-    |> Cache.fetch!(@module, @popular_domain_file)
+    |> Data.fetch!(@module, @popular_domain_file)
     |> Map.get(Atom.to_string(type))
     |> Enum.random()
   end

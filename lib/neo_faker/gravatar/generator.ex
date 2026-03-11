@@ -6,6 +6,7 @@ defmodule NeoFaker.Gravatar.Generator do
 
   @gravatar_url "https://gravatar.com/avatar/"
   @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  @default_image_size 80
 
   @doc """
   Returns the Gravatar image size, defaulting to 80 if the input is `nil`.
@@ -13,7 +14,7 @@ defmodule NeoFaker.Gravatar.Generator do
   If a size is provided, it is returned as-is. The expected valid range is 1 to 2048 pixels.
   """
   @spec image_size(integer() | nil) :: integer()
-  def image_size(nil), do: 80
+  def image_size(nil), do: @default_image_size
   def image_size(size) when size in 1..2048, do: size
 
   @doc """
@@ -24,28 +25,29 @@ defmodule NeoFaker.Gravatar.Generator do
   """
   @spec gravatar_url(email(), integer(), String.t()) :: String.t()
   def gravatar_url(email, image_size, default_fallback) do
-    email_hash = hash_email!(email)
-
     @gravatar_url
     |> URI.parse()
-    |> URI.append_path("/#{email_hash}")
+    |> URI.append_path("/#{email_hash(email)}")
     |> URI.append_query("d=#{default_fallback}")
     |> URI.append_query("s=#{image_size}")
     |> URI.to_string()
   end
 
-  defp hash_email!(nil) do
-    random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
+  @doc """
+  Generates a hash for an email address.
 
+  Returns a SHA-256 hash of the email address for use in Gravatar URLs.
+  If email is nil, generates a random email address first.
+  """
+  @spec email_hash(email()) :: String.t()
+  def email_hash(nil) do
+    random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
     hash_string(random_email)
   end
 
-  defp hash_email!(email) when is_binary(email) do
+  def email_hash(email) when is_binary(email) do
     if Regex.match?(@w3c_email_regex, email) do
-      email
-      |> String.trim()
-      |> String.downcase()
-      |> hash_string()
+      email |> String.trim() |> String.downcase() |> hash_string()
     else
       raise ArgumentError, "Invalid email address"
     end

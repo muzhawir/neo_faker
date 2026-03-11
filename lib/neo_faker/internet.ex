@@ -2,44 +2,52 @@ defmodule NeoFaker.Internet do
   @moduledoc """
   Functions for generating internet-related data.
 
-  This module provides utilities to generate random internet-related information, such as email
-  addresses, domain names, URLs, IP addresses, and MAC addresses.
+  Provides utilities to generate random usernames, email addresses, domain names, URLs,
+  IP addresses, MAC addresses, and slugs with flexible formatting and validation options.
   """
   @moduledoc since: "0.13.0"
 
+  alias NeoFaker.Helpers.Formatter
+  alias NeoFaker.Helpers.Options
   alias NeoFaker.Internet.Domain
   alias NeoFaker.Internet.Email
+  alias NeoFaker.Internet.Generator
   alias NeoFaker.Internet.TLD
   alias NeoFaker.Internet.Username
+  alias NeoFaker.Internet.Validator
+
+  @username_word_count 2
+  @domain_word_count 1
+  @number_range 1..1000
 
   @doc """
   Generates a random username.
 
-  Returns a random username string.
+  Returns a username string composed of words joined by a separator, with an optional
+  numeric suffix.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:word_count` - Number of words in the username. Defaults to `2`.
+    - `:joiner` - Separator between words. Defaults to `:all`.
+    - `:username_type` - Word source for the username. Defaults to `:person`.
+    - `:number` - When `true`, appends a random number. Defaults to `false`.
+    - `:number_range` - Range to sample the appended number from. Defaults to `1..1000`.
 
   ## Options
 
-  The accepted options are:
-
-  - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
-  - `:joiner` - Defines the joiner to use between words in the username.
-  - `:username_type` - Specifies the type of words to use in the username.
-  - `:number` - A boolean indicating whether to append a random number to the username.
-     Defaults to `false`.
-  - `:number_range` - Defines the range of numbers to choose from when appending a number.
-     Defaults to `1..1000`.
-
   The values for `:joiner` can be:
 
-  - `:all` - Uses any of the joiners (default).
-  - `:dot` - Uses a dot (`.`) as the joiner.
-  - `:underscore` - Uses an underscore (`_`) as the joiner.
-  - `:dash` - Uses a dash (`-`) as the joiner.
+  - `:all` - Any of the available joiners (default).
+  - `:dot` - Dot (`.`).
+  - `:underscore` - Underscore (`_`).
+  - `:dash` - Dash (`-`).
 
   The values for `:username_type` can be:
 
-  - `:person` - Uses random first or last names for the username (default).
-  - `:word` - Uses random words for the username.
+  - `:person` - Random first or last names (default).
+  - `:word` - Random words.
 
   ## Examples
 
@@ -52,19 +60,31 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.username(username_type: :word, number: true, number_range: 1..2025)
       "elixir_alchemist_2012"
 
+      iex> NeoFaker.Internet.username(number: true)
+      "jane_smith_42"
+
   """
   @spec username(Keyword.t()) :: String.t()
   def username(opts \\ []) do
-    word_count = 1..Keyword.get(opts, :word_count, 2)
-    joiner = opts |> Keyword.get(:joiner, :all) |> Username.joiner()
+    word_count = Options.get(opts, :word_count, @username_word_count)
+    joiner_type = Options.get(opts, :joiner, :all)
+    username_type = Options.get(opts, :username_type, :person)
+    include_number = Options.get(opts, :number, false)
+    number_range = Options.get(opts, :number_range, @number_range)
+
+    Validator.validate_username_joiner!(joiner_type)
+    Validator.validate_username_type!(username_type)
+    Validator.validate_word_count!(word_count)
+
+    joiner = Username.joiner(joiner_type)
 
     base =
-      Enum.map_join(word_count, joiner, fn _ ->
-        Username.word(Keyword.get(opts, :username_type, :person))
+      Enum.map_join(1..word_count, joiner, fn _ ->
+        Username.word(username_type)
       end)
 
-    if Keyword.get(opts, :number, false) do
-      base <> joiner <> "#{Enum.random(Keyword.get(opts, :number_range, 1..1000))}"
+    if include_number do
+      base <> joiner <> "#{Enum.random(number_range)}"
     else
       base
     end
@@ -73,32 +93,32 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random domain name.
 
-  Returns a random domain name string based on the specified options.
+  Returns a domain name string based on the specified type. Can produce random
+  word-based names, popular real-world domains, or a user-supplied custom domain.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:word_count` - Number of words in a random domain name. Defaults to `1`.
+    - `:type` - Domain name strategy. Defaults to `:random`.
+    - `:popular_type` - Popular domain category when `:type` is `:popular`. Defaults to `:all`.
+    - `:domain_name` - Custom domain string when `:type` is `:custom`. Defaults to `"example.com"`.
 
   ## Options
 
-  The accepted options are:
-
-  - `:word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
-  - `:type` - Specifies the type of domain name to generate.
-
   The values for `:type` can be:
 
-  - `:random` - Generates a random domain name using a random word (default).
-  - `:popular` - Selects a domain name from a list of popular domains, with the specific category
-    defined by the `:popular_type` option. For this option, the output will be a full domain name
-    like "gmail.com".
-  - `:custom` - Uses a custom domain name provided by the user via the `:domain_name` option. If
-    not provided, defaults to "example.com".
+  - `:random` - Random word-based domain name (default).
+  - `:popular` - Domain name from a list of popular real-world domains.
+  - `:custom` - User-supplied domain name via `:domain_name`.
 
-  If `:type` is set to `:popular`, the `:popular_type` option can be used to specify the category
-  of popular domains to select from. The values for `:popular_type` can be:
+  The values for `:popular_type` can be:
 
-  - `:all` - Selects from all popular domains (default).
-  - `:ecommerce` - Selects from popular e-commerce domains.
-  - `:email` - Selects from popular email service domains.
-  - `:search` - Selects from popular search engine domains.
-  - `:social` - Selects from popular social media domains.
+  - `:all` - All popular domains (default).
+  - `:ecommerce` - Popular e-commerce domains.
+  - `:email` - Popular email service domains.
+  - `:search` - Popular search engine domains.
+  - `:social` - Popular social media domains.
 
   ## Examples
 
@@ -117,43 +137,55 @@ defmodule NeoFaker.Internet do
   """
   @spec domain_name(keyword()) :: String.t()
   def domain_name(opts \\ []) do
-    word_count = Keyword.get(opts, :word_count, 1)
+    word_count = Options.get(opts, :word_count, @domain_word_count)
+    domain_type = Options.get(opts, :type, :random)
+    popular_type = Options.get(opts, :popular_type, :all)
 
-    case Keyword.get(opts, :type, :random) do
+    Validator.validate_domain_type!(domain_type)
+
+    case domain_type do
       :random ->
+        Validator.validate_word_count!(word_count)
         Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
 
       :popular ->
-        Domain.generate_popular_domain_name(Keyword.get(opts, :popular_type, :all))
+        Validator.validate_popular_domain_type!(popular_type)
+        Domain.generate_popular_domain_name(popular_type)
 
       :custom ->
-        Keyword.get(opts, :domain_name, "example.com")
+        custom_domain = Options.get(opts, :domain_name, "example.com")
 
-      _ ->
-        Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
+        if is_binary(custom_domain) and custom_domain != "" do
+          custom_domain
+        else
+          raise ArgumentError,
+                "Invalid :domain_name #{inspect(custom_domain)}. Expected a non-empty string, " <>
+                  "e.g. \"example.com\"."
+        end
     end
   end
 
   @doc """
   Generates a random top-level domain (TLD).
 
-  Returns a random TLD string.
+  Returns a TLD string, with a leading dot by default.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:dot` - When `true`, prepends a dot to the TLD. Defaults to `true`.
+    - `:type` - TLD category. Defaults to `:all_except_safe`.
 
   ## Options
 
-  The accepted options are:
-
-  - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
-  - `:type` - Specifies the type of TLD to generate.
-
   The values for `:type` can be:
 
-  - `:all_except_safe` - Returns a TLD from all types except safe TLDs. This is the default.
-  - `:all` - Returns a TLD from all available types, including safe TLDs.
-  - `:safe` - Returns a safe TLD, e.g. `.example`.
-  - `:generic` - Returns a generic TLD, e.g. `.com`.
-  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
-  - `:country_code` - Returns a country code TLD, e.g. `.id`.
+  - `:all_except_safe` - All TLD categories except safe TLDs (default).
+  - `:all` - All TLD categories, including safe TLDs.
+  - `:safe` - Safe TLDs, e.g. `.example`.
+  - `:generic` - Generic TLDs, e.g. `.com`.
+  - `:sponsored` - Sponsored TLDs, e.g. `.edu`.
+  - `:country_code` - Country code TLDs, e.g. `.id`.
 
   ## Examples
 
@@ -166,114 +198,65 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.tld(type: :safe)
       ".example"
 
-      iex> NeoFaker.Internet.tld(type: :country_code)
-      ".id"
+      iex> NeoFaker.Internet.tld(type: :generic, dot: false)
+      "net"
 
   """
   @spec tld(Keyword.t()) :: String.t()
   def tld(opts \\ []) do
-    type = Keyword.get(opts, :type, :all_except_safe)
+    tld_type = Options.get(opts, :type, :all_except_safe)
+    include_dot = Options.get(opts, :dot, true)
 
-    if Keyword.get(opts, :dot, true) do
-      "." <> TLD.generate_name(type)
+    Validator.validate_tld_type!(tld_type)
+
+    tld_name = TLD.generate_name(tld_type)
+
+    if include_dot do
+      "." <> tld_name
     else
-      TLD.generate_name(type)
+      tld_name
     end
   end
 
   @doc """
   Generates a random email address.
 
-  Returns a random email address string based on the specified options.
+  Combines username, domain name, and TLD generation into a single email address string.
+  Accepts all the same options as `username/1`, `domain_name/1`, and `tld/1`, prefixed
+  by their context.
 
-  ## Options
+  ## Username Options
 
-  ### Username Options
+  - `:username_word_count` - Number of words in the username. Defaults to `2`.
+  - `:joiner` - Separator between username words. Defaults to `:all`.
+  - `:username_type` - Word source. Defaults to `:person`.
+  - `:number` - When `true`, appends a random number to the username. Defaults to `false`.
+  - `:number_range` - Range for the appended number. Defaults to `1..1000`.
 
-  The accepted options for username generation are:
+  ## Domain Name Options
 
-  - `:username_word_count` - Specifies the number of words to include in the username. Defaults to `2`.
-  - `:joiner` - Defines the joiner to use between words in the username.
-  - `:username_type` - Specifies the type of words to use in the username.
-  - `:number` - A boolean indicating whether to append a random number to the username.
-    Defaults to `false`, if set to `true`, a number will be appended between `1` and `1000`, for
-    define a custom range, use the `:number_range` option.
-  - `:number_range` - Defines the range of numbers to choose from when appending a number.
-    Defaults to `1..1000`.
+  - `:domain_name_word_count` - Number of words in the domain name. Defaults to `1`.
+  - `:domain_type` - Domain name strategy. Defaults to `:random`.
+  - `:popular_type` - Popular domain category when `:domain_type` is `:popular`. Defaults to `:all`.
+  - `:domain_name` - Custom domain when `:domain_type` is `:custom`. Defaults to `"example.com"`.
 
-  The values for `:joiner` can be:
+  ## TLD Options
 
-  - `:all` - Uses any of the joiners (default).
-  - `:dot` - Uses a dot (`.`) as the joiner.
-  - `:underscore` - Uses an underscore (`_`) as the joiner.
-  - `:dash` - Uses a dash (`-`) as the joiner.
-
-  The values for `:username_type` can be:
-
-  - `:person` - Uses random first or last names for the username (default).
-  - `:word` - Uses random words for the username.
-
-  ### Domain Name Options
-
-  The accepted options for domain name generation are:
-
-  - `:domain_name_word_count` - Specifies the number of words to include in the domain name.
-    Defaults to `1`.
-  - `:domain_type` - Specifies the type of domain name to generate.
-  - `:popular_type` - When `:domain_type` is set to `:popular`, this option defines the category
-    of popular domains to select from. Defaults to `:all`.
-  - `:domain_name` - When `:domain_type` is set to `:custom`, this option allows the user to
-    provide a custom domain name. If not provided, defaults to "example.com".
-
-  The values for `:domain_type` can be:
-
-  - `:random` - Generates a random domain name using a random word (default).
-  - `:popular` - Selects a domain name from a list of popular domains, with the specific category
-    defined by the `:popular_type` option. For this option, the output will be a full domain name
-    like "gmail.com".
-  - `:custom` - Uses a custom domain name provided by the user via the `:domain_name` option. If
-    not provided, defaults to "example.com".
-
-  If `:domain_type` is set to `:popular`, the `:popular_type` option can be used to specify the
-  category of popular domains to select from. The values for `:popular_type` can be:
-
-  - `:all` - Selects from all popular domains (default).
-  - `:ecommerce` - Selects from popular e-commerce domains.
-  - `:email` - Selects from popular email service domains.
-  - `:search` - Selects from popular search engine domains.
-  - `:social` - Selects from popular social media domains.
-
-  ### TLD Options
-
-  The accepted options for TLD generation are:
-
-  - `:tld_type` - Specifies the type of TLD to generate.
-
-  The values for `:tld_type` can be:
-
-  - `:all_except_safe` - Returns a TLD from all types except safe TLDs (default).
-  - `:all` - Returns a TLD from all available types, including safe TLDs.
-  - `:safe` - Returns a safe TLD, e.g. `.example`.
-  - `:generic` - Returns a generic TLD, e.g. `.com`.
-  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
-  - `:country_code` - Returns a country code TLD, e.g. `.id`.
+  - `:tld_type` - TLD category. Defaults to `:all_except_safe`.
 
   ## Examples
 
       iex> NeoFaker.Internet.email()
       "josé@example.com"
 
-      iex> NeoFaker.Internet.email(word_count: 3, joiner: :dot, number: true)
-      "abigail.bethany.crawford_202"
+      iex> NeoFaker.Internet.email(username_word_count: 3, joiner: :dot, number: true)
+      "abigail.bethany.crawford_202@example.com"
 
       iex> NeoFaker.Internet.email(domain_type: :popular, popular_type: :email)
       "jane.doe@gmail.com"
 
       iex> NeoFaker.Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
       "josé@elixir-lang.org"
-
-      iex> NeoFaker.Internet.email(tld_type: :country_code, dot: false)
-      "josé@example.id"
 
   """
   @spec email(Keyword.t()) :: String.t()
@@ -282,7 +265,9 @@ defmodule NeoFaker.Internet do
     domain_name = Email.generate_domain_name(opts)
     tld = Email.generate_tld(opts)
 
-    if Keyword.get(opts, :domain_type, :random) in [:popular, :custom] do
+    domain_type = Options.get(opts, :domain_type, :random)
+
+    if domain_type in [:popular, :custom] do
       "#{username}@#{domain_name}"
     else
       "#{username}@#{domain_name}#{tld}"
@@ -292,28 +277,59 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random IPv4 address.
 
-  Returns a random IPv4 address string.
+  Returns a dotted-decimal IPv4 address string. Pass `private: true` to generate
+  an address from a RFC 1918 private range.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:private` - When `true`, generates a private IP address. Defaults to `false`.
+    - `:class` - Private IP class when `:private` is `true`. Randomly selected by default.
+
+  ## Options
+
+  The values for `:class` can be:
+
+  - `:a` - Class A range (10.0.0.0/8).
+  - `:b` - Class B range (172.16.0.0/12).
+  - `:c` - Class C range (192.168.0.0/16).
 
   ## Examples
 
       iex> NeoFaker.Internet.ipv4()
       "183.235.34.108"
 
+      iex> NeoFaker.Internet.ipv4(private: true)
+      "192.168.1.42"
+
+      iex> NeoFaker.Internet.ipv4(private: true, class: :a)
+      "10.25.30.100"
+
   """
-  @spec ipv4() :: String.t()
-  def ipv4, do: Enum.map_join(1..4, ".", fn _ -> :rand.uniform(256) - 1 end)
+  @spec ipv4(Keyword.t()) :: String.t()
+  def ipv4(opts \\ []) do
+    private = Options.get(opts, :private, false)
+
+    if private do
+      class = Options.get(opts, :class, Enum.random([:a, :b, :c]))
+      Validator.validate_ipv4_class!(class)
+      Generator.private_ipv4(class)
+    else
+      Generator.public_ipv4()
+    end
+  end
 
   @doc """
   Generates a random IPv6 address.
 
-  Returns a random IPv6 address string.
+  Returns a colon-separated hexadecimal IPv6 address string. Supports uppercase
+  and compressed (`::`) notation.
 
-  ## Options
+  ## Parameters
 
-  The accepted options are:
-
-  - `:uppercase` - A boolean indicating whether to return the address in uppercase.
-    Defaults to `true`.
+  - `opts` - Keyword list of options:
+    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
+    - `:compressed` - When `true`, uses compressed `::` notation. Defaults to `false`.
 
   ## Examples
 
@@ -323,32 +339,46 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.ipv6(uppercase: false)
       "e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
 
+      iex> NeoFaker.Internet.ipv6(compressed: true)
+      "2001:db8::8a2e:370:7334"
+
   """
   @spec ipv6(Keyword.t()) :: String.t()
   def ipv6(opts \\ []) do
-    ip_address =
-      Enum.map_join(1..8, ":", fn _ ->
-        Integer.to_string(:rand.uniform(0x10_000) - 1, 16)
-      end)
+    uppercase = Options.get(opts, :uppercase, true)
 
-    if Keyword.get(opts, :uppercase, true) do
-      String.upcase(ip_address)
-    else
-      String.downcase(ip_address)
-    end
+    ip_address =
+      if Options.get(opts, :compressed, false) do
+        Generator.compressed_ipv6()
+      else
+        Enum.map_join(1..8, ":", fn _ ->
+          (:rand.uniform(0x10_000) - 1)
+          |> Integer.to_string(16)
+          |> String.pad_leading(4, "0")
+        end)
+      end
+
+    Formatter.apply_case(ip_address, if(uppercase, do: :upper, else: :lower))
   end
 
   @doc """
   Generates a random MAC address.
 
-  Returns a random MAC address string.
+  Returns a hexadecimal MAC address string with configurable separator and casing.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
+    - `:separator` - Separator between octets. Defaults to `":"`.
 
   ## Options
 
-  The accepted options are:
+  The values for `:separator` can be:
 
-  - `:uppercase` - A boolean indicating whether to return the MAC address in uppercase.
-    Defaults to `true`.
+  - `":"` - Colon (default).
+  - `"-"` - Dash.
+  - `""` - No separator.
 
   ## Examples
 
@@ -358,20 +388,135 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.mac_address(uppercase: false)
       "74:4e:44:b0:d0:93"
 
+      iex> NeoFaker.Internet.mac_address(separator: "-")
+      "74-4E-44-B0-D0-93"
+
+      iex> NeoFaker.Internet.mac_address(separator: "", uppercase: false)
+      "744e44b0d093"
+
   """
   @spec mac_address(Keyword.t()) :: String.t()
   def mac_address(opts \\ []) do
+    uppercase = Options.get(opts, :uppercase, true)
+    separator = Options.get(opts, :separator, ":")
+
+    Validator.validate_mac_separator!(separator)
+
     mac_address =
-      Enum.map_join(1..6, ":", fn _ ->
+      Enum.map_join(1..6, separator, fn _ ->
         (:rand.uniform(0x100) - 1)
         |> Integer.to_string(16)
         |> String.pad_leading(2, "0")
       end)
 
-    if Keyword.get(opts, :uppercase, true) do
-      String.upcase(mac_address)
+    Formatter.apply_case(mac_address, if(uppercase, do: :upper, else: :lower))
+  end
+
+  @doc """
+  Generates a random URL.
+
+  Returns a URL string built from a protocol, domain name, and TLD. Optionally
+  appends a random path and/or query string.
+
+  ## Parameters
+
+  - `opts` - Keyword list of options:
+    - `:protocol` - URL scheme. Defaults to `:https`.
+    - `:domain_type` - Domain name strategy. Defaults to `:random`.
+    - `:path` - When `true`, appends a random path. Defaults to `false`.
+    - `:query` - When `true`, appends random query parameters. Defaults to `false`.
+
+  ## Options
+
+  The values for `:protocol` can be:
+
+  - `:https` - HTTPS (default).
+  - `:http` - HTTP.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.url()
+      "https://example.com"
+
+      iex> NeoFaker.Internet.url(protocol: :http)
+      "http://neo-faker.org"
+
+      iex> NeoFaker.Internet.url(path: true)
+      "https://example.com/users/profile"
+
+      iex> NeoFaker.Internet.url(path: true, query: true)
+      "https://example.com/api/v1?key=value&id=123"
+
+  """
+  @spec url(Keyword.t()) :: String.t()
+  def url(opts \\ []) do
+    protocol = Options.get(opts, :protocol, :https)
+    include_path = Options.get(opts, :path, false)
+    include_query = Options.get(opts, :query, false)
+
+    # Normalise :domain_type (url/1 API) -> :type (domain_name/1 API), mirroring
+    # how Email.generate_domain_name/1 handles the same translation.
+    domain_type = Keyword.get(opts, :domain_type, Keyword.get(opts, :type, :random))
+    domain_opts = Keyword.put(opts, :type, domain_type)
+
+    Validator.validate_protocol!(protocol)
+    Validator.validate_domain_type!(domain_type)
+
+    domain = domain_name(domain_opts)
+
+    # For :popular and :custom the domain is already fully-qualified (e.g.
+    # "gmail.com"), so appending a TLD would produce "gmail.com.net". Only
+    # word-based (:random) domains need a TLD appended.
+    base_url =
+      if domain_type == :random do
+        "#{protocol}://#{domain}#{tld(opts)}"
+      else
+        "#{protocol}://#{domain}"
+      end
+
+    url_with_path =
+      if include_path do
+        "#{base_url}/#{Generator.url_path()}"
+      else
+        base_url
+      end
+
+    if include_query do
+      "#{url_with_path}?#{Generator.query_string()}"
     else
-      String.downcase(mac_address)
+      url_with_path
     end
+  end
+
+  @doc """
+  Generates a random URL-friendly slug.
+
+  Returns a lowercase, word-joined string suitable for use in URLs.
+
+  ## Parameters
+
+  - `word_count` - Number of words in the slug. Defaults to `3`.
+  - `opts` - Keyword list of options:
+    - `:separator` - Separator between words. Defaults to `"-"`.
+
+  ## Examples
+
+      iex> NeoFaker.Internet.slug()
+      "neo-faker-elixir"
+
+      iex> NeoFaker.Internet.slug(5)
+      "the-quick-brown-fox-jumps"
+
+      iex> NeoFaker.Internet.slug(2, separator: "_")
+      "hello_world"
+
+  """
+  @spec slug(pos_integer(), Keyword.t()) :: String.t()
+  def slug(word_count \\ 3, opts \\ []) when is_integer(word_count) and word_count > 0 do
+    separator = Options.get(opts, :separator, "-")
+
+    Enum.map_join(1..word_count, separator, fn _ ->
+      String.downcase(NeoFaker.Text.word())
+    end)
   end
 end

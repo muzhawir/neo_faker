@@ -1,21 +1,21 @@
 defmodule NeoFaker.Color.Keyword do
   @moduledoc false
 
-  import NeoFaker.Data.Generator, only: [random_value: 4]
+  import NeoFaker.Data, only: [random_value: 4]
 
-  alias NeoFaker.Data.Cache
+  alias NeoFaker.Data
 
   @module NeoFaker.Color
 
   @doc """
-  Returns a random keyword color string for the specified locale and optional category.
+  Returns a random keyword color string for the specified category and locale.
 
   If `category` is `:all`, selects a random color from all available keyword colors for the given
-  locale.
+  locale. Otherwise, selects a random color from the specified category.
   """
   def color(:all, locale) do
     locale
-    |> Cache.fetch!(@module, "keyword.exs")
+    |> Data.fetch!(@module, "keyword.exs")
     |> Map.values()
     |> List.flatten()
     |> Enum.random()

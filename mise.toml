@@ -1,7 +1,35 @@
+# Tools configurations
+
 [tools]
 
-erlang = "27.3.4"
-elixir = "1.18.4-otp-27"
+erlang = "28.3"
+elixir = "1.19.4-otp-28"
+
+# Task definitions
+
+[tasks.format]
+
+description = "Format the codebase"
+run = [
+  "mix format"
+]
+
+[tasks.lint]
+
+description = "Format and lint the codebase"
+run = [
+  "mix format",
+  "mix credo"
+]
+
+[tasks.analyze]
+
+description = "Format, lint, and analyze the codebase"
+run = [
+  "mix format",
+  "mix credo",
+  "mix dialyzer"
+]
 
 [tasks.fix]
 

@@ -1,7 +1,7 @@
 defmodule NeoFaker.Data do
   @moduledoc false
 
-  @locale_file Path.join([File.cwd!(), "priv", "data", "locale.exs"])
+  @locale_file Path.join([:neo_faker |> :code.priv_dir() |> to_string(), "data", "locale.exs"])
 
   # ---------------------------------------------------------------------------
   # Public API – used by every faker module

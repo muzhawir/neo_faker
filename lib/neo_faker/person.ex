@@ -330,24 +330,12 @@ defmodule NeoFaker.Person do
     include_prefix = Options.get(opts, :prefix, false)
     include_suffix = Options.get(opts, :suffix, false)
 
-    name_parts = []
-
-    name_parts =
-      if include_prefix do
-        [prefix(opts) | name_parts]
-      else
-        name_parts
-      end
-
-    name_parts = [full_name(opts) | name_parts]
-
-    name_parts =
-      if include_suffix do
-        name_parts ++ [suffix(opts)]
-      else
-        name_parts
-      end
-
-    name_parts |> Enum.reverse() |> Enum.join(" ")
+    [
+      if(include_prefix, do: prefix(opts)),
+      full_name(opts),
+      if(include_suffix, do: suffix(opts))
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
   end
 end

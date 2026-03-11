@@ -261,7 +261,7 @@ defmodule NeoFaker.Internet.Generator do
     path_depth = :rand.uniform(3)
 
     Enum.map_join(1..path_depth, "/", fn _ ->
-      String.downcase(NeoFaker.Text.word())
+      NeoFaker.Text.word() |> String.downcase() |> slugify()
     end)
   end
 
@@ -276,13 +276,19 @@ defmodule NeoFaker.Internet.Generator do
     param_count = :rand.uniform(3)
 
     Enum.map_join(1..param_count, "&", fn _ ->
-      key = String.downcase(NeoFaker.Text.word())
+      key = NeoFaker.Text.word() |> String.downcase() |> slugify()
       value = :rand.uniform(1000)
       "#{key}=#{value}"
     end)
   end
 
   # Internal helpers
+
+  # Replaces runs of whitespace with hyphens so that multi-word entries returned
+  # by NeoFaker.Text.word/0 (e.g. "all right", "ice cream") become valid
+  # single-token URL path segments and query-string keys (e.g. "all-right").
+  @spec slugify(String.t()) :: String.t()
+  defp slugify(word), do: String.replace(word, ~r/\s+/, "-")
 
   @spec find_longest_zero_sequence(list(integer())) :: {integer(), integer()}
   defp find_longest_zero_sequence(groups) do

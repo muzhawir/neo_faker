@@ -1,9 +1,9 @@
 defmodule NeoFaker.Boolean do
   @moduledoc """
-  Functions for generating boolean values.
+  Functions for generating random boolean values.
 
-  This module provides utilities to generate random boolean values with configurable
-  probabilities, allowing for controlled randomness.
+  Provides utilities to generate `true` or `false` with a configurable probability,
+  with an option to return integer equivalents instead.
   """
   @moduledoc since: "0.5.0"
 
@@ -15,15 +15,14 @@ defmodule NeoFaker.Boolean do
   @doc """
   Generates a random boolean value with a configurable probability of returning `true`.
 
-  By default, returns `true` or `false` with equal probability. The `true_ratio` parameter sets
-  the percentage chance (0–100) of returning `true`. If the `integer: true` option is provided,
-  returns `1` for `true` and `0` for `false`.
+  The `true_ratio` parameter sets the percentage chance (0–100) of returning `true`.
+  Pass `integer: true` to receive `1` or `0` instead of `true` or `false`.
 
   ## Parameters
 
-  - `true_ratio` - The percentage probability (0-100) of returning `true`. Defaults to `50`.
+  - `true_ratio` - Percentage probability of returning `true` (0–100). Defaults to `50`.
   - `opts` - Keyword list of options:
-    - `:integer` - When `true`, returns `1` or `0` instead of `true` or `false`. Defaults to `false`.
+    - `:integer` - When `true`, returns `1` or `0`. Defaults to `false`.
 
   ## Examples
 

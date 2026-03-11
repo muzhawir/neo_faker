@@ -2,8 +2,9 @@ defmodule NeoFaker.Date do
   @moduledoc """
   Functions for generating random dates.
 
-  This module provides utilities to generate random dates, including dates within a specific
-  range, birthdays, and more. All functions support both struct and ISO 8601 string formats.
+  Provides utilities to generate random dates, including dates relative to today,
+  dates within a custom range, birthdays, past and future dates. All functions
+  support both `Date` struct and ISO 8601 string output formats.
   """
   @moduledoc since: "0.9.0"
 
@@ -33,7 +34,7 @@ defmodule NeoFaker.Date do
   The values for `:format` can be:
 
   - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` — Returns an ISO 8601 formatted string.
+  - `:iso8601` - Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -45,9 +46,6 @@ defmodule NeoFaker.Date do
 
       iex> NeoFaker.Date.add(0..31, format: :iso8601)
       "2025-03-25"
-
-      iex> NeoFaker.Date.add(-7..7, format: :struct)
-      ~D[2025-03-20]
 
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
@@ -61,8 +59,8 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date between two given dates.
 
-  By default, returns a date between January 1, 1970 (the Unix epoch) and today.
-  Both the start and finish dates are inclusive.
+  Both `start` and `finish` are inclusive. Defaults to a date between the Unix
+  epoch (`~D[1970-01-01]`) and today.
 
   ## Parameters
 
@@ -76,7 +74,7 @@ defmodule NeoFaker.Date do
   The values for `:format` can be:
 
   - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` — Returns an ISO 8601 formatted string.
+  - `:iso8601` - Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -89,9 +87,6 @@ defmodule NeoFaker.Date do
       iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
       "2025-03-25"
 
-      iex> NeoFaker.Date.between(~D[2024-01-01], ~D[2024-12-31])
-      ~D[2024-07-15]
-
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
   def between(start \\ @epoch_date, finish \\ Generator.local_date_now(), opts \\ []) do
@@ -102,24 +97,24 @@ defmodule NeoFaker.Date do
   end
 
   @doc """
-  Generates a random birthday.
+  Generates a random birthday within the specified age range.
 
-  Returns a birthday within the specified age range. The function calculates dates based on
-  the current date, ensuring the generated birthday represents someone within the given age range.
+  Calculates the valid date window from the current date and `min_age`/`max_age`,
+  then returns a random date within that window.
 
   ## Parameters
 
-  - `min_age` - The minimum age. Defaults to `18`.
-  - `max_age` - The maximum age. Defaults to `65`.
+  - `min_age` - The minimum age in years. Defaults to `18`.
+  - `max_age` - The maximum age in years. Defaults to `65`.
   - `opts` - Keyword list of options:
-    - `:format` - Specifies the format of the date. Defaults to `:struct`.
+    - `:format` - Specifies the output format. Defaults to `:struct`.
 
   ## Options
 
   The values for `:format` can be:
 
   - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` — Returns an ISO 8601 formatted string.
+  - `:iso8601` - Returns an ISO 8601 formatted string.
 
   ## Examples
 
@@ -131,12 +126,6 @@ defmodule NeoFaker.Date do
 
       iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
       "1999-05-06"
-
-      iex> NeoFaker.Date.birthday(25, 30)
-      ~D[1995-08-12]
-
-      iex> NeoFaker.Date.birthday(0, 10, format: :iso8601)
-      "2020-03-15"
 
   """
   @doc since: "0.10.0"
@@ -155,11 +144,12 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date in the past.
 
-  Returns a date between the specified number of days ago and today.
+  Returns a random date between `days` ago and today. Equivalent to
+  `add(-days..0, opts)`.
 
   ## Parameters
 
-  - `days` - The number of days in the past. Defaults to `365`.
+  - `days` - The number of days in the past to look back. Defaults to `365`.
   - `opts` - Keyword list of options:
     - `:format` - Specifies the output format. Defaults to `:struct`.
 
@@ -171,9 +161,6 @@ defmodule NeoFaker.Date do
       iex> NeoFaker.Date.past(365, format: :iso8601)
       "2024-03-25"
 
-      iex> NeoFaker.Date.past(7)
-      ~D[2025-03-18]
-
   """
   @spec past(pos_integer(), Keyword.t()) :: Date.t() | String.t()
   def past(days \\ 365, opts \\ []) when is_integer(days) and days > 0 do
@@ -183,11 +170,12 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date in the future.
 
-  Returns a date between today and the specified number of days from now.
+  Returns a random date between today and `days` from now. Equivalent to
+  `add(0..days, opts)`.
 
   ## Parameters
 
-  - `days` - The number of days in the future. Defaults to `365`.
+  - `days` - The number of days ahead to look. Defaults to `365`.
   - `opts` - Keyword list of options:
     - `:format` - Specifies the output format. Defaults to `:struct`.
 
@@ -199,9 +187,6 @@ defmodule NeoFaker.Date do
       iex> NeoFaker.Date.future(365, format: :iso8601)
       "2026-03-25"
 
-      iex> NeoFaker.Date.future(7)
-      ~D[2025-04-01]
-
   """
   @spec future(pos_integer(), Keyword.t()) :: Date.t() | String.t()
   def future(days \\ 365, opts \\ []) when is_integer(days) and days > 0 do
@@ -209,9 +194,10 @@ defmodule NeoFaker.Date do
   end
 
   @doc """
-  Returns today's date.
+  Returns today's local date.
 
-  This is a convenience function that returns the current local date.
+  A convenience wrapper that always returns the current date without any
+  randomisation.
 
   ## Parameters
 

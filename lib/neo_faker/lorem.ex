@@ -1,9 +1,10 @@
 defmodule NeoFaker.Lorem do
   @moduledoc """
-  Functions for generating random text using a Lorem Ipsum generator.
+  Functions for generating Lorem Ipsum text.
 
-  This module provides utilities to generate random text, such as paragraphs, sentences, and
-  words from various text sources.
+  Provides utilities to generate random paragraphs, sentences, and words sourced
+  from either the classic Lorem Ipsum text or Marcus Aurelius' *Meditations*.
+  All functions accept a `text:` option to switch between sources.
   """
   @moduledoc since: "0.8.0"
 
@@ -15,20 +16,11 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random paragraph.
 
-  Returns a random Lorem Ipsum paragraph. The paragraph is sourced from a specific text file
-  based on the provided options.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
+  Returns a randomly selected paragraph from the chosen text source.
 
   ## Options
 
-  Values for option `:text` can be:
-
-  - `:lorem` - A standard Lorem Ipsum text (default).
-  - `:meditations` - A meditation text by Marcus Aurelius.
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
 
   ## Examples
 
@@ -39,13 +31,7 @@ defmodule NeoFaker.Lorem do
 
       iex> NeoFaker.Lorem.paragraph(text: :meditations)
       "Do the things external which fall upon thee distract thee? Give thyself time to learn
-      something new and good, and cease to be whirled around. But then thou must also avoid being
-      carried about the other way. For those too are triflers who have wearied themselves in life
-      by their activity, and yet have no object to which to direct every movement, and, in a word,
-      all their thoughts."
-
-      iex> NeoFaker.Lorem.paragraph(text: :lorem)
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      something new and good, and cease to be whirled around."
 
   """
   @spec paragraph(Keyword.t()) :: String.t()
@@ -64,20 +50,12 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random sentence.
 
-  Returns a single random sentence from the specified text source. The sentence is extracted
-  from a paragraph and properly delimited.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
+  Extracts a single sentence from a randomly chosen paragraph of the given
+  text source.
 
   ## Options
 
-  Values for option `:text` can be:
-
-  - `:lorem` - A standard Lorem Ipsum text (default).
-  - `:meditations` - A meditation text by Marcus Aurelius.
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
 
   ## Examples
 
@@ -86,9 +64,6 @@ defmodule NeoFaker.Lorem do
 
       iex> NeoFaker.Lorem.sentence(text: :meditations)
       "Do the things external which fall upon thee distract thee?"
-
-      iex> NeoFaker.Lorem.sentence(text: :lorem)
-      "Lorem ipsum dolor sit amet."
 
   """
   @spec sentence(Keyword.t()) :: String.t()
@@ -99,20 +74,12 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random word.
 
-  Returns a single random word from the specified text source. The word is extracted from
-  a sentence and cleaned of punctuation.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
+  Extracts a single lowercase word from a randomly chosen sentence, stripped of
+  punctuation.
 
   ## Options
 
-  Values for option `:text` can be:
-
-  - `:lorem` - A standard Lorem Ipsum text (default).
-  - `:meditations` - A meditation text by Marcus Aurelius.
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
 
   ## Examples
 
@@ -121,9 +88,6 @@ defmodule NeoFaker.Lorem do
 
       iex> NeoFaker.Lorem.word(text: :meditations)
       "distract"
-
-      iex> NeoFaker.Lorem.word(text: :lorem)
-      "ipsum"
 
   """
   @spec word(Keyword.t()) :: String.t()
@@ -139,22 +103,21 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random paragraphs.
 
-  Returns a list of random paragraphs from the specified text source.
+  Returns a list of paragraphs. Pass `join: true` to get a single newline-separated string.
 
   ## Parameters
 
-  - `count` - The number of paragraphs to generate. Defaults to `3`.
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
-    - `:join` - When `true`, joins paragraphs with newlines. Defaults to `false`.
+  - `count` - Number of paragraphs to generate. Defaults to `3`.
+
+  ## Options
+
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+  - `:join` - When `true`, joins paragraphs with `"\\n\\n"`. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.paragraphs(2)
       ["First paragraph...", "Second paragraph..."]
-
-      iex> NeoFaker.Lorem.paragraphs(2, text: :meditations)
-      ["First meditation...", "Second meditation..."]
 
       iex> NeoFaker.Lorem.paragraphs(2, join: true)
       "First paragraph...\\n\\nSecond paragraph..."
@@ -174,22 +137,21 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random sentences.
 
-  Returns a list of random sentences from the specified text source.
+  Returns a list of sentences. Pass `join: true` to get a single space-separated string.
 
   ## Parameters
 
-  - `count` - The number of sentences to generate. Defaults to `5`.
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
-    - `:join` - When `true`, joins sentences with spaces. Defaults to `false`.
+  - `count` - Number of sentences to generate. Defaults to `5`.
+
+  ## Options
+
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+  - `:join` - When `true`, joins sentences with `" "`. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.sentences(3)
       ["First sentence.", "Second sentence.", "Third sentence."]
-
-      iex> NeoFaker.Lorem.sentences(3, text: :meditations)
-      ["First meditation.", "Second meditation.", "Third meditation."]
 
       iex> NeoFaker.Lorem.sentences(3, join: true)
       "First sentence. Second sentence. Third sentence."
@@ -209,25 +171,24 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random words.
 
-  Returns a list of random words from the specified text source.
+  Returns a list of words. Pass `join: true` to get a single space-separated string.
 
   ## Parameters
 
-  - `count` - The number of words to generate. Defaults to `10`.
-  - `opts` - Keyword list of options:
-    - `:text` - Specifies the text source. Defaults to `:lorem`.
-    - `:join` - When `true`, joins words with spaces. Defaults to `false`.
+  - `count` - Number of words to generate. Defaults to `10`.
+
+  ## Options
+
+  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+  - `:join` - When `true`, joins words with `" "`. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.words(5)
-      ["word1", "word2", "word3", "word4", "word5"]
-
-      iex> NeoFaker.Lorem.words(5, text: :meditations)
-      ["meditation1", "meditation2", "meditation3", "meditation4", "meditation5"]
+      ["suspendisse", "justo", "venenatis", "sapien", "accumsan"]
 
       iex> NeoFaker.Lorem.words(5, join: true)
-      "word1 word2 word3 word4 word5"
+      "suspendisse justo venenatis sapien accumsan"
 
   """
   @spec words(pos_integer(), Keyword.t()) :: [String.t()] | String.t()

@@ -1,23 +1,25 @@
 # Supported Locales
 
-NeoFaker generates locale-specific data for realistic testing and development. Locale-aware
-functions use data files from `priv/locales/<locale>/`. If a requested locale is missing, NeoFaker
-falls back to the default (`:default`), which provides generic English (US) data.
+NeoFaker supports locale-specific data for realistic test output. Locale-aware functions load
+data from `priv/data/<locale>/`. If the requested locale is unavailable, NeoFaker falls back
+to `:default`, which provides generic English (US) data.
 
-For example, generate an app description in Indonesian:
+To set the locale globally, add the following to your `config.exs`:
+
+```elixir
+config :neo_faker, locale: :default
+```
+
+You can also override the locale for individual function calls. For example, to get the description in Indonesian:
 
 ```elixir
 iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-This looks for data in `priv/locales/id_id/`. If unavailable, it falls back to
-`priv/locales/default/`.
+See the [configuration instructions](https://hexdocs.pm/neo_faker/getting-started.html#configuration) for more details.
 
-To set the locale, use the `locale` option in the function call. See
-[configuration instructions](getting-started.html#configuration) for details.
-
-Here are the currently supported locales:
+## Available Locales
 
 | Locale     | Country      | Language                           |
 | ---------- | ------------ | ---------------------------------- |

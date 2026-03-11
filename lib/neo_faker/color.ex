@@ -2,8 +2,9 @@ defmodule NeoFaker.Color do
   @moduledoc """
   Functions for generating random colors.
 
-  This module provides utilities to generate random colors in various formats including
-  CMYK, HEX, HSL, HSLA, RGB, RGBA, and keyword colors with support for W3C formatting.
+  Provides utilities to generate random colors in various formats including
+  CMYK, HEX, HSL, HSLA, RGB, RGBA, and CSS keyword colors, with optional
+  W3C string formatting.
   """
   @moduledoc since: "0.8.0"
 
@@ -18,22 +19,14 @@ defmodule NeoFaker.Color do
   alias NeoFaker.Helpers.Options
 
   @doc """
-  Generates a CMYK color.
+  Generates a random CMYK color.
 
-  Returns a CMYK color as a tuple of four integers representing the cyan, magenta, yellow, and
-  black components. Each component is a percentage value from 0 to 100.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to tuple format.
+  Returns a tuple `{cyan, magenta, yellow, black}` where each component is an
+  integer percentage from 0 to 100. Pass `format: :w3c` for a CSS string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
+  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
 
   ## Examples
 
@@ -42,16 +35,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.cmyk(format: :w3c)
       "cmyk(0%, 25%, 50%, 100%)"
-
-      iex> NeoFaker.Color.cmyk(format: nil)
-      {15, 30, 45, 60}
-
-  ## Errors
-
-  Raises `ArgumentError` if an invalid format is provided.
-
-      iex> NeoFaker.Color.cmyk(format: :invalid)
-      ** (ArgumentError) Invalid value for :format. Expected one of [nil, :w3c], got: :invalid
 
   """
   @spec cmyk(Keyword.t()) :: tuple() | String.t()
@@ -65,24 +48,14 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates a HEX color.
+  Generates a random HEX color string.
 
-  Returns a HEX color. If no options are provided, the color is returned in six-digit format
-  with a leading hash symbol (#).
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:six_digit`.
+  Returns a `#`-prefixed hex color. Defaults to six-digit format.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:six_digit` - Returns the color in six-digit format (default).
-  - `:three_digit` - Returns the color in three-digit format.
-  - `:four_digit` - Returns the color in four-digit format.
-  - `:eight_digit` - Returns the color in eight-digit format.
+  - `:format` - Digit length. One of `:six_digit` (default), `:three_digit`,
+    `:four_digit`, or `:eight_digit`.
 
   ## Examples
 
@@ -92,18 +65,8 @@ defmodule NeoFaker.Color do
       iex> NeoFaker.Color.hex(format: :three_digit)
       "#365"
 
-      iex> NeoFaker.Color.hex(format: :four_digit)
-      "#365F"
-
       iex> NeoFaker.Color.hex(format: :eight_digit)
       "#613583FF"
-
-  ## Errors
-
-  Raises `ArgumentError` if an invalid format is provided.
-
-      iex> NeoFaker.Color.hex(format: :invalid)
-      ** (ArgumentError) Invalid value for :format. Expected one of [:three_digit, :four_digit, :six_digit, :eight_digit], got: :invalid
 
   """
   @spec hex(Keyword.t()) :: String.t()
@@ -124,22 +87,15 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates an HSL color.
+  Generates a random HSL color.
 
-  Returns an HSL (Hue, Saturation, Lightness) color as a tuple or W3C formatted string.
-  Hue is in degrees (0-360), while Saturation and Lightness are percentages (0-100).
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to tuple format.
+  Returns a `{hue, saturation, lightness}` tuple. Hue is in degrees (0–360);
+  saturation and lightness are integer percentages (0–100). Pass `format: :w3c`
+  for a CSS string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
+  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
 
   ## Examples
 
@@ -148,9 +104,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.hsl(format: :w3c)
       "hsl(180, 50%, 75%)"
-
-      iex> NeoFaker.Color.hsl(format: nil)
-      {240, 100, 50}
 
   """
   @spec hsl(Keyword.t()) :: tuple() | String.t()
@@ -164,23 +117,15 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates an HSLA color.
+  Generates a random HSLA color.
 
-  Returns an HSLA (Hue, Saturation, Lightness, Alpha) color as a tuple or W3C formatted string.
-  Hue is in degrees (0-360), Saturation and Lightness are percentages (0-100), and Alpha
-  is a value between 0.0 and 1.0.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to tuple format.
+  Returns a `{hue, saturation, lightness, alpha}` tuple. Hue is in degrees (0–360),
+  saturation and lightness are integer percentages (0–100), and alpha is a float
+  between 0.0 and 1.0. Pass `format: :w3c` for a CSS string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
+  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
 
   ## Examples
 
@@ -189,9 +134,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.hsla(format: :w3c)
       "hsla(180, 50%, 75%, 0.8)"
-
-      iex> NeoFaker.Color.hsla(format: nil)
-      {240, 100, 50, 1.0}
 
   """
   @spec hsla(Keyword.t()) :: tuple() | String.t()
@@ -205,30 +147,15 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates a keyword color.
+  Generates a random CSS keyword color name.
 
-  Returns a keyword color name. If no options are provided, colors from all categories
-  are returned.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:category` - Specifies the category of keyword colors. Defaults to `:all`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Returns a color name string such as `"blueviolet"` or `"purple"`. Supports
+  locale-specific color names (e.g. Indonesian via `locale: :id_id`).
 
   ## Options
 
-  The values for `:category` can be:
-
-  - `:all` - Returns all keyword colors (default).
-  - `:basic` - Returns basic keyword colors (e.g., "red", "blue", "green").
-  - `:extended` - Returns extended keyword colors (e.g., "blueviolet", "cornflowerblue").
-
-  The values for `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale (returns Indonesian color names).
-  - `:en_us` - Uses the US English locale.
+  - `:category` - Color category. One of `:all` (default), `:basic`, or `:extended`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -240,9 +167,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.keyword(locale: :id_id)
       "ungu"
-
-      iex> NeoFaker.Color.keyword(category: :extended, locale: :en_us)
-      "cornflowerblue"
 
   """
   @spec keyword(Keyword.t()) :: String.t()
@@ -256,22 +180,14 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates an RGB color.
+  Generates a random RGB color.
 
-  Returns an RGB (Red, Green, Blue) color as a tuple or W3C formatted string.
-  Each component is an integer value from 0 to 255.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to tuple format.
+  Returns a `{red, green, blue}` tuple where each component is an integer from
+  0 to 255. Pass `format: :w3c` for a CSS string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
+  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
 
   ## Examples
 
@@ -280,16 +196,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.rgb(format: :w3c)
       "rgb(255, 128, 64)"
-
-      iex> NeoFaker.Color.rgb(format: nil)
-      {100, 200, 50}
-
-  ## Errors
-
-  Raises `ArgumentError` if an invalid format is provided.
-
-      iex> NeoFaker.Color.rgb(format: :invalid)
-      ** (ArgumentError) Invalid value for :format. Expected one of [nil, :w3c], got: :invalid
 
   """
   @spec rgb(Keyword.t()) :: tuple() | String.t()
@@ -303,22 +209,15 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates an RGBA color.
+  Generates a random RGBA color.
 
-  Returns an RGBA (Red, Green, Blue, Alpha) color as a tuple or W3C formatted string.
-  RGB components are integers from 0 to 255, and Alpha is a float between 0.0 and 1.0.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to tuple format.
+  Returns a `{red, green, blue, alpha}` tuple. RGB components are integers from
+  0 to 255; alpha is a float between 0.0 and 1.0. Pass `format: :w3c` for a
+  CSS string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `nil` - Returns the color in tuple format (default).
-  - `:w3c` - Returns the color in W3C format.
+  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
 
   ## Examples
 
@@ -327,9 +226,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.rgba(format: :w3c)
       "rgba(255, 128, 64, 0.8)"
-
-      iex> NeoFaker.Color.rgba(format: nil)
-      {100, 200, 50, 1.0}
 
   """
   @spec rgba(Keyword.t()) :: tuple() | String.t()
@@ -343,14 +239,12 @@ defmodule NeoFaker.Color do
   end
 
   @doc """
-  Generates a random color in any format.
+  Generates a random color in a randomly selected format.
 
-  Returns a color in a randomly selected format (CMYK, HEX, HSL, HSLA, RGB, or RGBA).
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - If provided, uses that specific format instead of random.
+  With no options, picks uniformly among CMYK, HEX, HSL, HSLA, RGB, and RGBA.
+  Pass `format: :w3c` to restrict the pool to formats that support W3C strings
+  (excludes HEX), or any other `:format` value to pass it through to each
+  individual generator.
 
   ## Examples
 
@@ -359,9 +253,6 @@ defmodule NeoFaker.Color do
 
       iex> NeoFaker.Color.random()
       "#613583"
-
-      iex> NeoFaker.Color.random()
-      {180, 50, 75}
 
   """
   @spec random(Keyword.t()) :: tuple() | String.t()

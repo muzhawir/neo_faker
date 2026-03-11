@@ -114,14 +114,7 @@ defmodule NeoFaker.Helpers.Options do
   @spec validate_many(keyword(), map()) :: :ok | {:error, String.t()}
   def validate_many(opts, validations) when is_list(opts) and is_map(validations) do
     for {key, validator} <- validations do
-      case Keyword.fetch(opts, key) do
-        {:ok, value} ->
-          result = validator.(value)
-          if result != :ok, do: throw(result)
-
-        :error ->
-          :ok
-      end
+      opts |> Keyword.fetch(key) |> run_validator(validator)
     end
 
     :ok
@@ -129,6 +122,14 @@ defmodule NeoFaker.Helpers.Options do
     {:error, reason} -> {:error, reason}
     error -> error
   end
+
+  @spec run_validator({:ok, term()} | :error, (term() -> :ok | {:error, String.t()})) :: :ok
+  defp run_validator({:ok, value}, validator) do
+    result = validator.(value)
+    if result != :ok, do: throw(result)
+  end
+
+  defp run_validator(:error, _validator), do: :ok
 
   @doc """
   Gets and validates an option value.

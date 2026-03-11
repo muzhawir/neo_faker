@@ -2,8 +2,9 @@ defmodule NeoFaker.Time do
   @moduledoc """
   Functions for generating random times.
 
-  This module provides utilities to generate random times, including times within a specific
-  range, time zones, and more. All functions support both struct and ISO 8601 string formats.
+  Provides utilities to generate random times, including times relative to now,
+  times within a specific range, time zones, and named periods (morning, afternoon,
+  evening, night). All functions support both `Time` struct and ISO 8601 string output.
   """
   @moduledoc since: "0.10.0"
 
@@ -17,30 +18,15 @@ defmodule NeoFaker.Time do
   @end_of_day ~T[23:59:59]
 
   @doc """
-  Generates a random time.
+  Generates a random time offset from now.
 
-  Returns a time within the default range of 24 hours before and 24 hours after the current time.
-  The range can be specified in hours, minutes, or seconds.
-
-  ## Parameters
-
-  - `range` - The range of time units relative to now. Defaults to `-24..24`.
-  - `opts` - Keyword list of options:
-    - `:unit` - Specifies the unit of time range. Defaults to `:hour`.
-    - `:format` - Specifies the format of the time. Defaults to `:struct`.
+  Adds a random number of units (hours by default) drawn from `range` to the
+  current time. The default range is `-24..24`.
 
   ## Options
 
-  The values for `:unit` can be:
-
-  - `:hour` - Returns the time in hours (default).
-  - `:minute` - Returns the time in minutes.
-  - `:second` - Returns the time in seconds.
-
-  The values for `:format` can be:
-
-  - `:struct` - Returns a `Time` struct (default).
-  - `:iso8601` - Returns an ISO 8601 formatted string.
+  - `:unit` - Unit of the range. One of `:hour` (default), `:minute`, or `:second`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -52,12 +38,6 @@ defmodule NeoFaker.Time do
 
       iex> NeoFaker.Time.add(0..10, format: :iso8601)
       "15:22:10"
-
-      iex> NeoFaker.Time.add(-5..5, unit: :hour, format: :struct)
-      ~T[12:30:45]
-
-      iex> NeoFaker.Time.add(0..30, unit: :second)
-      ~T[14:22:35]
 
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
@@ -73,21 +53,15 @@ defmodule NeoFaker.Time do
   @doc """
   Generates a random time between two times.
 
-  Returns a random time between the specified start and finish times. Both times are inclusive.
+  Both `start` and `finish` are inclusive. Defaults to the full day
+  (`~T[00:00:00]`–`~T[23:59:59]`).
 
   ## Parameters
 
-  - `start` - The start time (inclusive). Defaults to `~T[00:00:00]`.
-  - `finish` - The end time (inclusive). Defaults to `~T[23:59:59]`.
+  - `start` - Start time, inclusive. Defaults to `~T[00:00:00]`.
+  - `finish` - End time, inclusive. Defaults to `~T[23:59:59]`.
   - `opts` - Keyword list of options:
-    - `:format` - Specifies the format of the time. Defaults to `:struct`.
-
-  ## Options
-
-  The values for `:format` can be:
-
-  - `:struct` - Returns a `Time` struct (default).
-  - `:iso8601` - Returns an ISO 8601 formatted string.
+    - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -112,17 +86,15 @@ defmodule NeoFaker.Time do
   end
 
   @doc """
-  Generates a random time zone.
+  Generates a random time zone string.
 
-  Returns a random time zone from a predefined list of time zones.
+  Returns an IANA time zone name from a predefined list, such as
+  `"Asia/Makassar"` or `"America/New_York"`.
 
   ## Examples
 
       iex> NeoFaker.Time.time_zone()
       "Asia/Makassar"
-
-      iex> NeoFaker.Time.time_zone()
-      "America/New_York"
 
   """
   @spec time_zone() :: String.t()
@@ -131,14 +103,11 @@ defmodule NeoFaker.Time do
   end
 
   @doc """
-  Generates a random morning time.
+  Generates a random morning time (06:00–11:59).
 
-  Returns a time between 6:00 AM and 11:59 AM.
+  ## Options
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -153,14 +122,11 @@ defmodule NeoFaker.Time do
   def morning(opts \\ []), do: between(~T[06:00:00], ~T[11:59:59], opts)
 
   @doc """
-  Generates a random afternoon time.
+  Generates a random afternoon time (12:00–17:59).
 
-  Returns a time between 12:00 PM and 5:59 PM.
+  ## Options
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -175,14 +141,11 @@ defmodule NeoFaker.Time do
   def afternoon(opts \\ []), do: between(~T[12:00:00], ~T[17:59:59], opts)
 
   @doc """
-  Generates a random evening time.
+  Generates a random evening time (18:00–23:59).
 
-  Returns a time between 6:00 PM and 11:59 PM.
+  ## Options
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -197,14 +160,11 @@ defmodule NeoFaker.Time do
   def evening(opts \\ []), do: between(~T[18:00:00], ~T[23:59:59], opts)
 
   @doc """
-  Generates a random night time.
+  Generates a random night time (00:00–05:59).
 
-  Returns a time between 12:00 AM and 5:59 AM.
+  ## Options
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 
@@ -219,14 +179,13 @@ defmodule NeoFaker.Time do
   def night(opts \\ []), do: between(~T[00:00:00], ~T[05:59:59], opts)
 
   @doc """
-  Returns the current time.
+  Returns the current UTC time.
 
-  This is a convenience function that returns the current local time.
+  A convenience wrapper that returns `Time.utc_now()` with optional formatting.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
 
   ## Examples
 

@@ -4,9 +4,6 @@
 
 ### Features
 
-- Added `NeoFaker.Person.pronouns/0` for generating random pronouns.
-- Added `NeoFaker.Company.suffix/0` for generating random company suffixes.
-- Added `NeoFaker.Phone.extension/0` for generating random phone number extensions.
 - Added `NeoFaker.Helpers.Constants` for centralized constant values.
 - Added `NeoFaker.Helpers.Formatter` for standardized format conversions.
 - Added `NeoFaker.Helpers.Options` for consistent option extraction and validation.
@@ -30,11 +27,15 @@
 
 Added new module `NeoFaker.Internet` to handle internet-related data generation, including:
 
-- `Internet.tld/1` for generating random top-level domains (TLDs).
-- `Internet.user_name/1` for generating random usernames.
-- `Internet.domain/1` for generating random domains.
-- `Internet.popular_domain/0` for generating popular domains.
-- `Internet.email/1` for generating random email addresses.
+- `NeoFaker.Internet.tld/1` for generating random top-level domains (TLDs).
+- `NeoFaker.Internet.username/1` for generating random usernames.
+- `NeoFaker.Internet.domain_name/1` for generating random domain names.
+- `NeoFaker.Internet.email/1` for generating random email addresses.
+- `NeoFaker.Internet.ipv4/1` for generating random IPv4 addresses.
+- `NeoFaker.Internet.ipv6/1` for generating random IPv6 addresses.
+- `NeoFaker.Internet.mac_address/1` for generating random MAC addresses.
+- `NeoFaker.Internet.url/1` for generating random URLs.
+- `NeoFaker.Internet.slug/2` for generating random URL slugs.
 
 ### Improvements
 

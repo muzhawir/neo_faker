@@ -1,9 +1,9 @@
 defmodule NeoFaker.Address do
   @moduledoc """
-  Provides functions for generating random address data.
+  Functions for generating random address data.
 
-  This module offers utilities to create random addresses, such as street names, city names,
-  country names, building numbers, and geographic coordinates.
+  Provides utilities to generate street names, city names, country names, building
+  numbers, and geographic coordinates with support for multiple locales.
   """
   @moduledoc since: "0.12.0"
 
@@ -17,35 +17,22 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random building number within a specified range.
 
-  Returns an integer or a string representation of the building number based on
-  the specified type.
+  Returns the building number as a string by default, or as an integer when
+  `type: :integer` is passed.
 
   ## Parameters
 
   - `range` - The range of building numbers. Defaults to `1..100`.
   - `opts` - Keyword list of options:
-    - `:type` - Specifies the return type (`:string` or `:integer`). Defaults to `:string`.
-
-  ## Options
-
-  The values for `:type` can be:
-
-  - `:string` - Returns the building number as a string (default).
-  - `:integer` - Returns the building number as an integer.
+    - `:type` - Return type. Either `:string` (default) or `:integer`.
 
   ## Examples
-
-      iex> NeoFaker.Address.building_number(1..100)
-      "25"
-
-      iex> NeoFaker.Address.building_number(1..100, type: :integer)
-      25
 
       iex> NeoFaker.Address.building_number()
       "42"
 
-      iex> NeoFaker.Address.building_number(1..10, type: :string)
-      "7"
+      iex> NeoFaker.Address.building_number(1..100, type: :integer)
+      25
 
   """
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
@@ -65,21 +52,10 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random city name.
 
-  Returns a string representing a city name. The city name is selected from
-  locale-specific data files.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
-  ## Options
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale. For a list of supported locales, see
-    [list of supported locales](https://hexdocs.pm/neo_faker/available-locales.html).
+  The city name is selected from locale-specific data. Pass `locale:` to use a
+  different locale. See the
+  [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  for supported codes.
 
   ## Examples
 
@@ -96,21 +72,10 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random country name.
 
-  Returns a string representing a country name. The country name is selected from
-  locale-specific data files.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
-  ## Options
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale. For a list of supported locales, see
-    [list of supported locales](https://hexdocs.pm/neo_faker/available-locales.html).
+  The country name is selected from locale-specific data. Pass `locale:` to use a
+  different locale. See the
+  [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  for supported codes.
 
   ## Examples
 
@@ -129,25 +94,22 @@ defmodule NeoFaker.Address do
   @doc """
   Generates random geographic coordinates.
 
-  Returns a tuple of latitude and longitude, or a single value based on the specified type.
-  Coordinates are generated with configurable precision.
+  Returns a `{latitude, longitude}` tuple by default. Use the `:type` option to
+  return a single value, and `:precision` to control decimal places.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:type` - Specifies which coordinate(s) to return. Defaults to `:full`.
+    - `:type` - Which coordinate(s) to return. Defaults to `:full`.
     - `:precision` - Number of decimal places. Defaults to `6`.
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:full` (default) - Returns `{latitude, longitude}` tuple.
+  - `:full` - Returns `{latitude, longitude}` tuple (default).
   - `:latitude` - Returns only the latitude as a float.
   - `:longitude` - Returns only the longitude as a float.
-
-  The value for `:precision` can be any non-negative integer (default: 6), which
-  determines the number of decimal places in the returned coordinates.
 
   ## Examples
 

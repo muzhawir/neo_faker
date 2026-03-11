@@ -3,6 +3,30 @@
 erlang = "28.3"
 elixir = "1.19.4-otp-28"
 
+[tasks.format]
+
+description = "Format the codebase"
+run = [
+  "mix format"
+]
+
+[tasks.lint]
+
+description = "Format and lint the codebase"
+run = [
+  "mix format",
+  "mix credo"
+]
+
+[tasks.analyze]
+
+description = "Format, lint, and analyze the codebase"
+run = [
+  "mix format",
+  "mix credo",
+  "mix dialyzer"
+]
+
 [tasks.fix]
 
 description = "Format, lint, analyze, and test the codebase"

@@ -2,11 +2,9 @@ defmodule NeoFaker.Gravatar do
   @moduledoc """
   Functions for generating random Gravatar URLs.
 
-  This module provides utilities to generate Gravatar image URLs with various customization
-  options. It is based on the [Gravatar API documentation](https://docs.gravatar.com/api/avatars/images).
-
-  Gravatar (Globally Recognized Avatar) is a service for providing globally unique avatars
-  based on email addresses.
+  Provides utilities to generate Gravatar image and profile URLs with customizable size,
+  fallback type, rating, and format options, based on the
+  [Gravatar API](https://docs.gravatar.com/api/avatars/images).
   """
   @moduledoc since: "0.3.1"
 
@@ -25,50 +23,41 @@ defmodule NeoFaker.Gravatar do
   @doc """
   Generates a Gravatar image URL.
 
-  Returns a string representing the Gravatar URL for the given email address. If an email is not
-  provided, a random email is generated. The URL includes query parameters for image size and
-  fallback image type.
+  Returns the Gravatar avatar URL for the given email address. If `nil` is passed,
+  a random email is used.
 
   ## Parameters
 
-  - `email` - The email address to generate a Gravatar for. If `nil`, generates a random email.
+  - `email` - Email address to hash. If `nil`, generates a random email.
   - `opts` - Keyword list of options:
-    - `:size` - Defines the image size in pixels. Defaults to `80`.
-    - `:fallback` - Specifies the default fallback image. Defaults to `:identicon`.
-    - `:rating` - Specifies the maximum rating. Defaults to `:g`.
-    - `:force_default` - When `true`, always return the default image. Defaults to `false`.
+    - `:size` - Image size in pixels (`1`–`2048`). Defaults to `80`.
+    - `:fallback` - Default image type. Defaults to `:identicon`.
+    - `:rating` - Maximum content rating. Defaults to `nil` (no restriction).
+    - `:force_default` - When `true`, always returns the fallback image. Defaults to `false`.
 
   ## Options
 
-  The values for `:size` can be:
-
-  - `nil` - Uses `80px` (default).
-  - `1` - `2048` - The image size in pixels (valid range: `1` to `2048`).
-
   The values for `:fallback` can be:
 
-  - `:identicon` - Generates a geometric pattern based on email hash (default).
-  - `:monsterid` - Generates a generated monster image.
-  - `:wavatar` - Generates a generated face image.
-  - `:robohash` - Generates a generated robot image.
-  - `:retro` - Generates an 8-bit arcade-style pixelated face.
-  - `:blank` - Returns a transparent PNG image.
-  - `:"404"` - Returns an HTTP 404 (File Not Found) response.
-  - Custom URL string - Uses a custom default image URL.
+  - `:identicon` - Geometric pattern based on email hash (default).
+  - `:monsterid` - Generated monster image.
+  - `:wavatar` - Generated face image.
+  - `:robohash` - Generated robot image.
+  - `:retro` - 8-bit arcade-style pixelated face.
+  - `:blank` - Transparent PNG.
+  - `:"404"` - HTTP 404 response.
+  - Custom `http://` or `https://` URL string.
 
   The values for `:rating` can be:
 
-  - `:g` - Suitable for display on all websites (default).
-  - `:pg` - May contain rude gestures, provocatively dressed individuals, mild profanity.
-  - `:r` - May contain harsh profanity, intense violence, nudity, or hard drug use.
-  - `:x` - May contain hardcore sexual imagery or extremely disturbing violence.
+  - `:g` - Suitable for all audiences.
+  - `:pg` - May contain mild profanity or suggestive content.
+  - `:r` - May contain harsh profanity, violence, or nudity.
+  - `:x` - May contain explicit sexual imagery or extreme violence.
 
   ## Examples
 
       iex> NeoFaker.Gravatar.display()
-      "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
-
-      iex> NeoFaker.Gravatar.display("john.doe@example.com")
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80"
 
       iex> NeoFaker.Gravatar.display("john.doe@example.com", size: 100)
@@ -76,9 +65,6 @@ defmodule NeoFaker.Gravatar do
 
       iex> NeoFaker.Gravatar.display("john.doe@example.com", fallback: :monsterid)
       "https://gravatar.com/avatar/<hashed_email>?d=monsterid&s=80"
-
-      iex> NeoFaker.Gravatar.display(nil, size: 200, fallback: :robohash)
-      "https://gravatar.com/avatar/<hashed_email>?d=robohash&s=200"
 
       iex> NeoFaker.Gravatar.display("user@test.com", rating: :pg)
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80&r=pg"
@@ -120,31 +106,29 @@ defmodule NeoFaker.Gravatar do
   @doc """
   Generates a Gravatar profile URL.
 
-  Returns a URL to the Gravatar profile page for the given email address.
+  Returns the Gravatar profile page URL for the given email address. If `nil` is
+  passed, a random email is used.
 
   ## Parameters
 
-  - `email` - The email address. If `nil`, generates a random email.
+  - `email` - Email address to hash. If `nil`, generates a random email.
   - `opts` - Keyword list of options:
-    - `:format` - The response format. Defaults to `:html`.
+    - `:format` - Response format. Defaults to `:html`.
 
   ## Options
 
   The values for `:format` can be:
 
-  - `:html` - Returns the HTML profile page URL (default).
-  - `:json` - Returns the JSON API endpoint.
-  - `:xml` - Returns the XML API endpoint.
-  - `:php` - Returns the PHP serialized data endpoint.
-  - `:vcf` - Returns the vCard/VCF endpoint.
-  - `:qr` - Returns the QR code image endpoint.
+  - `:html` - HTML profile page (default).
+  - `:json` - JSON API endpoint.
+  - `:xml` - XML API endpoint.
+  - `:php` - PHP serialized data endpoint.
+  - `:vcf` - vCard/VCF endpoint.
+  - `:qr` - QR code image endpoint.
 
   ## Examples
 
       iex> NeoFaker.Gravatar.profile()
-      "https://gravatar.com/<hash>"
-
-      iex> NeoFaker.Gravatar.profile("user@example.com")
       "https://gravatar.com/<hash>"
 
       iex> NeoFaker.Gravatar.profile("user@example.com", format: :json)
@@ -169,9 +153,7 @@ defmodule NeoFaker.Gravatar do
   end
 
   @doc """
-  Generates a random Gravatar URL with random options.
-
-  Returns a Gravatar URL with randomly selected size and fallback type.
+  Generates a Gravatar image URL with randomly selected size and fallback type.
 
   ## Examples
 
@@ -191,7 +173,7 @@ defmodule NeoFaker.Gravatar do
   end
 
   @doc """
-  Returns a list of all valid fallback types.
+  Returns the list of all valid fallback type atoms.
 
   ## Examples
 
@@ -203,7 +185,7 @@ defmodule NeoFaker.Gravatar do
   def fallback_types, do: @valid_fallback_types
 
   @doc """
-  Returns the default image size.
+  Returns the default image size in pixels.
 
   ## Examples
 
@@ -215,7 +197,7 @@ defmodule NeoFaker.Gravatar do
   def default_size, do: @default_size
 
   @doc """
-  Returns the valid size range.
+  Returns the valid image size range.
 
   ## Examples
 

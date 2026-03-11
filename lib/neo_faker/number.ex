@@ -2,8 +2,8 @@ defmodule NeoFaker.Number do
   @moduledoc """
   Functions for generating random numbers.
 
-  This module provides utilities to generate random numbers, including values within a specified
-  range, floating-point numbers, and single digits.
+  Provides utilities to generate random integers, floats, digits, and decimals, including
+  values within a specified range and numbers with controlled precision.
   """
   @moduledoc since: "0.8.0"
 
@@ -16,13 +16,13 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random number between `min` and `max`.
 
-  Returns a random integer when both arguments are integers, or a random float when either
-  argument is a float. If no arguments are given, returns a random value in the range 0 to 100.
+  Returns an integer when both arguments are integers, or a float when either argument is a
+  float. Defaults to the range `0`–`100`.
 
   ## Parameters
 
-  - `min` - The minimum value (inclusive). Defaults to `0`.
-  - `max` - The maximum value (inclusive). Defaults to `100`.
+  - `min` - Minimum value (inclusive). Defaults to `0`.
+  - `max` - Maximum value (inclusive). Defaults to `100`.
 
   ## Examples
 
@@ -35,15 +35,8 @@ defmodule NeoFaker.Number do
       iex> NeoFaker.Number.between(20, 100.0)
       29.481745280074264
 
-      iex> NeoFaker.Number.between(10.0, 100.0)
-      29.481745280074264
-
       iex> NeoFaker.Number.between(50, 50)
       50
-
-  ## Errors
-
-  Raises `ArgumentError` if `min` is greater than `max`.
 
       iex> NeoFaker.Number.between(100, 1)
       ** (ArgumentError) min must be less than or equal to max, got: min=100, max=1
@@ -72,10 +65,9 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random floating-point number within the given range.
 
-  Returns a floating-point number composed of a randomly selected integer part and a fractional
-  part. The integer part is chosen from the `left_digit` range, and the fractional part is
-  composed of digits chosen from the `right_digit` range. If no arguments are given, defaults to
-  a left digit in the range `10..100` and a right digit in the range `10_000..100_000`.
+  Combines a randomly selected integer part from `left_digit` and a fractional part from
+  `right_digit` into a float. Defaults to `10..100` for the integer part and
+  `10_000..100_000` for the fractional part.
 
   ## Parameters
 
@@ -89,13 +81,6 @@ defmodule NeoFaker.Number do
 
       iex> NeoFaker.Number.float(1..9, 10..90)
       1.44
-
-      iex> NeoFaker.Number.float(100..200, 1000..2000)
-      157.1823
-
-  ## Errors
-
-  Raises `ArgumentError` if either range is invalid.
 
       iex> NeoFaker.Number.float(10..5, 10..100)
       ** (ArgumentError) left_digit range must have first <= last, got: 10..5
@@ -113,31 +98,23 @@ defmodule NeoFaker.Number do
   end
 
   @doc """
-  Generates a random digit between `0` and `9`.
-
-  Returns a single-digit integer.
+  Generates a random single digit between `0` and `9`.
 
   ## Examples
 
       iex> NeoFaker.Number.digit()
       5
 
-      iex> digit = NeoFaker.Number.digit()
-      iex> digit >= 0 and digit <= 9
-      true
-
   """
   @spec digit() :: integer()
   def digit, do: Enum.random(@digit_range)
 
   @doc """
-  Generates a random positive integer.
-
-  Returns a random positive integer between `1` and `max`.
+  Generates a random positive integer between `1` and `max`.
 
   ## Parameters
 
-  - `max` - The maximum value (inclusive). Defaults to `100`.
+  - `max` - Maximum value (inclusive). Defaults to `100`.
 
   ## Examples
 
@@ -146,10 +123,6 @@ defmodule NeoFaker.Number do
 
       iex> NeoFaker.Number.positive()
       42
-
-  ## Errors
-
-  Raises `ArgumentError` if `max` is less than 1.
 
       iex> NeoFaker.Number.positive(0)
       ** (ArgumentError) max must be at least 1, got: 0
@@ -165,13 +138,11 @@ defmodule NeoFaker.Number do
   end
 
   @doc """
-  Generates a random negative integer.
-
-  Returns a random negative integer between `min` and `-1`.
+  Generates a random negative integer between `min` and `-1`.
 
   ## Parameters
 
-  - `min` - The minimum value (inclusive). Defaults to `-100`.
+  - `min` - Minimum value (inclusive). Defaults to `-100`.
 
   ## Examples
 
@@ -192,14 +163,12 @@ defmodule NeoFaker.Number do
   end
 
   @doc """
-  Generates a random decimal number with specified precision.
-
-  Returns a float with the specified number of decimal places.
+  Generates a random float rounded to the specified number of decimal places.
 
   ## Parameters
 
-  - `min` - The minimum value (inclusive). Defaults to `0.0`.
-  - `max` - The maximum value (inclusive). Defaults to `100.0`.
+  - `min` - Minimum value (inclusive). Defaults to `0.0`.
+  - `max` - Maximum value (inclusive). Defaults to `100.0`.
   - `precision` - Number of decimal places. Defaults to `2`.
 
   ## Examples

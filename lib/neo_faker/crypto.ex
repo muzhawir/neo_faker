@@ -1,9 +1,9 @@
 defmodule NeoFaker.Crypto do
   @moduledoc """
-  Functions for generating cryptographic hashes.
+  Functions for generating cryptographic hashes and tokens.
 
-  This module provides utilities to generate cryptographic hash values, such as MD5 and SHA-based
-  hashes with support for various formatting options.
+  Provides utilities to generate random cryptographic values including MD5, SHA-1,
+  SHA-256, SHA-512 hashes, UUID v4 identifiers, and secure random tokens.
   """
   @moduledoc since: "0.3.1"
 
@@ -18,19 +18,11 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random MD5 hash.
 
-  Returns a random MD5 hash string. MD5 produces a 128-bit (32 character) hash value.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+  MD5 produces a 128-bit (32 hexadecimal character) hash value.
 
   ## Options
 
-  The values for `:case` can be:
-
-  - `:lower` - Uses lowercase characters (default).
-  - `:upper` - Uses uppercase characters.
+  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 
@@ -39,9 +31,6 @@ defmodule NeoFaker.Crypto do
 
       iex> NeoFaker.Crypto.md5(case: :upper)
       "AFC4C626C55E4166421D82732163857D"
-
-      iex> NeoFaker.Crypto.md5(case: :lower)
-      "5d41402abc4b2a76b9719d911017c592"
 
   """
   @spec md5(Keyword.t()) :: String.t()
@@ -53,19 +42,11 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random SHA-1 hash.
 
-  Returns a random SHA-1 hash string. SHA-1 produces a 160-bit (40 character) hash value.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+  SHA-1 produces a 160-bit (40 hexadecimal character) hash value.
 
   ## Options
 
-  The values for `:case` can be:
-
-  - `:lower` - Uses lowercase characters (default).
-  - `:upper` - Uses uppercase characters.
+  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 
@@ -74,9 +55,6 @@ defmodule NeoFaker.Crypto do
 
       iex> NeoFaker.Crypto.sha1(case: :upper)
       "356A192B7913B04C54574D18C28D46E6395428AB"
-
-      iex> NeoFaker.Crypto.sha1(case: :lower)
-      "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
   """
   @spec sha1(Keyword.t()) :: String.t()
@@ -88,19 +66,11 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random SHA-256 hash.
 
-  Returns a random SHA-256 hash string. SHA-256 produces a 256-bit (64 character) hash value.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+  SHA-256 produces a 256-bit (64 hexadecimal character) hash value.
 
   ## Options
 
-  The values for `:case` can be:
-
-  - `:lower` - Uses lowercase characters (default).
-  - `:upper` - Uses uppercase characters.
+  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 
@@ -109,9 +79,6 @@ defmodule NeoFaker.Crypto do
 
       iex> NeoFaker.Crypto.sha256(case: :upper)
       "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-
-      iex> NeoFaker.Crypto.sha256(case: :lower)
-      "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
 
   """
   @spec sha256(Keyword.t()) :: String.t()
@@ -123,19 +90,11 @@ defmodule NeoFaker.Crypto do
   @doc """
   Generates a random SHA-512 hash.
 
-  Returns a random SHA-512 hash string. SHA-512 produces a 512-bit (128 character) hash value.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+  SHA-512 produces a 512-bit (128 hexadecimal character) hash value.
 
   ## Options
 
-  The values for `:case` can be:
-
-  - `:lower` - Uses lowercase characters (default).
-  - `:upper` - Uses uppercase characters.
+  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 
@@ -153,15 +112,15 @@ defmodule NeoFaker.Crypto do
   end
 
   @doc """
-  Generates a random hash of the specified type.
+  Generates a random hash of the specified algorithm.
 
-  Returns a random hash string of the specified algorithm type with the given formatting options.
+  A convenience dispatcher over `md5/1`, `sha1/1`, `sha256/1`, and `sha512/1`.
 
   ## Parameters
 
-  - `type` - The hash algorithm to use. Must be one of `:md5`, `:sha1`, `:sha256`, `:sha512`.
+  - `type` - Hash algorithm. One of `:md5`, `:sha1`, `:sha256`, or `:sha512`.
   - `opts` - Keyword list of options:
-    - `:case` - Specifies the character case of the output. Defaults to `:lower`.
+    - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 
@@ -170,9 +129,6 @@ defmodule NeoFaker.Crypto do
 
       iex> NeoFaker.Crypto.hash(:sha256, case: :upper)
       "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-
-      iex> NeoFaker.Crypto.hash(:sha1)
-      "356a192b7913b04c54574d18c28d46e6395428ab"
 
   """
   @spec hash(atom(), Keyword.t()) :: String.t()
@@ -189,31 +145,22 @@ defmodule NeoFaker.Crypto do
   end
 
   @doc """
-  Generates a random cryptographic token.
+  Generates a random secure token.
 
-  Returns a random token string suitable for use as API keys, session tokens, etc.
-  Uses URL-safe base64 encoding.
+  Returns a URL-safe random token string suitable for API keys, session tokens,
+  and similar secrets. The `length` controls the number of **random bytes** used,
+  not the final string length (which varies by encoding).
 
   ## Parameters
 
-  - `length` - The desired length of the token in bytes. Defaults to `32`.
+  - `length` - Number of random bytes. Defaults to `32`.
   - `opts` - Keyword list of options:
-    - `:encoding` - The encoding format. Defaults to `:base64`.
-
-  ## Options
-
-  The values for `:encoding` can be:
-
-  - `:base64` - URL-safe base64 encoding (default).
-  - `:hex` - Hexadecimal encoding.
+    - `:encoding` - Output encoding. Either `:base64` (URL-safe, default) or `:hex`.
 
   ## Examples
 
       iex> NeoFaker.Crypto.token()
       "dGVzdF90b2tlbl9oZXJl"
-
-      iex> NeoFaker.Crypto.token(16)
-      "c2hvcnRfdG9rZW4"
 
       iex> NeoFaker.Crypto.token(32, encoding: :hex)
       "a1b2c3d4e5f6708192a3b4c5d6e7f8091a2b3c4d5e6f7081"
@@ -243,27 +190,12 @@ defmodule NeoFaker.Crypto do
   end
 
   @doc """
-  Generates a UUID (Universally Unique Identifier).
-
-  Returns a random UUID v4 string in the standard format.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - The UUID format. Defaults to `:standard`.
-    - `:case` - The character case. Defaults to `:lower`.
+  Generates a random UUID v4 string.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:standard` - Standard UUID format with dashes (default).
-  - `:compact` - Compact format without dashes.
-
-  The values for `:case` can be:
-
-  - `:lower` - Uses lowercase characters (default).
-  - `:upper` - Uses uppercase characters.
+  - `:format` - Either `:standard` (dashes, default) or `:compact` (no dashes).
+  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
 
   ## Examples
 

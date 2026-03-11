@@ -2,9 +2,8 @@ defmodule NeoFaker.Internet do
   @moduledoc """
   Functions for generating internet-related data.
 
-  This module provides utilities to generate random internet-related information, such as email
-  addresses, domain names, URLs, IP addresses, and MAC addresses with comprehensive validation
-  and formatting options.
+  Provides utilities to generate random usernames, email addresses, domain names, URLs,
+  IP addresses, MAC addresses, and slugs with flexible formatting and validation options.
   """
   @moduledoc since: "0.13.0"
 
@@ -25,31 +24,31 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random username.
 
-  Returns a random username string composed of words joined by specified separators,
-  with optional numeric suffix.
+  Returns a username string composed of words joined by a separator, with an optional
+  numeric suffix.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:word_count` - Specifies the number of words to include in the username. Defaults to `2`.
-    - `:joiner` - Defines the joiner to use between words in the username. Defaults to `:all`.
-    - `:username_type` - Specifies the type of words to use in the username. Defaults to `:person`.
-    - `:number` - A boolean indicating whether to append a random number to the username. Defaults to `false`.
-    - `:number_range` - Defines the range of numbers to choose from when appending a number. Defaults to `1..1000`.
+    - `:word_count` - Number of words in the username. Defaults to `2`.
+    - `:joiner` - Separator between words. Defaults to `:all`.
+    - `:username_type` - Word source for the username. Defaults to `:person`.
+    - `:number` - When `true`, appends a random number. Defaults to `false`.
+    - `:number_range` - Range to sample the appended number from. Defaults to `1..1000`.
 
   ## Options
 
   The values for `:joiner` can be:
 
-  - `:all` - Uses any of the joiners (default).
-  - `:dot` - Uses a dot (`.`) as the joiner.
-  - `:underscore` - Uses an underscore (`_`) as the joiner.
-  - `:dash` - Uses a dash (`-`) as the joiner.
+  - `:all` - Any of the available joiners (default).
+  - `:dot` - Dot (`.`).
+  - `:underscore` - Underscore (`_`).
+  - `:dash` - Dash (`-`).
 
   The values for `:username_type` can be:
 
-  - `:person` - Uses random first or last names for the username (default).
-  - `:word` - Uses random words for the username.
+  - `:person` - Random first or last names (default).
+  - `:word` - Random words.
 
   ## Examples
 
@@ -61,9 +60,6 @@ defmodule NeoFaker.Internet do
 
       iex> NeoFaker.Internet.username(username_type: :word, number: true, number_range: 1..2025)
       "elixir_alchemist_2012"
-
-      iex> NeoFaker.Internet.username(word_count: 1, joiner: :dash)
-      "john-doe"
 
       iex> NeoFaker.Internet.username(number: true)
       "jane_smith_42"
@@ -98,33 +94,32 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random domain name.
 
-  Returns a random domain name string based on the specified options. Can generate
-  random words, popular domains, or custom domains.
+  Returns a domain name string based on the specified type. Can produce random
+  word-based names, popular real-world domains, or a user-supplied custom domain.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
-    - `:type` - Specifies the type of domain name to generate. Defaults to `:random`.
-    - `:popular_type` - When `:type` is `:popular`, defines the category. Defaults to `:all`.
-    - `:domain_name` - When `:type` is `:custom`, provides the custom domain. Defaults to `"example.com"`.
+    - `:word_count` - Number of words in a random domain name. Defaults to `1`.
+    - `:type` - Domain name strategy. Defaults to `:random`.
+    - `:popular_type` - Popular domain category when `:type` is `:popular`. Defaults to `:all`.
+    - `:domain_name` - Custom domain string when `:type` is `:custom`. Defaults to `"example.com"`.
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:random` - Generates a random domain name using a random word (default).
-  - `:popular` - Selects a domain name from a list of popular domains.
-  - `:custom` - Uses a custom domain name provided by the user.
+  - `:random` - Random word-based domain name (default).
+  - `:popular` - Domain name from a list of popular real-world domains.
+  - `:custom` - User-supplied domain name via `:domain_name`.
 
-  If `:type` is set to `:popular`, the `:popular_type` option can be used to specify the category
-  of popular domains to select from. The values for `:popular_type` can be:
+  The values for `:popular_type` can be:
 
-  - `:all` - Selects from all popular domains (default).
-  - `:ecommerce` - Selects from popular e-commerce domains.
-  - `:email` - Selects from popular email service domains.
-  - `:search` - Selects from popular search engine domains.
-  - `:social` - Selects from popular social media domains.
+  - `:all` - All popular domains (default).
+  - `:ecommerce` - Popular e-commerce domains.
+  - `:email` - Popular email service domains.
+  - `:search` - Popular search engine domains.
+  - `:social` - Popular social media domains.
 
   ## Examples
 
@@ -139,9 +134,6 @@ defmodule NeoFaker.Internet do
 
       iex> NeoFaker.Internet.domain_name(type: :custom, domain_name: "elixir-lang.org")
       "elixir-lang.org"
-
-      iex> NeoFaker.Internet.domain_name(word_count: 2)
-      "neo-faker"
 
   """
   @spec domain_name(keyword()) :: String.t()
@@ -169,24 +161,24 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random top-level domain (TLD).
 
-  Returns a random TLD string with optional leading dot.
+  Returns a TLD string, with a leading dot by default.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:dot` - A boolean indicating whether to include a leading dot in the TLD. Defaults to `true`.
-    - `:type` - Specifies the type of TLD to generate. Defaults to `:all_except_safe`.
+    - `:dot` - When `true`, prepends a dot to the TLD. Defaults to `true`.
+    - `:type` - TLD category. Defaults to `:all_except_safe`.
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:all_except_safe` - Returns a TLD from all types except safe TLDs (default).
-  - `:all` - Returns a TLD from all available types, including safe TLDs.
-  - `:safe` - Returns a safe TLD, e.g. `.example`.
-  - `:generic` - Returns a generic TLD, e.g. `.com`.
-  - `:sponsored` - Returns a sponsored TLD, e.g. `.edu`.
-  - `:country_code` - Returns a country code TLD, e.g. `.id`.
+  - `:all_except_safe` - All TLD categories except safe TLDs (default).
+  - `:all` - All TLD categories, including safe TLDs.
+  - `:safe` - Safe TLDs, e.g. `.example`.
+  - `:generic` - Generic TLDs, e.g. `.com`.
+  - `:sponsored` - Sponsored TLDs, e.g. `.edu`.
+  - `:country_code` - Country code TLDs, e.g. `.id`.
 
   ## Examples
 
@@ -198,9 +190,6 @@ defmodule NeoFaker.Internet do
 
       iex> NeoFaker.Internet.tld(type: :safe)
       ".example"
-
-      iex> NeoFaker.Internet.tld(type: :country_code)
-      ".id"
 
       iex> NeoFaker.Internet.tld(type: :generic, dot: false)
       "net"
@@ -225,31 +214,28 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random email address.
 
-  Returns a random email address string based on the specified options, combining
-  username, domain, and TLD generation with flexible customization.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options supporting username, domain, and TLD customization.
+  Combines username, domain name, and TLD generation into a single email address string.
+  Accepts all the same options as `username/1`, `domain_name/1`, and `tld/1`, prefixed
+  by their context.
 
   ## Username Options
 
-  - `:username_word_count` - Specifies the number of words to include in the username. Defaults to `2`.
-  - `:joiner` - Defines the joiner to use between words in the username. Defaults to `:all`.
-  - `:username_type` - Specifies the type of words to use in the username. Defaults to `:person`.
-  - `:number` - A boolean indicating whether to append a random number to the username. Defaults to `false`.
-  - `:number_range` - Defines the range of numbers to choose from when appending a number. Defaults to `1..1000`.
+  - `:username_word_count` - Number of words in the username. Defaults to `2`.
+  - `:joiner` - Separator between username words. Defaults to `:all`.
+  - `:username_type` - Word source. Defaults to `:person`.
+  - `:number` - When `true`, appends a random number to the username. Defaults to `false`.
+  - `:number_range` - Range for the appended number. Defaults to `1..1000`.
 
   ## Domain Name Options
 
-  - `:domain_name_word_count` - Specifies the number of words to include in the domain name. Defaults to `1`.
-  - `:domain_type` - Specifies the type of domain name to generate. Defaults to `:random`.
-  - `:popular_type` - When `:domain_type` is set to `:popular`, defines the category. Defaults to `:all`.
-  - `:domain_name` - When `:domain_type` is set to `:custom`, provides the custom domain. Defaults to `"example.com"`.
+  - `:domain_name_word_count` - Number of words in the domain name. Defaults to `1`.
+  - `:domain_type` - Domain name strategy. Defaults to `:random`.
+  - `:popular_type` - Popular domain category when `:domain_type` is `:popular`. Defaults to `:all`.
+  - `:domain_name` - Custom domain when `:domain_type` is `:custom`. Defaults to `"example.com"`.
 
   ## TLD Options
 
-  - `:tld_type` - Specifies the type of TLD to generate. Defaults to `:all_except_safe`.
+  - `:tld_type` - TLD category. Defaults to `:all_except_safe`.
 
   ## Examples
 
@@ -264,9 +250,6 @@ defmodule NeoFaker.Internet do
 
       iex> NeoFaker.Internet.email(domain_type: :custom, domain_name: "elixir-lang.org")
       "josé@elixir-lang.org"
-
-      iex> NeoFaker.Internet.email(tld_type: :country_code)
-      "user@example.id"
 
   """
   @spec email(Keyword.t()) :: String.t()
@@ -287,29 +270,27 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random IPv4 address.
 
-  Returns a random IPv4 address string in dotted-decimal notation.
+  Returns a dotted-decimal IPv4 address string. Pass `private: true` to generate
+  an address from a RFC 1918 private range.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
     - `:private` - When `true`, generates a private IP address. Defaults to `false`.
-    - `:class` - Specifies the private IP class when `:private` is `true`.
+    - `:class` - Private IP class when `:private` is `true`. Randomly selected by default.
 
   ## Options
 
   The values for `:class` can be:
 
-  - `:a` - Class A private range (10.0.0.0/8).
-  - `:b` - Class B private range (172.16.0.0/12).
-  - `:c` - Class C private range (192.168.0.0/16).
+  - `:a` - Class A range (10.0.0.0/8).
+  - `:b` - Class B range (172.16.0.0/12).
+  - `:c` - Class C range (192.168.0.0/16).
 
   ## Examples
 
       iex> NeoFaker.Internet.ipv4()
       "183.235.34.108"
-
-      iex> NeoFaker.Internet.ipv4()
-      "192.0.2.146"
 
       iex> NeoFaker.Internet.ipv4(private: true)
       "192.168.1.42"
@@ -333,13 +314,14 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random IPv6 address.
 
-  Returns a random IPv6 address string in hexadecimal notation.
+  Returns a colon-separated hexadecimal IPv6 address string. Supports uppercase
+  and compressed (`::`) notation.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:uppercase` - A boolean indicating whether to return the address in uppercase. Defaults to `true`.
-    - `:compressed` - When `true`, uses compressed notation (::). Defaults to `false`.
+    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
+    - `:compressed` - When `true`, uses compressed `::` notation. Defaults to `false`.
 
   ## Examples
 
@@ -374,20 +356,20 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random MAC address.
 
-  Returns a random MAC address string in colon-separated hexadecimal notation.
+  Returns a hexadecimal MAC address string with configurable separator and casing.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:uppercase` - A boolean indicating whether to return the MAC address in uppercase. Defaults to `true`.
-    - `:separator` - The separator to use between octets. Defaults to `":"`.
+    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
+    - `:separator` - Separator between octets. Defaults to `":"`.
 
   ## Options
 
   The values for `:separator` can be:
 
-  - `":"` - Colon separator (default).
-  - `"-"` - Dash separator.
+  - `":"` - Colon (default).
+  - `"-"` - Dash.
   - `""` - No separator.
 
   ## Examples
@@ -425,22 +407,23 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random URL.
 
-  Returns a random URL string with specified protocol, domain, and path options.
+  Returns a URL string built from a protocol, domain name, and TLD. Optionally
+  appends a random path and/or query string.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:protocol` - The URL protocol. Defaults to `:https`.
-    - `:domain_type` - The type of domain to use. Defaults to `:random`.
-    - `:path` - When `true`, includes a random path. Defaults to `false`.
-    - `:query` - When `true`, includes query parameters. Defaults to `false`.
+    - `:protocol` - URL scheme. Defaults to `:https`.
+    - `:domain_type` - Domain name strategy. Defaults to `:random`.
+    - `:path` - When `true`, appends a random path. Defaults to `false`.
+    - `:query` - When `true`, appends random query parameters. Defaults to `false`.
 
   ## Options
 
   The values for `:protocol` can be:
 
-  - `:https` - HTTPS protocol (default).
-  - `:http` - HTTP protocol.
+  - `:https` - HTTPS (default).
+  - `:http` - HTTP.
 
   ## Examples
 
@@ -487,15 +470,15 @@ defmodule NeoFaker.Internet do
   end
 
   @doc """
-  Generates a random slug.
+  Generates a random URL-friendly slug.
 
-  Returns a URL-friendly slug string.
+  Returns a lowercase, word-joined string suitable for use in URLs.
 
   ## Parameters
 
-  - `word_count` - The number of words in the slug. Defaults to `3`.
+  - `word_count` - Number of words in the slug. Defaults to `3`.
   - `opts` - Keyword list of options:
-    - `:separator` - The separator between words. Defaults to `"-"`.
+    - `:separator` - Separator between words. Defaults to `"-"`.
 
   ## Examples
 

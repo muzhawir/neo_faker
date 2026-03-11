@@ -4,16 +4,33 @@ defmodule NeoFaker do
 
   This module provides the main interface for starting the application and
   managing locale configuration.
+
+  ## Locale support
+
+  Many modules accept a `:locale` option. Use `set_locale/1` to configure a
+  default locale for the whole application, or pass `locale:` per call.
+
+      iex> NeoFaker.set_locale(:id_id)
+      :ok
+
+      iex> NeoFaker.Person.first_name()          # uses :id_id globally
+      "Jaka"
+
+      iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
+      "Julia"
+
+  See the [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  for the full list of supported locale codes.
   """
   @moduledoc since: "0.1.0"
 
   alias NeoFaker.Helpers.Constants
 
   @doc """
-  Starts the NeoFaker application and ensures a locale is set.
+  Starts the NeoFaker application and ensures a locale is configured.
 
-  If no locale is configured in the application environment, sets the locale to
-  the default locale. Prints the active locale and returns `:ok`.
+  If no locale is set in the application environment, it defaults to `:default`.
+  Prints the active locale to stdout and returns `:ok`.
 
   ## Examples
 
@@ -41,9 +58,10 @@ defmodule NeoFaker do
   end
 
   @doc """
-  Returns the current locale set for the NeoFaker application.
+  Returns the current locale configured for the NeoFaker application.
 
-  If no locale is configured in the application environment, returns `:error`.
+  Returns `{:ok, locale}` when a locale is set, or `:error` when none has been
+  configured. Raises `ArgumentError` if the stored value is not an atom.
 
   ## Examples
 
@@ -54,6 +72,8 @@ defmodule NeoFaker do
       {:ok, :en_us}
 
       iex> Application.delete_env(:neo_faker, :locale)
+      :ok
+
       iex> NeoFaker.locale()
       :error
 
@@ -74,12 +94,12 @@ defmodule NeoFaker do
   end
 
   @doc """
-  Sets the current locale for the NeoFaker application.
+  Sets the locale for the NeoFaker application.
 
-  Set the locale to a specific language and country code. You can find the
-  available locales at: https://hexdocs.pm/neo_faker/available-locales.html
-
-  The locale must be an atom. Raises `ArgumentError` if a non-atom value is provided.
+  The `locale` must be an atom matching a supported locale code (e.g. `:en_us`,
+  `:id_id`, `:default`). See the
+  [available locales](https://hexdocs.pm/neo_faker/available-locales.html) for
+  the full list. Raises `ArgumentError` if a non-atom value is provided.
 
   ## Examples
 
@@ -104,10 +124,10 @@ defmodule NeoFaker do
   end
 
   @doc """
-  Returns the current locale or the default locale if none is set.
+  Returns the active locale, falling back to `:default` when none is set.
 
-  This is a convenience function that always returns a locale value,
-  defaulting to `:default` if no locale has been configured.
+  Unlike `locale/0`, this function always returns an atom and never returns
+  `:error`, making it convenient for use inside generator functions.
 
   ## Examples
 
@@ -118,6 +138,8 @@ defmodule NeoFaker do
       :en_us
 
       iex> Application.delete_env(:neo_faker, :locale)
+      :ok
+
       iex> NeoFaker.get_locale()
       :default
 

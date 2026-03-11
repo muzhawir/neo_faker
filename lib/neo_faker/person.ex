@@ -2,8 +2,9 @@ defmodule NeoFaker.Person do
   @moduledoc """
   Functions for generating person-related information.
 
-  This module provides utilities to generate random personal details, such as names, ages,
-  genders, and other person-specific data with support for multiple locales.
+  Provides utilities to generate random personal details including first, middle,
+  and last names, full names, prefixes, suffixes, ages, and genders with support
+  for multiple locales and sex options.
   """
   @moduledoc since: "0.6.0"
 
@@ -19,28 +20,10 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random first name.
 
-  Returns a random first name string. If no options are provided, it returns a random
-  unisex first name by default.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:sex` - Specifies the sex of the generated name. Defaults to `:unisex`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
   ## Options
 
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:female` - Generates a random female name.
-  - `:male` - Generates a random male name.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -68,28 +51,10 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random middle name.
 
-  Returns a random middle name string. If no options are provided, it returns a random
-  unisex middle name by default.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:sex` - Specifies the sex of the generated name. Defaults to `:unisex`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
   ## Options
 
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:female` - Generates a random female name.
-  - `:male` - Generates a random male name.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -117,28 +82,10 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random last name.
 
-  Returns a random last name string. If no options are provided, it returns a random
-  unisex last name by default.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:sex` - Specifies the sex of the generated name. Defaults to `:unisex`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
   ## Options
 
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:female` - Generates a random female name.
-  - `:male` - Generates a random male name.
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -166,33 +113,13 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random full name.
 
-  Returns a full name string, which is a combination of a first name, an optional middle name, and
-  a last name.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-    - `:sex` - Specifies the sex of the generated name. Defaults to `:unisex`.
-    - `:middle_name` - Determines whether to include a middle name. Defaults to `true`.
+  Combines a first name, an optional middle name, and a last name.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-
-  Values for option `:sex` can be:
-
-  - `:unisex` - Generates a random unisex name (default).
-  - `:male` - Generates a random male name.
-  - `:female` - Generates a random female name.
-
-  Values for option `:middle_name` can be:
-
-  - `true` - Includes a random middle name (default).
-  - `false` - Excludes the middle name.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
 
   ## Examples
 
@@ -222,22 +149,11 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random name prefix.
-
-  Returns a name prefix, such as `"Mr."`, `"Ms."`, `"Dr."`, etc.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Generates a random name prefix such as `"Mr."`, `"Ms."`, or `"Dr."`.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -248,28 +164,18 @@ defmodule NeoFaker.Person do
       "Tn."
 
   """
+  @doc since: "0.7.0"
   @spec prefix(Keyword.t()) :: String.t()
   def prefix(opts \\ []) do
     random_value(__MODULE__, Constants.name_affixes_file(), "prefixes", opts)
   end
 
   @doc """
-  Generates a random name suffix.
-
-  Returns a name suffix, such as `"Jr."`, `"Sr."`, `"III"`, etc.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Generates a random name suffix such as `"Jr."`, `"Sr."`, or `"III"`.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -292,19 +198,11 @@ defmodule NeoFaker.Person do
   @doc """
   Generates a random binary gender.
 
-  Returns either `"Male"` or `"Female"`.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Returns either `"Male"` or `"Female"` in the configured locale.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale (returns "Laki-laki" or "Perempuan").
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -314,9 +212,6 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.binary_gender(locale: :id_id)
       "Perempuan"
 
-      iex> NeoFaker.Person.binary_gender(locale: :en_us)
-      "Female"
-
   """
   @spec binary_gender(Keyword.t()) :: String.t()
   def binary_gender(opts \\ []) do
@@ -324,21 +219,11 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random short binary gender.
-
-  Returns a short form of binary gender, such as `"M"` or `"F"`.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Generates a random short binary gender such as `"M"` or `"F"`.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale (returns "L" or "P").
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -355,21 +240,11 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random non-binary gender.
-
-  Returns a non-binary gender identity string.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+  Generates a random non-binary gender identity string.
 
   ## Options
 
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -386,15 +261,12 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random age.
-
-  Returns an age as a non-negative integer between `min` and `max`. By default, generates
-  an age between `0` and `120`.
+  Generates a random age as a non-negative integer.
 
   ## Parameters
 
-  - `min` - The minimum age (inclusive). Defaults to `0`.
-  - `max` - The maximum age (inclusive). Defaults to `120`.
+  - `min` - Minimum age, inclusive. Defaults to `0`.
+  - `max` - Maximum age, inclusive. Defaults to `120`.
 
   ## Examples
 
@@ -406,9 +278,6 @@ defmodule NeoFaker.Person do
 
       iex> NeoFaker.Person.age(18, 65)
       35
-
-      iex> NeoFaker.Person.age(0, 10)
-      5
 
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
@@ -428,18 +297,17 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random full name with prefix and/or suffix.
+  Generates a random full name with optional prefix and/or suffix.
 
-  Returns a full name with optional title prefix and/or name suffix.
+  Delegates to `full_name/1` and wraps the result with the requested title parts.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:sex` - Specifies the sex of the generated name. Defaults to `:unisex`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-    - `:middle_name` - Include middle name. Defaults to `true`.
-    - `:prefix` - Include name prefix (e.g., "Mr.", "Dr."). Defaults to `false`.
-    - `:suffix` - Include name suffix (e.g., "Jr.", "III"). Defaults to `false`.
+  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
+  - `:locale` - Locale to use. Defaults to the application's configured locale.
+  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
+  - `:prefix` - When `true`, prepends a name prefix such as `"Mr."` or `"Dr."`. Defaults to `false`.
+  - `:suffix` - When `true`, appends a name suffix such as `"Jr."` or `"III"`. Defaults to `false`.
 
   ## Examples
 

@@ -1,9 +1,10 @@
 defmodule NeoFaker.Text do
   @moduledoc """
-  Functions for generating text.
+  Functions for generating random text.
 
-  This module provides utilities to generate random text, including alphanumeric characters,
-  emojis, and words.
+  Provides utilities to generate single characters, multi-character strings,
+  emojis, and words from common word lists. All character generators support
+  type filtering (alphabet, digits, or mixed alphanumeric).
   """
   @moduledoc since: "0.8.0"
 
@@ -15,22 +16,16 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a single random character.
 
-  Returns a single alphanumeric character such as a letter or digit. If no options are provided,
-  it randomly selects from the full alphanumeric set.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:type` - Specifies the type of character to generate. Defaults to alphanumeric.
+  Returns a single character from the alphanumeric set by default. Use the
+  `:type` option to restrict the pool.
 
   ## Options
 
-  The values for `:type` can be:
-
-  - `:alphabet_lower` - A lowercase letter.
-  - `:alphabet_upper` - An uppercase letter.
-  - `:alphabet` - A letter (either lowercase or uppercase).
-  - `:digit` - A digit (`0`-`9`).
+  - `:type` - Character pool to draw from. Defaults to the full alphanumeric set.
+    - `:alphabet_lower` - Lowercase letters only.
+    - `:alphabet_upper` - Uppercase letters only.
+    - `:alphabet` - Any letter (lower or upper).
+    - `:digit` - A digit (`0`–`9`).
 
   ## Examples
 
@@ -63,22 +58,15 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a string of random characters.
 
-  Returns a string of the specified length containing randomly selected characters.
+  Calls `character/1` `number` times and joins the results into a single string.
 
   ## Parameters
 
-  - `number` - The number of characters to generate. Defaults to `11`.
-  - `opts` - Keyword list of options:
-    - `:type` - Specifies the type of character to generate.
+  - `number` - Number of characters to generate. Defaults to `11`.
 
   ## Options
 
-  The values for `:type` can be:
-
-  - `:alphabet_lower` - Lowercase letters only.
-  - `:alphabet_upper` - Uppercase letters only.
-  - `:alphabet` - Letters (lowercase or uppercase).
-  - `:digit` - Digits (`0`-`9`) only.
+  - `:type` - Character pool to draw from (see `character/1`). Defaults to alphanumeric.
 
   ## Examples
 
@@ -113,27 +101,21 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a random emoji.
 
-  Returns a random emoji from any category if no category is specified; otherwise, it selects one
-  from the specified category.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:category` - Specifies the category from which to generate an emoji. Defaults to `:all`.
+  Returns a random emoji from the specified category, or from all categories
+  when `:all` is used (default).
 
   ## Options
 
-  The values for `:category` can be:
-
-  - `:all` - An emoji from any category (default).
-  - `:activities` - An emoji related to activities.
-  - `:animals_and_nature` - An emoji related to animals and nature.
-  - `:food_and_drink` - An emoji related to food and drink.
-  - `:objects` - An emoji related to objects.
-  - `:people_and_body` - An emoji related to people and body.
-  - `:smileys_and_emotion` - An emoji related to smileys and emotion.
-  - `:symbols` - An emoji related to symbols.
-  - `:travel_and_places` - An emoji related to travel and places.
+  - `:category` - Emoji category. Defaults to `:all`.
+    - `:all` - Any category.
+    - `:activities` - Activities.
+    - `:animals_and_nature` - Animals and nature.
+    - `:food_and_drink` - Food and drink.
+    - `:objects` - Objects.
+    - `:people_and_body` - People and body.
+    - `:smileys_and_emotion` - Smileys and emotion.
+    - `:symbols` - Symbols.
+    - `:travel_and_places` - Travel and places.
 
   ## Examples
 
@@ -158,17 +140,12 @@ defmodule NeoFaker.Text do
   end
 
   @doc """
-  Generates a random word.
-
-  Returns a random word from common word lists.
+  Generates a random word from a common English word list.
 
   ## Examples
 
       iex> NeoFaker.Text.word()
       "computer"
-
-      iex> NeoFaker.Text.word()
-      "elixir"
 
   """
   @spec word() :: String.t()
@@ -179,14 +156,16 @@ defmodule NeoFaker.Text do
   @doc """
   Generates multiple random words.
 
-  Returns a list of random words, or a joined string if the `:join` option is true.
+  Returns a list of words by default. Pass `join: true` to get a single string.
 
   ## Parameters
 
-  - `count` - The number of words to generate. Defaults to `5`.
-  - `opts` - Keyword list of options:
-    - `:join` - When `true`, joins words with spaces. Defaults to `false`.
-    - `:separator` - The separator to use when joining. Defaults to `" "`.
+  - `count` - Number of words to generate. Defaults to `5`.
+
+  ## Options
+
+  - `:join` - When `true`, joins the words into a string. Defaults to `false`.
+  - `:separator` - Separator used when joining. Defaults to `" "`.
 
   ## Examples
 

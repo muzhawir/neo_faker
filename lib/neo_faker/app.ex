@@ -2,9 +2,9 @@ defmodule NeoFaker.App do
   @moduledoc """
   Functions for generating app metadata.
 
-  This module provides utilities to generate random app-related information, including author
-  names, app names, descriptions, versions, and licenses with support for multiple locales
-  and formatting options.
+  Provides utilities to generate random app-related information, including author
+  names, app names, descriptions, versions, licenses, bundle identifiers, and
+  package names with support for multiple locales and formatting options.
   """
   @moduledoc since: "0.4.0"
 
@@ -26,15 +26,15 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app author name.
 
-  Returns a string representing the full name of the app author. By default, excludes
-  middle names for cleaner author attribution.
+  Delegates to `NeoFaker.Person.full_name/1` with `:middle_name` defaulting to
+  `false` for cleaner attribution strings.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:middle_name` - Include middle name in author name. Defaults to `false`.
-    - `:sex` - Specifies the sex of the author name. Defaults to `:unisex`.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+    - `:middle_name` - Include a middle name. Defaults to `false`.
+    - `:sex` - Sex of the generated name. One of `:unisex` (default), `:female`, `:male`.
+    - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -42,13 +42,10 @@ defmodule NeoFaker.App do
       "José Valim"
 
       iex> NeoFaker.App.author(middle_name: true)
-      "José Antonio Valim"
-
-      iex> NeoFaker.App.author(sex: :male, locale: :id_id)
-      "Jaka"
+      "José Carlos Valim"
 
       iex> NeoFaker.App.author(sex: :female)
-      "Jane Doe"
+      "Juliana Silva"
 
   """
   @spec author(Keyword.t()) :: String.t()
@@ -59,22 +56,10 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Generates a short app description.
+  Generates a random short app description.
 
-  Returns a string representing the app description from locale-specific data sources.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
-
-  ## Options
-
-  Values for option `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  Returns a one-line description string selected from locale-specific data.
+  Pass `locale:` to override the application's configured locale.
 
   ## Examples
 
@@ -84,9 +69,6 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.description(locale: :id_id)
       "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 
-      iex> NeoFaker.App.description(locale: :en_us)
-      "A powerful testing library for Elixir applications."
-
   """
   @spec description(Keyword.t()) :: String.t()
   def description(opts \\ []) do
@@ -94,21 +76,16 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Generates a random open-source license.
+  Generates a random open-source license name.
 
-  Returns a random open-source license name selected from a predefined list based on
-  [ChooseALicense](https://choosealicense.com/appendix).
+  Returns a name from a curated list sourced from
+  [ChooseALicense](https://choosealicense.com/appendix), such as
+  `"MIT License"`, `"Apache License 2.0"`, or `"GNU General Public License v3.0"`.
 
   ## Examples
 
       iex> NeoFaker.App.license()
       "MIT License"
-
-      iex> NeoFaker.App.license()
-      "Apache License 2.0"
-
-      iex> NeoFaker.App.license()
-      "GNU General Public License v3.0"
 
   """
   @spec license() :: String.t()
@@ -117,31 +94,25 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app name.
 
-  Returns a string representing the app name, which is a combination of a first name and a last
-  name formatted according to the specified style.
+  Combines a random first word and last word from locale-specific data, then
+  formats the result according to the requested style.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:style` - Defines the case style of the app name. Defaults to standard format.
-    - `:locale` - Specifies the locale to use. Defaults to the application's current locale.
+    - `:style` - Case style for the name. Defaults to `nil` (title-spaced).
+    - `:locale` - Locale to use. Defaults to the application's configured locale.
 
   ## Options
 
   The values for `:style` can be:
 
-  - `nil` (default) - Uses the standard format, e.g., `"Neo Faker"`.
-  - `:camel_case` - Uses camel case, e.g., `"neoFaker"`.
-  - `:pascal_case` - Uses Pascal case, e.g., `"NeoFaker"`.
-  - `:dashed` - Uses a dashed format, e.g., `"neo-faker"`.
-  - `:underscore` - Uses an underscore format, e.g., `"neo_faker"`.
-  - `:single` - Uses a single-word format, e.g., `"Faker"`.
-
-  The values for `:locale` can be:
-
-  - `nil` - Uses the default locale `:default`.
-  - `:id_id` - Uses the Indonesian locale.
-  - `:en_us` - Uses the US English locale.
+  - `nil` - Title-spaced format, e.g. `"Neo Faker"` (default).
+  - `:camel_case` - e.g. `"neoFaker"`.
+  - `:pascal_case` - e.g. `"NeoFaker"`.
+  - `:dashed` - e.g. `"neo-faker"`.
+  - `:underscore` - e.g. `"neo_faker"`.
+  - `:single` - First word only, e.g. `"Faker"`.
 
   ## Examples
 
@@ -151,23 +122,11 @@ defmodule NeoFaker.App do
       iex> NeoFaker.App.name(style: :camel_case)
       "neoFaker"
 
-      iex> NeoFaker.App.name(style: :pascal_case)
-      "NeoFaker"
-
       iex> NeoFaker.App.name(style: :dashed)
       "neo-faker"
 
-      iex> NeoFaker.App.name(style: :underscore)
-      "neo_faker"
-
-      iex> NeoFaker.App.name(style: :single)
-      "Faker"
-
       iex> NeoFaker.App.name(locale: :id_id)
       "Garuda Web"
-
-      iex> NeoFaker.App.name(style: :camel_case, locale: :id_id)
-      "garudaWeb"
 
   """
   @spec name(Keyword.t()) :: String.t()
@@ -184,25 +143,24 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Generates a semantic version number.
+  Generates a random semantic version number.
 
-  Returns a version number following the Semantic Versioning (SemVer) standard. By default, it
-  generates a core version (`MAJOR.MINOR.PATCH`).
+  Returns a version string following the [Semantic Versioning](https://semver.org)
+  (`MAJOR.MINOR.PATCH`) standard. Use `:type` to append pre-release or build metadata.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:type` - Specifies the type of version format. Defaults to core version.
+    - `:type` - Version format variant. Defaults to `nil` (core only).
 
   ## Options
 
   The values for `:type` can be:
 
-  - `nil` (default) - Uses core SemVer format (e.g., `"1.2.3"`).
-  - `:pre_release` - Includes a pre-release label (e.g., `"1.2.3-beta.1"`).
-  - `:build` - Includes a build metadata label (e.g., `"1.2.3+20250325"`).
-  - `:pre_release_build` - Includes both pre-release and build metadata (e.g.,
-    `"1.2.3-rc.1+20250325"`).
+  - `nil` - Core `MAJOR.MINOR.PATCH` format, e.g. `"1.2.3"` (default).
+  - `:pre_release` - Appends a pre-release label, e.g. `"1.2.3-beta.1"`.
+  - `:build` - Appends build metadata, e.g. `"1.2.3+20250325"`.
+  - `:pre_release_build` - Appends both, e.g. `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 
@@ -235,21 +193,14 @@ defmodule NeoFaker.App do
   end
 
   @doc """
-  Generates a simple version number.
+  Generates a simplified `MAJOR.MINOR` version number.
 
-  Returns a version number in the format `MAJOR.MINOR`, which is a simplified version
-  derived from the semantic version.
+  Derives the version by taking the first two components of a `semver/1` result.
 
   ## Examples
 
       iex> NeoFaker.App.version()
       "1.2"
-
-      iex> NeoFaker.App.version()
-      "0.14"
-
-      iex> NeoFaker.App.version()
-      "3.5"
 
   """
   @spec version() :: String.t()
@@ -258,25 +209,26 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app bundle identifier.
 
-  Returns a bundle identifier commonly used in mobile apps (e.g., iOS, Android).
-  The format follows reverse domain name notation.
+  Returns a bundle ID in reverse-domain notation, commonly used for iOS and
+  Android apps. The app name portion is generated via `name/1` and formatted
+  with the given `:style`. Only `:underscore` and `:dashed` styles are supported.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:domain` - Custom domain to use. Defaults to random domain.
-    - `:style` - Name style for the app portion. Defaults to `:underscore`.
+    - `:domain` - Base domain. Defaults to `"example.com"`.
+    - `:style` - Name style for the app segment. Either `:underscore` (default) or `:dashed`.
 
   ## Examples
 
       iex> NeoFaker.App.bundle_id()
       "com.example.neo_faker"
 
-      iex> NeoFaker.App.bundle_id(domain: "mycompany.io")
-      "io.mycompany.app_name"
-
       iex> NeoFaker.App.bundle_id(style: :dashed)
       "com.example.neo-faker"
+
+      iex> NeoFaker.App.bundle_id(domain: "mycompany.io")
+      "io.mycompany.neo_faker"
 
   """
   @spec bundle_id(Keyword.t()) :: String.t()
@@ -297,20 +249,21 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app package name.
 
-  Returns a package name in Java package notation, commonly used for Android apps.
+  Returns a package name in Java reverse-domain notation (e.g. for Android apps).
+  The app name segment is lowercased and stripped of all non-alphanumeric characters.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:domain` - Custom domain to use. Defaults to random domain.
+    - `:domain` - Base domain. Defaults to `"example.com"`.
 
   ## Examples
 
       iex> NeoFaker.App.package_name()
       "com.example.neofaker"
 
-      iex> NeoFaker.App.package_name(domain: "mycompany.io")
-      "io.mycompany.appname"
+      iex> NeoFaker.App.package_name(domain: "mycompany.id")
+      "id.mycompany.neofaker"
 
   """
   @spec package_name(Keyword.t()) :: String.t()

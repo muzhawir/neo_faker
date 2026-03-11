@@ -23,7 +23,7 @@ def deps do
 end
 ```
 
-Install the dependency:
+Then fetch the dependency:
 
 ```sh
 mix deps.get
@@ -31,20 +31,19 @@ mix deps.get
 
 ## Configuration
 
-Set the default locale in your `config.exs`:
+Set the default locale in `config/config.exs`:
 
 ```elixir
 config :neo_faker, locale: :default
 ```
 
-If the locale is unavailable, NeoFaker falls back to `:default`. See the
-[list of supported locales](https://hexdocs.pm/neo_faker/available-locales.html).
+If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English US data).
+See the [supported locales](https://hexdocs.pm/neo_faker/available-locales.html) for a full list.
 
 > ### Phoenix Projects {: .tip}
 >
-> For [Phoenix](https://hexdocs.pm/phoenix) apps, set the locale in `config/dev.exs` or `config/test.exs`.
->
-> In `test/test_helper.exs`, add:
+> For [Phoenix](https://hexdocs.pm/phoenix) apps, set the locale in `config/dev.exs` or
+> `config/test.exs` instead. In `test/test_helper.exs`, add:
 >
 > ```elixir
 > ExUnit.start()
@@ -52,8 +51,6 @@ If the locale is unavailable, NeoFaker falls back to `:default`. See the
 > ```
 
 ## Usage
-
-Generate fake data with NeoFaker:
 
 ```elixir
 iex> NeoFaker.App.name()

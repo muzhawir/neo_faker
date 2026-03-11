@@ -2,8 +2,8 @@ defmodule NeoFaker.Blood do
   @moduledoc """
   Functions for generating blood types.
 
-  This module provides utilities to generate random blood groups, blood types, and Rh factors
-  following the ABO blood group system classification.
+  Provides utilities to generate random blood groups, blood types, and Rh factors
+  following the ABO and Rh blood group system classification.
   """
   @moduledoc since: "0.3.1"
 
@@ -16,30 +16,20 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood group.
 
-  Returns a blood group, which consists of a blood type (`A`, `B`, `AB`, or `O`) combined with an
-  Rh factor (`+` or `-`), forming a complete blood group according to the ABO and Rh blood
-  group systems.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:group`.
+  Combines a blood type (`A`, `B`, `AB`, or `O`) with an Rh factor (`+` or `-`).
+  Use the `:format` option to return only part of the result.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:group` - Returns the full blood group (e.g., `"B+"`) (default).
-  - `:type_only` - Returns only the blood type (e.g., `"B"`).
-  - `:rh_only` - Returns only the Rh factor (e.g., `"+"`).
+  - `:format` - Controls what is returned. Defaults to `:group`.
+    - `:group` - Full blood group, e.g. `"B+"` (default).
+    - `:type_only` - Blood type only, e.g. `"B"`.
+    - `:rh_only` - Rh factor only, e.g. `"+"`.
 
   ## Examples
 
       iex> NeoFaker.Blood.group()
       "B+"
-
-      iex> NeoFaker.Blood.group(format: :group)
-      "AB-"
 
       iex> NeoFaker.Blood.group(format: :type_only)
       "O"
@@ -64,22 +54,12 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood type.
 
-  Returns a string representing a blood type without the Rh factor. The blood type can be
-  one of the four main types in the ABO blood group system: `A`, `B`, `AB`, or `O`.
+  Returns one of the four ABO blood types: `"A"`, `"B"`, `"AB"`, or `"O"`.
 
   ## Examples
 
       iex> NeoFaker.Blood.type()
       "B"
-
-      iex> NeoFaker.Blood.type()
-      "AB"
-
-      iex> NeoFaker.Blood.type()
-      "O"
-
-      iex> NeoFaker.Blood.type()
-      "A"
 
   """
   @spec type() :: String.t()
@@ -88,31 +68,26 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random Rh factor.
 
-  Returns a string representing the Rh factor, which can be either `+` (positive) or
-  `-` (negative). The Rh factor indicates the presence or absence of the Rh antigen.
+  Returns either `"+"` (positive) or `"-"` (negative).
 
   ## Examples
 
       iex> NeoFaker.Blood.rh_factor()
       "+"
 
-      iex> NeoFaker.Blood.rh_factor()
-      "-"
-
   """
   @spec rh_factor() :: String.t()
   def rh_factor, do: Enum.random(@rh_factors)
 
   @doc """
-  Generates a random blood type with full medical notation.
+  Generates a random blood type in medical notation.
 
-  Returns a blood group with medical notation including the ABO type and Rh factor
-  in a more descriptive format suitable for medical documentation.
+  Returns a descriptive string combining the ABO type and Rh factor. Set
+  `verbose: true` for the extended `"Type X, Rh Y"` form.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:verbose` - When `true`, uses full descriptive text. Defaults to `false`.
+  - `:verbose` - When `true`, uses full descriptive text. Defaults to `false`.
 
   ## Examples
 
@@ -121,9 +96,6 @@ defmodule NeoFaker.Blood do
 
       iex> NeoFaker.Blood.medical_notation(verbose: true)
       "Type AB, Rh positive"
-
-      iex> NeoFaker.Blood.medical_notation(verbose: false)
-      "O negative"
 
   """
   @spec medical_notation(Keyword.t()) :: String.t()
@@ -139,9 +111,7 @@ defmodule NeoFaker.Blood do
   end
 
   @doc """
-  Returns a list of all possible blood groups.
-
-  Returns all 8 possible blood group combinations in the ABO and Rh blood group systems.
+  Returns all 8 possible blood group combinations in the ABO and Rh systems.
 
   ## Examples
 
@@ -157,9 +127,7 @@ defmodule NeoFaker.Blood do
   end
 
   @doc """
-  Returns a list of all blood types.
-
-  Returns all 4 blood types in the ABO blood group system.
+  Returns all 4 blood types in the ABO system.
 
   ## Examples
 
@@ -171,8 +139,6 @@ defmodule NeoFaker.Blood do
   def all_types, do: @blood_types
 
   @doc """
-  Returns a list of all Rh factors.
-
   Returns both possible Rh factors.
 
   ## Examples

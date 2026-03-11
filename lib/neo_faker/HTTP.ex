@@ -1,10 +1,9 @@
 defmodule NeoFaker.HTTP do
   @moduledoc """
-  Functions for generating HTTP-related information.
+  Functions for generating HTTP-related data.
 
-  This module provides utilities to generate random HTTP-related information, such as request
-  methods, status codes, user-agents, and referrer policies with comprehensive validation
-  and formatting options.
+  Provides utilities to generate random HTTP values including user-agent strings, request
+  methods, status codes, referrer policies, protocol versions, and header names.
   """
   @moduledoc since: "0.11.0"
 
@@ -42,21 +41,20 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP user-agent string.
 
-  Returns a random user-agent string representing either a browser or a crawler from the top
-  100 most common user-agents.
+  Returns a user-agent from the top 100 most common browser or crawler user-agents.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:type` - Defines the type of user-agent to generate. Defaults to `:all`.
+    - `:type` - User-agent category. Defaults to `:all`.
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:all` - Returns a random user-agent from both browsers and crawlers (default).
-  - `:browser` - Returns a random browser user-agent.
-  - `:crawler` - Returns a random crawler user-agent.
+  - `:all` - Random user-agent from browsers and crawlers (default).
+  - `:browser` - Browser user-agent only.
+  - `:crawler` - Crawler user-agent only.
 
   ## Examples
 
@@ -69,9 +67,6 @@ defmodule NeoFaker.HTTP do
       iex> NeoFaker.HTTP.user_agent(type: :crawler)
       "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 
-      iex> NeoFaker.HTTP.user_agent(type: :all)
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-
   """
   @spec user_agent(Keyword.t()) :: String.t()
   def user_agent(opts \\ []) do
@@ -83,27 +78,21 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP request method.
 
-  Returns a random HTTP request method string. By default, returns one of the most common
-  methods (GET, POST, PUT, DELETE, PATCH).
+  Returns one of the common methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) by default.
+  Pass `common_only: false` to include all nine standard methods.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:common_only` - When `true`, only returns common methods. Defaults to `true`.
+    - `:common_only` - When `true`, restricts to the five most common methods. Defaults to `true`.
 
   ## Examples
 
       iex> NeoFaker.HTTP.request_method()
       "GET"
 
-      iex> NeoFaker.HTTP.request_method()
-      "POST"
-
       iex> NeoFaker.HTTP.request_method(common_only: false)
       "OPTIONS"
-
-      iex> NeoFaker.HTTP.request_method(common_only: true)
-      "PUT"
 
   """
   @spec request_method(Keyword.t()) :: String.t()
@@ -123,8 +112,7 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP referrer policy.
 
-  Returns a random HTTP referrer policy string that controls how much referrer information
-  should be included with requests.
+  Returns one of the eight standard `Referrer-Policy` header values.
 
   ## Examples
 
@@ -134,9 +122,6 @@ defmodule NeoFaker.HTTP do
       iex> NeoFaker.HTTP.referrer_policy()
       "strict-origin-when-cross-origin"
 
-      iex> NeoFaker.HTTP.referrer_policy()
-      "same-origin"
-
   """
   @spec referrer_policy() :: String.t()
   def referrer_policy, do: Enum.random(@valid_referrer_policies)
@@ -144,30 +129,30 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP status code.
 
-  Returns a random HTTP status code, which can be either detailed (e.g., `"200 OK"`) or
-  simple (e.g., `"200"`). Optionally filter by status code group.
+  Returns either a simple code string (e.g. `"200"`) or a detailed one (e.g. `"200 OK"`),
+  optionally filtered to a specific status group.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:type` - Defines the type of status code to generate. Defaults to `:simple`.
-    - `:group` - Specifies the group of status codes to generate. Defaults to `nil` (all).
+    - `:type` - Output format. Defaults to `:simple`.
+    - `:group` - Status code group to sample from. Defaults to `nil` (all groups).
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:simple` - Returns a simple status code (e.g., `"200"`) (default).
-  - `:detailed` - Returns a detailed status code (e.g., `"200 OK"`).
+  - `:simple` - Code only, e.g. `"200"` (default).
+  - `:detailed` - Code with reason phrase, e.g. `"200 OK"`.
 
   The values for `:group` can be:
 
   - `nil` - All status codes (default).
-  - `:information` - 1xx status codes (Informational).
-  - `:success` - 2xx status codes (Success).
-  - `:redirection` - 3xx status codes (Redirection).
-  - `:client_error` - 4xx status codes (Client Error).
-  - `:server_error` - 5xx status codes (Server Error).
+  - `:information` - 1xx Informational.
+  - `:success` - 2xx Success.
+  - `:redirection` - 3xx Redirection.
+  - `:client_error` - 4xx Client Error.
+  - `:server_error` - 5xx Server Error.
 
   ## Examples
 
@@ -176,9 +161,6 @@ defmodule NeoFaker.HTTP do
 
       iex> NeoFaker.HTTP.status_code(type: :detailed)
       "200 OK"
-
-      iex> NeoFaker.HTTP.status_code(type: :simple)
-      "404"
 
       iex> NeoFaker.HTTP.status_code(group: :client_error)
       "404"
@@ -201,25 +183,22 @@ defmodule NeoFaker.HTTP do
   end
 
   @doc """
-  Generates a random HTTP protocol version.
+  Generates a random HTTP protocol version string.
 
-  Returns a random HTTP protocol version string.
+  Randomly selects from `HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, and optionally `HTTP/3`.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:include_http3` - When `true`, includes HTTP/3. Defaults to `true`.
+    - `:include_http3` - When `true`, includes `HTTP/3` in the pool. Defaults to `true`.
 
   ## Examples
 
       iex> NeoFaker.HTTP.protocol_version()
       "HTTP/1.1"
 
-      iex> NeoFaker.HTTP.protocol_version()
-      "HTTP/2"
-
       iex> NeoFaker.HTTP.protocol_version(include_http3: false)
-      "HTTP/1.1"
+      "HTTP/1.0"
 
   """
   @spec protocol_version(Keyword.t()) :: String.t()
@@ -241,20 +220,20 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP header name.
 
-  Returns a random common HTTP header name.
+  Returns a common request or response header name from a curated list of ten per category.
 
   ## Parameters
 
   - `opts` - Keyword list of options:
-    - `:type` - The type of header. Defaults to `:all`.
+    - `:type` - Header category. Defaults to `:all`.
 
   ## Options
 
   The values for `:type` can be:
 
-  - `:all` - All common headers (default).
-  - `:request` - Request headers only.
-  - `:response` - Response headers only.
+  - `:all` - Request and response headers combined (default).
+  - `:request` - Request headers only, e.g. `"User-Agent"`.
+  - `:response` - Response headers only, e.g. `"Server"`.
 
   ## Examples
 
@@ -318,7 +297,7 @@ defmodule NeoFaker.HTTP do
   end
 
   @doc """
-  Returns a list of all valid HTTP request methods.
+  Returns the list of all valid HTTP request methods.
 
   ## Examples
 
@@ -330,7 +309,7 @@ defmodule NeoFaker.HTTP do
   def all_request_methods, do: @valid_request_methods
 
   @doc """
-  Returns a list of all valid referrer policies.
+  Returns the list of all valid referrer policy strings.
 
   ## Examples
 

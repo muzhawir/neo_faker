@@ -45,6 +45,7 @@ defmodule NeoFaker.IdId.Person do
       "7645504903500640"
 
   """
+  @doc since: "0.14.0"
   @spec npwp() :: String.t()
   defdelegate npwp(), to: __MODULE__, as: :nik
 end

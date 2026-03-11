@@ -24,6 +24,8 @@ defmodule NeoFaker do
   """
   @moduledoc since: "0.1.0"
 
+  alias NeoFaker.Data
+
   @doc """
   Starts the NeoFaker application and ensures a locale is configured.
 
@@ -97,7 +99,8 @@ defmodule NeoFaker do
   The `locale` must be an atom matching a supported locale code (e.g. `:en_us`,
   `:id_id`, `:default`). See the
   [available locales](https://hexdocs.pm/neo_faker/locales.html) for
-  the full list. Raises `ArgumentError` if a non-atom value is provided.
+  the full list. Raises `ArgumentError` if a non-atom or unsupported locale is
+  provided.
 
   ## Examples
 
@@ -110,11 +113,29 @@ defmodule NeoFaker do
       iex> NeoFaker.set_locale(:default)
       :ok
 
+      iex> NeoFaker.set_locale(:bogus)
+      ** (ArgumentError) Unsupported locale :bogus. Expected one of [:default, :en_us, :id_id] or see the available locales documentation.
+
+  The list of supported locales in the error message is generated dynamically
+  from `priv/data/locale.exs`, so it will always reflect the actual supported
+  locales (including any added in future releases).
+
   """
   @spec set_locale(atom()) :: :ok
   def set_locale(locale) when is_atom(locale) do
-    Application.put_env(:neo_faker, :locale, locale)
-    :ok
+    if locale == :default or Data.locale_available?(locale) do
+      Application.put_env(:neo_faker, :locale, locale)
+      :ok
+    else
+      supported =
+        [:default | Data.supported_locales()]
+        |> Enum.sort()
+        |> inspect()
+
+      raise ArgumentError,
+            "Unsupported locale #{inspect(locale)}. Expected one of #{supported} " <>
+              "or see the available locales documentation."
+    end
   end
 
   def set_locale(invalid) do

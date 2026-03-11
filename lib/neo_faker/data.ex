@@ -83,26 +83,47 @@ defmodule NeoFaker.Data do
   defp resolve_locale(locale), do: if(locale_available?(locale), do: locale, else: :default)
 
   @doc """
-  Returns `true` when `locale` is listed in `priv/data/locale.exs` or is the
-  special `:default` sentinel, `false` otherwise.
+  Returns the sorted list of all supported locale atoms from `priv/data/locale.exs`.
+
+  The `:default` sentinel is **not** included; use `locale_available?/1` or
+  check for `:default` explicitly. Results are cached in `:persistent_term`
+  after the first call, so repeated invocations are O(1).
+
+  ## Examples
+
+      iex> NeoFaker.Data.supported_locales()
+      [:en_us, :id_id]
+
+  """
+  @spec supported_locales() :: [atom()]
+  def supported_locales do
+    load_locale_set() |> Enum.map(&String.to_atom/1) |> Enum.sort()
+  end
+
+  @doc """
+  Returns `true` when `locale` is listed in `priv/data/locale.exs`, `false`
+  otherwise.
 
   The result of reading `locale.exs` is cached in `:persistent_term` on the
   first call, so subsequent calls are O(1) lookups.
   """
   @spec locale_available?(atom()) :: boolean()
   def locale_available?(locale) do
-    locales =
-      case :persistent_term.get(:available_locales, nil) do
-        nil ->
-          loaded = @locale_file |> read_data_file!() |> MapSet.new()
-          :persistent_term.put(:available_locales, loaded)
-          loaded
+    MapSet.member?(load_locale_set(), Atom.to_string(locale))
+  end
 
-        loaded ->
-          loaded
-      end
+  # Loads (or retrieves from cache) the MapSet of locale strings from locale.exs.
+  @spec load_locale_set() :: MapSet.t(String.t())
+  defp load_locale_set do
+    case :persistent_term.get(:available_locales, nil) do
+      nil ->
+        loaded = @locale_file |> read_data_file!() |> MapSet.new()
+        :persistent_term.put(:available_locales, loaded)
+        loaded
 
-    MapSet.member?(locales, Atom.to_string(locale))
+      loaded ->
+        loaded
+    end
   end
 
   @spec read_data_file!(String.t()) :: any()

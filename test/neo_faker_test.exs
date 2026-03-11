@@ -19,10 +19,50 @@ defmodule NeoFakerTest do
       assert NeoFaker.set_locale(:id_id) == :ok
     end
 
+    test "accepts :en_us and returns :ok" do
+      assert NeoFaker.set_locale(:en_us) == :ok
+    end
+
+    test "accepts :default and returns :ok" do
+      assert NeoFaker.set_locale(:default) == :ok
+    end
+
     test "raises ArgumentError when locale is not an atom" do
-      assert_raise ArgumentError, fn ->
+      assert_raise ArgumentError, ~r/Locale must be an atom/, fn ->
         NeoFaker.set_locale("en_us")
       end
+    end
+
+    test "raises ArgumentError for an unsupported atom locale" do
+      assert_raise ArgumentError, ~r/Unsupported locale :bogus/, fn ->
+        NeoFaker.set_locale(:bogus)
+      end
+    end
+
+    test "error message for unsupported locale dynamically includes supported locales" do
+      error =
+        assert_raise ArgumentError, fn ->
+          NeoFaker.set_locale(:totally_unknown)
+        end
+
+      supported = NeoFaker.Data.supported_locales()
+
+      for locale <- supported do
+        assert String.contains?(error.message, Atom.to_string(locale)),
+               "expected error message to mention :#{locale}, got: #{error.message}"
+      end
+
+      assert String.contains?(error.message, "default"),
+             "expected error message to mention :default, got: #{error.message}"
+    end
+
+    test "error message for unsupported locale references the documentation" do
+      error =
+        assert_raise ArgumentError, fn ->
+          NeoFaker.set_locale(:not_a_real_locale)
+        end
+
+      assert String.contains?(error.message, "available locales documentation")
     end
   end
 

@@ -22,7 +22,8 @@
 - Removed duplicate private `hash_email!/1` from `Gravatar.Generator`.
 - Renamed `Generator.ex` to `generator.ex` for consistent lowercase filenames.
 - Added `@doc` attributes to all sub-module functions for improved autocomplete support.
-- Bumped minimum Erlang to 28.3 and Elixir to 1.19.4-otp-28.
+- Bumped minimum Erlang to 28.0 and Elixir to 1.18.4-otp-28.
+- Pinned development toolchain to Erlang 28.3 and Elixir 1.19.4-otp-28 in `mise.toml` and CI.
 - Upgraded Hex dependencies.
 - Updated module documentation: replaced "library" with "package", improved option descriptions, and added detailed examples.
 - Added mise tasks and section comments to `mise.toml`.

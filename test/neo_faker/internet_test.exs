@@ -86,6 +86,18 @@ defmodule NeoFaker.InternetTest do
         Internet.domain_name(type: :unknown)
       end
     end
+
+    test "raises ArgumentError when type: :custom and :domain_name is not a string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.domain_name(type: :custom, domain_name: 42)
+      end
+    end
+
+    test "raises ArgumentError when type: :custom and :domain_name is an empty string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.domain_name(type: :custom, domain_name: "")
+      end
+    end
   end
 
   describe "tld/1" do
@@ -143,6 +155,18 @@ defmodule NeoFaker.InternetTest do
       email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
 
       assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
+    end
+
+    test "raises ArgumentError when domain_type: :custom and :domain_name is not a string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.email(domain_type: :custom, domain_name: :not_a_string)
+      end
+    end
+
+    test "raises ArgumentError when domain_type: :custom and :domain_name is an empty string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.email(domain_type: :custom, domain_name: "")
+      end
     end
   end
 
@@ -498,6 +522,18 @@ defmodule NeoFaker.InternetTest do
       url = Internet.url(domain_type: :custom)
 
       assert String.contains?(url, "example.com")
+    end
+
+    test "raises ArgumentError when domain_type: :custom and :domain_name is not a string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.url(domain_type: :custom, domain_name: ["not", "a", "string"])
+      end
+    end
+
+    test "raises ArgumentError when domain_type: :custom and :domain_name is an empty string" do
+      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+        Internet.url(domain_type: :custom, domain_name: "")
+      end
     end
 
     test "raises ArgumentError for an invalid protocol" do

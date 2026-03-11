@@ -153,7 +153,15 @@ defmodule NeoFaker.Internet do
         Domain.generate_popular_domain_name(popular_type)
 
       :custom ->
-        Options.get(opts, :domain_name, "example.com")
+        custom_domain = Options.get(opts, :domain_name, "example.com")
+
+        if is_binary(custom_domain) and custom_domain != "" do
+          custom_domain
+        else
+          raise ArgumentError,
+                "Invalid :domain_name #{inspect(custom_domain)}. Expected a non-empty string, " <>
+                  "e.g. \"example.com\"."
+        end
     end
   end
 

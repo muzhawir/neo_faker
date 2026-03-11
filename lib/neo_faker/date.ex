@@ -9,13 +9,13 @@ defmodule NeoFaker.Date do
   @moduledoc since: "0.9.0"
 
   alias NeoFaker.Date.Generator
-  alias NeoFaker.Helpers.Constants
+  alias NeoFaker.Date.Validator
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
 
   @epoch_date ~D[1970-01-01]
-  @min_age Constants.default_age_min()
-  @max_age Constants.default_age_max()
+  @date_range -365..365
+  @min_age 18
+  @max_age 65
 
   @doc """
   Generates a random date within a specified range relative to today.
@@ -49,9 +49,9 @@ defmodule NeoFaker.Date do
 
   """
   @spec add(Range.t(), Keyword.t()) :: Date.t() | String.t()
-  def add(range \\ Constants.default_date_range(), opts \\ []) do
-    validate_range!(range)
-    format = get_and_validate_format!(opts)
+  def add(range \\ @date_range, opts \\ []) do
+    Validator.validate_range!(range)
+    format = Validator.get_and_validate_format!(opts)
 
     range |> Generator.add(:struct) |> Formatter.format_date(format)
   end
@@ -90,8 +90,8 @@ defmodule NeoFaker.Date do
   """
   @spec between(Date.t(), Date.t(), Keyword.t()) :: Date.t() | String.t()
   def between(start \\ @epoch_date, finish \\ Generator.local_date_now(), opts \\ []) do
-    validate_date_order!(start, finish)
-    format = get_and_validate_format!(opts)
+    Validator.validate_date_order!(start, finish)
+    format = Validator.get_and_validate_format!(opts)
 
     start |> Generator.between(finish, :struct) |> Formatter.format_date(format)
   end
@@ -131,8 +131,8 @@ defmodule NeoFaker.Date do
   @doc since: "0.10.0"
   @spec birthday(non_neg_integer(), non_neg_integer(), Keyword.t()) :: Date.t() | String.t()
   def birthday(min_age \\ @min_age, max_age \\ @max_age, opts \\ []) do
-    validate_age_range!(min_age, max_age)
-    format = get_and_validate_format!(opts)
+    Validator.validate_age_range!(min_age, max_age)
+    format = Validator.get_and_validate_format!(opts)
 
     today = Generator.local_date_now()
     start_date = Date.shift(today, year: -max_age)
@@ -215,73 +215,8 @@ defmodule NeoFaker.Date do
   """
   @spec today(Keyword.t()) :: Date.t() | String.t()
   def today(opts \\ []) do
-    format = get_and_validate_format!(opts)
+    format = Validator.get_and_validate_format!(opts)
     date = Generator.local_date_now()
     Formatter.format_date(date, format)
-  end
-
-  # Private functions
-
-  @spec get_and_validate_format!(Keyword.t()) :: atom()
-  defp get_and_validate_format!(opts) do
-    format = Options.get(opts, :format, :struct)
-    valid_formats = Constants.valid_datetime_formats()
-
-    case Options.validate_enum(:format, format, valid_formats) do
-      :ok ->
-        format
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_range!(Range.t()) :: :ok
-  defp validate_range!(range) when is_struct(range, Range) do
-    if range.first <= range.last do
-      :ok
-    else
-      raise ArgumentError, "Invalid range: first must be less than or equal to last"
-    end
-  end
-
-  defp validate_range!(invalid) do
-    raise ArgumentError, "Expected a Range, got: #{inspect(invalid)}"
-  end
-
-  @spec validate_date_order!(Date.t(), Date.t()) :: :ok
-  defp validate_date_order!(start, finish) do
-    case Date.compare(start, finish) do
-      :gt ->
-        raise ArgumentError, "start date must be before or equal to finish date"
-
-      _ ->
-        :ok
-    end
-  end
-
-  @spec validate_age_range!(non_neg_integer(), non_neg_integer()) :: :ok
-  defp validate_age_range!(min_age, max_age) when is_integer(min_age) and is_integer(max_age) do
-    cond do
-      min_age < 0 ->
-        raise ArgumentError, "min_age must be non-negative, got: #{min_age}"
-
-      max_age < 0 ->
-        raise ArgumentError, "max_age must be non-negative, got: #{max_age}"
-
-      min_age > max_age ->
-        raise ArgumentError, "min_age must be less than or equal to max_age"
-
-      true ->
-        :ok
-    end
-  end
-
-  defp validate_age_range!(min_age, _max_age) when not is_integer(min_age) do
-    raise ArgumentError, "min_age must be an integer, got: #{inspect(min_age)}"
-  end
-
-  defp validate_age_range!(_min_age, max_age) when not is_integer(max_age) do
-    raise ArgumentError, "max_age must be an integer, got: #{inspect(max_age)}"
   end
 end

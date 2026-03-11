@@ -9,10 +9,14 @@ defmodule NeoFaker.Time do
   @moduledoc since: "0.10.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Time.Generator, as: TimeGenerator
+
+  @default_time_range -24..24
+  @valid_datetime_formats [:struct, :iso8601]
+  @valid_time_units [:hour, :minute, :second]
+  @time_zone_file "time_zone.exs"
 
   @midnight ~T[00:00:00]
   @end_of_day ~T[23:59:59]
@@ -41,7 +45,7 @@ defmodule NeoFaker.Time do
 
   """
   @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
-  def add(range \\ Constants.default_time_range(), opts \\ []) do
+  def add(range \\ @default_time_range, opts \\ []) do
     validate_range!(range)
     unit = get_and_validate_unit!(opts)
     format = get_and_validate_format!(opts)
@@ -99,7 +103,7 @@ defmodule NeoFaker.Time do
   """
   @spec time_zone() :: String.t()
   def time_zone do
-    Data.random_value(__MODULE__, Constants.time_zone_file(), "time_zone")
+    Data.random_value(__MODULE__, @time_zone_file, "time_zone")
   end
 
   @doc """
@@ -205,7 +209,7 @@ defmodule NeoFaker.Time do
   defp get_and_validate_format!(opts) do
     format = Options.get(opts, :format, :struct)
 
-    case Options.validate_enum(:format, format, Constants.valid_datetime_formats()) do
+    case Options.validate_enum(:format, format, @valid_datetime_formats) do
       :ok ->
         format
 
@@ -218,7 +222,7 @@ defmodule NeoFaker.Time do
   defp get_and_validate_unit!(opts) do
     unit = Options.get(opts, :unit, :hour)
 
-    case Options.validate_enum(:unit, unit, Constants.valid_time_units()) do
+    case Options.validate_enum(:unit, unit, @valid_time_units) do
       :ok ->
         unit
 

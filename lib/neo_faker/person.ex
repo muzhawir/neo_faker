@@ -10,11 +10,14 @@ defmodule NeoFaker.Person do
 
   import NeoFaker.Data, only: [random_value: 4]
 
-  alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
 
+  @default_locale :default
+  @gender_file "gender.exs"
+  @name_affixes_file "name_affixes.exs"
+  @valid_sex_options [:unisex, :male, :female]
   @max_age 120
 
   @doc """
@@ -41,7 +44,7 @@ defmodule NeoFaker.Person do
   @spec first_name(Keyword.t()) :: String.t()
   def first_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, @default_locale)
 
     validate_sex!(sex)
 
@@ -72,7 +75,7 @@ defmodule NeoFaker.Person do
   @spec middle_name(Keyword.t()) :: String.t()
   def middle_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, @default_locale)
 
     validate_sex!(sex)
 
@@ -103,7 +106,7 @@ defmodule NeoFaker.Person do
   @spec last_name(Keyword.t()) :: String.t()
   def last_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, @default_locale)
 
     validate_sex!(sex)
 
@@ -140,7 +143,7 @@ defmodule NeoFaker.Person do
   @spec full_name(Keyword.t()) :: String.t()
   def full_name(opts \\ []) do
     sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, Constants.default_locale())
+    locale = Options.get(opts, :locale, @default_locale)
     include_middle = Options.get(opts, :middle_name, true)
 
     validate_sex!(sex)
@@ -167,7 +170,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec prefix(Keyword.t()) :: String.t()
   def prefix(opts \\ []) do
-    random_value(__MODULE__, Constants.name_affixes_file(), "prefixes", opts)
+    random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
   end
 
   @doc """
@@ -192,7 +195,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec suffix(Keyword.t()) :: String.t()
   def suffix(opts \\ []) do
-    random_value(__MODULE__, Constants.name_affixes_file(), "suffixes", opts)
+    random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
   end
 
   @doc """
@@ -215,7 +218,7 @@ defmodule NeoFaker.Person do
   """
   @spec binary_gender(Keyword.t()) :: String.t()
   def binary_gender(opts \\ []) do
-    random_value(__MODULE__, Constants.gender_file(), "binary", opts)
+    random_value(__MODULE__, @gender_file, "binary", opts)
   end
 
   @doc """
@@ -236,7 +239,7 @@ defmodule NeoFaker.Person do
   """
   @spec short_binary_gender(Keyword.t()) :: String.t()
   def short_binary_gender(opts \\ []) do
-    random_value(__MODULE__, Constants.gender_file(), "short_binary", opts)
+    random_value(__MODULE__, @gender_file, "short_binary", opts)
   end
 
   @doc """
@@ -257,7 +260,7 @@ defmodule NeoFaker.Person do
   """
   @spec non_binary_gender(Keyword.t()) :: String.t()
   def non_binary_gender(opts \\ []) do
-    random_value(__MODULE__, Constants.gender_file(), "non_binary", opts)
+    random_value(__MODULE__, @gender_file, "non_binary", opts)
   end
 
   @doc """
@@ -351,7 +354,7 @@ defmodule NeoFaker.Person do
 
   @spec validate_sex!(atom()) :: :ok
   defp validate_sex!(sex) do
-    valid_sex_options = Constants.valid_sex_options()
+    valid_sex_options = @valid_sex_options
 
     case Options.validate_enum(:sex, sex, valid_sex_options) do
       :ok ->

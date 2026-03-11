@@ -9,17 +9,29 @@ defmodule NeoFaker.TimeTest do
 
   describe "add/0" do
     test "returns a random time" do
-      assert FakeTime.add(0..0) == local_time()
+      before = local_time()
+      result = FakeTime.add(0..0)
+      after_time = local_time()
+
+      assert result == before or result == after_time
     end
 
     test "returns a random time with unit option" do
       for unit <- [:hour, :minute, :second] do
-        assert FakeTime.add(0..0, unit: unit) == local_time()
+        before = local_time()
+        result = FakeTime.add(0..0, unit: unit)
+        after_time = local_time()
+
+        assert result == before or result == after_time
       end
     end
 
     test "returns a random time in ISO 8601" do
-      assert FakeTime.add(0..0, format: :iso8601) == local_time_iso()
+      before = local_time_iso()
+      result = FakeTime.add(0..0, format: :iso8601)
+      after_time = local_time_iso()
+
+      assert result == before or result == after_time
     end
   end
 

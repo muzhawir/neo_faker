@@ -68,42 +68,48 @@ defmodule NeoFaker.DataTest do
 
   describe "random_value/4 file name validation" do
     test "accepts a valid bare filename with .exs extension" do
-      assert is_binary(Data.random_value(@module, @valid_file, @valid_key))
+      assert is_binary(Data.random_value(@module, @valid_file, @valid_key, locale: :default))
     end
 
     test "raises ArgumentError for a path-traversal filename" do
       assert_raise ArgumentError, ~r/invalid data file name/, fn ->
-        Data.random_value(@module, "../../config/runtime.exs", "key")
+        Data.random_value(@module, "../../config/runtime.exs", "key", locale: :default)
       end
     end
 
     test "raises ArgumentError for a filename with a leading directory component" do
       assert_raise ArgumentError, ~r/invalid data file name/, fn ->
-        Data.random_value(@module, "subdir/word.exs", @valid_key)
+        Data.random_value(@module, "subdir/word.exs", @valid_key, locale: :default)
       end
     end
 
     test "raises ArgumentError for a filename with a non-.exs extension" do
       assert_raise ArgumentError, ~r/invalid data file name/, fn ->
-        Data.random_value(@module, "word.json", @valid_key)
+        Data.random_value(@module, "word.json", @valid_key, locale: :default)
+      end
+    end
+
+    test "raises ArgumentError for a filename with no extension" do
+      assert_raise ArgumentError, ~r/invalid data file name/, fn ->
+        Data.random_value(@module, "word", @valid_key, locale: :default)
       end
     end
 
     test "raises ArgumentError for an empty filename" do
       assert_raise ArgumentError, ~r/invalid data file name/, fn ->
-        Data.random_value(@module, "", @valid_key)
+        Data.random_value(@module, "", @valid_key, locale: :default)
       end
     end
 
     test "raises ArgumentError when filename is not a string" do
       assert_raise ArgumentError, ~r/data file name must be a string/, fn ->
-        Data.random_value(@module, :word_exs, @valid_key)
+        Data.random_value(@module, :word_exs, @valid_key, locale: :default)
       end
     end
 
     test "raises ArgumentError for an absolute path" do
       assert_raise ArgumentError, ~r/invalid data file name/, fn ->
-        Data.random_value(@module, "/etc/passwd.exs", @valid_key)
+        Data.random_value(@module, "/etc/passwd.exs", @valid_key, locale: :default)
       end
     end
   end

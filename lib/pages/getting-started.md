@@ -38,7 +38,7 @@ config :neo_faker, locale: :default
 ```
 
 If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English US data).
-See the [supported locales](https://hexdocs.pm/neo_faker/available-locales.html) for a full list.
+See the [supported locales](https://hexdocs.pm/neo_faker/locales.html) for a full list.
 
 ### Phoenix Projects
 

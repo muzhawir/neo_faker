@@ -19,7 +19,7 @@ defmodule NeoFaker do
       iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
       "José"
 
-  See the [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  See the [available locales](https://hexdocs.pm/neo_faker/locales.html)
   for the full list of supported locale codes.
   """
   @moduledoc since: "0.1.0"
@@ -96,7 +96,7 @@ defmodule NeoFaker do
 
   The `locale` must be an atom matching a supported locale code (e.g. `:en_us`,
   `:id_id`, `:default`). See the
-  [available locales](https://hexdocs.pm/neo_faker/available-locales.html) for
+  [available locales](https://hexdocs.pm/neo_faker/locales.html) for
   the full list. Raises `ArgumentError` if a non-atom value is provided.
 
   ## Examples

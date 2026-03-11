@@ -7,19 +7,18 @@ defmodule NeoFaker.Internet do
   """
   @moduledoc since: "0.13.0"
 
-  alias NeoFaker.Helpers.Constants
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Internet.Domain
   alias NeoFaker.Internet.Email
+  alias NeoFaker.Internet.Generator
   alias NeoFaker.Internet.TLD
   alias NeoFaker.Internet.Username
+  alias NeoFaker.Internet.Validator
 
-  @valid_username_joiners [:all, :dot, :underscore, :dash]
-  @valid_username_types [:person, :word]
-  @valid_domain_types [:random, :popular, :custom]
-  @valid_popular_domain_types [:all, :ecommerce, :email, :search, :social]
-  @valid_tld_types [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]
+  @username_word_count 2
+  @domain_word_count 1
+  @number_range 1..1000
 
   @doc """
   Generates a random username.
@@ -67,15 +66,15 @@ defmodule NeoFaker.Internet do
   """
   @spec username(Keyword.t()) :: String.t()
   def username(opts \\ []) do
-    word_count = Options.get(opts, :word_count, Constants.default_username_word_count())
+    word_count = Options.get(opts, :word_count, @username_word_count)
     joiner_type = Options.get(opts, :joiner, :all)
     username_type = Options.get(opts, :username_type, :person)
     include_number = Options.get(opts, :number, false)
-    number_range = Options.get(opts, :number_range, Constants.default_number_range())
+    number_range = Options.get(opts, :number_range, @number_range)
 
-    validate_username_joiner!(joiner_type)
-    validate_username_type!(username_type)
-    validate_word_count!(word_count)
+    Validator.validate_username_joiner!(joiner_type)
+    Validator.validate_username_type!(username_type)
+    Validator.validate_word_count!(word_count)
 
     joiner = Username.joiner(joiner_type)
 
@@ -138,19 +137,19 @@ defmodule NeoFaker.Internet do
   """
   @spec domain_name(keyword()) :: String.t()
   def domain_name(opts \\ []) do
-    word_count = Options.get(opts, :word_count, Constants.default_domain_word_count())
+    word_count = Options.get(opts, :word_count, @domain_word_count)
     domain_type = Options.get(opts, :type, :random)
     popular_type = Options.get(opts, :popular_type, :all)
 
-    validate_domain_type!(domain_type)
+    Validator.validate_domain_type!(domain_type)
 
     case domain_type do
       :random ->
-        validate_word_count!(word_count)
+        Validator.validate_word_count!(word_count)
         Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
 
       :popular ->
-        validate_popular_domain_type!(popular_type)
+        Validator.validate_popular_domain_type!(popular_type)
         Domain.generate_popular_domain_name(popular_type)
 
       :custom ->
@@ -200,7 +199,7 @@ defmodule NeoFaker.Internet do
     tld_type = Options.get(opts, :type, :all_except_safe)
     include_dot = Options.get(opts, :dot, true)
 
-    validate_tld_type!(tld_type)
+    Validator.validate_tld_type!(tld_type)
 
     tld_name = TLD.generate_name(tld_type)
 
@@ -305,9 +304,9 @@ defmodule NeoFaker.Internet do
 
     if private do
       class = Options.get(opts, :class, Enum.random([:a, :b, :c]))
-      generate_private_ipv4(class)
+      Generator.private_ipv4(class)
     else
-      generate_public_ipv4()
+      Generator.public_ipv4()
     end
   end
 
@@ -341,7 +340,7 @@ defmodule NeoFaker.Internet do
 
     ip_address =
       if Options.get(opts, :compressed, false) do
-        generate_compressed_ipv6()
+        Generator.compressed_ipv6()
       else
         Enum.map_join(1..8, ":", fn _ ->
           (:rand.uniform(0x10_000) - 1)
@@ -392,7 +391,7 @@ defmodule NeoFaker.Internet do
     uppercase = Options.get(opts, :uppercase, true)
     separator = Options.get(opts, :separator, ":")
 
-    validate_mac_separator!(separator)
+    Validator.validate_mac_separator!(separator)
 
     mac_address =
       Enum.map_join(1..6, separator, fn _ ->
@@ -446,7 +445,7 @@ defmodule NeoFaker.Internet do
     include_path = Options.get(opts, :path, false)
     include_query = Options.get(opts, :query, false)
 
-    validate_protocol!(protocol)
+    Validator.validate_protocol!(protocol)
 
     domain = domain_name(opts)
     tld_name = tld(opts)
@@ -455,15 +454,13 @@ defmodule NeoFaker.Internet do
 
     url_with_path =
       if include_path do
-        path = generate_url_path()
-        "#{base_url}/#{path}"
+        "#{base_url}/#{Generator.url_path()}"
       else
         base_url
       end
 
     if include_query do
-      query = generate_query_string()
-      "#{url_with_path}?#{query}"
+      "#{url_with_path}?#{Generator.query_string()}"
     else
       url_with_path
     end
@@ -499,185 +496,5 @@ defmodule NeoFaker.Internet do
     Enum.map_join(1..word_count, separator, fn _ ->
       String.downcase(NeoFaker.Text.word())
     end)
-  end
-
-  # Private functions
-
-  @spec generate_public_ipv4() :: String.t()
-  defp generate_public_ipv4 do
-    Enum.map_join(1..4, ".", fn _ -> :rand.uniform(256) - 1 end)
-  end
-
-  @spec generate_private_ipv4(atom()) :: String.t()
-  defp generate_private_ipv4(:a) do
-    "10.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}"
-  end
-
-  defp generate_private_ipv4(:b) do
-    "172.#{:rand.uniform(16) + 15}.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}"
-  end
-
-  defp generate_private_ipv4(:c) do
-    "192.168.#{:rand.uniform(256) - 1}.#{:rand.uniform(256) - 1}"
-  end
-
-  @spec generate_compressed_ipv6() :: String.t()
-  defp generate_compressed_ipv6 do
-    # Generate 8 groups but compress some zeros
-    groups =
-      Enum.map(1..8, fn _ ->
-        :rand.uniform(0x10_000) - 1
-      end)
-
-    # Find longest sequence of zeros
-    {start_idx, length} = find_longest_zero_sequence(groups)
-
-    if length > 1 do
-      # Create compressed notation
-      before = Enum.take(groups, start_idx)
-      after_groups = Enum.drop(groups, start_idx + length)
-
-      before_str = format_ipv6_groups(before)
-      after_str = format_ipv6_groups(after_groups)
-
-      case {before_str, after_str} do
-        {"", ""} -> "::"
-        {"", _} -> "::#{after_str}"
-        {_, ""} -> "#{before_str}::"
-        _ -> "#{before_str}::#{after_str}"
-      end
-    else
-      # No compression
-      format_ipv6_groups(groups)
-    end
-  end
-
-  @spec find_longest_zero_sequence(list(integer())) :: {integer(), integer()}
-  defp find_longest_zero_sequence(groups) do
-    groups
-    |> Enum.with_index()
-    |> Enum.chunk_by(fn {val, _} -> val == 0 end)
-    |> Enum.filter(fn chunk ->
-      case chunk do
-        [{0, _} | _] -> true
-        _ -> false
-      end
-    end)
-    |> Enum.max_by(fn chunk -> length(chunk) end, fn -> [] end)
-    |> case do
-      [] -> {0, 0}
-      chunk -> {elem(hd(chunk), 1), length(chunk)}
-    end
-  end
-
-  @spec format_ipv6_groups(list(integer())) :: String.t()
-  defp format_ipv6_groups([]), do: ""
-
-  defp format_ipv6_groups(groups) do
-    Enum.map_join(groups, ":", &Integer.to_string(&1, 16))
-  end
-
-  @spec generate_url_path() :: String.t()
-  defp generate_url_path do
-    path_depth = :rand.uniform(3)
-
-    Enum.map_join(1..path_depth, "/", fn _ ->
-      String.downcase(NeoFaker.Text.word())
-    end)
-  end
-
-  @spec generate_query_string() :: String.t()
-  defp generate_query_string do
-    param_count = :rand.uniform(3)
-
-    Enum.map_join(1..param_count, "&", fn _ ->
-      key = String.downcase(NeoFaker.Text.word())
-      value = :rand.uniform(1000)
-      "#{key}=#{value}"
-    end)
-  end
-
-  # Validation functions
-
-  @spec validate_username_joiner!(atom()) :: :ok
-  defp validate_username_joiner!(joiner) do
-    case Options.validate_enum(:joiner, joiner, @valid_username_joiners) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_username_type!(atom()) :: :ok
-  defp validate_username_type!(type) do
-    case Options.validate_enum(:username_type, type, @valid_username_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_domain_type!(atom()) :: :ok
-  defp validate_domain_type!(type) do
-    case Options.validate_enum(:type, type, @valid_domain_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_popular_domain_type!(atom()) :: :ok
-  defp validate_popular_domain_type!(type) do
-    case Options.validate_enum(:popular_type, type, @valid_popular_domain_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_tld_type!(atom()) :: :ok
-  defp validate_tld_type!(type) do
-    case Options.validate_enum(:type, type, @valid_tld_types) do
-      :ok ->
-        :ok
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @spec validate_word_count!(pos_integer()) :: :ok
-  defp validate_word_count!(count) when is_integer(count) and count > 0, do: :ok
-
-  defp validate_word_count!(count) when is_integer(count) do
-    raise ArgumentError, "word_count must be a positive integer, got: #{count}"
-  end
-
-  defp validate_word_count!(count) do
-    raise ArgumentError, "word_count must be a positive integer, got: #{inspect(count)}"
-  end
-
-  @spec validate_mac_separator!(String.t()) :: :ok
-  defp validate_mac_separator!(sep) when sep in [":", "-", ""], do: :ok
-
-  defp validate_mac_separator!(sep) do
-    raise ArgumentError,
-          "Invalid MAC separator. Expected one of [\":\", \"-\", \"\"], got: #{inspect(sep)}"
-  end
-
-  @spec validate_protocol!(atom()) :: :ok
-  defp validate_protocol!(protocol) when protocol in [:http, :https], do: :ok
-
-  defp validate_protocol!(protocol) do
-    raise ArgumentError,
-          "Invalid protocol. Expected one of [:http, :https], got: #{inspect(protocol)}"
   end
 end

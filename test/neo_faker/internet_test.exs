@@ -226,6 +226,12 @@ defmodule NeoFaker.InternetTest do
 
       assert String.starts_with?(ip, "192.168.")
     end
+
+    test "raises ArgumentError for an invalid class" do
+      assert_raise ArgumentError, fn ->
+        Internet.ipv4(private: true, class: :d)
+      end
+    end
   end
 
   describe "ipv6/1" do
@@ -266,6 +272,148 @@ defmodule NeoFaker.InternetTest do
 
       assert String.length(mac) == 17
       assert mac |> String.split(":") |> length() == 6
+    end
+  end
+
+  describe "url/1" do
+    test "returns a valid https URL by default" do
+      url = Internet.url()
+
+      assert String.starts_with?(url, "https://")
+      assert String.valid?(url)
+    end
+
+    test "returns a URL with http protocol when protocol: :http" do
+      url = Internet.url(protocol: :http)
+
+      assert String.starts_with?(url, "http://")
+    end
+
+    test "returns a URL with https protocol when protocol: :https" do
+      url = Internet.url(protocol: :https)
+
+      assert String.starts_with?(url, "https://")
+    end
+
+    test "returns a URL without a path by default" do
+      url = Internet.url()
+
+      # After stripping the scheme, no slash should remain in the host+tld
+      without_scheme = String.replace_prefix(url, "https://", "")
+
+      refute String.contains?(without_scheme, "/")
+    end
+
+    test "returns a URL with a path when path: true" do
+      url = Internet.url(path: true)
+
+      without_scheme = String.replace_prefix(url, "https://", "")
+
+      assert String.contains?(without_scheme, "/")
+    end
+
+    test "returns a URL without a query string by default" do
+      url = Internet.url()
+
+      refute String.contains?(url, "?")
+    end
+
+    test "returns a URL with a query string when query: true" do
+      url = Internet.url(query: true)
+
+      assert String.contains?(url, "?")
+    end
+
+    test "returns a URL with both path and query string when path: true and query: true" do
+      url = Internet.url(path: true, query: true)
+
+      assert String.contains?(url, "/")
+      assert String.contains?(url, "?")
+      # path segment must appear before the query string
+      assert String.match?(url, ~r|/[^?]+\?|)
+    end
+
+    test "returns a URL for a popular domain without a duplicate TLD" do
+      url = Internet.url(domain_type: :popular)
+
+      # A popular domain like "gmail.com" must not become "gmail.com.net"
+      [_scheme, rest] = String.split(url, "://", parts: 2)
+      host = rest |> String.split("/") |> List.first()
+
+      assert length(String.split(host, ".")) <= 2,
+             "#{url}: popular domain URL must not have more than one dot in the host"
+    end
+
+    test "returns a URL containing the custom domain when domain_type: :custom and domain_name is provided" do
+      url = Internet.url(domain_type: :custom, domain_name: "elixir-lang.org")
+
+      assert String.contains?(url, "elixir-lang.org")
+    end
+
+    test "returns a URL containing example.com when domain_type: :custom and no domain_name" do
+      url = Internet.url(domain_type: :custom)
+
+      assert String.contains?(url, "example.com")
+    end
+
+    test "raises ArgumentError for an invalid protocol" do
+      assert_raise ArgumentError, fn ->
+        Internet.url(protocol: :ftp)
+      end
+    end
+
+    test "raises ArgumentError for an invalid domain_type" do
+      assert_raise ArgumentError, fn ->
+        Internet.url(domain_type: :unknown)
+      end
+    end
+  end
+
+  describe "slug/2" do
+    test "returns a slug with 3 dash-separated words by default" do
+      slug = Internet.slug()
+
+      assert slug |> String.split("-") |> length() == 3
+    end
+
+    test "returns a slug with the specified word count" do
+      for count <- [1, 2, 5] do
+        slug = Internet.slug(count)
+
+        assert slug |> String.split("-") |> length() == count,
+               "expected #{count} dash-separated parts in slug: #{slug}"
+      end
+    end
+
+    test "returns a slug containing only lowercase letters and the default separator" do
+      slug = Internet.slug()
+
+      assert String.match?(slug, ~r/^[a-z]+(-[a-z]+)*$/)
+    end
+
+    test "returns a slug with underscore separator when separator: \"_\"" do
+      slug = Internet.slug(3, separator: "_")
+
+      assert String.match?(slug, ~r/^[a-z]+(_[a-z]+){2}$/)
+    end
+
+    test "returns a slug with a custom separator joining the correct number of parts" do
+      slug = Internet.slug(2, separator: ".")
+
+      assert slug |> String.split(".") |> length() == 2
+    end
+
+    test "returns a single lowercase word with no separator when word_count is 1" do
+      slug = Internet.slug(1)
+
+      refute String.contains?(slug, "-")
+      assert String.match?(slug, ~r/^[a-z]+$/)
+    end
+
+    test "returns different slugs on repeated calls" do
+      slugs = Enum.map(1..10, fn _ -> Internet.slug() end)
+
+      assert slugs |> Enum.uniq() |> length() > 1
     end
   end
 end

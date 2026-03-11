@@ -9,10 +9,16 @@ defmodule NeoFaker.Address do
 
   import NeoFaker.Data, only: [random_value: 4]
 
-  alias NeoFaker.Helpers.Constants
+  alias NeoFaker.Address.Generator
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Number
+
+  @city_file "city.exs"
+  @country_file "country.exs"
+
+  @building_number_range 1..100
+  @coordinate_precision 6
 
   @doc """
   Generates a random building number within a specified range.
@@ -36,8 +42,8 @@ defmodule NeoFaker.Address do
 
   """
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
-  def building_number(range \\ Constants.default_building_number_range(), opts \\ []) do
-    validate_range!(range)
+  def building_number(range \\ @building_number_range, opts \\ []) do
+    Generator.validate_range!(range)
 
     type = Options.get(opts, :type, :string)
     number = Number.between(range.first, range.last)
@@ -67,7 +73,7 @@ defmodule NeoFaker.Address do
 
   """
   @spec city(Keyword.t()) :: String.t()
-  def city(opts \\ []), do: random_value(__MODULE__, Constants.city_file(), "city", opts)
+  def city(opts \\ []), do: random_value(__MODULE__, @city_file, "city", opts)
 
   @doc """
   Generates a random country name.
@@ -88,7 +94,7 @@ defmodule NeoFaker.Address do
   """
   @spec country(Keyword.t()) :: String.t()
   def country(opts \\ []) do
-    random_value(__MODULE__, Constants.country_file(), "country", opts)
+    random_value(__MODULE__, @country_file, "country", opts)
   end
 
   @doc """
@@ -131,13 +137,13 @@ defmodule NeoFaker.Address do
   """
   @spec coordinate(keyword()) :: {float(), float()} | float()
   def coordinate(opts \\ []) do
-    precision = Options.get(opts, :precision, Constants.default_coordinate_precision())
+    precision = Options.get(opts, :precision, @coordinate_precision)
     type = Options.get(opts, :type, :full)
 
-    validate_precision!(precision)
+    Generator.validate_precision!(precision)
 
-    latitude = generate_latitude(precision)
-    longitude = generate_longitude(precision)
+    latitude = Generator.latitude(precision)
+    longitude = Generator.longitude(precision)
 
     case type do
       :latitude -> latitude
@@ -145,43 +151,5 @@ defmodule NeoFaker.Address do
       :full -> {latitude, longitude}
       _ -> {latitude, longitude}
     end
-  end
-
-  # Private functions
-
-  @spec generate_latitude(non_neg_integer()) :: float()
-  defp generate_latitude(precision) do
-    # Latitude ranges from -90 to 90
-    Float.round(:rand.uniform() * 180 - 90, precision)
-  end
-
-  @spec generate_longitude(non_neg_integer()) :: float()
-  defp generate_longitude(precision) do
-    # Longitude ranges from -180 to 180
-    Float.round(:rand.uniform() * 360 - 180, precision)
-  end
-
-  @spec validate_range!(Range.t()) :: :ok
-  defp validate_range!(range) when is_struct(range, Range) do
-    if range.first <= range.last do
-      :ok
-    else
-      raise ArgumentError, "Invalid range: first must be less than or equal to last"
-    end
-  end
-
-  defp validate_range!(invalid) do
-    raise ArgumentError, "Expected a Range, got: #{inspect(invalid)}"
-  end
-
-  @spec validate_precision!(integer()) :: :ok
-  defp validate_precision!(precision) when is_integer(precision) and precision >= 0, do: :ok
-
-  defp validate_precision!(precision) when is_integer(precision) do
-    raise ArgumentError, "precision must be non-negative, got: #{precision}"
-  end
-
-  defp validate_precision!(invalid) do
-    raise ArgumentError, "precision must be an integer, got: #{inspect(invalid)}"
   end
 end

@@ -2,6 +2,7 @@ defmodule NeoFaker.InternetTest do
   use ExUnit.Case, async: true
 
   alias NeoFaker.Internet
+  alias NeoFaker.Internet.Generator
 
   describe "username/1" do
     test "returns a username with the specified word count" do
@@ -173,7 +174,7 @@ defmodule NeoFaker.InternetTest do
   describe "ipv4/0" do
     # Shared shortcut so every test below can call the predicate without a
     # fully-qualified module name.
-    defp reserved?(a, b, c), do: NeoFaker.Internet.Generator.reserved_ipv4?(a, b, c)
+    defp reserved?(a, b, c), do: Generator.reserved_ipv4?(a, b, c)
 
     defp assert_valid_ipv4(ip) do
       parts = String.split(ip, ".")

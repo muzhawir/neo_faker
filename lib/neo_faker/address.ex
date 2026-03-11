@@ -61,7 +61,7 @@ defmodule NeoFaker.Address do
 
   The city name is selected from locale-specific data. Pass `locale:` to use a
   different locale. See the
-  [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  [available locales](https://hexdocs.pm/neo_faker/locales.html)
   for supported codes.
 
   ## Examples
@@ -81,7 +81,7 @@ defmodule NeoFaker.Address do
 
   The country name is selected from locale-specific data. Pass `locale:` to use a
   different locale. See the
-  [available locales](https://hexdocs.pm/neo_faker/available-locales.html)
+  [available locales](https://hexdocs.pm/neo_faker/locales.html)
   for supported codes.
 
   ## Examples

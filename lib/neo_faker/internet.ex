@@ -446,12 +446,25 @@ defmodule NeoFaker.Internet do
     include_path = Options.get(opts, :path, false)
     include_query = Options.get(opts, :query, false)
 
+    # Normalise :domain_type (url/1 API) -> :type (domain_name/1 API), mirroring
+    # how Email.generate_domain_name/1 handles the same translation.
+    domain_type = Keyword.get(opts, :domain_type, Keyword.get(opts, :type, :random))
+    domain_opts = Keyword.put(opts, :type, domain_type)
+
     Validator.validate_protocol!(protocol)
+    Validator.validate_domain_type!(domain_type)
 
-    domain = domain_name(opts)
-    tld_name = tld(opts)
+    domain = domain_name(domain_opts)
 
-    base_url = "#{protocol}://#{domain}#{tld_name}"
+    # For :popular and :custom the domain is already fully-qualified (e.g.
+    # "gmail.com"), so appending a TLD would produce "gmail.com.net". Only
+    # word-based (:random) domains need a TLD appended.
+    base_url =
+      if domain_type == :random do
+        "#{protocol}://#{domain}#{tld(opts)}"
+      else
+        "#{protocol}://#{domain}"
+      end
 
     url_with_path =
       if include_path do

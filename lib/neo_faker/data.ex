@@ -19,6 +19,8 @@ defmodule NeoFaker.Data do
   """
   @spec random_value(atom(), String.t(), String.t(), Keyword.t()) :: any()
   def random_value(module, file, key, opts \\ []) do
+    validate_file_name!(file)
+
     locale =
       opts[:locale]
       |> resolve_locale_config()
@@ -38,6 +40,7 @@ defmodule NeoFaker.Data do
   """
   @spec fetch!(atom(), atom(), String.t()) :: map()
   def fetch!(locale, module, file) do
+    validate_file_name!(file)
     resolved_locale = resolve_locale_config(locale)
     key = cache_key(resolved_locale, module, file)
 
@@ -136,7 +139,9 @@ defmodule NeoFaker.Data do
   @spec put_cache!(atom(), atom(), String.t()) :: :ok
   defp put_cache!(locale, module, file) do
     module_name = module_dir_name(module)
-    file_path = Path.join([data_path(), Atom.to_string(locale), module_name, file])
+
+    file_path =
+      Path.join([data_path(), Atom.to_string(locale), module_name, validate_file_name!(file)])
 
     if File.exists?(file_path) do
       :rand.seed(:exsplus, :os.timestamp())
@@ -160,9 +165,30 @@ defmodule NeoFaker.Data do
   @spec ensure_locale_file_exists(atom(), atom(), String.t()) :: atom()
   defp ensure_locale_file_exists(locale, module, file) do
     module_name = module_dir_name(module)
-    file_path = Path.join([data_path(), Atom.to_string(locale), module_name, file])
+
+    file_path =
+      Path.join([data_path(), Atom.to_string(locale), module_name, validate_file_name!(file)])
 
     if File.exists?(file_path), do: locale, else: :default
+  end
+
+  # Validates that `file` is a bare filename (no directory component) with a
+  # `.exs` extension. Raises `ArgumentError` on any other value, preventing
+  # path traversal and arbitrary-file evaluation via `Code.eval_string/3`.
+  @spec validate_file_name!(String.t()) :: String.t()
+  defp validate_file_name!(file) when is_binary(file) do
+    if file != "" and Path.basename(file) == file and Path.extname(file) == ".exs" do
+      file
+    else
+      raise ArgumentError,
+            "invalid data file name #{inspect(file)}. " <>
+              "Expected a bare filename with a .exs extension, e.g. \"word.exs\"."
+    end
+  end
+
+  defp validate_file_name!(file) do
+    raise ArgumentError,
+          "data file name must be a string, got: #{inspect(file)}"
   end
 
   @spec module_dir_name(atom()) :: String.t()

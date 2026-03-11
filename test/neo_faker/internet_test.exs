@@ -151,22 +151,26 @@ defmodule NeoFaker.InternetTest do
     # fully-qualified module name.
     defp reserved?(a, b, c), do: NeoFaker.Internet.Generator.reserved_ipv4?(a, b, c)
 
-    # -------------------------------------------------------------------------
-    # Structural sanity check — unchanged, still useful as a quick smoke test.
-    # -------------------------------------------------------------------------
-
-    test "returns a valid IPv4 address" do
-      ip = Internet.ipv4()
+    defp assert_valid_ipv4(ip) do
       parts = String.split(ip, ".")
 
-      assert length(parts) == 4
+      assert length(parts) == 4, "#{ip}: expected 4 octets, got #{length(parts)}"
 
       assert Enum.all?(parts, fn part ->
                case Integer.parse(part) do
                  {num, ""} -> num >= 0 and num <= 255
                  _ -> false
                end
-             end)
+             end),
+             "#{ip}: every octet must be a decimal integer in 0..255"
+    end
+
+    # -------------------------------------------------------------------------
+    # Structural sanity check — unchanged, still useful as a quick smoke test.
+    # -------------------------------------------------------------------------
+
+    test "returns a valid IPv4 address" do
+      assert_valid_ipv4(Internet.ipv4())
     end
 
     # -------------------------------------------------------------------------
@@ -337,6 +341,7 @@ defmodule NeoFaker.InternetTest do
 
     test "returns a private IPv4 address when private: true" do
       ip = Internet.ipv4(private: true)
+      assert_valid_ipv4(ip)
       [a, b, _c, _d] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
 
       assert a == 10 or (a == 172 and b in 16..31) or (a == 192 and b == 168),
@@ -345,12 +350,14 @@ defmodule NeoFaker.InternetTest do
 
     test "returns a class A private address when private: true, class: :a" do
       ip = Internet.ipv4(private: true, class: :a)
+      assert_valid_ipv4(ip)
 
       assert String.starts_with?(ip, "10.")
     end
 
     test "returns a class B private address when private: true, class: :b" do
       ip = Internet.ipv4(private: true, class: :b)
+      assert_valid_ipv4(ip)
       [_a, b | _] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
 
       assert String.starts_with?(ip, "172.")
@@ -359,6 +366,7 @@ defmodule NeoFaker.InternetTest do
 
     test "returns a class C private address when private: true, class: :c" do
       ip = Internet.ipv4(private: true, class: :c)
+      assert_valid_ipv4(ip)
 
       assert String.starts_with?(ip, "192.168.")
     end

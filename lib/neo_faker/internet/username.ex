@@ -32,7 +32,6 @@ defmodule NeoFaker.Internet.Username do
       :dot -> "."
       :underscore -> "_"
       :dash -> "-"
-      _ -> Enum.random([".", "_", "-"])
     end
   end
 end

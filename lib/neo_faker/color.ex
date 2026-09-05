@@ -43,7 +43,7 @@ defmodule NeoFaker.Color do
 
     case Validator.get_and_validate_color_format!(opts) do
       :w3c -> CMYK.color_w3c(color_tuple)
-      _ -> color_tuple
+      nil -> color_tuple
     end
   end
 
@@ -112,7 +112,7 @@ defmodule NeoFaker.Color do
 
     case Validator.get_and_validate_color_format!(opts) do
       :w3c -> HSL.color_w3c(color_tuple)
-      _ -> color_tuple
+      nil -> color_tuple
     end
   end
 
@@ -142,7 +142,7 @@ defmodule NeoFaker.Color do
 
     case Validator.get_and_validate_color_format!(opts) do
       :w3c -> HSLA.color_w3c(color_tuple)
-      _ -> color_tuple
+      nil -> color_tuple
     end
   end
 
@@ -204,7 +204,7 @@ defmodule NeoFaker.Color do
 
     case Validator.get_and_validate_color_format!(opts) do
       :w3c -> RGB.color_w3c(color_tuple)
-      _ -> color_tuple
+      nil -> color_tuple
     end
   end
 
@@ -234,7 +234,7 @@ defmodule NeoFaker.Color do
 
     case Validator.get_and_validate_color_format!(opts) do
       :w3c -> RGBA.color_w3c(color_tuple)
-      _ -> color_tuple
+      nil -> color_tuple
     end
   end
 

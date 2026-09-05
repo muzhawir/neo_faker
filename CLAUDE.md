@@ -27,6 +27,12 @@ Two CI workflows mirror these checks: `lint.yml` (format check + credo + test, r
 (format check + credo + dialyzer + test, runs on `main`). Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test`
 before being considered done; run `mix dialyzer` too when types/specs changed.
 
+## Elixir documentation lookup
+
+When you need official Elixir documentation (module reference, guides, anti-patterns, meta-programming, etc.), start from the index at https://elixir.hexdocs.pm/llms.txt — it lists every page and module with its relative path, e.g. `[Enum](Enum.md)`, `[Code anti-patterns](code-anti-patterns.md)`.
+
+Always fetch documentation pages as `.md`, never `.html`: take the filename from `llms.txt` and request `https://elixir.hexdocs.pm/<version>/<filename>.md` (e.g. `https://elixir.hexdocs.pm/1.20.4/code-anti-patterns.md`, not `.../code-anti-patterns.html`). The `.md` version is the plain-text source and is far cheaper to fetch and read than the rendered HTML page.
+
 ## Architecture
 
 ### Domain modules and their internal split

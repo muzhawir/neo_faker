@@ -348,9 +348,24 @@ no single giant diff.
 
   Verified: `mix format` clean, `mix test` 325 passed (3 seeds), `mix dialyzer` 0 errors,
   `mix docs` builds (only the same pre-existing hidden-module warnings from earlier phases).
-- [ ] **Phase 5 — docs & changelog.** Update `CLAUDE.md` architecture section,
-      `getting-started.md` (seed usage, locale semantics), `CHANGELOG.md` entry describing the
-      breaking changes, bump `mix.exs` version to `0.15.0`.
+- [x] **Phase 5 — docs & changelog.** Done. `mix.exs` version bumped to `0.15.0`. `CLAUDE.md`
+      updated: domain-module section now describes the single `Generator`/`Validator`
+      convention and the "no bare `import`" rule, a new "Options handling" section documents the
+      `NimbleOptions` pattern (including the "defaults are validated too" gotcha), the locale
+      section describes the two-layer process-override/config resolution, the `Options` helper
+      description is rewritten for `validate!/2`, and a new "Tests" note records that doctests
+      are never actually run (`grep -rln doctest test/` is empty) plus why
+      `neo_faker_application_env_test.exs` must stay `async: false`.
+      `lib/pages/getting-started.md` updated: dependency version, a note that `set_locale/1` is
+      now process-scoped (vs. `config` for the whole app), and a new "Reproducible output"
+      section documenting `NeoFaker.seed/1`. `lib/pages/changelog.md` gets a new `v0.15.0` entry
+      (Features/Breaking Changes/Bug Fixes/Improvements/Tests) covering everything from phases
+      1-4: process-scoped locale, the `Locales` namespace move, the new `nimble_options`
+      dependency, the `ArgumentError` message-wording change, the `email/1` undocumented-fallback
+      removal, the two locale-default bug fixes, and the RNG-reseed removal. Older changelog
+      entries were left untouched (they document past releases as they were at the time).
+      Verified: `mix format` clean, `mix test` 325 passed, `mix dialyzer` 0 errors, `mix docs`
+      builds and confirms version `0.15.0` in generated output.
 - [ ] **Phase 6 — final verification.** Full `mise run format|lint|analyze|fix` chain, `mix
       docs` clean build, smoke-test against the same throwaway Phoenix app used earlier in this
       project to confirm the process-scoped locale change doesn't break the documented Phoenix

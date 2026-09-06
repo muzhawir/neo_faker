@@ -123,8 +123,9 @@ Key points:
   `priv/data/en_us/` directory; `:en_us` falls back to `:default` data unless a locale-specific override file exists.
 - If a locale-specific data file doesn't exist for a given module/file, `NeoFaker.Data` silently falls back to `:default` rather than erroring
   (`ensure_locale_file_exists/3`).
-- Locale data is cached in `:persistent_term` after first read (per locale/module/file), and values are shuffled once at cache time, not re-randomized
-  per call, since `Enum.random/1` picks from the cached shuffled list on every call.
+- Locale data is cached in `:persistent_term` after first read (per locale/module/file), keyed by the `{NeoFaker.Data, locale, module, file}` tuple.
+  Each list in the file is deduplicated with `Enum.uniq/1` at cache time but kept in file order; the per-call pick is `Enum.random/1` on the cached
+  list (`NeoFaker.Data.random_value/4`), so randomness happens per call, not at cache time.
 - `validate_file_name!/1` restricts data file names to a bare filename ending in `.exs`, which guards against path traversal / arbitrary file eval
   via `Code.eval_string/3`. Never bypass this when adding new data lookups.
 - Locale resolution has two layers, checked in order by `NeoFaker.Locale.fetch/0`: a **process-scoped** override set via `NeoFaker.Locale.set/1`

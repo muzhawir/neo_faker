@@ -1,4 +1,4 @@
-defmodule NeoFaker.HTTP.UserAgent do
+defmodule NeoFaker.HTTP.UserAgentGenerator do
   @moduledoc false
 
   alias NeoFaker.Data

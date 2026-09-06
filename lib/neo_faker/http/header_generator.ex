@@ -1,4 +1,4 @@
-defmodule NeoFaker.HTTP.Header do
+defmodule NeoFaker.HTTP.HeaderGenerator do
   @moduledoc false
 
   @request_headers [

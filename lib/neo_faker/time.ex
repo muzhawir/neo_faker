@@ -10,6 +10,7 @@ defmodule NeoFaker.Time do
 
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
+  alias NeoFaker.Helpers.Options
   alias NeoFaker.Time.Generator, as: TimeGenerator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
@@ -18,6 +19,13 @@ defmodule NeoFaker.Time do
   @time_range -24..24
   @midnight ~T[00:00:00]
   @end_of_day ~T[23:59:59]
+
+  @add_schema NimbleOptions.new!(
+                unit: [type: {:in, [:hour, :minute, :second]}, default: :hour],
+                format: [type: {:in, [:struct, :iso8601]}, default: :struct]
+              )
+
+  @format_schema NimbleOptions.new!(format: [type: {:in, [:struct, :iso8601]}, default: :struct])
 
   @doc """
   Generates a random time offset from now.
@@ -42,14 +50,13 @@ defmodule NeoFaker.Time do
       "15:22:10"
 
   """
-  @spec add(Range.t(), Keyword.t()) :: Time.t() | String.t()
+  @spec add(Range.t(), keyword()) :: Time.t() | String.t()
   def add(range \\ @time_range, opts \\ []) do
     TimeValidator.validate_range!(range)
-    unit = TimeValidator.get_and_validate_unit!(opts)
-    format = TimeValidator.get_and_validate_format!(opts)
+    opts = Options.validate!(opts, @add_schema)
 
-    time = TimeGenerator.add(range, unit, :struct)
-    Formatter.format_time(time, format)
+    time = TimeGenerator.add(range, opts[:unit], :struct)
+    Formatter.format_time(time, opts[:format])
   end
 
   @doc """
@@ -77,14 +84,14 @@ defmodule NeoFaker.Time do
       "15:22:10"
 
   """
-  @spec between(Time.t(), Time.t(), Keyword.t()) :: Time.t() | String.t()
+  @spec between(Time.t(), Time.t(), keyword()) :: Time.t() | String.t()
   def between(start \\ @midnight, finish \\ @end_of_day, opts \\ []) do
     TimeValidator.validate_time_order!(start, finish)
-    format = TimeValidator.get_and_validate_format!(opts)
+    opts = Options.validate!(opts, @format_schema)
 
     time = TimeGenerator.between(start, finish, :struct)
 
-    Formatter.format_time(time, format)
+    Formatter.format_time(time, opts[:format])
   end
 
   @doc """
@@ -120,7 +127,7 @@ defmodule NeoFaker.Time do
       "09:45:22"
 
   """
-  @spec morning(Keyword.t()) :: Time.t() | String.t()
+  @spec morning(keyword()) :: Time.t() | String.t()
   def morning(opts \\ []), do: between(~T[06:00:00], ~T[11:59:59], opts)
 
   @doc """
@@ -139,7 +146,7 @@ defmodule NeoFaker.Time do
       "15:45:22"
 
   """
-  @spec afternoon(Keyword.t()) :: Time.t() | String.t()
+  @spec afternoon(keyword()) :: Time.t() | String.t()
   def afternoon(opts \\ []), do: between(~T[12:00:00], ~T[17:59:59], opts)
 
   @doc """
@@ -158,7 +165,7 @@ defmodule NeoFaker.Time do
       "21:45:22"
 
   """
-  @spec evening(Keyword.t()) :: Time.t() | String.t()
+  @spec evening(keyword()) :: Time.t() | String.t()
   def evening(opts \\ []), do: between(~T[18:00:00], ~T[23:59:59], opts)
 
   @doc """
@@ -177,7 +184,7 @@ defmodule NeoFaker.Time do
       "03:45:22"
 
   """
-  @spec night(Keyword.t()) :: Time.t() | String.t()
+  @spec night(keyword()) :: Time.t() | String.t()
   def night(opts \\ []), do: between(~T[00:00:00], ~T[05:59:59], opts)
 
   @doc """
@@ -198,7 +205,9 @@ defmodule NeoFaker.Time do
       "15:22:10"
 
   """
-  @spec now(Keyword.t()) :: Time.t() | String.t()
-  def now(opts \\ []),
-    do: Formatter.format_time(Time.utc_now(), TimeValidator.get_and_validate_format!(opts))
+  @spec now(keyword()) :: Time.t() | String.t()
+  def now(opts \\ []) do
+    opts = Options.validate!(opts, @format_schema)
+    Formatter.format_time(Time.utc_now(), opts[:format])
+  end
 end

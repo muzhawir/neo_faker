@@ -7,11 +7,14 @@ defmodule NeoFaker.Blood do
   """
   @moduledoc since: "0.3.1"
 
-  alias NeoFaker.Blood.Validator
+  alias NeoFaker.Blood.Generator
   alias NeoFaker.Helpers.Options
 
-  @blood_types ~w[A B AB O]
-  @rh_factors ~w[+ -]
+  @group_schema NimbleOptions.new!(
+                  format: [type: {:in, [:group, :type_only, :rh_only]}, default: :group]
+                )
+
+  @medical_notation_schema NimbleOptions.new!(verbose: [type: :boolean, default: false])
 
   @doc """
   Generates a random blood group.
@@ -38,11 +41,9 @@ defmodule NeoFaker.Blood do
       "-"
 
   """
-  @spec group(Keyword.t()) :: String.t()
+  @spec group(keyword()) :: String.t()
   def group(opts \\ []) do
-    format = Options.get(opts, :format, :group)
-
-    Validator.validate_format!(format)
+    format = opts |> Options.validate!(@group_schema) |> Keyword.fetch!(:format)
 
     case format do
       :group -> "#{type()}#{rh_factor()}"
@@ -63,7 +64,7 @@ defmodule NeoFaker.Blood do
 
   """
   @spec type() :: String.t()
-  def type, do: Enum.random(@blood_types)
+  def type, do: Generator.type()
 
   @doc """
   Generates a random Rh factor.
@@ -77,7 +78,7 @@ defmodule NeoFaker.Blood do
 
   """
   @spec rh_factor() :: String.t()
-  def rh_factor, do: Enum.random(@rh_factors)
+  def rh_factor, do: Generator.rh_factor()
 
   @doc """
   Generates a random blood type in medical notation.
@@ -98,12 +99,14 @@ defmodule NeoFaker.Blood do
       "Type AB, Rh positive"
 
   """
-  @spec medical_notation(Keyword.t()) :: String.t()
+  @spec medical_notation(keyword()) :: String.t()
   def medical_notation(opts \\ []) do
+    verbose = opts |> Options.validate!(@medical_notation_schema) |> Keyword.fetch!(:verbose)
+
     blood_type = type()
     rh_text = if rh_factor() == "+", do: "positive", else: "negative"
 
-    if Options.get(opts, :verbose, false) do
+    if verbose do
       "Type #{blood_type}, Rh #{rh_text}"
     else
       "#{blood_type} #{rh_text}"
@@ -120,7 +123,7 @@ defmodule NeoFaker.Blood do
 
   """
   @spec all_types() :: [String.t()]
-  def all_types, do: @blood_types
+  def all_types, do: Generator.all_types()
 
   @doc """
   Returns both possible Rh factors.
@@ -132,5 +135,5 @@ defmodule NeoFaker.Blood do
 
   """
   @spec all_rh_factors() :: [String.t()]
-  def all_rh_factors, do: @rh_factors
+  def all_rh_factors, do: Generator.all_rh_factors()
 end

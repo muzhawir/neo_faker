@@ -1,4 +1,4 @@
-defmodule NeoFaker.EnUs.Person do
+defmodule NeoFaker.Locales.EnUs.Person do
   @moduledoc """
   Functions for generating person-related information specific to the United States.
 
@@ -7,7 +7,7 @@ defmodule NeoFaker.EnUs.Person do
   """
   @moduledoc since: "0.9.0"
 
-  import NeoFaker.EnUs.Person.Utils
+  alias NeoFaker.Locales.EnUs.Person.Generator
 
   @doc """
   Generates a random SSN.
@@ -16,10 +16,12 @@ defmodule NeoFaker.EnUs.Person do
 
   ## Examples
 
-      iex> NeoFaker.EnUs.Person.ssn()
+      iex> NeoFaker.Locales.EnUs.Person.ssn()
       "184-63-2006"
 
   """
   @spec ssn() :: String.t()
-  def ssn, do: "#{area_number()}-#{serial_number(99, 2)}-#{serial_number(9999, 4)}"
+  def ssn,
+    do:
+      "#{Generator.area_number()}-#{Generator.serial_number(99, 2)}-#{Generator.serial_number(9999, 4)}"
 end

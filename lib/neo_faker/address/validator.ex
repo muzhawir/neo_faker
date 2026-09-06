@@ -7,29 +7,31 @@ defmodule NeoFaker.Address.Validator do
   @doc """
   Validates the `:type` option for `building_number/2`.
 
-  Raises `ArgumentError` if the type is not one of `#{inspect([:string, :integer])}`.
+  Returns `{:ok, type}` if valid, `{:error, message}` otherwise. Used as a `NimbleOptions`
+  custom validator.
   """
-  @spec validate_building_number_type!(atom()) :: :ok
-  def validate_building_number_type!(type) when type in @building_number_types, do: :ok
+  @spec validate_building_number_type(term()) :: {:ok, atom()} | {:error, String.t()}
+  def validate_building_number_type(type) when type in @building_number_types, do: {:ok, type}
 
-  def validate_building_number_type!(other) do
-    raise ArgumentError,
-          "invalid :type for building_number/2. " <>
-            "Expected one of #{inspect(@building_number_types)}, got: #{inspect(other)}"
+  def validate_building_number_type(other) do
+    {:error,
+     "invalid :type for building_number/2. " <>
+       "Expected one of #{inspect(@building_number_types)}, got: #{inspect(other)}"}
   end
 
   @doc """
   Validates the `:type` option for `coordinate/1`.
 
-  Raises `ArgumentError` if the type is not one of `#{inspect([:full, :latitude, :longitude])}`.
+  Returns `{:ok, type}` if valid, `{:error, message}` otherwise. Used as a `NimbleOptions`
+  custom validator.
   """
-  @spec validate_coordinate_type!(atom()) :: :ok
-  def validate_coordinate_type!(type) when type in @coordinate_types, do: :ok
+  @spec validate_coordinate_type(term()) :: {:ok, atom()} | {:error, String.t()}
+  def validate_coordinate_type(type) when type in @coordinate_types, do: {:ok, type}
 
-  def validate_coordinate_type!(other) do
-    raise ArgumentError,
-          "invalid :type for coordinate/1. " <>
-            "Expected one of #{inspect(@coordinate_types)}, got: #{inspect(other)}"
+  def validate_coordinate_type(other) do
+    {:error,
+     "invalid :type for coordinate/1. " <>
+       "Expected one of #{inspect(@coordinate_types)}, got: #{inspect(other)}"}
   end
 
   @doc """
@@ -48,21 +50,5 @@ defmodule NeoFaker.Address.Validator do
 
   def validate_range!(invalid) do
     raise ArgumentError, "Expected a Range, got: #{inspect(invalid)}"
-  end
-
-  @doc """
-  Validates that the given precision is a non-negative integer.
-
-  Raises `ArgumentError` if `precision` is a negative integer or not an integer at all.
-  """
-  @spec validate_precision!(integer()) :: :ok
-  def validate_precision!(precision) when is_integer(precision) and precision >= 0, do: :ok
-
-  def validate_precision!(precision) when is_integer(precision) do
-    raise ArgumentError, "precision must be non-negative, got: #{precision}"
-  end
-
-  def validate_precision!(invalid) do
-    raise ArgumentError, "precision must be an integer, got: #{inspect(invalid)}"
   end
 end

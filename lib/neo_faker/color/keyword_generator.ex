@@ -1,7 +1,5 @@
-defmodule NeoFaker.Color.Keyword do
+defmodule NeoFaker.Color.KeywordGenerator do
   @moduledoc false
-
-  import NeoFaker.Data, only: [random_value: 4]
 
   alias NeoFaker.Data
 
@@ -22,6 +20,6 @@ defmodule NeoFaker.Color.Keyword do
   end
 
   def color(category, locale) do
-    random_value(@module, "keyword.exs", Atom.to_string(category), locale: locale)
+    Data.random_value(@module, "keyword.exs", Atom.to_string(category), locale: locale)
   end
 end

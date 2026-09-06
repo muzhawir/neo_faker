@@ -1,7 +1,7 @@
 defmodule NeoFaker.Person.NameGenerator do
   @moduledoc false
 
-  import NeoFaker.Data, only: [random_value: 4]
+  alias NeoFaker.Data
 
   @module NeoFaker.Person
   @female_name_file "female_name.exs"
@@ -17,15 +17,15 @@ defmodule NeoFaker.Person.NameGenerator do
   def name(locale, key, gender) do
     case gender do
       :female ->
-        random_value(@module, @female_name_file, key, locale: locale)
+        Data.random_value(@module, @female_name_file, key, locale: locale)
 
       :male ->
-        random_value(@module, @male_name_file, key, locale: locale)
+        Data.random_value(@module, @male_name_file, key, locale: locale)
 
       :unisex ->
         Enum.random([
-          random_value(@module, @female_name_file, key, locale: locale),
-          random_value(@module, @male_name_file, key, locale: locale)
+          Data.random_value(@module, @female_name_file, key, locale: locale),
+          Data.random_value(@module, @male_name_file, key, locale: locale)
         ])
 
       other ->

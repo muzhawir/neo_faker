@@ -8,11 +8,20 @@ defmodule NeoFaker.Lorem do
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Data, only: [random_value: 4]
-
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Options
-  alias NeoFaker.Lorem.Parser
-  alias NeoFaker.Lorem.Validator
+  alias NeoFaker.Lorem.Generator
+
+  @text_schema NimbleOptions.new!(
+                 text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
+                 locale: [type: :atom, default: nil]
+               )
+
+  @join_schema NimbleOptions.new!(
+                 join: [type: :boolean, default: false],
+                 text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
+                 locale: [type: :atom, default: nil]
+               )
 
   @doc """
   Generates a random paragraph.
@@ -35,17 +44,15 @@ defmodule NeoFaker.Lorem do
       something new and good, and cease to be whirled around."
 
   """
-  @spec paragraph(Keyword.t()) :: String.t()
+  @spec paragraph(keyword()) :: String.t()
   def paragraph(opts \\ []) do
-    text_source = Options.get(opts, :text, :lorem)
-    Validator.validate_text_source!(text_source)
-
-    file = Parser.text_file(text_source)
+    opts = Options.validate!(opts, @text_schema)
+    file = Generator.text_file(opts[:text])
 
     __MODULE__
-    |> random_value(file, "text", opts)
-    |> Parser.normalize()
-    |> Parser.extract_paragraph()
+    |> Data.random_value(file, "text", opts)
+    |> Generator.normalize()
+    |> Generator.extract_paragraph()
   end
 
   @doc """
@@ -67,9 +74,9 @@ defmodule NeoFaker.Lorem do
       "Do the things external which fall upon thee distract thee?"
 
   """
-  @spec sentence(Keyword.t()) :: String.t()
+  @spec sentence(keyword()) :: String.t()
   def sentence(opts \\ []) do
-    opts |> paragraph() |> Parser.split_sentences() |> Enum.random()
+    opts |> paragraph() |> Generator.split_sentences() |> Enum.random()
   end
 
   @doc """
@@ -91,12 +98,12 @@ defmodule NeoFaker.Lorem do
       "distract"
 
   """
-  @spec word(Keyword.t()) :: String.t()
+  @spec word(keyword()) :: String.t()
   def word(opts \\ []) do
     opts
     |> sentence()
-    |> Parser.remove_punctuation()
-    |> Parser.split_words()
+    |> Generator.remove_punctuation()
+    |> Generator.split_words()
     |> Enum.random()
     |> String.downcase()
   end
@@ -124,11 +131,14 @@ defmodule NeoFaker.Lorem do
       "First paragraph...\\n\\nSecond paragraph..."
 
   """
-  @spec paragraphs(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec paragraphs(pos_integer(), keyword()) :: [String.t()] | String.t()
   def paragraphs(count \\ 3, opts \\ []) when is_integer(count) and count > 0 do
-    paragraphs_list = Enum.map(1..count, fn _ -> paragraph(opts) end)
+    opts = Options.validate!(opts, @join_schema)
+    text_opts = Keyword.take(opts, [:text, :locale])
 
-    if Options.get(opts, :join, false) do
+    paragraphs_list = Enum.map(1..count, fn _ -> paragraph(text_opts) end)
+
+    if opts[:join] do
       Enum.join(paragraphs_list, "\n\n")
     else
       paragraphs_list
@@ -158,11 +168,14 @@ defmodule NeoFaker.Lorem do
       "First sentence. Second sentence. Third sentence."
 
   """
-  @spec sentences(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec sentences(pos_integer(), keyword()) :: [String.t()] | String.t()
   def sentences(count \\ 5, opts \\ []) when is_integer(count) and count > 0 do
-    sentences_list = Enum.map(1..count, fn _ -> sentence(opts) end)
+    opts = Options.validate!(opts, @join_schema)
+    text_opts = Keyword.take(opts, [:text, :locale])
 
-    if Options.get(opts, :join, false) do
+    sentences_list = Enum.map(1..count, fn _ -> sentence(text_opts) end)
+
+    if opts[:join] do
       Enum.join(sentences_list, " ")
     else
       sentences_list
@@ -192,13 +205,14 @@ defmodule NeoFaker.Lorem do
       "suspendisse justo venenatis sapien accumsan"
 
   """
-  @spec words(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec words(pos_integer(), keyword()) :: [String.t()] | String.t()
   def words(count \\ 10, opts \\ []) when is_integer(count) and count > 0 do
-    join = Options.get(opts, :join, false)
+    opts = Options.validate!(opts, @join_schema)
+    text_opts = Keyword.take(opts, [:text, :locale])
 
-    words_list = Enum.map(1..count, fn _ -> word(opts) end)
+    words_list = Enum.map(1..count, fn _ -> word(text_opts) end)
 
-    if join do
+    if opts[:join] do
       Enum.join(words_list, " ")
     else
       words_list

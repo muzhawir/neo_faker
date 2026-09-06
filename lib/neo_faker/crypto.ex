@@ -8,10 +8,19 @@ defmodule NeoFaker.Crypto do
   @moduledoc since: "0.3.1"
 
   import Bitwise
-  import NeoFaker.Crypto.Hash, only: [generate_hash: 2]
 
+  alias NeoFaker.Crypto.HashGenerator
   alias NeoFaker.Crypto.Validator
   alias NeoFaker.Helpers.Options
+
+  @case_schema NimbleOptions.new!(case: [type: {:in, [:lower, :upper]}, default: :lower])
+
+  @token_schema NimbleOptions.new!(encoding: [type: {:in, [:base64, :hex]}, default: :base64])
+
+  @uuid_schema NimbleOptions.new!(
+                 format: [type: {:in, [:standard, :compact]}, default: :standard],
+                 case: [type: {:in, [:lower, :upper]}, default: :lower]
+               )
 
   @doc """
   Generates a random MD5 hash.
@@ -31,10 +40,10 @@ defmodule NeoFaker.Crypto do
       "AFC4C626C55E4166421D82732163857D"
 
   """
-  @spec md5(Keyword.t()) :: String.t()
+  @spec md5(keyword()) :: String.t()
   def md5(opts \\ []) do
-    Validator.validate_case_option!(opts)
-    generate_hash(:md5, opts)
+    opts = Options.validate!(opts, @case_schema)
+    HashGenerator.generate_hash(:md5, opts)
   end
 
   @doc """
@@ -55,10 +64,10 @@ defmodule NeoFaker.Crypto do
       "356A192B7913B04C54574D18C28D46E6395428AB"
 
   """
-  @spec sha1(Keyword.t()) :: String.t()
+  @spec sha1(keyword()) :: String.t()
   def sha1(opts \\ []) do
-    Validator.validate_case_option!(opts)
-    generate_hash(:sha, opts)
+    opts = Options.validate!(opts, @case_schema)
+    HashGenerator.generate_hash(:sha, opts)
   end
 
   @doc """
@@ -79,10 +88,10 @@ defmodule NeoFaker.Crypto do
       "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
 
   """
-  @spec sha256(Keyword.t()) :: String.t()
+  @spec sha256(keyword()) :: String.t()
   def sha256(opts \\ []) do
-    Validator.validate_case_option!(opts)
-    generate_hash(:sha256, opts)
+    opts = Options.validate!(opts, @case_schema)
+    HashGenerator.generate_hash(:sha256, opts)
   end
 
   @doc """
@@ -103,10 +112,10 @@ defmodule NeoFaker.Crypto do
       "CF83E1357EEFB8BDF1542850D66D8007D620E4050B5715DC83F4A921D36CE9CE47D0D13C5D85F2B0FF8318D2877EEC2F63B931BD47417A81A538327AF927DA3E"
 
   """
-  @spec sha512(Keyword.t()) :: String.t()
+  @spec sha512(keyword()) :: String.t()
   def sha512(opts \\ []) do
-    Validator.validate_case_option!(opts)
-    generate_hash(:sha512, opts)
+    opts = Options.validate!(opts, @case_schema)
+    HashGenerator.generate_hash(:sha512, opts)
   end
 
   @doc """
@@ -129,16 +138,16 @@ defmodule NeoFaker.Crypto do
       "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
 
   """
-  @spec hash(atom(), Keyword.t()) :: String.t()
+  @spec hash(atom(), keyword()) :: String.t()
   def hash(type, opts \\ []) do
     Validator.validate_hash_type!(type)
-    Validator.validate_case_option!(opts)
+    opts = Options.validate!(opts, @case_schema)
 
     case type do
-      :md5 -> generate_hash(:md5, opts)
-      :sha1 -> generate_hash(:sha, opts)
-      :sha256 -> generate_hash(:sha256, opts)
-      :sha512 -> generate_hash(:sha512, opts)
+      :md5 -> HashGenerator.generate_hash(:md5, opts)
+      :sha1 -> HashGenerator.generate_hash(:sha, opts)
+      :sha256 -> HashGenerator.generate_hash(:sha256, opts)
+      :sha512 -> HashGenerator.generate_hash(:sha512, opts)
     end
   end
 
@@ -164,16 +173,14 @@ defmodule NeoFaker.Crypto do
       "a1b2c3d4e5f6708192a3b4c5d6e7f8091a2b3c4d5e6f7081"
 
   """
-  @spec token(pos_integer(), Keyword.t()) :: String.t()
+  @spec token(pos_integer(), keyword()) :: String.t()
   def token(length \\ 32, opts \\ [])
 
   def token(length, opts) when is_integer(length) and length > 0 do
-    encoding = Options.get(opts, :encoding, :base64)
-    Validator.validate_encoding!(encoding)
-
+    opts = Options.validate!(opts, @token_schema)
     random_bytes = :crypto.strong_rand_bytes(length)
 
-    case encoding do
+    case opts[:encoding] do
       :base64 -> Base.url_encode64(random_bytes, padding: false)
       :hex -> Base.encode16(random_bytes, case: :lower)
     end
@@ -207,20 +214,16 @@ defmodule NeoFaker.Crypto do
       "550E8400-E29B-41D4-A716-446655440000"
 
   """
-  @spec uuid(Keyword.t()) :: String.t()
+  @spec uuid(keyword()) :: String.t()
   def uuid(opts \\ []) do
-    format = Options.get(opts, :format, :standard)
-    case_opt = Options.get(opts, :case, :lower)
-
-    Validator.validate_case_option!(case: case_opt)
-    Validator.validate_uuid_format!(format)
+    opts = Options.validate!(opts, @uuid_schema)
 
     # Generate random bytes
     <<a::32, b::16, c::16, d::16, e::48>> = :crypto.strong_rand_bytes(16)
 
     # Set version 4 and variant bits
     uuid_string =
-      case format do
+      case opts[:format] do
         :standard ->
           "~8.16.0b-~4.16.0b-4~3.16.0b-~4.16.0b-~12.16.0b"
           |> :io_lib.format([a, b, c &&& 0x0FFF, (d &&& 0x3FFF) ||| 0x8000, e])
@@ -232,7 +235,7 @@ defmodule NeoFaker.Crypto do
           |> IO.iodata_to_binary()
       end
 
-    case case_opt do
+    case opts[:case] do
       :lower -> String.downcase(uuid_string)
       :upper -> String.upcase(uuid_string)
     end

@@ -1,4 +1,4 @@
-defmodule NeoFaker.HTTP.StatusCode do
+defmodule NeoFaker.HTTP.StatusCodeGenerator do
   @moduledoc false
 
   alias NeoFaker.Data

@@ -50,8 +50,8 @@ defmodule NeoFaker.MixProject do
 
   defp groups_for_modules do
     [
-      "Random Generators": ~r/^NeoFaker(?!\.[A-Z][a-z][A-Z][a-z]\.)/,
-      "Locale Random Generators": ~r/^NeoFaker\.[A-Z][a-z][A-Z][a-z]\..+/
+      "Random Generators": ~r/^NeoFaker(?!\.Locales\.)/,
+      "Locale Random Generators": ~r/^NeoFaker\.Locales\..+/
     ]
   end
 
@@ -68,6 +68,7 @@ defmodule NeoFaker.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40.1", only: :dev, runtime: false},
+      {:nimble_options, "~> 1.1"},
       {:styler, "~> 1.11", only: [:dev, :test], runtime: false}
     ]
   end

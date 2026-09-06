@@ -1,14 +1,15 @@
-defmodule NeoFaker.Color.HSLA do
+defmodule NeoFaker.Color.HslaGenerator do
   @moduledoc false
 
-  import NeoFaker.Number, only: [between: 0, between: 2]
+  alias NeoFaker.Number
 
   @doc """
   Generates a random HSLA color tuple with hue (0–359), saturation and lightness (0–100),
   and alpha (0.0–1.0) rounded to one decimal place.
   """
   def color_tuple do
-    {between(0, 359), between(), between(), Float.round(between(0.0, 1.0), 1)}
+    {Number.between(0, 359), Number.between(), Number.between(),
+     Float.round(Number.between(0.0, 1.0), 1)}
   end
 
   @doc """

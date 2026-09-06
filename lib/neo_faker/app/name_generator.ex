@@ -1,4 +1,4 @@
-defmodule NeoFaker.App.Name do
+defmodule NeoFaker.App.NameGenerator do
   @moduledoc false
 
   @type case_style :: nil | :camel_case | :pascal_case | :dashed | :underscore | :single

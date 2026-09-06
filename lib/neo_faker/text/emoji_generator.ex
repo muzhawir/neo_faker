@@ -1,8 +1,6 @@
 defmodule NeoFaker.Text.EmojiGenerator do
   @moduledoc false
 
-  import NeoFaker.Data, only: [random_value: 3]
-
   alias NeoFaker.Data
 
   @type category ::
@@ -33,21 +31,21 @@ defmodule NeoFaker.Text.EmojiGenerator do
     |> Enum.random()
   end
 
-  def emoji(:activities), do: random_value(@module, @emoji_file, "activities")
-  def emoji(:food_and_drink), do: random_value(@module, @emoji_file, "food_and_drink")
-  def emoji(:objects), do: random_value(@module, @emoji_file, "objects")
-  def emoji(:people_and_body), do: random_value(@module, @emoji_file, "people_and_body")
-  def emoji(:symbols), do: random_value(@module, @emoji_file, "symbols")
+  def emoji(:activities), do: Data.random_value(@module, @emoji_file, "activities")
+  def emoji(:food_and_drink), do: Data.random_value(@module, @emoji_file, "food_and_drink")
+  def emoji(:objects), do: Data.random_value(@module, @emoji_file, "objects")
+  def emoji(:people_and_body), do: Data.random_value(@module, @emoji_file, "people_and_body")
+  def emoji(:symbols), do: Data.random_value(@module, @emoji_file, "symbols")
 
   def emoji(:animals_and_nature) do
-    random_value(@module, @emoji_file, "animals_and_nature")
+    Data.random_value(@module, @emoji_file, "animals_and_nature")
   end
 
   def emoji(:smileys_and_emotion) do
-    random_value(@module, @emoji_file, "smileys_and_emotion")
+    Data.random_value(@module, @emoji_file, "smileys_and_emotion")
   end
 
   def emoji(:travel_and_places) do
-    random_value(@module, @emoji_file, "travel_and_places")
+    Data.random_value(@module, @emoji_file, "travel_and_places")
   end
 end

@@ -7,10 +7,9 @@ defmodule NeoFaker.Address do
   """
   @moduledoc since: "0.12.0"
 
-  import NeoFaker.Data, only: [random_value: 4]
-
   alias NeoFaker.Address.Generator
   alias NeoFaker.Address.Validator
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Number
@@ -20,6 +19,23 @@ defmodule NeoFaker.Address do
 
   @building_number_range 1..100
   @coordinate_precision 6
+
+  @building_number_schema NimbleOptions.new!(
+                            type: [
+                              type: {:custom, Validator, :validate_building_number_type, []},
+                              default: :string
+                            ]
+                          )
+
+  @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
+
+  @coordinate_schema NimbleOptions.new!(
+                       type: [
+                         type: {:custom, Validator, :validate_coordinate_type, []},
+                         default: :full
+                       ],
+                       precision: [type: :non_neg_integer, default: @coordinate_precision]
+                     )
 
   @doc """
   Generates a random building number within a specified range.
@@ -45,14 +61,11 @@ defmodule NeoFaker.Address do
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
   def building_number(range \\ @building_number_range, opts \\ []) do
     Validator.validate_range!(range)
-
-    type = Options.get(opts, :type, :string)
-
-    Validator.validate_building_number_type!(type)
+    opts = Options.validate!(opts, @building_number_schema)
 
     number = Number.between(range.first, range.last)
 
-    case type do
+    case opts[:type] do
       :string -> Formatter.format_number(number, :string)
       :integer -> number
     end
@@ -75,8 +88,11 @@ defmodule NeoFaker.Address do
       "Palu"
 
   """
-  @spec city(Keyword.t()) :: String.t()
-  def city(opts \\ []), do: random_value(__MODULE__, @city_file, "city", opts)
+  @spec city(keyword()) :: String.t()
+  def city(opts \\ []) do
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @city_file, "city", opts)
+  end
 
   @doc """
   Generates a random country name.
@@ -95,9 +111,10 @@ defmodule NeoFaker.Address do
       "Indonesia"
 
   """
-  @spec country(Keyword.t()) :: String.t()
+  @spec country(keyword()) :: String.t()
   def country(opts \\ []) do
-    random_value(__MODULE__, @country_file, "country", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @country_file, "country", opts)
   end
 
   @doc """
@@ -140,16 +157,12 @@ defmodule NeoFaker.Address do
   """
   @spec coordinate(keyword()) :: {float(), float()} | float()
   def coordinate(opts \\ []) do
-    precision = Options.get(opts, :precision, @coordinate_precision)
-    type = Options.get(opts, :type, :full)
+    opts = Options.validate!(opts, @coordinate_schema)
 
-    Validator.validate_precision!(precision)
-    Validator.validate_coordinate_type!(type)
+    latitude = Generator.latitude(opts[:precision])
+    longitude = Generator.longitude(opts[:precision])
 
-    latitude = Generator.latitude(precision)
-    longitude = Generator.longitude(precision)
-
-    case type do
+    case opts[:type] do
       :latitude -> latitude
       :longitude -> longitude
       :full -> {latitude, longitude}

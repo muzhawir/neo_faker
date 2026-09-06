@@ -1,14 +1,15 @@
-defmodule NeoFaker.Color.RGBA do
+defmodule NeoFaker.Color.RgbaGenerator do
   @moduledoc false
 
-  import NeoFaker.Number, only: [between: 2]
+  alias NeoFaker.Number
 
   @doc """
   Generates a random RGBA color tuple with red, green, and blue components between 0 and 255,
   and an alpha value between 0.0 and 1.0 rounded to one decimal place.
   """
   def color_tuple do
-    {between(0, 255), between(0, 255), between(0, 255), Float.round(between(0.0, 1.0), 1)}
+    {Number.between(0, 255), Number.between(0, 255), Number.between(0, 255),
+     Float.round(Number.between(0.0, 1.0), 1)}
   end
 
   @doc """

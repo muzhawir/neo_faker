@@ -1,4 +1,4 @@
-defmodule NeoFaker.App.Semver do
+defmodule NeoFaker.App.SemverGenerator do
   @moduledoc false
 
   @pre_release_labels ~w[alpha beta rc]

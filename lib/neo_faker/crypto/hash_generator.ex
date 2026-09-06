@@ -1,4 +1,4 @@
-defmodule NeoFaker.Crypto.Hash do
+defmodule NeoFaker.Crypto.HashGenerator do
   @moduledoc false
 
   @doc """
@@ -23,7 +23,7 @@ defmodule NeoFaker.Crypto.Hash do
   - `:lower` - uses lower case characters (default)
   - `:upper` - uses upper case characters
   """
-  @spec generate_hash(atom(), Keyword.t()) :: String.t()
+  @spec generate_hash(atom(), keyword()) :: String.t()
   def generate_hash(hash_type, opts \\ []) do
     case_type = Keyword.get(opts, :case, :lower)
     random_bytes = :crypto.strong_rand_bytes(16)

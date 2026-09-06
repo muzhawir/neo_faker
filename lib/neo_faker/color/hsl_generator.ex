@@ -1,13 +1,13 @@
-defmodule NeoFaker.Color.HSL do
+defmodule NeoFaker.Color.HslGenerator do
   @moduledoc false
 
-  import NeoFaker.Number, only: [between: 0, between: 2]
+  alias NeoFaker.Number
 
   @doc """
   Generates a random HSL color tuple with hue between 0 and 359, and saturation and lightness
   between 0 and 100.
   """
-  def color_tuple, do: {between(0, 359), between(), between()}
+  def color_tuple, do: {Number.between(0, 359), Number.between(), Number.between()}
 
   @doc """
   Formats an HSL color tuple as a W3C-compliant string in the form "hsl(h, s%, l%)".

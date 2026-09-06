@@ -8,8 +8,7 @@ defmodule NeoFaker.Person do
   """
   @moduledoc since: "0.6.0"
 
-  import NeoFaker.Data, only: [random_value: 4]
-
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
@@ -18,8 +17,28 @@ defmodule NeoFaker.Person do
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
 
-  @locale :default
   @max_age 120
+
+  @name_schema NimbleOptions.new!(
+                 sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                 locale: [type: :atom, default: nil]
+               )
+
+  @full_name_schema NimbleOptions.new!(
+                      sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                      locale: [type: :atom, default: nil],
+                      middle_name: [type: :boolean, default: true]
+                    )
+
+  @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
+
+  @full_name_with_title_schema NimbleOptions.new!(
+                                 sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                                 locale: [type: :atom, default: nil],
+                                 middle_name: [type: :boolean, default: true],
+                                 prefix: [type: :boolean, default: false],
+                                 suffix: [type: :boolean, default: false]
+                               )
 
   @doc """
   Generates a random first name.
@@ -42,14 +61,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec first_name(Keyword.t()) :: String.t()
+  @spec first_name(keyword()) :: String.t()
   def first_name(opts \\ []) do
-    sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @locale)
-
-    Validator.validate_sex!(sex)
-
-    NameGenerator.name(locale, "first_names", sex)
+    opts = Options.validate!(opts, @name_schema)
+    NameGenerator.name(opts[:locale], "first_names", opts[:sex])
   end
 
   @doc """
@@ -73,14 +88,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec middle_name(Keyword.t()) :: String.t()
+  @spec middle_name(keyword()) :: String.t()
   def middle_name(opts \\ []) do
-    sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @locale)
-
-    Validator.validate_sex!(sex)
-
-    NameGenerator.name(locale, "middle_names", sex)
+    opts = Options.validate!(opts, @name_schema)
+    NameGenerator.name(opts[:locale], "middle_names", opts[:sex])
   end
 
   @doc """
@@ -104,14 +115,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec last_name(Keyword.t()) :: String.t()
+  @spec last_name(keyword()) :: String.t()
   def last_name(opts \\ []) do
-    sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @locale)
-
-    Validator.validate_sex!(sex)
-
-    NameGenerator.name(locale, "last_names", sex)
+    opts = Options.validate!(opts, @name_schema)
+    NameGenerator.name(opts[:locale], "last_names", opts[:sex])
   end
 
   @doc """
@@ -141,15 +148,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec full_name(Keyword.t()) :: String.t()
+  @spec full_name(keyword()) :: String.t()
   def full_name(opts \\ []) do
-    sex = Options.get(opts, :sex, :unisex)
-    locale = Options.get(opts, :locale, @locale)
-    include_middle = Options.get(opts, :middle_name, true)
-
-    Validator.validate_sex!(sex)
-
-    FullNameGenerator.name(sex, locale, include_middle)
+    opts = Options.validate!(opts, @full_name_schema)
+    FullNameGenerator.name(opts[:sex], opts[:locale], opts[:middle_name])
   end
 
   @doc """
@@ -169,9 +171,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec prefix(Keyword.t()) :: String.t()
+  @spec prefix(keyword()) :: String.t()
   def prefix(opts \\ []) do
-    random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
   end
 
   @doc """
@@ -194,9 +197,10 @@ defmodule NeoFaker.Person do
 
   """
   @doc since: "0.7.0"
-  @spec suffix(Keyword.t()) :: String.t()
+  @spec suffix(keyword()) :: String.t()
   def suffix(opts \\ []) do
-    random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
   end
 
   @doc """
@@ -217,9 +221,10 @@ defmodule NeoFaker.Person do
       "Perempuan"
 
   """
-  @spec binary_gender(Keyword.t()) :: String.t()
+  @spec binary_gender(keyword()) :: String.t()
   def binary_gender(opts \\ []) do
-    random_value(__MODULE__, @gender_file, "binary", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @gender_file, "binary", opts)
   end
 
   @doc """
@@ -238,9 +243,10 @@ defmodule NeoFaker.Person do
       "P"
 
   """
-  @spec short_binary_gender(Keyword.t()) :: String.t()
+  @spec short_binary_gender(keyword()) :: String.t()
   def short_binary_gender(opts \\ []) do
-    random_value(__MODULE__, @gender_file, "short_binary", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @gender_file, "short_binary", opts)
   end
 
   @doc """
@@ -259,9 +265,10 @@ defmodule NeoFaker.Person do
       "Non-biner"
 
   """
-  @spec non_binary_gender(Keyword.t()) :: String.t()
+  @spec non_binary_gender(keyword()) :: String.t()
   def non_binary_gender(opts \\ []) do
-    random_value(__MODULE__, @gender_file, "non_binary", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @gender_file, "non_binary", opts)
   end
 
   @doc """
@@ -325,15 +332,16 @@ defmodule NeoFaker.Person do
       "Mr. John Smith III"
 
   """
-  @spec full_name_with_title(Keyword.t()) :: String.t()
+  @spec full_name_with_title(keyword()) :: String.t()
   def full_name_with_title(opts \\ []) do
-    include_prefix = Options.get(opts, :prefix, false)
-    include_suffix = Options.get(opts, :suffix, false)
+    opts = Options.validate!(opts, @full_name_with_title_schema)
+    name_opts = Keyword.take(opts, [:sex, :locale, :middle_name])
+    locale_opts = Keyword.take(opts, [:locale])
 
     [
-      if(include_prefix, do: prefix(opts)),
-      full_name(opts),
-      if(include_suffix, do: suffix(opts))
+      if(opts[:prefix], do: prefix(locale_opts)),
+      full_name(name_opts),
+      if(opts[:suffix], do: suffix(locale_opts))
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join(" ")

@@ -1,7 +1,7 @@
-defmodule NeoFaker.EnUs.PersonTest do
+defmodule NeoFaker.Locales.EnUs.PersonTest do
   use ExUnit.Case, async: true
 
-  alias NeoFaker.EnUs.Person
+  alias NeoFaker.Locales.EnUs.Person
 
   @ssn_regexp ~r/^\d{3}-\d{2}-\d{4}$/
 

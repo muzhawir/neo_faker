@@ -1,49 +1,6 @@
 defmodule NeoFaker.Time.Validator do
   @moduledoc false
 
-  alias NeoFaker.Helpers.Options
-
-  @datetime_formats [:struct, :iso8601]
-  @time_units [:hour, :minute, :second]
-
-  @doc """
-  Retrieves and validates the `:format` option from the given keyword list.
-
-  Returns the format atom (`:struct` or `:iso8601`), defaulting to `:struct` if not provided.
-  Raises `ArgumentError` if the value is not a valid format.
-  """
-  @spec get_and_validate_format!(Keyword.t()) :: atom()
-  def get_and_validate_format!(opts) do
-    format = Options.get(opts, :format, :struct)
-
-    case Options.validate_enum(:format, format, @datetime_formats) do
-      :ok ->
-        format
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
-  @doc """
-  Retrieves and validates the `:unit` option from the given keyword list.
-
-  Returns the unit atom (`:hour`, `:minute`, or `:second`), defaulting to `:hour` if not
-  provided. Raises `ArgumentError` if the value is not a valid time unit.
-  """
-  @spec get_and_validate_unit!(Keyword.t()) :: atom()
-  def get_and_validate_unit!(opts) do
-    unit = Options.get(opts, :unit, :hour)
-
-    case Options.validate_enum(:unit, unit, @time_units) do
-      :ok ->
-        unit
-
-      {:error, reason} ->
-        raise ArgumentError, reason
-    end
-  end
-
   @doc """
   Validates that the given value is a `Range` with `first <= last`.
 

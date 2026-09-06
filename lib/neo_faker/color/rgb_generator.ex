@@ -1,13 +1,13 @@
-defmodule NeoFaker.Color.RGB do
+defmodule NeoFaker.Color.RgbGenerator do
   @moduledoc false
 
-  import NeoFaker.Number, only: [between: 2]
+  alias NeoFaker.Number
 
   @doc """
   Generates a tuple representing an RGB color with each component randomly selected between
   0 and 255.
   """
-  def color_tuple, do: {between(0, 255), between(0, 255), between(0, 255)}
+  def color_tuple, do: {Number.between(0, 255), Number.between(0, 255), Number.between(0, 255)}
 
   @doc """
   Formats an RGB color tuple as a W3C-compliant string in the form "rgb(r, g, b)".

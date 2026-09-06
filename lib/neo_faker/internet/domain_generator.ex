@@ -1,4 +1,4 @@
-defmodule NeoFaker.Internet.Domain do
+defmodule NeoFaker.Internet.DomainGenerator do
   @moduledoc false
 
   alias NeoFaker.Data

@@ -8,18 +8,49 @@ defmodule NeoFaker.App do
   """
   @moduledoc since: "0.4.0"
 
-  import NeoFaker.App.Name
-  import NeoFaker.App.Semver
-  import NeoFaker.Data, only: [random_value: 3, random_value: 4]
-
-  alias NeoFaker.App.Domain
+  alias NeoFaker.App.DomainGenerator
+  alias NeoFaker.App.NameGenerator
+  alias NeoFaker.App.SemverGenerator
   alias NeoFaker.App.Validator
+  alias NeoFaker.Data
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Person
 
   @description_file "description.exs"
   @license_file "license.exs"
   @name_file "name.exs"
+
+  @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
+
+  @name_schema NimbleOptions.new!(
+                 style: [
+                   type: {:in, [nil, :camel_case, :pascal_case, :dashed, :underscore, :single]},
+                   default: nil
+                 ],
+                 locale: [type: :atom, default: nil]
+               )
+
+  @semver_schema NimbleOptions.new!(
+                   type: [
+                     type: {:in, [nil, :pre_release, :build, :pre_release_build]},
+                     default: nil
+                   ]
+                 )
+
+  @bundle_id_schema NimbleOptions.new!(
+                      domain: [
+                        type: {:custom, Validator, :validate_domain, []},
+                        default: "example.com"
+                      ],
+                      style: [type: {:in, [:underscore, :dashed]}, default: :underscore]
+                    )
+
+  @package_name_schema NimbleOptions.new!(
+                         domain: [
+                           type: {:custom, Validator, :validate_domain, []},
+                           default: "example.com"
+                         ]
+                       )
 
   @doc """
   Generates a random app author name.
@@ -46,7 +77,7 @@ defmodule NeoFaker.App do
       "Juliana Silva"
 
   """
-  @spec author(Keyword.t()) :: String.t()
+  @spec author(keyword()) :: String.t()
   def author(opts \\ []) do
     # Set default middle_name to false for cleaner author names
     opts_with_defaults = Keyword.put_new(opts, :middle_name, false)
@@ -68,9 +99,10 @@ defmodule NeoFaker.App do
       "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
 
   """
-  @spec description(Keyword.t()) :: String.t()
+  @spec description(keyword()) :: String.t()
   def description(opts \\ []) do
-    random_value(__MODULE__, @description_file, "descriptions", opts)
+    opts = Options.validate!(opts, @locale_schema)
+    Data.random_value(__MODULE__, @description_file, "descriptions", opts)
   end
 
   @doc """
@@ -87,7 +119,7 @@ defmodule NeoFaker.App do
 
   """
   @spec license() :: String.t()
-  def license, do: random_value(__MODULE__, @license_file, "licenses")
+  def license, do: Data.random_value(__MODULE__, @license_file, "licenses")
 
   @doc """
   Generates a random app name.
@@ -127,17 +159,14 @@ defmodule NeoFaker.App do
       "Garuda Web"
 
   """
-  @spec name(Keyword.t()) :: String.t()
+  @spec name(keyword()) :: String.t()
   def name(opts \\ []) do
-    style = Options.get(opts, :style, nil)
-    locale = Options.get(opts, :locale, :default)
+    opts = Options.validate!(opts, @name_schema)
 
-    Validator.validate_name_style!(style)
+    first_name = Data.random_value(__MODULE__, @name_file, "first_names", locale: opts[:locale])
+    last_name = Data.random_value(__MODULE__, @name_file, "last_names", locale: opts[:locale])
 
-    first_name = random_value(__MODULE__, @name_file, "first_names", locale: locale)
-    last_name = random_value(__MODULE__, @name_file, "last_names", locale: locale)
-
-    format_text({first_name, last_name}, style)
+    NameGenerator.format_text({first_name, last_name}, opts[:style])
   end
 
   @doc """
@@ -175,18 +204,24 @@ defmodule NeoFaker.App do
       "1.2.3-rc.1+20250325"
 
   """
-  @spec semver(Keyword.t()) :: String.t()
+  @spec semver(keyword()) :: String.t()
   def semver(opts \\ []) do
-    type = Options.get(opts, :type, nil)
-    Validator.validate_semver_type!(type)
+    opts = Options.validate!(opts, @semver_schema)
 
-    core = semver_core()
+    core = SemverGenerator.semver_core()
 
-    case type do
-      nil -> core
-      :pre_release -> "#{core}-#{semver_pre_release()}"
-      :build -> "#{core}+#{semver_build_number()}"
-      :pre_release_build -> "#{core}-#{semver_pre_release()}+#{semver_build_number()}"
+    case opts[:type] do
+      nil ->
+        core
+
+      :pre_release ->
+        "#{core}-#{SemverGenerator.semver_pre_release()}"
+
+      :build ->
+        "#{core}+#{SemverGenerator.semver_build_number()}"
+
+      :pre_release_build ->
+        "#{core}-#{SemverGenerator.semver_pre_release()}+#{SemverGenerator.semver_build_number()}"
     end
   end
 
@@ -229,16 +264,12 @@ defmodule NeoFaker.App do
       "io.mycompany.neo_faker"
 
   """
-  @spec bundle_id(Keyword.t()) :: String.t()
+  @spec bundle_id(keyword()) :: String.t()
   def bundle_id(opts \\ []) do
-    domain = Options.get(opts, :domain, "example.com")
-    style = Options.get(opts, :style, :underscore)
+    opts = Options.validate!(opts, @bundle_id_schema)
 
-    Validator.validate_domain!(domain)
-    Validator.validate_name_style_for_bundle!(style)
-
-    app_name = name(style: style)
-    "#{Domain.reverse_domain!(domain)}.#{String.downcase(app_name)}"
+    app_name = name(style: opts[:style])
+    "#{DomainGenerator.reverse_domain!(opts[:domain])}.#{String.downcase(app_name)}"
   end
 
   @doc """
@@ -261,15 +292,13 @@ defmodule NeoFaker.App do
       "id.mycompany.neofaker"
 
   """
-  @spec package_name(Keyword.t()) :: String.t()
+  @spec package_name(keyword()) :: String.t()
   def package_name(opts \\ []) do
-    domain = Options.get(opts, :domain, "example.com")
-
-    Validator.validate_domain!(domain)
+    opts = Options.validate!(opts, @package_name_schema)
 
     # Package names use lowercase, no special characters
     app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
 
-    "#{Domain.reverse_domain!(domain)}.#{app_name}"
+    "#{DomainGenerator.reverse_domain!(opts[:domain])}.#{app_name}"
   end
 end

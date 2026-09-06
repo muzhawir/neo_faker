@@ -8,10 +8,9 @@ defmodule NeoFaker.HTTP do
   @moduledoc since: "0.11.0"
 
   alias NeoFaker.Helpers.Options
-  alias NeoFaker.HTTP.Header
-  alias NeoFaker.HTTP.StatusCode
-  alias NeoFaker.HTTP.UserAgent
-  alias NeoFaker.HTTP.Validator
+  alias NeoFaker.HTTP.HeaderGenerator
+  alias NeoFaker.HTTP.StatusCodeGenerator
+  alias NeoFaker.HTTP.UserAgentGenerator
 
   @request_methods [
     "GET",
@@ -35,6 +34,38 @@ defmodule NeoFaker.HTTP do
     "strict-origin-when-cross-origin",
     "unsafe-url"
   ]
+
+  @user_agent_schema NimbleOptions.new!(
+                       type: [type: {:in, [:all, :browser, :crawler]}, default: :all]
+                     )
+
+  @request_method_schema NimbleOptions.new!(common_only: [type: :boolean, default: true])
+
+  @status_code_schema NimbleOptions.new!(
+                        type: [type: {:in, [:simple, :detailed]}, default: :simple],
+                        group: [
+                          type:
+                            {:or,
+                             [
+                               nil,
+                               {:in,
+                                [
+                                  :information,
+                                  :success,
+                                  :redirection,
+                                  :client_error,
+                                  :server_error
+                                ]}
+                             ]},
+                          default: nil
+                        ]
+                      )
+
+  @protocol_version_schema NimbleOptions.new!(include_http3: [type: :boolean, default: true])
+
+  @header_name_schema NimbleOptions.new!(
+                        type: [type: {:in, [:all, :request, :response]}, default: :all]
+                      )
 
   @doc """
   Generates a random HTTP user-agent string.
@@ -66,11 +97,10 @@ defmodule NeoFaker.HTTP do
       "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
 
   """
-  @spec user_agent(Keyword.t()) :: String.t()
+  @spec user_agent(keyword()) :: String.t()
   def user_agent(opts \\ []) do
-    type = Options.get(opts, :type, :all)
-    Validator.validate_user_agent_type!(type)
-    UserAgent.name(type)
+    opts = Options.validate!(opts, @user_agent_schema)
+    UserAgentGenerator.name(opts[:type])
   end
 
   @doc """
@@ -93,12 +123,12 @@ defmodule NeoFaker.HTTP do
       "OPTIONS"
 
   """
-  @spec request_method(Keyword.t()) :: String.t()
+  @spec request_method(keyword()) :: String.t()
   def request_method(opts \\ []) do
-    common_only = Options.get(opts, :common_only, true)
+    opts = Options.validate!(opts, @request_method_schema)
 
     methods =
-      if common_only do
+      if opts[:common_only] do
         ["GET", "POST", "PUT", "DELETE", "PATCH"]
       else
         @request_methods
@@ -167,17 +197,13 @@ defmodule NeoFaker.HTTP do
       "201 Created"
 
   """
-  @spec status_code(Keyword.t()) :: String.t()
+  @spec status_code(keyword()) :: String.t()
   def status_code(opts \\ []) do
-    type = Options.get(opts, :type, :simple)
-    group = Options.get(opts, :group, nil)
+    opts = Options.validate!(opts, @status_code_schema)
 
-    Validator.validate_status_code_type!(type)
-    Validator.validate_status_code_group!(group)
-
-    group
-    |> StatusCode.generates!()
-    |> StatusCode.number(type: type)
+    opts[:group]
+    |> StatusCodeGenerator.generates!()
+    |> StatusCodeGenerator.number(type: opts[:type])
   end
 
   @doc """
@@ -199,14 +225,14 @@ defmodule NeoFaker.HTTP do
       "HTTP/1.0"
 
   """
-  @spec protocol_version(Keyword.t()) :: String.t()
+  @spec protocol_version(keyword()) :: String.t()
   def protocol_version(opts \\ []) do
-    include_http3 = Options.get(opts, :include_http3, true)
+    opts = Options.validate!(opts, @protocol_version_schema)
 
     versions = ["HTTP/1.0", "HTTP/1.1", "HTTP/2"]
 
     versions =
-      if include_http3 do
+      if opts[:include_http3] do
         versions ++ ["HTTP/3"]
       else
         versions
@@ -245,10 +271,10 @@ defmodule NeoFaker.HTTP do
       "Server"
 
   """
-  @spec header_name(Keyword.t()) :: String.t()
+  @spec header_name(keyword()) :: String.t()
   def header_name(opts \\ []) do
-    type = Options.get(opts, :type, :all)
-    Header.name(type)
+    opts = Options.validate!(opts, @header_name_schema)
+    HeaderGenerator.name(opts[:type])
   end
 
   @doc """

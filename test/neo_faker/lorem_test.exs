@@ -9,7 +9,7 @@ defmodule NeoFaker.LoremTest do
     end
 
     test "returns a random paragraph with type option" do
-      assert is_binary(Lorem.paragraph(type: :meditations))
+      assert is_binary(Lorem.paragraph(text: :meditations))
     end
   end
 
@@ -19,7 +19,7 @@ defmodule NeoFaker.LoremTest do
     end
 
     test "returns a random sentence with type option" do
-      assert is_binary(Lorem.sentence(type: :meditations))
+      assert is_binary(Lorem.sentence(text: :meditations))
     end
   end
 
@@ -29,7 +29,7 @@ defmodule NeoFaker.LoremTest do
     end
 
     test "returns a random word with type option" do
-      assert is_binary(Lorem.word(type: :meditations))
+      assert is_binary(Lorem.word(text: :meditations))
     end
   end
 end

@@ -29,9 +29,13 @@ before being considered done; run `mix dialyzer` too when types/specs changed.
 
 ## Elixir documentation lookup
 
-When you need official Elixir documentation (module reference, guides, anti-patterns, meta-programming, etc.), start from the index at https://elixir.hexdocs.pm/llms.txt — it lists every page and module with its relative path, e.g. `[Enum](Enum.md)`, `[Code anti-patterns](code-anti-patterns.md)`.
+When you need official Elixir documentation (module reference, guides, anti-patterns, meta-programming, etc.), start from the index at
+https://elixir.hexdocs.pm/llms.txt — it lists every page and module with its relative path, e.g. `[Enum](Enum.md)`,
+`[Code anti-patterns](code-anti-patterns.md)`.
 
-Always fetch documentation pages as `.md`, never `.html`: take the filename from `llms.txt` and request `https://elixir.hexdocs.pm/<version>/<filename>.md` (e.g. `https://elixir.hexdocs.pm/1.20.4/code-anti-patterns.md`, not `.../code-anti-patterns.html`). The `.md` version is the plain-text source and is far cheaper to fetch and read than the rendered HTML page.
+Always fetch documentation pages as `.md`, never `.html`: take the filename from `llms.txt` and request
+`https://elixir.hexdocs.pm/<version>/<filename>.md` (e.g. `https://elixir.hexdocs.pm/1.20.4/code-anti-patterns.md`, not `.../code-anti-patterns.html`).
+The `.md` version is the plain-text source and is far cheaper to fetch and read than the rendered HTML page.
 
 ## Architecture
 
@@ -75,10 +79,10 @@ Key points:
 ### Locale-exclusive modules
 
 Some functionality only makes sense for one locale (e.g. US Social Security Numbers) and isn't expressed as a `locale:` option on a shared function.
-These live under `lib/neo_faker/<locale>/` with locale-cased module names, e.g. `NeoFaker.EnUs.Person.ssn/0` (`lib/neo_faker/en_us/person.ex`) and
-`NeoFaker.IdId.Person` (`lib/neo_faker/id_id/person.ex`). `mix.exs`'s `groups_for_modules/0` splits ExDoc's sidebar into "Random Generators" vs.
-"Locale Random Generators" using a regex over the module name shape (`NeoFaker.XxYy.*`), so keep this naming convention when adding new
-locale-exclusive modules.
+These live under `lib/neo_faker/locales/<locale>/`, namespaced under `NeoFaker.Locales.*` with locale-cased module names, e.g.
+`NeoFaker.Locales.EnUs.Person.ssn/0` (`lib/neo_faker/locales/en_us/person.ex`) and `NeoFaker.Locales.IdId.Person`
+(`lib/neo_faker/locales/id_id/person.ex`). `mix.exs`'s `groups_for_modules/0` splits ExDoc's sidebar into "Random Generators" vs. "Locale Random
+Generators" by matching the literal `NeoFaker.Locales.` prefix, so keep every locale-exclusive module under that namespace.
 
 ### Shared helpers
 
@@ -90,7 +94,7 @@ locale-exclusive modules.
 
 ### Tests
 
-Test files mirror `lib/` under `test/neo_faker/`, including locale-exclusive subdirectories (`test/neo_faker/en_us/`, `test/neo_faker/id_id/`).
+Test files mirror `lib/` under `test/neo_faker/`, including locale-exclusive subdirectories (`test/neo_faker/locales/en_us/`, `test/neo_faker/locales/id_id/`).
 Tests commonly call `NeoFaker.Data.fetch!/3` directly to pull the full cached data set for a module/file and assert generated values are drawn from it
 (see `test/neo_faker/address_test.exs`). `test/test_helper.exs` calls `NeoFaker.start()` before the suite runs, so a locale is always configured
 during tests.

@@ -8,15 +8,36 @@ defmodule NeoFaker.Color do
   """
   @moduledoc since: "0.8.0"
 
-  alias NeoFaker.Color.CMYK
-  alias NeoFaker.Color.HEX
-  alias NeoFaker.Color.HSL
-  alias NeoFaker.Color.HSLA
-  alias NeoFaker.Color.Keyword, as: KeywordColor
-  alias NeoFaker.Color.RGB
-  alias NeoFaker.Color.RGBA
-  alias NeoFaker.Color.Validator
+  alias NeoFaker.Color.CmykGenerator
+  alias NeoFaker.Color.HexGenerator
+  alias NeoFaker.Color.HslaGenerator
+  alias NeoFaker.Color.HslGenerator
+  alias NeoFaker.Color.KeywordGenerator
+  alias NeoFaker.Color.RgbaGenerator
+  alias NeoFaker.Color.RgbGenerator
   alias NeoFaker.Helpers.Options
+
+  @w3c_format_schema NimbleOptions.new!(format: [type: {:in, [nil, :w3c]}, default: nil])
+
+  @hex_schema NimbleOptions.new!(
+                format: [
+                  type: {:in, [:three_digit, :four_digit, :six_digit, :eight_digit]},
+                  default: :six_digit
+                ]
+              )
+
+  @keyword_schema NimbleOptions.new!(
+                    category: [type: {:in, [:all, :basic, :extended]}, default: :all],
+                    locale: [type: :atom, default: nil]
+                  )
+
+  @typedoc """
+  Any value a color-generating function in this module can return: a tuple of numeric
+  components, or a W3C-formatted CSS string. Which shape comes back depends on the
+  `:format` option (and, for `random/1`, on which format is randomly picked) — this is
+  intentional, not an accident of implementation.
+  """
+  @type any_color :: tuple() | String.t()
 
   @doc """
   Generates a random CMYK color.
@@ -37,12 +58,13 @@ defmodule NeoFaker.Color do
       "cmyk(0%, 25%, 50%, 100%)"
 
   """
-  @spec cmyk(Keyword.t()) :: tuple() | String.t()
+  @spec cmyk(keyword()) :: any_color()
   def cmyk(opts \\ []) do
-    color_tuple = CMYK.color_tuple()
+    opts = Options.validate!(opts, @w3c_format_schema)
+    color_tuple = CmykGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> CMYK.color_w3c(color_tuple)
+    case opts[:format] do
+      :w3c -> CmykGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
   end
@@ -69,21 +91,19 @@ defmodule NeoFaker.Color do
       "#613583FF"
 
   """
-  @spec hex(Keyword.t()) :: String.t()
+  @spec hex(keyword()) :: String.t()
   def hex(opts \\ []) do
-    format = Options.get(opts, :format, :six_digit)
-
-    Validator.validate_hex_format!(format)
+    opts = Options.validate!(opts, @hex_schema)
 
     digits =
-      case format do
+      case opts[:format] do
         :three_digit -> 3
         :four_digit -> 4
         :six_digit -> 6
         :eight_digit -> 8
       end
 
-    "#" <> HEX.color(digits)
+    "#" <> HexGenerator.color(digits)
   end
 
   @doc """
@@ -106,12 +126,13 @@ defmodule NeoFaker.Color do
       "hsl(180, 50%, 75%)"
 
   """
-  @spec hsl(Keyword.t()) :: tuple() | String.t()
+  @spec hsl(keyword()) :: any_color()
   def hsl(opts \\ []) do
-    color_tuple = HSL.color_tuple()
+    opts = Options.validate!(opts, @w3c_format_schema)
+    color_tuple = HslGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> HSL.color_w3c(color_tuple)
+    case opts[:format] do
+      :w3c -> HslGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
   end
@@ -136,12 +157,13 @@ defmodule NeoFaker.Color do
       "hsla(180, 50%, 75%, 0.8)"
 
   """
-  @spec hsla(Keyword.t()) :: tuple() | String.t()
+  @spec hsla(keyword()) :: any_color()
   def hsla(opts \\ []) do
-    color_tuple = HSLA.color_tuple()
+    opts = Options.validate!(opts, @w3c_format_schema)
+    color_tuple = HslaGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> HSLA.color_w3c(color_tuple)
+    case opts[:format] do
+      :w3c -> HslaGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
   end
@@ -169,14 +191,10 @@ defmodule NeoFaker.Color do
       "ungu"
 
   """
-  @spec keyword(Keyword.t()) :: String.t()
+  @spec keyword(keyword()) :: String.t()
   def keyword(opts \\ []) do
-    category = Options.get(opts, :category, :all)
-    locale = Options.get(opts, :locale, :default)
-
-    Validator.validate_color_category!(category)
-
-    KeywordColor.color(category, locale)
+    opts = Options.validate!(opts, @keyword_schema)
+    KeywordGenerator.color(opts[:category], opts[:locale])
   end
 
   @doc """
@@ -198,12 +216,13 @@ defmodule NeoFaker.Color do
       "rgb(255, 128, 64)"
 
   """
-  @spec rgb(Keyword.t()) :: tuple() | String.t()
+  @spec rgb(keyword()) :: any_color()
   def rgb(opts \\ []) do
-    color_tuple = RGB.color_tuple()
+    opts = Options.validate!(opts, @w3c_format_schema)
+    color_tuple = RgbGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> RGB.color_w3c(color_tuple)
+    case opts[:format] do
+      :w3c -> RgbGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
   end
@@ -228,12 +247,13 @@ defmodule NeoFaker.Color do
       "rgba(255, 128, 64, 0.8)"
 
   """
-  @spec rgba(Keyword.t()) :: tuple() | String.t()
+  @spec rgba(keyword()) :: any_color()
   def rgba(opts \\ []) do
-    color_tuple = RGBA.color_tuple()
+    opts = Options.validate!(opts, @w3c_format_schema)
+    color_tuple = RgbaGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> RGBA.color_w3c(color_tuple)
+    case opts[:format] do
+      :w3c -> RgbaGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
   end
@@ -255,13 +275,13 @@ defmodule NeoFaker.Color do
       "#613583"
 
   """
-  @spec random(Keyword.t()) :: tuple() | String.t()
+  @spec random(keyword()) :: any_color()
   def random(opts \\ []) do
     format_specified = Keyword.has_key?(opts, :format)
 
     if format_specified do
       # User specified a format, use it
-      case Options.get(opts, :format, nil) do
+      case Keyword.get(opts, :format) do
         :w3c -> Enum.random([cmyk(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
         _ -> Enum.random([cmyk(opts), hex(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
       end

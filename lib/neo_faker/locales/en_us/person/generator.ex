@@ -1,4 +1,4 @@
-defmodule NeoFaker.EnUs.Person.Utils do
+defmodule NeoFaker.Locales.EnUs.Person.Generator do
   @moduledoc false
 
   alias NeoFaker.Number

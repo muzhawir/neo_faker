@@ -8,7 +8,7 @@ defmodule NeoFaker.Person.FullNameGenerator do
 
   If `:unisex` is provided as the gender, randomly selects between a male or female full name.
   """
-  @spec name(atom(), Keyword.t(), boolean()) :: String.t()
+  @spec name(atom(), keyword(), boolean()) :: String.t()
   def name(:unisex, locale, include_middle_name?) do
     generate_full_name(
       Enum.random([:male, :female]),

@@ -13,6 +13,8 @@ defmodule NeoFaker.Boolean do
 
   @ratio_range 0..100
 
+  @options_schema NimbleOptions.new!(integer: [type: :boolean, default: false])
+
   @doc """
   Generates a random boolean value with a configurable probability of returning `true`.
 
@@ -43,13 +45,14 @@ defmodule NeoFaker.Boolean do
       true
 
   """
-  @spec boolean(0..100, Keyword.t()) :: boolean() | non_neg_integer()
+  @spec boolean(0..100, keyword()) :: boolean() | non_neg_integer()
   def boolean(true_ratio \\ 50, opts \\ [])
 
   def boolean(true_ratio, opts) when true_ratio in @ratio_range do
+    opts = Options.validate!(opts, @options_schema)
     result = Generator.boolean(true_ratio)
 
-    if Options.get(opts, :integer, false) do
+    if opts[:integer] do
       Formatter.format_boolean(result, :integer)
     else
       result

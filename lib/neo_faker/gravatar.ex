@@ -20,6 +20,23 @@ defmodule NeoFaker.Gravatar do
   @max_size 2048
   @size 80
 
+  @display_schema NimbleOptions.new!(
+                    size: [type: {:custom, Validator, :validate_size, []}, default: @size],
+                    fallback: [
+                      type: {:custom, Validator, :validate_and_format_fallback, []},
+                      default: :identicon
+                    ],
+                    rating: [type: {:or, [nil, {:in, [:g, :pg, :r, :x]}]}, default: nil],
+                    force_default: [type: :boolean, default: false]
+                  )
+
+  @profile_schema NimbleOptions.new!(
+                    format: [
+                      type: {:in, [:html, :json, :xml, :php, :vcf, :qr]},
+                      default: :html
+                    ]
+                  )
+
   @doc """
   Generates a Gravatar image URL.
 
@@ -73,30 +90,23 @@ defmodule NeoFaker.Gravatar do
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80&f=y"
 
   """
-  @spec display(email(), Keyword.t()) :: String.t()
+  @spec display(email(), keyword()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    size = Options.get(opts, :size, @size)
-    fallback = Options.get(opts, :fallback, :identicon)
-    rating = Options.get(opts, :rating, nil)
-    force_default = Options.get(opts, :force_default, false)
+    opts = Options.validate!(opts, @display_schema)
 
-    Validator.validate_size!(size)
-    fallback_string = Validator.validate_and_format_fallback!(fallback)
-    Validator.validate_rating!(rating)
+    validated_size = Generator.image_size(opts[:size])
 
-    validated_size = Generator.image_size(size)
-
-    base_url = Generator.gravatar_url(email, validated_size, fallback_string)
+    base_url = Generator.gravatar_url(email, validated_size, opts[:fallback])
 
     # Add optional parameters
     url_with_rating =
-      if rating do
-        base_url <> "&r=#{rating}"
+      if opts[:rating] do
+        base_url <> "&r=#{opts[:rating]}"
       else
         base_url
       end
 
-    if force_default do
+    if opts[:force_default] do
       url_with_rating <> "&f=y"
     else
       url_with_rating
@@ -138,15 +148,14 @@ defmodule NeoFaker.Gravatar do
       "https://gravatar.com/<hash>.xml"
 
   """
-  @spec profile(email(), Keyword.t()) :: String.t()
+  @spec profile(email(), keyword()) :: String.t()
   def profile(email \\ nil, opts \\ []) do
-    format = Options.get(opts, :format, :html)
-    Validator.validate_profile_format!(format)
+    opts = Options.validate!(opts, @profile_schema)
 
     hash = Generator.email_hash(email)
     base_url = "https://gravatar.com/#{hash}"
 
-    case format do
+    case opts[:format] do
       :html -> base_url
       other -> "#{base_url}.#{other}"
     end

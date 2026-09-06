@@ -1,4 +1,4 @@
-defmodule NeoFaker.App.Domain do
+defmodule NeoFaker.App.DomainGenerator do
   @moduledoc false
 
   @doc """
@@ -19,16 +19,16 @@ defmodule NeoFaker.App.Domain do
 
   ## Examples
 
-      iex> NeoFaker.App.Domain.reverse_domain!("example.com")
+      iex> NeoFaker.App.DomainGenerator.reverse_domain!("example.com")
       "com.example"
 
-      iex> NeoFaker.App.Domain.reverse_domain!("my-company.io")
+      iex> NeoFaker.App.DomainGenerator.reverse_domain!("my-company.io")
       "io.mycompany"
 
-      iex> NeoFaker.App.Domain.reverse_domain!("MyCompany.IO")
+      iex> NeoFaker.App.DomainGenerator.reverse_domain!("MyCompany.IO")
       "io.mycompany"
 
-      iex> NeoFaker.App.Domain.reverse_domain!("my-app.my-company.io")
+      iex> NeoFaker.App.DomainGenerator.reverse_domain!("my-app.my-company.io")
       "io.mycompany.myapp"
 
   """

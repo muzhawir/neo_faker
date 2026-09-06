@@ -1,7 +1,7 @@
-defmodule NeoFaker.IdId.PersonTest do
+defmodule NeoFaker.Locales.IdId.PersonTest do
   use ExUnit.Case, async: true
 
-  alias NeoFaker.IdId.Person
+  alias NeoFaker.Locales.IdId.Person
 
   describe "nik/0" do
     test "returns a NIK as a binary string" do

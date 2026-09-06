@@ -1,4 +1,4 @@
-defmodule NeoFaker.Lorem.Parser do
+defmodule NeoFaker.Lorem.Generator do
   @moduledoc false
 
   @lorem_ipsum_file "lorem_ipsum.exs"

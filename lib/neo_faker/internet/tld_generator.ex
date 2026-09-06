@@ -1,4 +1,4 @@
-defmodule NeoFaker.Internet.TLD do
+defmodule NeoFaker.Internet.TldGenerator do
   @moduledoc false
 
   alias NeoFaker.Data

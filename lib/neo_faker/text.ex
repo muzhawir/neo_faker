@@ -12,11 +12,41 @@ defmodule NeoFaker.Text do
   alias NeoFaker.Helpers.Options
   alias NeoFaker.Text.EmojiGenerator
   alias NeoFaker.Text.Generator
-  alias NeoFaker.Text.Validator
 
   @word_file "word.exs"
 
   @character_count 11
+
+  @character_schema NimbleOptions.new!(
+                      type: [
+                        type: {:in, [nil, :alphabet_lower, :alphabet_upper, :alphabet, :digit]},
+                        default: nil
+                      ]
+                    )
+
+  @emoji_schema NimbleOptions.new!(
+                  category: [
+                    type:
+                      {:in,
+                       [
+                         :all,
+                         :activities,
+                         :animals_and_nature,
+                         :food_and_drink,
+                         :objects,
+                         :people_and_body,
+                         :smileys_and_emotion,
+                         :symbols,
+                         :travel_and_places
+                       ]},
+                    default: :all
+                  ]
+                )
+
+  @words_schema NimbleOptions.new!(
+                  join: [type: :boolean, default: false],
+                  separator: [type: :string, default: " "]
+                )
 
   @doc """
   Generates a single random character.
@@ -50,14 +80,10 @@ defmodule NeoFaker.Text do
       "X"
 
   """
-  @spec character(Keyword.t()) :: String.t()
-  def character(opts \\ [])
-  def character([]), do: Generator.character(nil)
-
-  def character(opts) when is_list(opts) do
-    type = Options.get(opts, :type, nil)
-    Validator.validate_character_type!(type)
-    Generator.character(type)
+  @spec character(keyword()) :: String.t()
+  def character(opts \\ []) do
+    opts = Options.validate!(opts, @character_schema)
+    Generator.character(opts[:type])
   end
 
   @doc """
@@ -88,7 +114,7 @@ defmodule NeoFaker.Text do
       "xyzabcdefg"
 
   """
-  @spec characters(pos_integer(), Keyword.t()) :: String.t()
+  @spec characters(pos_integer(), keyword()) :: String.t()
   def characters(number \\ @character_count, opts \\ [])
 
   def characters(number, opts) when is_integer(number) and number > 0 and is_list(opts) do
@@ -137,11 +163,10 @@ defmodule NeoFaker.Text do
       "🐶"
 
   """
-  @spec emoji(Keyword.t()) :: String.t()
+  @spec emoji(keyword()) :: String.t()
   def emoji(opts \\ []) do
-    category = Options.get(opts, :category, :all)
-    Validator.validate_emoji_category!(category)
-    EmojiGenerator.emoji(category)
+    opts = Options.validate!(opts, @emoji_schema)
+    EmojiGenerator.emoji(opts[:category])
   end
 
   @doc """
@@ -184,16 +209,16 @@ defmodule NeoFaker.Text do
       "computer-elixir-phoenix"
 
   """
-  @spec words(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec words(pos_integer(), keyword()) :: [String.t()] | String.t()
   def words(count \\ 5, opts \\ [])
 
   def words(count, opts) when is_integer(count) and count > 0 do
-    join = Options.get(opts, :join, false)
+    opts = Options.validate!(opts, @words_schema)
 
     words_list = Enum.map(1..count, fn _ -> word() end)
 
-    if join do
-      Enum.join(words_list, Options.get(opts, :separator, " "))
+    if opts[:join] do
+      Enum.join(words_list, opts[:separator])
     else
       words_list
     end

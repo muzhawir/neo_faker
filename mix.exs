@@ -37,6 +37,7 @@ defmodule NeoFaker.MixProject do
       main: "getting-started",
       logo: "priv/assets/logo/doc_logo.svg",
       extras: extra_pages(),
+      groups_for_extras: groups_for_extras(),
       groups_for_modules: groups_for_modules()
     ]
   end
@@ -46,6 +47,14 @@ defmodule NeoFaker.MixProject do
       Path.wildcard("lib/pages/**/*.md"),
       Path.wildcard("lib/pages/**/*.cheatmd")
     ])
+  end
+
+  defp groups_for_extras do
+    [
+      Guides: ~r/lib\/pages\/(getting-started|locales|ecto-integration)\.md/,
+      Reference: ~r/lib\/pages\/cheat\.cheatmd/,
+      About: ~r/lib\/pages\/changelog\.md/
+    ]
   end
 
   defp groups_for_modules do

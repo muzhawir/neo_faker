@@ -55,11 +55,22 @@ ExUnit.start()
 NeoFaker.start()
 ```
 
+If you use NeoFaker inside a `test/support/factory.ex` module to build fake `Ecto.Schema`
+structs for your tests, see [Ecto Test Factories](ecto-integration.html) — it covers wiring
+NeoFaker into the factory pattern from Ecto's own guide, and how to keep factory-generated values
+unique where your schema requires it.
+
 ## Usage
 
+Every function lives under a domain module such as `NeoFaker.Person`, `NeoFaker.Internet`, or
+`NeoFaker.Date` — there is no single catch-all module:
+
 ```elixir
-iex> NeoFaker.App.name()
-"Neo Faker"
+iex> NeoFaker.Person.full_name()
+"Abigail Bethany Crawford"
+
+iex> NeoFaker.Internet.email()
+"josé@example.com"
 
 iex> NeoFaker.App.description()
 "Fake data generator for Elixir tests and development environments."
@@ -68,8 +79,16 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-For detailed documentation, see the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html).
-For a quick overview, see the [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html).
+Most functions accept a keyword list of options to control the output shape — see each
+function's own documentation for the options it supports:
+
+```elixir
+iex> NeoFaker.Date.past(30, format: :iso8601)
+"2025-02-25"
+
+iex> NeoFaker.Color.hex(format: :eight_digit)
+"#613583FF"
+```
 
 ## Reproducible output
 
@@ -82,6 +101,17 @@ setup do
   NeoFaker.seed(12_345)
 end
 ```
+
+## Next steps
+
+- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html) — a one-page reference of every
+  function with examples, grouped by domain.
+- [Supported Locales](https://hexdocs.pm/neo_faker/locales.html) — the list of available
+  locales and how locale resolution works across processes, config, and per-call overrides.
+- [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) — wiring NeoFaker
+  into a `test/support/factory.ex` module for `Ecto.Schema`-based tests.
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html) — full module and function
+  documentation.
 
 ## License
 

@@ -231,18 +231,6 @@ defmodule NeoFaker.GravatarTest do
   end
 
   # ---------------------------------------------------------------------------
-  # random/0 (deprecated)
-  # ---------------------------------------------------------------------------
-
-  describe "random/0 (deprecated, delegates to random_display/0)" do
-    test "returns a valid Gravatar image URL" do
-      url = Gravatar.random()
-
-      assert String.match?(url, @gravatar_image_url_regexp)
-    end
-  end
-
-  # ---------------------------------------------------------------------------
   # fallback_types/0
   # ---------------------------------------------------------------------------
 

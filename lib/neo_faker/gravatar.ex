@@ -168,19 +168,6 @@ defmodule NeoFaker.Gravatar do
   end
 
   @doc """
-  Generates a Gravatar image URL with randomly selected size and fallback type.
-
-  ## Examples
-
-      iex> NeoFaker.Gravatar.random()
-      "https://gravatar.com/avatar/<hash>?d=monsterid&s=150"
-
-  """
-  @deprecated "Use random_display/0 instead"
-  @spec random() :: String.t()
-  def random, do: random_display()
-
-  @doc """
   Returns the list of all valid fallback type atoms.
 
   ## Examples

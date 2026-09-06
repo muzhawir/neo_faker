@@ -2,18 +2,21 @@
 
 ## v0.15.0 (2026-09-06)
 
-This release is an internal architecture rewrite. See
+This release is a large internal architecture rewrite. See
 [docs/rebuild_plan.md](https://github.com/muzhawir/neo_faker/blob/main/docs/rebuild_plan.md) in
-the repository for the full rationale. The public function names and arities you already use are
-unchanged; what changed is how locale state is scoped, how options are validated, and where a
-few internal (never public) modules live.
+the repository for the full rationale. A handful of thin top-level functions were removed
+outright rather than deprecated (see Breaking Changes); each has a one-to-one replacement. Beyond
+that, what changed is how locale state is scoped, how options are validated, and where a few
+internal (never public) modules live. A formal deprecation cycle for future removals begins in
+v0.20.0.
 
 ### Features
 
 - Added `NeoFaker.seed/1`, which seeds `:rand` for the calling process, for reproducible output in
   tests (e.g. `NeoFaker.seed(12_345)`).
-- Added `NeoFaker.Person.gender/1`, which consolidates `binary_gender/1`, `short_binary_gender/1`,
-  and `non_binary_gender/1` into a single function with a `:format` option, matching the same
+- Added `NeoFaker.Person.gender/1`, a single function with a `:format` option (`:binary`,
+  `:short_binary`, `:non_binary`) that replaces the separate `binary_gender/1`,
+  `short_binary_gender/1`, and `non_binary_gender/1` functions, matching the same
   `:format`-option pattern `NeoFaker.Blood.group/1` already used.
 - Added `NeoFaker.Gravatar.random_display/0`, replacing `random/0` with a name that reads
   consistently alongside its siblings `display/2` and `profile/2`.
@@ -25,9 +28,16 @@ few internal (never public) modules live.
 
 ### Breaking Changes
 
-- **`NeoFaker.set_locale/1` is now process-scoped**, not node-global. It no longer writes to
-  `Application.put_env/3`. Instead, it stores the override in the calling process's process
-  dictionary.
+- **`NeoFaker.locale/0`, `NeoFaker.set_locale/1`, and `NeoFaker.get_locale/0` are removed.** Use
+  `NeoFaker.Locale.fetch/0`, `NeoFaker.Locale.set/1`, and `NeoFaker.Locale.get/0` instead. Same
+  signatures and return values, just on the new module.
+- **`NeoFaker.Person.binary_gender/1`, `short_binary_gender/1`, and `non_binary_gender/1` are
+  removed.** Use `gender/1` with the matching `:format` option: `gender(format: :binary)`,
+  `gender(format: :short_binary)`, `gender(format: :non_binary)`.
+- **`NeoFaker.Gravatar.random/0` is removed.** Use `random_display/0`, which does the exact same
+  thing.
+- **`NeoFaker.Locale.set/1` is process-scoped**, not node-global. It does not write to
+  `Application.put_env/3`; it stores the override in the calling process's process dictionary.
   A locale set in one process (including one ExUnit test) no longer affects any other process.
   Set a locale for the whole application via `config :neo_faker, locale: ...` instead (unchanged).
 - **Locale-exclusive modules moved namespace**: `NeoFaker.EnUs.*` and `NeoFaker.IdId.*` are now
@@ -50,27 +60,14 @@ few internal (never public) modules live.
   (internal), so there's no deprecated delegate here, only the documented `NeoFaker` functions
   below get one.
 
-### Deprecations
-
-- **`NeoFaker.Person.binary_gender/1`, `short_binary_gender/1`, and `non_binary_gender/1`** are
-  deprecated in favor of `gender/1` with the matching `:format` option (`:binary`,
-  `:short_binary`, `:non_binary`). The old functions still work and delegate to `gender/1`, but
-  emit a compile-time deprecation warning.
-- **`NeoFaker.Gravatar.random/0`** is deprecated in favor of `random_display/0`, which does the
-  exact same thing. The old function still works and delegates to `random_display/0`, but emits a
-  compile-time deprecation warning.
-- **`NeoFaker.locale/0`, `set_locale/1`, and `get_locale/0`** are deprecated in favor of
-  `NeoFaker.Locale.fetch/0`, `set/1`, and `get/0`. The old functions still work and delegate to
-  `NeoFaker.Locale`, but emit a compile-time deprecation warning.
-
 ### Bug Fixes
 
 - **`NeoFaker.Person.first_name/1`, `middle_name/1`, `last_name/1`, `full_name/1`,
   `NeoFaker.App.name/1`, and `NeoFaker.Color.keyword/1`** now correctly fall back to the
-  configured locale (`set_locale/1` or `config :neo_faker, locale: ...`) when no `locale:` option
-  is given. Previously they hardcoded the `:default` locale, silently ignoring the configured
-  one. For example, `NeoFaker.set_locale(:id_id)` followed by `NeoFaker.Person.first_name()` still
-  returned an English name.
+  configured locale (`NeoFaker.Locale.set/1` or `config :neo_faker, locale: ...`) when no
+  `locale:` option is given. Previously they hardcoded the `:default` locale, silently ignoring
+  the configured one. For example, `NeoFaker.Locale.set(:id_id)` followed by
+  `NeoFaker.Person.first_name()` still returned an English name.
 - `NeoFaker.Data` no longer reseeds `:rand` as a side effect of the first read of a locale/module
   data file. This silently overrode any seed a caller had set (including via the new
   `NeoFaker.seed/1`); OTP already seeds `:rand` automatically per process.
@@ -98,7 +95,7 @@ few internal (never public) modules live.
   `NeoFaker.Lorem` never reads (the real, documented option is `:text`); the assertions passed
   vacuously before because the unrecognized option was silently ignored.
 - Split the two tests in `NeoFakerTest` that mutate `Application` env directly (bypassing
-  `set_locale/1`, to exercise the raw-config validation path) into
+  `NeoFaker.Locale.set/1`, to exercise the raw-config validation path) into
   `NeoFaker.LocaleApplicationEnvTest`, kept `async: false` since that kind of mutation is
   inherently node-global regardless of the locale-scoping change above. Moved alongside the new
   `NeoFaker.LocaleTest` once locale management moved to `NeoFaker.Locale`.
@@ -106,6 +103,9 @@ few internal (never public) modules live.
   `internet_test` to expect `NimbleOptions.ValidationError` instead of `ArgumentError`. Tests for
   positional arguments and for the empty-string `:domain_name` guard (which still raises
   `ArgumentError` from the generator, not the schema) are unchanged.
+- Removed the delegate tests for the deleted functions above (`NeoFakerTest`'s locale describes,
+  `person_test`'s "deprecated gender functions", `gravatar_test`'s `random/0`). `NeoFaker.LocaleTest`
+  and the `gender/1` / `random_display/0` tests already cover the replacements.
 
 ## v0.14.0 (2026-03-11)
 

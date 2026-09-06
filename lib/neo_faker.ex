@@ -60,46 +60,6 @@ defmodule NeoFaker do
   end
 
   @doc """
-  Returns the current locale, preferring a process-scoped override over the application-wide
-  default.
-
-  ## Examples
-
-      iex> NeoFaker.locale()
-      {:ok, :en_us}
-
-  """
-  @deprecated "Use NeoFaker.Locale.fetch/0 instead"
-  @spec locale() :: {:ok, atom()} | :error
-  def locale, do: Locale.fetch()
-
-  @doc """
-  Sets the locale for the calling process.
-
-  ## Examples
-
-      iex> NeoFaker.set_locale(:id_id)
-      :ok
-
-  """
-  @deprecated "Use NeoFaker.Locale.set/1 instead"
-  @spec set_locale(atom()) :: :ok
-  def set_locale(locale), do: Locale.set(locale)
-
-  @doc """
-  Returns the active locale, falling back to `:default` when none is set.
-
-  ## Examples
-
-      iex> NeoFaker.get_locale()
-      :en_us
-
-  """
-  @deprecated "Use NeoFaker.Locale.get/0 instead"
-  @spec get_locale() :: atom()
-  def get_locale, do: Locale.get()
-
-  @doc """
   Seeds the random number generator for the calling process, for reproducible output.
 
   NeoFaker draws values via `Enum.random/1` and `:rand.uniform/1`, both backed by `:rand`, which

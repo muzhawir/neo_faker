@@ -114,26 +114,6 @@ defmodule NeoFaker.PersonTest do
     end
   end
 
-  describe "deprecated gender functions" do
-    test "binary_gender/1 delegates to gender(format: :binary)" do
-      word_list = fetch_key(:default, "gender.exs", "binary")
-
-      assert Person.binary_gender(locale: :default) in word_list
-    end
-
-    test "short_binary_gender/1 delegates to gender(format: :short_binary)" do
-      result = Person.short_binary_gender(locale: :default)
-
-      assert String.match?(result, ~r/^[A-Z]$/)
-    end
-
-    test "non_binary_gender/1 delegates to gender(format: :non_binary)" do
-      word_list = fetch_key(:default, "gender.exs", "non_binary")
-
-      assert Person.non_binary_gender(locale: :default) in word_list
-    end
-  end
-
   describe "full_name_with_title/1" do
     # Load the real prefix and suffix lists once for the whole describe block so
     # assertions about token positions use actual data rather than shape heuristics.

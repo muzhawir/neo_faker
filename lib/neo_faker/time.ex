@@ -10,7 +10,6 @@ defmodule NeoFaker.Time do
 
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Time.Generator, as: TimeGenerator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
@@ -53,7 +52,7 @@ defmodule NeoFaker.Time do
   @spec add(Range.t(), keyword()) :: Time.t() | String.t()
   def add(range \\ @time_range, opts \\ []) do
     TimeValidator.validate_range!(range)
-    opts = Options.validate!(opts, @add_schema)
+    opts = NimbleOptions.validate!(opts, @add_schema)
 
     time = TimeGenerator.add(range, Keyword.fetch!(opts, :unit), :struct)
     Formatter.format_time(time, Keyword.fetch!(opts, :format))
@@ -84,7 +83,7 @@ defmodule NeoFaker.Time do
   @spec between(Time.t(), Time.t(), keyword()) :: Time.t() | String.t()
   def between(start \\ @midnight, finish \\ @end_of_day, opts \\ []) do
     TimeValidator.validate_time_order!(start, finish)
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
 
     time = TimeGenerator.between(start, finish, :struct)
 
@@ -204,7 +203,7 @@ defmodule NeoFaker.Time do
   """
   @spec now(keyword()) :: Time.t() | String.t()
   def now(opts \\ []) do
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
     Formatter.format_time(Time.utc_now(), Keyword.fetch!(opts, :format))
   end
 end

@@ -9,7 +9,6 @@ defmodule NeoFaker.Person do
   @moduledoc since: "0.6.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
   alias NeoFaker.Person.Validator
@@ -71,7 +70,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec first_name(keyword()) :: String.t()
   def first_name(opts \\ []) do
-    opts = Options.validate!(opts, @name_schema)
+    opts = NimbleOptions.validate!(opts, @name_schema)
     NameGenerator.name(Keyword.fetch!(opts, :locale), "first_names", Keyword.fetch!(opts, :sex))
   end
 
@@ -98,7 +97,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec middle_name(keyword()) :: String.t()
   def middle_name(opts \\ []) do
-    opts = Options.validate!(opts, @name_schema)
+    opts = NimbleOptions.validate!(opts, @name_schema)
     NameGenerator.name(Keyword.fetch!(opts, :locale), "middle_names", Keyword.fetch!(opts, :sex))
   end
 
@@ -125,7 +124,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec last_name(keyword()) :: String.t()
   def last_name(opts \\ []) do
-    opts = Options.validate!(opts, @name_schema)
+    opts = NimbleOptions.validate!(opts, @name_schema)
     NameGenerator.name(Keyword.fetch!(opts, :locale), "last_names", Keyword.fetch!(opts, :sex))
   end
 
@@ -158,7 +157,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec full_name(keyword()) :: String.t()
   def full_name(opts \\ []) do
-    opts = Options.validate!(opts, @full_name_schema)
+    opts = NimbleOptions.validate!(opts, @full_name_schema)
 
     FullNameGenerator.name(
       Keyword.fetch!(opts, :sex),
@@ -186,7 +185,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec prefix(keyword()) :: String.t()
   def prefix(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     Data.random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
   end
 
@@ -212,7 +211,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec suffix(keyword()) :: String.t()
   def suffix(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     Data.random_value(__MODULE__, @name_affixes_file, "suffixes", opts)
   end
 
@@ -246,7 +245,7 @@ defmodule NeoFaker.Person do
   @doc since: "0.15.0"
   @spec gender(keyword()) :: String.t()
   def gender(opts \\ []) do
-    opts = Options.validate!(opts, @gender_schema)
+    opts = NimbleOptions.validate!(opts, @gender_schema)
     format = Keyword.fetch!(opts, :format)
     locale_opts = Keyword.take(opts, [:locale])
 
@@ -281,7 +280,7 @@ defmodule NeoFaker.Person do
   @deprecated "Use gender/1 instead, e.g. gender(format: :binary)"
   @spec binary_gender(keyword()) :: String.t()
   def binary_gender(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     gender(Keyword.put(opts, :format, :binary))
   end
 
@@ -304,7 +303,7 @@ defmodule NeoFaker.Person do
   @deprecated "Use gender/1 instead, e.g. gender(format: :short_binary)"
   @spec short_binary_gender(keyword()) :: String.t()
   def short_binary_gender(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     gender(Keyword.put(opts, :format, :short_binary))
   end
 
@@ -327,7 +326,7 @@ defmodule NeoFaker.Person do
   @deprecated "Use gender/1 instead, e.g. gender(format: :non_binary)"
   @spec non_binary_gender(keyword()) :: String.t()
   def non_binary_gender(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     gender(Keyword.put(opts, :format, :non_binary))
   end
 
@@ -393,7 +392,7 @@ defmodule NeoFaker.Person do
   """
   @spec full_name_with_title(keyword()) :: String.t()
   def full_name_with_title(opts \\ []) do
-    opts = Options.validate!(opts, @full_name_with_title_schema)
+    opts = NimbleOptions.validate!(opts, @full_name_with_title_schema)
     name_opts = Keyword.take(opts, [:sex, :locale, :middle_name])
     locale_opts = Keyword.take(opts, [:locale])
 

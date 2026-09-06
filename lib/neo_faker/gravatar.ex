@@ -10,7 +10,6 @@ defmodule NeoFaker.Gravatar do
 
   alias NeoFaker.Gravatar.Generator
   alias NeoFaker.Gravatar.Validator
-  alias NeoFaker.Helpers.Options
 
   @typedoc "Email address."
   @type email :: String.t() | nil
@@ -84,7 +83,7 @@ defmodule NeoFaker.Gravatar do
   """
   @spec display(email(), keyword()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    opts = Options.validate!(opts, @display_schema)
+    opts = NimbleOptions.validate!(opts, @display_schema)
 
     validated_size = Generator.image_size(Keyword.fetch!(opts, :size))
 
@@ -136,7 +135,7 @@ defmodule NeoFaker.Gravatar do
   """
   @spec profile(email(), keyword()) :: String.t()
   def profile(email \\ nil, opts \\ []) do
-    opts = Options.validate!(opts, @profile_schema)
+    opts = NimbleOptions.validate!(opts, @profile_schema)
 
     hash = Generator.email_hash(email)
     base_url = "https://gravatar.com/#{hash}"

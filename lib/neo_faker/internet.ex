@@ -8,7 +8,6 @@ defmodule NeoFaker.Internet do
   @moduledoc since: "0.13.0"
 
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Internet.DomainGenerator
   alias NeoFaker.Internet.EmailGenerator
   alias NeoFaker.Internet.Generator
@@ -127,7 +126,7 @@ defmodule NeoFaker.Internet do
   """
   @spec username(keyword()) :: String.t()
   def username(opts \\ []) do
-    opts = Options.validate!(opts, @username_schema)
+    opts = NimbleOptions.validate!(opts, @username_schema)
     joiner = UsernameGenerator.joiner(Keyword.fetch!(opts, :joiner))
 
     base =
@@ -179,7 +178,7 @@ defmodule NeoFaker.Internet do
   """
   @spec domain_name(keyword()) :: String.t()
   def domain_name(opts \\ []) do
-    opts = Options.validate!(opts, @domain_name_schema)
+    opts = NimbleOptions.validate!(opts, @domain_name_schema)
 
     case Keyword.fetch!(opts, :type) do
       :random ->
@@ -236,7 +235,7 @@ defmodule NeoFaker.Internet do
   """
   @spec tld(keyword()) :: String.t()
   def tld(opts \\ []) do
-    opts = Options.validate!(opts, @tld_schema)
+    opts = NimbleOptions.validate!(opts, @tld_schema)
     tld_name = TldGenerator.generate_name(Keyword.fetch!(opts, :type))
 
     if Keyword.fetch!(opts, :dot) do
@@ -297,7 +296,7 @@ defmodule NeoFaker.Internet do
   """
   @spec email(keyword()) :: String.t()
   def email(opts \\ []) do
-    opts = Options.validate!(opts, @email_schema)
+    opts = NimbleOptions.validate!(opts, @email_schema)
 
     username = EmailGenerator.generate_username(opts)
     domain_name = EmailGenerator.generate_domain_name(opts)
@@ -339,7 +338,7 @@ defmodule NeoFaker.Internet do
   """
   @spec ipv4(keyword()) :: String.t()
   def ipv4(opts \\ []) do
-    opts = Options.validate!(opts, @ipv4_schema)
+    opts = NimbleOptions.validate!(opts, @ipv4_schema)
 
     if Keyword.fetch!(opts, :private) do
       class = Keyword.fetch!(opts, :class) || Enum.random([:a, :b, :c])
@@ -375,7 +374,7 @@ defmodule NeoFaker.Internet do
   """
   @spec ipv6(keyword()) :: String.t()
   def ipv6(opts \\ []) do
-    opts = Options.validate!(opts, @ipv6_schema)
+    opts = NimbleOptions.validate!(opts, @ipv6_schema)
 
     ip_address =
       if Keyword.fetch!(opts, :compressed) do
@@ -422,7 +421,7 @@ defmodule NeoFaker.Internet do
   """
   @spec mac_address(keyword()) :: String.t()
   def mac_address(opts \\ []) do
-    opts = Options.validate!(opts, @mac_address_schema)
+    opts = NimbleOptions.validate!(opts, @mac_address_schema)
 
     mac_address =
       Enum.map_join(1..6, Keyword.fetch!(opts, :separator), fn _ ->
@@ -468,7 +467,7 @@ defmodule NeoFaker.Internet do
   """
   @spec url(keyword()) :: String.t()
   def url(opts \\ []) do
-    opts = Options.validate!(opts, @url_schema)
+    opts = NimbleOptions.validate!(opts, @url_schema)
 
     domain_opts =
       opts
@@ -525,7 +524,7 @@ defmodule NeoFaker.Internet do
   """
   @spec slug(pos_integer(), keyword()) :: String.t()
   def slug(word_count \\ 3, opts \\ []) when is_integer(word_count) and word_count > 0 do
-    opts = Options.validate!(opts, @slug_schema)
+    opts = NimbleOptions.validate!(opts, @slug_schema)
 
     Enum.map_join(1..word_count, Keyword.fetch!(opts, :separator), fn _ ->
       String.downcase(NeoFaker.Text.word())

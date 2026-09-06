@@ -11,7 +11,6 @@ defmodule NeoFaker.Date do
   alias NeoFaker.Date.Generator
   alias NeoFaker.Date.Validator
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
 
   @epoch_date ~D[1970-01-01]
   @date_range -365..365
@@ -45,7 +44,7 @@ defmodule NeoFaker.Date do
   @spec add(Range.t(), keyword()) :: Date.t() | String.t()
   def add(range \\ @date_range, opts \\ []) do
     Validator.validate_range!(range)
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
 
     range |> Generator.add(:struct) |> Formatter.format_date(Keyword.fetch!(opts, :format))
   end
@@ -75,7 +74,7 @@ defmodule NeoFaker.Date do
   @spec between(Date.t(), Date.t(), keyword()) :: Date.t() | String.t()
   def between(start \\ @epoch_date, finish \\ Generator.local_date_now(), opts \\ []) do
     Validator.validate_date_order!(start, finish)
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
 
     start
     |> Generator.between(finish, :struct)
@@ -108,7 +107,7 @@ defmodule NeoFaker.Date do
   @spec birthday(non_neg_integer(), non_neg_integer(), keyword()) :: Date.t() | String.t()
   def birthday(min_age \\ @min_age, max_age \\ @max_age, opts \\ []) do
     Validator.validate_age_range!(min_age, max_age)
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
 
     today = Generator.local_date_now()
 
@@ -192,7 +191,7 @@ defmodule NeoFaker.Date do
   """
   @spec today(keyword()) :: Date.t() | String.t()
   def today(opts \\ []) do
-    opts = Options.validate!(opts, @format_schema)
+    opts = NimbleOptions.validate!(opts, @format_schema)
     date = Generator.local_date_now()
     Formatter.format_date(date, Keyword.fetch!(opts, :format))
   end

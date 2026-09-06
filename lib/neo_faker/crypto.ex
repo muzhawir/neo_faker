@@ -11,7 +11,6 @@ defmodule NeoFaker.Crypto do
 
   alias NeoFaker.Crypto.HashGenerator
   alias NeoFaker.Crypto.Validator
-  alias NeoFaker.Helpers.Options
 
   @case_schema NimbleOptions.new!(case: [type: {:in, [:lower, :upper]}, default: :lower])
 
@@ -42,7 +41,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec md5(keyword()) :: String.t()
   def md5(opts \\ []) do
-    opts = Options.validate!(opts, @case_schema)
+    opts = NimbleOptions.validate!(opts, @case_schema)
     HashGenerator.generate_hash(:md5, opts)
   end
 
@@ -66,7 +65,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha1(keyword()) :: String.t()
   def sha1(opts \\ []) do
-    opts = Options.validate!(opts, @case_schema)
+    opts = NimbleOptions.validate!(opts, @case_schema)
     HashGenerator.generate_hash(:sha, opts)
   end
 
@@ -90,7 +89,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha256(keyword()) :: String.t()
   def sha256(opts \\ []) do
-    opts = Options.validate!(opts, @case_schema)
+    opts = NimbleOptions.validate!(opts, @case_schema)
     HashGenerator.generate_hash(:sha256, opts)
   end
 
@@ -114,7 +113,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec sha512(keyword()) :: String.t()
   def sha512(opts \\ []) do
-    opts = Options.validate!(opts, @case_schema)
+    opts = NimbleOptions.validate!(opts, @case_schema)
     HashGenerator.generate_hash(:sha512, opts)
   end
 
@@ -140,7 +139,7 @@ defmodule NeoFaker.Crypto do
   @spec hash(atom(), keyword()) :: String.t()
   def hash(type, opts \\ []) do
     Validator.validate_hash_type!(type)
-    opts = Options.validate!(opts, @case_schema)
+    opts = NimbleOptions.validate!(opts, @case_schema)
 
     case type do
       :md5 -> HashGenerator.generate_hash(:md5, opts)
@@ -175,7 +174,7 @@ defmodule NeoFaker.Crypto do
   def token(length \\ 32, opts \\ [])
 
   def token(length, opts) when is_integer(length) and length > 0 do
-    opts = Options.validate!(opts, @token_schema)
+    opts = NimbleOptions.validate!(opts, @token_schema)
     random_bytes = :crypto.strong_rand_bytes(length)
 
     case Keyword.fetch!(opts, :encoding) do
@@ -215,7 +214,7 @@ defmodule NeoFaker.Crypto do
   """
   @spec uuid(keyword()) :: String.t()
   def uuid(opts \\ []) do
-    opts = Options.validate!(opts, @uuid_schema)
+    opts = NimbleOptions.validate!(opts, @uuid_schema)
 
     <<a::32, b::16, c::16, d::16, e::48>> = :crypto.strong_rand_bytes(16)
 

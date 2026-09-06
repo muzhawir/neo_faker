@@ -9,7 +9,6 @@ defmodule NeoFaker.Boolean do
 
   alias NeoFaker.Boolean.Generator
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
 
   @ratio_range 0..100
 
@@ -48,7 +47,7 @@ defmodule NeoFaker.Boolean do
   def boolean(true_ratio \\ 50, opts \\ [])
 
   def boolean(true_ratio, opts) when true_ratio in @ratio_range do
-    opts = Options.validate!(opts, @options_schema)
+    opts = NimbleOptions.validate!(opts, @options_schema)
     result = Generator.boolean(true_ratio)
 
     if Keyword.fetch!(opts, :integer) do

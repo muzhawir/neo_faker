@@ -152,8 +152,8 @@ defmodule NeoFaker.AppTest do
       assert String.match?(bundle, ~r/^com\.example\.[a-z0-9_]+$/)
     end
 
-    test "raises ArgumentError for an invalid style" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an invalid style" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(style: :pascal_case)
       end
     end
@@ -178,56 +178,56 @@ defmodule NeoFaker.AppTest do
       assert String.starts_with?(bundle, "com.123corp.")
     end
 
-    test "raises ArgumentError when domain has no dot" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain has no dot" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "nodot")
       end
     end
 
-    test "raises ArgumentError when domain is empty" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain is empty" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "")
       end
     end
 
-    test "raises ArgumentError when domain is not a string" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain is not a string" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: :example)
       end
     end
 
-    test "raises ArgumentError when all domain labels vanish after sanitisation" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when all domain labels vanish after sanitisation" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "----.----")
       end
     end
 
-    test "raises ArgumentError when domain has a trailing dot" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain has a trailing dot" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "example.com.")
       end
     end
 
-    test "raises ArgumentError when domain contains a path separator" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain contains a path separator" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "example.com/path")
       end
     end
 
-    test "raises ArgumentError when domain contains a port suffix" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain contains a port suffix" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "example.com:443")
       end
     end
 
-    test "raises ArgumentError when a domain label starts with a hyphen" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when a domain label starts with a hyphen" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "-example.com")
       end
     end
 
-    test "raises ArgumentError when a domain label ends with a hyphen" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when a domain label ends with a hyphen" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.bundle_id(domain: "example-.com")
       end
     end
@@ -286,56 +286,56 @@ defmodule NeoFaker.AppTest do
              "expected all domain label segments to be alphanumeric, got: #{inspect(domain_segments)}"
     end
 
-    test "raises ArgumentError when domain has no dot" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain has no dot" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "nodot")
       end
     end
 
-    test "raises ArgumentError when domain is empty" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain is empty" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "")
       end
     end
 
-    test "raises ArgumentError when domain is not a string" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain is not a string" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: 42)
       end
     end
 
-    test "raises ArgumentError when all domain labels vanish after sanitisation" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when all domain labels vanish after sanitisation" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "----.----")
       end
     end
 
-    test "raises ArgumentError when domain has a trailing dot" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain has a trailing dot" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "example.com.")
       end
     end
 
-    test "raises ArgumentError when domain contains a path separator" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain contains a path separator" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "example.com/path")
       end
     end
 
-    test "raises ArgumentError when domain contains a port suffix" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when domain contains a port suffix" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "example.com:443")
       end
     end
 
-    test "raises ArgumentError when a domain label starts with a hyphen" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when a domain label starts with a hyphen" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "-example.com")
       end
     end
 
-    test "raises ArgumentError when a domain label ends with a hyphen" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when a domain label ends with a hyphen" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         App.package_name(domain: "example-.com")
       end
     end

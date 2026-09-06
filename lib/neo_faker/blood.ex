@@ -8,7 +8,6 @@ defmodule NeoFaker.Blood do
   @moduledoc since: "0.3.1"
 
   alias NeoFaker.Blood.Generator
-  alias NeoFaker.Helpers.Options
 
   @group_schema NimbleOptions.new!(
                   format: [type: {:in, [:group, :type_only, :rh_only]}, default: :group]
@@ -40,7 +39,7 @@ defmodule NeoFaker.Blood do
   """
   @spec group(keyword()) :: String.t()
   def group(opts \\ []) do
-    format = opts |> Options.validate!(@group_schema) |> Keyword.fetch!(:format)
+    format = opts |> NimbleOptions.validate!(@group_schema) |> Keyword.fetch!(:format)
 
     case format do
       :group -> "#{type()}#{rh_factor()}"
@@ -98,7 +97,8 @@ defmodule NeoFaker.Blood do
   """
   @spec medical_notation(keyword()) :: String.t()
   def medical_notation(opts \\ []) do
-    verbose = opts |> Options.validate!(@medical_notation_schema) |> Keyword.fetch!(:verbose)
+    verbose =
+      opts |> NimbleOptions.validate!(@medical_notation_schema) |> Keyword.fetch!(:verbose)
 
     blood_type = type()
     rh_text = if rh_factor() == "+", do: "positive", else: "negative"

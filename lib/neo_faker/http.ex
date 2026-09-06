@@ -7,7 +7,6 @@ defmodule NeoFaker.HTTP do
   """
   @moduledoc since: "0.11.0"
 
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.HTTP.HeaderGenerator
   alias NeoFaker.HTTP.StatusCodeGenerator
   alias NeoFaker.HTTP.UserAgentGenerator
@@ -91,7 +90,7 @@ defmodule NeoFaker.HTTP do
   """
   @spec user_agent(keyword()) :: String.t()
   def user_agent(opts \\ []) do
-    opts = Options.validate!(opts, @user_agent_schema)
+    opts = NimbleOptions.validate!(opts, @user_agent_schema)
     UserAgentGenerator.name(Keyword.fetch!(opts, :type))
   end
 
@@ -116,7 +115,7 @@ defmodule NeoFaker.HTTP do
   """
   @spec request_method(keyword()) :: String.t()
   def request_method(opts \\ []) do
-    opts = Options.validate!(opts, @request_method_schema)
+    opts = NimbleOptions.validate!(opts, @request_method_schema)
 
     methods =
       if Keyword.fetch!(opts, :common_only) do
@@ -179,7 +178,7 @@ defmodule NeoFaker.HTTP do
   """
   @spec status_code(keyword()) :: String.t()
   def status_code(opts \\ []) do
-    opts = Options.validate!(opts, @status_code_schema)
+    opts = NimbleOptions.validate!(opts, @status_code_schema)
 
     opts
     |> Keyword.fetch!(:group)
@@ -208,7 +207,7 @@ defmodule NeoFaker.HTTP do
   """
   @spec protocol_version(keyword()) :: String.t()
   def protocol_version(opts \\ []) do
-    opts = Options.validate!(opts, @protocol_version_schema)
+    opts = NimbleOptions.validate!(opts, @protocol_version_schema)
 
     versions = ["HTTP/1.0", "HTTP/1.1", "HTTP/2"]
 
@@ -247,7 +246,7 @@ defmodule NeoFaker.HTTP do
   """
   @spec header_name(keyword()) :: String.t()
   def header_name(opts \\ []) do
-    opts = Options.validate!(opts, @header_name_schema)
+    opts = NimbleOptions.validate!(opts, @header_name_schema)
     HeaderGenerator.name(Keyword.fetch!(opts, :type))
   end
 

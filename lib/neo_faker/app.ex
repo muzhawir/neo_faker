@@ -13,7 +13,6 @@ defmodule NeoFaker.App do
   alias NeoFaker.App.SemverGenerator
   alias NeoFaker.App.Validator
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Person
 
   @description_file "description.exs"
@@ -71,7 +70,7 @@ defmodule NeoFaker.App do
       "José Valim"
 
       iex> NeoFaker.App.author(middle_name: true)
-      "José Carlos Valim"
+      "Joshua Peter Bennet"
 
       iex> NeoFaker.App.author(sex: :female)
       "Juliana Silva"
@@ -103,7 +102,7 @@ defmodule NeoFaker.App do
   """
   @spec description(keyword()) :: String.t()
   def description(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     Data.random_value(__MODULE__, @description_file, "descriptions", opts)
   end
 
@@ -153,15 +152,21 @@ defmodule NeoFaker.App do
   """
   @spec name(keyword()) :: String.t()
   def name(opts \\ []) do
-    opts = Options.validate!(opts, @name_schema)
+    opts = NimbleOptions.validate!(opts, @name_schema)
 
     first_name =
-      Data.random_value(__MODULE__, @name_file, "first_names",
+      Data.random_value(
+        __MODULE__,
+        @name_file,
+        "first_names",
         locale: Keyword.fetch!(opts, :locale)
       )
 
     last_name =
-      Data.random_value(__MODULE__, @name_file, "last_names",
+      Data.random_value(
+        __MODULE__,
+        @name_file,
+        "last_names",
         locale: Keyword.fetch!(opts, :locale)
       )
 
@@ -199,7 +204,7 @@ defmodule NeoFaker.App do
   """
   @spec semver(keyword()) :: String.t()
   def semver(opts \\ []) do
-    opts = Options.validate!(opts, @semver_schema)
+    opts = NimbleOptions.validate!(opts, @semver_schema)
 
     core = SemverGenerator.semver_core()
 
@@ -230,7 +235,7 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver() |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+  def version, do: semver() |> String.split(".") |> Stream.take(2) |> Enum.join(".")
 
   @doc """
   Generates a random app bundle identifier.
@@ -258,7 +263,7 @@ defmodule NeoFaker.App do
   """
   @spec bundle_id(keyword()) :: String.t()
   def bundle_id(opts \\ []) do
-    opts = Options.validate!(opts, @bundle_id_schema)
+    opts = NimbleOptions.validate!(opts, @bundle_id_schema)
 
     app_name = name(style: Keyword.fetch!(opts, :style))
 
@@ -286,7 +291,7 @@ defmodule NeoFaker.App do
   """
   @spec package_name(keyword()) :: String.t()
   def package_name(opts \\ []) do
-    opts = Options.validate!(opts, @package_name_schema)
+    opts = NimbleOptions.validate!(opts, @package_name_schema)
 
     app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
 

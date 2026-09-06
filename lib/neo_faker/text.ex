@@ -9,7 +9,6 @@ defmodule NeoFaker.Text do
   @moduledoc since: "0.8.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Text.EmojiGenerator
   alias NeoFaker.Text.Generator
 
@@ -82,7 +81,7 @@ defmodule NeoFaker.Text do
   """
   @spec character(keyword()) :: String.t()
   def character(opts \\ []) do
-    opts = Options.validate!(opts, @character_schema)
+    opts = NimbleOptions.validate!(opts, @character_schema)
     Generator.character(Keyword.fetch!(opts, :type))
   end
 
@@ -162,7 +161,7 @@ defmodule NeoFaker.Text do
   """
   @spec emoji(keyword()) :: String.t()
   def emoji(opts \\ []) do
-    opts = Options.validate!(opts, @emoji_schema)
+    opts = NimbleOptions.validate!(opts, @emoji_schema)
     EmojiGenerator.emoji(Keyword.fetch!(opts, :category))
   end
 
@@ -207,7 +206,7 @@ defmodule NeoFaker.Text do
   def words(count \\ 5, opts \\ [])
 
   def words(count, opts) when is_integer(count) and count > 0 do
-    opts = Options.validate!(opts, @words_schema)
+    opts = NimbleOptions.validate!(opts, @words_schema)
 
     words_list = Enum.map(1..count, fn _ -> word() end)
 

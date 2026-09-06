@@ -15,7 +15,6 @@ defmodule NeoFaker.Color do
   alias NeoFaker.Color.KeywordGenerator
   alias NeoFaker.Color.RgbaGenerator
   alias NeoFaker.Color.RgbGenerator
-  alias NeoFaker.Helpers.Options
 
   @w3c_format_schema NimbleOptions.new!(format: [type: {:in, [nil, :w3c]}, default: nil])
 
@@ -61,7 +60,7 @@ defmodule NeoFaker.Color do
   """
   @spec cmyk(keyword()) :: any_color()
   def cmyk(opts \\ []) do
-    opts = Options.validate!(opts, @w3c_format_schema)
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
     color_tuple = CmykGenerator.color_tuple()
 
     case Keyword.fetch!(opts, :format) do
@@ -94,7 +93,7 @@ defmodule NeoFaker.Color do
   """
   @spec hex(keyword()) :: String.t()
   def hex(opts \\ []) do
-    opts = Options.validate!(opts, @hex_schema)
+    opts = NimbleOptions.validate!(opts, @hex_schema)
 
     digits =
       case Keyword.fetch!(opts, :format) do
@@ -129,7 +128,7 @@ defmodule NeoFaker.Color do
   """
   @spec hsl(keyword()) :: any_color()
   def hsl(opts \\ []) do
-    opts = Options.validate!(opts, @w3c_format_schema)
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
     color_tuple = HslGenerator.color_tuple()
 
     case Keyword.fetch!(opts, :format) do
@@ -161,7 +160,7 @@ defmodule NeoFaker.Color do
   """
   @spec hsla(keyword()) :: any_color()
   def hsla(opts \\ []) do
-    opts = Options.validate!(opts, @w3c_format_schema)
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
     color_tuple = HslaGenerator.color_tuple()
 
     case Keyword.fetch!(opts, :format) do
@@ -197,7 +196,7 @@ defmodule NeoFaker.Color do
   """
   @spec keyword(keyword()) :: String.t()
   def keyword(opts \\ []) do
-    opts = Options.validate!(opts, @keyword_schema)
+    opts = NimbleOptions.validate!(opts, @keyword_schema)
     KeywordGenerator.color(Keyword.fetch!(opts, :category), Keyword.fetch!(opts, :locale))
   end
 
@@ -223,7 +222,7 @@ defmodule NeoFaker.Color do
   """
   @spec rgb(keyword()) :: any_color()
   def rgb(opts \\ []) do
-    opts = Options.validate!(opts, @w3c_format_schema)
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
     color_tuple = RgbGenerator.color_tuple()
 
     case Keyword.fetch!(opts, :format) do
@@ -254,7 +253,7 @@ defmodule NeoFaker.Color do
   """
   @spec rgba(keyword()) :: any_color()
   def rgba(opts \\ []) do
-    opts = Options.validate!(opts, @w3c_format_schema)
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
     color_tuple = RgbaGenerator.color_tuple()
 
     case Keyword.fetch!(opts, :format) do

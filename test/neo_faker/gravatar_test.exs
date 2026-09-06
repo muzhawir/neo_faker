@@ -101,44 +101,44 @@ defmodule NeoFaker.GravatarTest do
       assert String.contains?(url, "&s=")
     end
 
-    test "raises ArgumentError when size is below 1" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is below 1" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: 0)
       end
     end
 
-    test "raises ArgumentError when size is above 2048" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is above 2048" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: 2049)
       end
     end
 
-    test "raises ArgumentError when size is not an integer" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is not an integer" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: "large")
       end
     end
 
-    test "raises ArgumentError when fallback is an unknown atom" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback is an unknown atom" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: :unknown)
       end
     end
 
-    test "raises ArgumentError when fallback string does not start with http:// or https://" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback string does not start with http:// or https://" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: "ftp://example.com/img.png")
       end
     end
 
-    test "raises ArgumentError when fallback is neither an atom nor a string" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback is neither an atom nor a string" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: 42)
       end
     end
 
-    test "raises ArgumentError when rating is an invalid atom" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when rating is an invalid atom" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, rating: :nc17)
       end
     end
@@ -198,8 +198,8 @@ defmodule NeoFaker.GravatarTest do
       assert String.starts_with?(url, "https://gravatar.com/")
     end
 
-    test "raises ArgumentError for an unsupported profile format" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an unsupported profile format" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.profile(@john_doe_email, format: :yaml)
       end
     end

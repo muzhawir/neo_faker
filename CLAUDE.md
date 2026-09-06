@@ -70,17 +70,18 @@ Every function that accepts a keyword-list `opts` parameter validates it with `N
            )
 
 def my_function(opts \\ []) do
-  opts = NeoFaker.Helpers.Options.validate!(opts, @my_schema)
+  opts = NimbleOptions.validate!(opts, @my_schema)
   # ... use opts[:format]
 end
 ```
 
-`NeoFaker.Helpers.Options.validate!/2` (`lib/neo_faker/helpers/options.ex`) wraps `NimbleOptions.validate/2` and re-raises as `ArgumentError`
-instead of `NimbleOptions.ValidationError`, so every function keeps its documented "Raises `ArgumentError`" contract. For validation NimbleOptions
-has no built-in type for (a business rule, or a message that must name the specific function), write a `{:ok, value} | {:error, message}` function
-in the domain's `Validator` module and reference it as `type: {:custom, Validator, :fun_name, []}`. NimbleOptions wraps whatever message that
-function returns; it doesn't replace it. **NimbleOptions validates default values against their own type too** (including through `{:custom, ...}`
-validators). A schema default must independently satisfy its own type spec, or every call using that default will raise.
+Call `NimbleOptions.validate!/2` directly; there is no wrapper. Invalid options therefore raise `NimbleOptions.ValidationError`, not
+`ArgumentError` (positional-argument validation in the `Validator` modules and unsupported-locale errors still raise `ArgumentError` directly).
+For validation NimbleOptions has no built-in type for (a business rule, or a message that must name the specific function), write a
+`{:ok, value} | {:error, message}` function in the domain's `Validator` module and reference it as `type: {:custom, Validator, :fun_name, []}`.
+NimbleOptions wraps whatever message that function returns in a `NimbleOptions.ValidationError`; it doesn't replace it. **NimbleOptions validates
+default values against their own type too** (including through `{:custom, ...}` validators). A schema default must independently satisfy its own
+type spec, or every call using that default will raise.
 
 When one function forwards a subset of its own already-validated `opts` to another function that has its own independent schema, extract exactly
 that subset with `Keyword.take/2` first (see `NeoFaker.Internet.EmailGenerator` for an example), since NimbleOptions raises on any key a schema
@@ -145,9 +146,10 @@ Generators" by matching the literal `NeoFaker.Locales.` prefix, so keep every lo
 
 `lib/neo_faker/helpers/`:
 
-- `Options` provides `validate!/2`, a thin `NimbleOptions.validate/2` wrapper that re-raises as `ArgumentError` (see "Options handling" above).
-  Every domain module parsing `opts` goes through this instead of ad hoc `Keyword.get/3` + manual validation.
 - `Formatter` provides shared output formatting (e.g. numbers to string).
+
+Options parsing has no shared helper: every domain module calls `NimbleOptions.validate!/2` directly (see "Options handling" above) instead of
+ad hoc `Keyword.get/3` + manual validation.
 
 ### Tests
 

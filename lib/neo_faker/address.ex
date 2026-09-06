@@ -11,7 +11,6 @@ defmodule NeoFaker.Address do
   alias NeoFaker.Address.Validator
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Number
 
   @city_file "city.exs"
@@ -59,7 +58,7 @@ defmodule NeoFaker.Address do
   @spec building_number(Range.t(), keyword()) :: integer() | String.t()
   def building_number(range \\ @building_number_range, opts \\ []) do
     Validator.validate_range!(range)
-    opts = Options.validate!(opts, @building_number_schema)
+    opts = NimbleOptions.validate!(opts, @building_number_schema)
 
     number = Number.between(range.first, range.last)
 
@@ -90,7 +89,7 @@ defmodule NeoFaker.Address do
   """
   @spec city(keyword()) :: String.t()
   def city(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     Data.random_value(__MODULE__, @city_file, "city", opts)
   end
 
@@ -115,7 +114,7 @@ defmodule NeoFaker.Address do
   """
   @spec country(keyword()) :: String.t()
   def country(opts \\ []) do
-    opts = Options.validate!(opts, @locale_schema)
+    opts = NimbleOptions.validate!(opts, @locale_schema)
     Data.random_value(__MODULE__, @country_file, "country", opts)
   end
 
@@ -150,7 +149,7 @@ defmodule NeoFaker.Address do
   """
   @spec coordinate(keyword()) :: {float(), float()} | float()
   def coordinate(opts \\ []) do
-    opts = Options.validate!(opts, @coordinate_schema)
+    opts = NimbleOptions.validate!(opts, @coordinate_schema)
 
     latitude = Generator.latitude(Keyword.fetch!(opts, :precision))
     longitude = Generator.longitude(Keyword.fetch!(opts, :precision))

@@ -27,14 +27,14 @@ defmodule NeoFaker.AddressTest do
       assert Address.building_number(1..100, type: :integer) in 1..100
     end
 
-    test "raises ArgumentError for an unknown :type" do
-      assert_raise ArgumentError, ~r/invalid :type for building_number\/2/, fn ->
+    test "raises NimbleOptions.ValidationError for an unknown :type" do
+      assert_raise NimbleOptions.ValidationError, ~r/invalid :type for building_number\/2/, fn ->
         Address.building_number(1..100, type: :float)
       end
     end
 
-    test "raises ArgumentError for a non-atom :type" do
-      assert_raise ArgumentError, ~r/invalid :type for building_number\/2/, fn ->
+    test "raises NimbleOptions.ValidationError for a non-atom :type" do
+      assert_raise NimbleOptions.ValidationError, ~r/invalid :type for building_number\/2/, fn ->
         Address.building_number(1..100, type: "string")
       end
     end
@@ -90,14 +90,14 @@ defmodule NeoFaker.AddressTest do
       assert is_float(Address.coordinate(type: :longitude))
     end
 
-    test "raises ArgumentError for an unknown :type" do
-      assert_raise ArgumentError, ~r/invalid :type for coordinate\/1/, fn ->
+    test "raises NimbleOptions.ValidationError for an unknown :type" do
+      assert_raise NimbleOptions.ValidationError, ~r/invalid :type for coordinate\/1/, fn ->
         Address.coordinate(type: :altitude)
       end
     end
 
-    test "raises ArgumentError for a non-atom :type" do
-      assert_raise ArgumentError, ~r/invalid :type for coordinate\/1/, fn ->
+    test "raises NimbleOptions.ValidationError for a non-atom :type" do
+      assert_raise NimbleOptions.ValidationError, ~r/invalid :type for coordinate\/1/, fn ->
         Address.coordinate(type: "full")
       end
     end

@@ -2,16 +2,14 @@ defmodule NeoFaker do
   @moduledoc """
   NeoFaker is a package for generating fake data in Elixir.
 
-  This module provides the main interface for starting the application and
-  seeding the random number generator. See `NeoFaker.Locale` for managing
-  locale configuration.
+  This module provides the main interface for starting the application and seeding the random
+  number generator. See `NeoFaker.Locale` for managing locale configuration.
 
   ## Locale support
 
-  Many modules accept a `:locale` option. Use `NeoFaker.Locale.set/1` to
-  override the locale for the calling process, or pass `locale:` per call.
-  To set a locale for the whole application instead (e.g. for a Phoenix
-  app), configure `config :neo_faker, locale: ...`, then see
+  Many modules accept a `:locale` option. Use `NeoFaker.Locale.set/1` to override the locale for
+  the calling process, or pass `locale:` per call. To set a locale for the whole application
+  instead (e.g. for a Phoenix app), configure `config :neo_faker, locale: ...`, then see
   [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html).
 
       iex> NeoFaker.Locale.set(:id_id)
@@ -23,8 +21,8 @@ defmodule NeoFaker do
       iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
       "José"
 
-  See the [available locales](https://hexdocs.pm/neo_faker/locales.html)
-  for the full list of supported locale codes.
+  See the [available locales](https://hexdocs.pm/neo_faker/locales.html) for the full list of
+  supported locale codes.
   """
   @moduledoc since: "0.1.0"
 
@@ -62,8 +60,8 @@ defmodule NeoFaker do
   end
 
   @doc """
-  Returns the current locale, preferring a process-scoped override over the
-  application-wide default.
+  Returns the current locale, preferring a process-scoped override over the application-wide
+  default.
 
   ## Examples
 
@@ -102,13 +100,11 @@ defmodule NeoFaker do
   def get_locale, do: Locale.get()
 
   @doc """
-  Seeds the random number generator for the calling process, for reproducible
-  output.
+  Seeds the random number generator for the calling process, for reproducible output.
 
-  NeoFaker draws values via `Enum.random/1` and `:rand.uniform/1`, both backed
-  by `:rand`, which OTP already seeds automatically and unpredictably per
-  process. Call this at the start of a test (or anywhere else you need
-  deterministic fake data) to pin that seed instead.
+  NeoFaker draws values via `Enum.random/1` and `:rand.uniform/1`, both backed by `:rand`, which
+  OTP already seeds automatically and unpredictably per process. Call this at the start of a
+  test (or anywhere else you need deterministic fake data) to pin that seed instead.
 
   ## Examples
 

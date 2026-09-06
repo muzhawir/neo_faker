@@ -9,7 +9,6 @@ defmodule NeoFaker.Lorem do
   @moduledoc since: "0.8.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Lorem.Generator
 
   @text_schema NimbleOptions.new!(
@@ -47,7 +46,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec paragraph(keyword()) :: String.t()
   def paragraph(opts \\ []) do
-    opts = Options.validate!(opts, @text_schema)
+    opts = NimbleOptions.validate!(opts, @text_schema)
     file = Generator.text_file(Keyword.fetch!(opts, :text))
 
     __MODULE__
@@ -132,7 +131,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec paragraphs(pos_integer(), keyword()) :: [String.t()] | String.t()
   def paragraphs(count \\ 3, opts \\ []) when is_integer(count) and count > 0 do
-    opts = Options.validate!(opts, @join_schema)
+    opts = NimbleOptions.validate!(opts, @join_schema)
     text_opts = Keyword.take(opts, [:text, :locale])
 
     paragraphs_list = Enum.map(1..count, fn _ -> paragraph(text_opts) end)
@@ -167,7 +166,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec sentences(pos_integer(), keyword()) :: [String.t()] | String.t()
   def sentences(count \\ 5, opts \\ []) when is_integer(count) and count > 0 do
-    opts = Options.validate!(opts, @join_schema)
+    opts = NimbleOptions.validate!(opts, @join_schema)
     text_opts = Keyword.take(opts, [:text, :locale])
 
     sentences_list = Enum.map(1..count, fn _ -> sentence(text_opts) end)
@@ -202,7 +201,7 @@ defmodule NeoFaker.Lorem do
   """
   @spec words(pos_integer(), keyword()) :: [String.t()] | String.t()
   def words(count \\ 10, opts \\ []) when is_integer(count) and count > 0 do
-    opts = Options.validate!(opts, @join_schema)
+    opts = NimbleOptions.validate!(opts, @join_schema)
     text_opts = Keyword.take(opts, [:text, :locale])
 
     words_list = Enum.map(1..count, fn _ -> word(text_opts) end)

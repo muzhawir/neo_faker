@@ -82,14 +82,14 @@ defmodule NeoFaker.InternetTest do
       assert domain == "example.com"
     end
 
-    test "raises ArgumentError for an unknown type" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an unknown type" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Internet.domain_name(type: :unknown)
       end
     end
 
-    test "raises ArgumentError when type: :custom and :domain_name is not a string" do
-      assert_raise ArgumentError,
+    test "raises NimbleOptions.ValidationError when type: :custom and :domain_name is not a string" do
+      assert_raise NimbleOptions.ValidationError,
                    ~r/invalid value for :domain_name option: expected string/,
                    fn ->
                      Internet.domain_name(type: :custom, domain_name: 42)
@@ -160,8 +160,8 @@ defmodule NeoFaker.InternetTest do
       assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
     end
 
-    test "raises ArgumentError when domain_type: :custom and :domain_name is not a string" do
-      assert_raise ArgumentError,
+    test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is not a string" do
+      assert_raise NimbleOptions.ValidationError,
                    ~r/invalid value for :domain_name option: expected string/,
                    fn ->
                      Internet.email(domain_type: :custom, domain_name: :not_a_string)
@@ -400,8 +400,8 @@ defmodule NeoFaker.InternetTest do
       assert String.starts_with?(ip, "192.168.")
     end
 
-    test "raises ArgumentError for an invalid class" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an invalid class" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Internet.ipv4(private: true, class: :d)
       end
     end
@@ -529,8 +529,8 @@ defmodule NeoFaker.InternetTest do
       assert String.contains?(url, "example.com")
     end
 
-    test "raises ArgumentError when domain_type: :custom and :domain_name is not a string" do
-      assert_raise ArgumentError,
+    test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is not a string" do
+      assert_raise NimbleOptions.ValidationError,
                    ~r/invalid value for :domain_name option: expected string/,
                    fn ->
                      Internet.url(domain_type: :custom, domain_name: ["not", "a", "string"])
@@ -543,14 +543,14 @@ defmodule NeoFaker.InternetTest do
       end
     end
 
-    test "raises ArgumentError for an invalid protocol" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an invalid protocol" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Internet.url(protocol: :ftp)
       end
     end
 
-    test "raises ArgumentError for an invalid domain_type" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an invalid domain_type" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Internet.url(domain_type: :unknown)
       end
     end

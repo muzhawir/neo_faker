@@ -24,7 +24,7 @@ run = "mix test"
 description = "Format and lint the codebase"
 alias = "l"
 depends = ["format"]
-run = "mix credo"
+run = "mix credo --strict"
 
 [tasks.analyze]
 description = "Format, lint, and analyze the codebase"

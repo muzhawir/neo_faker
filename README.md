@@ -101,6 +101,7 @@ iex> NeoFaker.Color.hex()
 | [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html)                    | One-page reference of every function with examples                |
 | [Supported Locales](https://hexdocs.pm/neo_faker/locales.html)            | Available locales and how locale resolution works                 |
 | [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) | Using NeoFaker as the data source in an Ecto-based factory module |
+| [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html)      | Contributor guide for submitting a new locale as a pull request   |
 | [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)          | Full module and function documentation                            |
 | [Changelog](https://hexdocs.pm/neo_faker/changelog.html)                  | Release history                                                   |
 

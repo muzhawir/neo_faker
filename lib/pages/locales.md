@@ -74,5 +74,8 @@ Locale support is data-driven: a new locale needs a directory under `priv/data/<
 mirroring the domains it covers (only the files you provide are used, and anything missing falls
 back to `:default`, so a partial locale is valid), and its code added to the list in
 `priv/data/locale.exs` (kept alphabetically sorted). Locale-exclusive generators, if any, go
-under `lib/neo_faker/locales/<locale>/`. Open an issue or pull request on
+under `lib/neo_faker/locales/<locale>/`.
+
+See [Adding a Locale](adding-a-locale.html) for the full contributor walkthrough, from picking a
+locale code through opening the pull request. Open an issue or pull request on
 [GitHub](https://github.com/muzhawir/neo_faker) to propose one.

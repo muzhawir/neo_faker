@@ -111,6 +111,8 @@ end
   overrides.
 - [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html), for wiring
   NeoFaker into a `test/support/factory.ex` module for `Ecto.Schema`-based tests.
+- [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html), a contributor guide for
+  submitting a new locale as a pull request.
 - [API Reference](https://hexdocs.pm/neo_faker/api-reference.html), the full module and
   function documentation.
 

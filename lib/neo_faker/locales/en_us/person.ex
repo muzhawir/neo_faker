@@ -21,7 +21,7 @@ defmodule NeoFaker.Locales.EnUs.Person do
 
   """
   @spec ssn() :: String.t()
-  def ssn,
-    do:
-      "#{Generator.area_number()}-#{Generator.serial_number(99, 2)}-#{Generator.serial_number(9999, 4)}"
+  def ssn do
+    "#{Generator.area_number()}-#{Generator.serial_number(99, 2)}-#{Generator.serial_number(9999, 4)}"
+  end
 end

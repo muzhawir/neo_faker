@@ -108,14 +108,8 @@ defmodule NeoFaker.Date do
   def birthday(min_age \\ @min_age, max_age \\ @max_age, opts \\ []) do
     Validator.validate_age_range!(min_age, max_age)
     opts = NimbleOptions.validate!(opts, @format_schema)
-
     today = Generator.local_date_now()
-
-    start_date =
-      today
-      |> Date.shift(year: -(max_age + 1))
-      |> Date.add(1)
-
+    start_date = today |> Date.shift(year: -(max_age + 1)) |> Date.add(1)
     finish_date = Date.shift(today, year: -min_age)
 
     start_date
@@ -193,6 +187,7 @@ defmodule NeoFaker.Date do
   def today(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @format_schema)
     date = Generator.local_date_now()
+
     Formatter.format_date(date, Keyword.fetch!(opts, :format))
   end
 end

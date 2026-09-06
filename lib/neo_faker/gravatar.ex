@@ -25,7 +25,13 @@ defmodule NeoFaker.Gravatar do
                       type: {:custom, Validator, :validate_and_format_fallback, []},
                       default: :identicon
                     ],
-                    rating: [type: {:or, [nil, {:in, [:g, :pg, :r, :x]}]}, default: nil],
+                    rating: [
+                      type: {
+                        :or,
+                        [nil, {:in, [:g, :pg, :r, :x]}]
+                      },
+                      default: nil
+                    ],
                     force_default: [type: :boolean, default: false]
                   )
 

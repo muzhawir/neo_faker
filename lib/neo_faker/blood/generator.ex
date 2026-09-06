@@ -1,10 +1,6 @@
 defmodule NeoFaker.Blood.Generator do
   @moduledoc false
 
-  # Source lists for Blood.type/0 and Blood.rh_factor/0. all_types/0 and
-  # all_rh_factors/0 return these verbatim, so this order is the documented
-  # public return value, not just an internal detail; keep it ["A", "B", "AB",
-  # "O"] / ["+", "-"] if either list ever needs to change.
   @blood_types ~w[A B AB O]
   @rh_factors ~w[+ -]
 

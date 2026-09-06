@@ -10,11 +10,7 @@
 [![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)](https://hex.pm/packages/neo_faker)
 [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-NeoFaker generates realistic-looking fake data for Elixir tests, database seeds, and local
-development. It spans a wide range of data domains, from people and addresses to dates, colors,
-network values, and cryptographic values. Generators are locale-aware (choose a locale per call,
-per process, or for the whole application), validate their options up front with clear error
-messages, and can be seeded for reproducible output across a test run.
+NeoFaker generates realistic-looking fake data for Elixir tests, database seeds, and local development.
 
 ## Requirements
 
@@ -50,18 +46,15 @@ Set a default locale in `config/config.exs`:
 config :neo_faker, locale: :default
 ```
 
-If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English (US)
-data). `NeoFaker.Locale.set/1` overrides the locale for the calling process only, which makes it
-safe to use inside `async: true` tests without affecting other processes.
+If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English (US) data). `NeoFaker.Locale.set/1` overrides the locale
+for the calling process only, which makes it safe to use inside `async: true` tests without affecting other processes.
 
 ### Using with Phoenix Framework
 
-For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the
-top-level `config.exs`, and call `NeoFaker.start()` in `test/test_helper.exs`. If you also use
-NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for your tests, see
-the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) guide, which covers
-wiring NeoFaker into the factory pattern from Ecto's own docs, plus how to keep factory-generated
-values unique where your schema requires it.
+For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the top-level `config.exs`, and call `NeoFaker.start()` in
+`test/test_helper.exs`. If you also use NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for your tests, see
+the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) guide, which covers wiring NeoFaker into the factory pattern from Ecto's
+own docs, plus how to keep factory-generated values unique where your schema requires it.
 
 ## Usage
 

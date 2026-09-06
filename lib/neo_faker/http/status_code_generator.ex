@@ -37,7 +37,7 @@ defmodule NeoFaker.HTTP.StatusCodeGenerator do
 
   def number(status_codes, type: :simple) do
     status_codes
-    |> Enum.map(&(&1 |> String.split(" ", parts: 2) |> List.first()))
+    |> Stream.map(&(&1 |> String.split(" ", parts: 2) |> List.first()))
     |> Enum.random()
   end
 end

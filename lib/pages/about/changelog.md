@@ -2,12 +2,10 @@
 
 ## v0.15.0 (2026-09-06)
 
-This release is a large internal architecture rewrite. See
-[docs/rebuild_plan.md](https://github.com/muzhawir/neo_faker/blob/main/docs/rebuild_plan.md) in
-the repository for the full rationale. A handful of thin top-level functions were removed
-outright rather than deprecated (see Breaking Changes); each has a one-to-one replacement. Beyond
-that, what changed is how locale state is scoped, how options are validated, and where a few
-internal (never public) modules live. A formal deprecation cycle for future removals begins in
+This release is a large internal architecture rewrite. A handful of thin top-level functions were
+removed outright rather than deprecated (see Breaking Changes); each has a one-to-one replacement.
+Beyond that, what changed is how locale state is scoped, how options are validated, and where a
+few internal (never public) modules live. A formal deprecation cycle for future removals begins in
 v0.20.0.
 
 ### Features
@@ -49,7 +47,7 @@ v0.20.0.
   `NimbleOptions.validate!/2` directly; the internal `NeoFaker.Helpers.Options` wrapper that
   re-raised `NimbleOptions` errors as `ArgumentError` has been removed. Messages are
   `NimbleOptions`' own wording (e.g. `"invalid value for :format option: expected one of [...],
-  got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`max`, counts) and
+got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`max`, counts) and
   unsupported-locale errors still raise `ArgumentError`. Update any `rescue`/`assert_raise` in
   your own code that expected `ArgumentError` for a bad option.
 - **`NeoFaker.Internet.email/1`** no longer accepts the undocumented bare `:word_count` (or

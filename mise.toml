@@ -4,12 +4,6 @@
 erlang = "29.0.6"
 elixir = "1.20.4-otp-29"
 
-# Task definitions
-#
-# Each task depends on the one before it (`depends`), so the full chain is
-# only spelled out once, in `fix`, instead of every task repeating every
-# earlier step's commands. Run with `mise run <task>`.
-
 [tasks.format]
 description = "Format the codebase"
 run = "mix format"

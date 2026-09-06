@@ -10,17 +10,12 @@ defmodule NeoFaker.Person.FullNameGenerator do
   @doc """
   Generates a random full name for a specified sex and locale.
 
-  `sex` is `:male`, `:female`, or `:unisex` (which picks one of the other two
-  at random, once per call, before delegating). `locale` is a locale atom, or
-  `nil` to use the configured default.
+  `sex` is `:male`, `:female`, or `:unisex` (which picks one of the other two at random, once per
+  call, before delegating). `locale` is a locale atom, or `nil` to use the configured default.
   """
   @spec name(atom(), atom() | nil, boolean()) :: String.t()
   def name(:unisex, locale, include_middle_name?) do
-    generate_full_name(
-      Enum.random([:male, :female]),
-      locale,
-      include_middle_name?
-    )
+    generate_full_name(Enum.random([:male, :female]), locale, include_middle_name?)
   end
 
   def name(sex, locale, include_middle_name?) when sex in [:male, :female] do

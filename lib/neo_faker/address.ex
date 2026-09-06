@@ -150,7 +150,6 @@ defmodule NeoFaker.Address do
   @spec coordinate(keyword()) :: {float(), float()} | float()
   def coordinate(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @coordinate_schema)
-
     latitude = Generator.latitude(Keyword.fetch!(opts, :precision))
     longitude = Generator.longitude(Keyword.fetch!(opts, :precision))
 

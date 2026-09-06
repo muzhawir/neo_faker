@@ -86,6 +86,26 @@ When one function forwards a subset of its own already-validated `opts` to anoth
 that subset with `Keyword.take/2` first (see `NeoFaker.Internet.EmailGenerator` for an example) — NimbleOptions raises on any key a schema doesn't
 declare, so passing the full opts list through unchanged only works when every downstream schema declares the same keys.
 
+### Documentation style
+
+`@moduledoc`/`@doc` content follows the wording and structure used by Elixir's own stdlib docs
+(`String`, `Enum`, `Date`, `Time`, `Path`), not an ad hoc house style. When writing or editing a
+public function's docs:
+
+- First line: one concise, imperative sentence (`"Generates a random X."`, `"Returns Y."`). A
+  short prose paragraph after it may explain non-obvious behavior or mention a positional
+  parameter's role/default by name — don't add a separate "## Parameters" heading for that; it's
+  redundant with the `@spec` and the prose.
+- Keyword-list options go under a single `## Options` heading, one `*` bullet per key:
+  `` * `:key` (type or allowed values) - description. Defaults to `value`. `` When an option
+  takes several named atoms that each need explaining, nest a nested `*` list under that
+  option's bullet instead of a free-floating "The values for `:x` can be:" paragraph.
+- Keep `## Examples` with `iex>` doctests as-is.
+
+See `lib/neo_faker/blood.ex` or `lib/neo_faker/color.ex` for compact examples, and
+`lib/neo_faker/internet.ex`'s `email/1` for a composite function that groups options by the
+sub-function they're forwarded to (`## Username options`, `## Domain name options`, etc.).
+
 ### Locale system
 
 `NeoFaker.Data` (`lib/neo_faker/data.ex`) is the single data-loading layer used by every domain module via `random_value/4` (and `fetch!/3` directly

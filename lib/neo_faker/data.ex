@@ -146,7 +146,7 @@ defmodule NeoFaker.Data do
       data =
         file_path
         |> read_data_file!()
-        |> Map.new(fn {key, val} -> {key, val |> Stream.uniq() |> Enum.shuffle()} end)
+        |> Map.new(fn {key, val} -> {key, Enum.uniq(val)} end)
 
       :persistent_term.put(cache_key(locale, module, file), data)
     else

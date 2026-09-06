@@ -18,7 +18,7 @@ mix dialyzer # type checking (build-only CI job, not lint-only job)
 mix test # run full test suite
 mix test test/neo_faker/address_test.exs # run one test file
 mix test test/neo_faker/address_test.exs:42 # run a single test at a line
-mix docs # build ExDoc documentation (uses lib/pages/{guides,reference,about}/*)
+mix docs # build ExDoc documentation (uses lib/pages/{guides,reference,contributing,about}/*)
 ```
 
 `mise.toml` defines composite tasks (`mise run format|lint|analyze|fix`) that chain the above in order: format → credo → dialyzer → test.

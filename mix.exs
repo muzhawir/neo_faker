@@ -63,9 +63,9 @@ defmodule NeoFaker.MixProject do
       "lib/pages/guides/getting-started.md",
       "lib/pages/guides/locales.md",
       "lib/pages/guides/ecto-integration.md",
-      "lib/pages/guides/adding-a-locale.md",
       "lib/pages/reference/cheat.cheatmd",
       "lib/pages/reference/locale-cheat.cheatmd",
+      "lib/pages/contributing/adding-a-locale.md",
       "lib/pages/about/changelog.md"
     ]
   end
@@ -74,6 +74,7 @@ defmodule NeoFaker.MixProject do
     [
       Guides: ~r{lib/pages/guides/},
       Reference: ~r{lib/pages/reference/},
+      Contributing: ~r{lib/pages/contributing/},
       About: ~r{lib/pages/about/}
     ]
   end

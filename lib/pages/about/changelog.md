@@ -88,10 +88,11 @@ v0.20.0.
   `random_ipv6_group/0` helpers; `reserved_ipv4?/3` pattern-matches the octets instead of guarding
   on `==`; the compressed-IPv6 builder drops a redundant `case`; and `url_path/0`/`query_string/0`
   share one word-segment helper. Output and the public `reserved_ipv4?/3` behavior are unchanged.
-- Sorted the documentation source pages into `lib/pages/guides/`, `lib/pages/reference/`, and
-  `lib/pages/about/` subfolders, one per ExDoc sidebar group, and listed them explicitly in
-  `mix.exs` so the sidebar order is deliberate. ExDoc still publishes each page at the same
-  `<name>.html` URL, so no documentation links change.
+- Sorted the documentation source pages into `lib/pages/guides/`, `lib/pages/reference/`,
+  `lib/pages/contributing/`, and `lib/pages/about/` subfolders, one per ExDoc sidebar group, and
+  listed them explicitly in `mix.exs` so the sidebar order is deliberate. The "Adding a Locale"
+  guide now sits under its own "Contributing" group, separate from the user-facing guides. ExDoc
+  still publishes each page at the same `<name>.html` URL, so no documentation links change.
 
 ### Tests
 

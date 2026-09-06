@@ -11,21 +11,10 @@
 [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
 NeoFaker generates realistic-looking fake data for Elixir tests, database seeds, and local
-development, including names, addresses, dates, email addresses, colors, cryptographic values,
-and more, with built-in locale support.
-
-## Features
-
-- **15 data domains.** `Address`, `App`, `Blood`, `Boolean`, `Color`, `Crypto`, `Date`,
-  `Gravatar`, `HTTP`, `Internet`, `Lorem`, `Number`, `Person`, `Text`, and `Time`.
-- **Locale-aware.** Generate data for a specific locale (currently `:en_us` and `:id_id`) per
-  call, per process, or for the whole application. See [Supported Locales](https://hexdocs.pm/neo_faker/locales.html).
-- **Locale-exclusive generators.** Country-specific formats that don't apply universally, such
-  as US Social Security Numbers and Indonesian NIK/NPWP numbers.
-- **Validated options.** Every function validates its options and raises `ArgumentError` with a
-  precise message on invalid input, instead of failing silently or deep inside a helper.
-- **Reproducible output.** Seed the random number generator once to get deterministic values
-  across a test run.
+development. It spans a wide range of data domains, from people and addresses to dates, colors,
+network values, and cryptographic values. Generators are locale-aware (choose a locale per call,
+per process, or for the whole application), validate their options up front with clear error
+messages, and can be seeded for reproducible output across a test run.
 
 ## Requirements
 
@@ -65,7 +54,7 @@ If the requested locale is unavailable, NeoFaker falls back to `:default` (gener
 data). `NeoFaker.Locale.set/1` overrides the locale for the calling process only, which makes it
 safe to use inside `async: true` tests without affecting other processes.
 
-### Using with Phoenix
+### Using with Phoenix Framework
 
 For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the
 top-level `config.exs`, and call `NeoFaker.start()` in `test/test_helper.exs`. If you also use
@@ -81,7 +70,7 @@ iex> NeoFaker.Person.full_name()
 "Abigail Bethany Crawford"
 
 iex> NeoFaker.Internet.email()
-"josé@example.com"
+"jose@example.com"
 
 iex> NeoFaker.Address.city(locale: :id_id)
 "Palu"
@@ -95,16 +84,14 @@ iex> NeoFaker.Color.hex()
 
 ## Documentation
 
-| Guide                                                                     | Covers                                                                |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html)      | Installation, configuration, first steps                             |
-| [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html)                    | One-page reference of every domain generator function with examples  |
-| [Locale Cheat Sheet](https://hexdocs.pm/neo_faker/locale-cheat.html)      | One-page reference of locale-exclusive generators, grouped by locale |
-| [Supported Locales](https://hexdocs.pm/neo_faker/locales.html)            | Available locales and how locale resolution works                    |
-| [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) | Using NeoFaker as the data source in an Ecto-based factory module    |
-| [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html)      | Contributor guide for submitting a new locale as a pull request      |
-| [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)          | Full module and function documentation                               |
-| [Changelog](https://hexdocs.pm/neo_faker/changelog.html)                  | Release history                                                      |
+- [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html): installation, configuration, and first steps.
+- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html): one-page reference of every domain generator function, with examples.
+- [Locale Cheat Sheet](https://hexdocs.pm/neo_faker/locale-cheat.html): one-page reference of locale-exclusive generators, grouped by locale.
+- [Supported Locales](https://hexdocs.pm/neo_faker/locales.html): available locales and how locale resolution works.
+- [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html): using NeoFaker as the data source in an Ecto-based factory module.
+- [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html): contributor guide for submitting a new locale as a pull request.
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html): full module and function documentation.
+- [Changelog](https://hexdocs.pm/neo_faker/changelog.html): release history.
 
 ## Contributing
 

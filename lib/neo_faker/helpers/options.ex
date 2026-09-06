@@ -5,8 +5,8 @@ defmodule NeoFaker.Helpers.Options do
   @doc """
   Validates `opts` against a `NimbleOptions` schema.
 
-  Returns the validated keyword list with defaults applied. Raises `ArgumentError` — not
-  `NimbleOptions.ValidationError` — so every domain function keeps its documented "Raises
+  Returns the validated keyword list with defaults applied. Raises `ArgumentError`, not
+  `NimbleOptions.ValidationError`, so every domain function keeps its documented "Raises
   ArgumentError" contract regardless of how its options happen to be validated internally.
 
   ## Examples

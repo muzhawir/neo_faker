@@ -34,7 +34,7 @@ defmodule NeoFaker.Color do
   @typedoc """
   Any value a color-generating function in this module can return: a tuple of numeric
   components, or a W3C-formatted CSS string. Which shape comes back depends on the
-  `:format` option (and, for `random/1`, on which format is randomly picked) — this is
+  `:format` option (and, for `random/1`, on which format is randomly picked), which is
   intentional, not an accident of implementation.
   """
   @type any_color :: tuple() | String.t()

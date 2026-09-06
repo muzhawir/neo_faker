@@ -86,24 +86,24 @@ defmodule NeoFaker.Internet.Generator do
   block that `public_ipv4/0` excludes; `false` when the address is publicly routable.
 
   Only the first three octets are required because every reserved block that is
-  narrower than a /24 is fully identified by `{a, b, c}` — the fourth octet never
+  narrower than a /24 is fully identified by `{a, b, c}`, so the fourth octet never
   changes the classification.
 
   Reserved ranges checked (RFC references match the module-level comment):
 
-  - `0.x.x.x`          — "This" network (RFC 791)
-  - `10.x.x.x`         — RFC 1918 private class A
-  - `100.64–127.x.x`   — Carrier-grade NAT / CGN (RFC 6598)
-  - `127.x.x.x`        — Loopback (RFC 1122)
-  - `169.254.x.x`      — Link-local (RFC 3927)
-  - `172.16–31.x.x`    — RFC 1918 private class B
-  - `192.0.x.x`        — IETF protocol assignments + TEST-NET-1 (RFC 6890 / RFC 5737)
-  - `192.88.99.x`      — Deprecated 6to4 relay anycast (RFC 7526)
-  - `192.168.x.x`      — RFC 1918 private class C
-  - `198.18–19.x.x`    — Benchmarking (RFC 2544)
-  - `198.51.100.x`     — TEST-NET-2 (RFC 5737)
-  - `203.0.113.x`      — TEST-NET-3 (RFC 5737)
-  - `224–255.x.x.x`    — Multicast + reserved / broadcast (RFC 3171 / RFC 1112)
+  - `0.x.x.x` covers the "This" network (RFC 791)
+  - `10.x.x.x` covers RFC 1918 private class A
+  - `100.64–127.x.x` covers carrier-grade NAT / CGN (RFC 6598)
+  - `127.x.x.x` covers loopback (RFC 1122)
+  - `169.254.x.x` covers link-local (RFC 3927)
+  - `172.16–31.x.x` covers RFC 1918 private class B
+  - `192.0.x.x` covers IETF protocol assignments and TEST-NET-1 (RFC 6890 / RFC 5737)
+  - `192.88.99.x` covers the deprecated 6to4 relay anycast (RFC 7526)
+  - `192.168.x.x` covers RFC 1918 private class C
+  - `198.18–19.x.x` covers benchmarking (RFC 2544)
+  - `198.51.100.x` covers TEST-NET-2 (RFC 5737)
+  - `203.0.113.x` covers TEST-NET-3 (RFC 5737)
+  - `224–255.x.x.x` covers multicast and reserved/broadcast (RFC 3171 / RFC 1112)
   """
   @spec reserved_ipv4?(non_neg_integer(), non_neg_integer(), non_neg_integer()) :: boolean()
   def reserved_ipv4?(a, _b, _c) when a == 0, do: true
@@ -127,21 +127,21 @@ defmodule NeoFaker.Internet.Generator do
   Returns a string in the form `"A.B.C.D"` where the address is guaranteed to
   fall outside all IANA special-purpose ranges, including:
 
-  - `0.0.0.0/8` — "This" network (RFC 791)
-  - `10.0.0.0/8` — RFC 1918 private class A
-  - `100.64.0.0/10` — Shared address / carrier-grade NAT (RFC 6598)
-  - `127.0.0.0/8` — Loopback (RFC 1122)
-  - `169.254.0.0/16` — Link-local (RFC 3927)
-  - `172.16.0.0/12` — RFC 1918 private class B
-  - `192.0.0.0/24` — IETF protocol assignments (RFC 6890)
-  - `192.0.2.0/24` — TEST-NET-1 (RFC 5737)
-  - `192.88.99.0/24` — Deprecated 6to4 relay anycast (RFC 7526)
-  - `192.168.0.0/16` — RFC 1918 private class C
-  - `198.18.0.0/15` — Benchmarking (RFC 2544)
-  - `198.51.100.0/24` — TEST-NET-2 (RFC 5737)
-  - `203.0.113.0/24` — TEST-NET-3 (RFC 5737)
-  - `224.0.0.0/4` — Multicast (RFC 3171)
-  - `240.0.0.0/4` — Reserved / broadcast (RFC 1112)
+  - `0.0.0.0/8` covers the "This" network (RFC 791)
+  - `10.0.0.0/8` covers RFC 1918 private class A
+  - `100.64.0.0/10` covers the shared address space / carrier-grade NAT (RFC 6598)
+  - `127.0.0.0/8` covers loopback (RFC 1122)
+  - `169.254.0.0/16` covers link-local (RFC 3927)
+  - `172.16.0.0/12` covers RFC 1918 private class B
+  - `192.0.0.0/24` covers IETF protocol assignments (RFC 6890)
+  - `192.0.2.0/24` covers TEST-NET-1 (RFC 5737)
+  - `192.88.99.0/24` covers the deprecated 6to4 relay anycast (RFC 7526)
+  - `192.168.0.0/16` covers RFC 1918 private class C
+  - `198.18.0.0/15` covers benchmarking (RFC 2544)
+  - `198.51.100.0/24` covers TEST-NET-2 (RFC 5737)
+  - `203.0.113.0/24` covers TEST-NET-3 (RFC 5737)
+  - `224.0.0.0/4` covers multicast (RFC 3171)
+  - `240.0.0.0/4` covers reserved/broadcast addresses (RFC 1112)
 
   All other addresses in `1.0.0.0`–`223.255.255.255` are eligible, including
   the public portions of `100.x`, `169.x`, `172.x`, `192.x`, `198.x`, and
@@ -186,24 +186,24 @@ defmodule NeoFaker.Internet.Generator do
   # ---------------------------------------------------------------------------
   @spec pick_public_second_octet(non_neg_integer()) :: non_neg_integer()
 
-  # 100.64.0.0/10 — second octets 64–127 are CGN (RFC 6598).
+  # Within 100.64.0.0/10, second octets 64–127 are CGN (RFC 6598).
   # 100.0–100.63 and 100.128–100.255 are public.
   defp pick_public_second_octet(100) do
     Enum.random(Enum.reject(0..255, &(&1 in 64..127)))
   end
 
-  # 169.254.0.0/16 — only second octet 254 is link-local (RFC 3927).
+  # Within 169.254.0.0/16, only second octet 254 is link-local (RFC 3927).
   defp pick_public_second_octet(169) do
     Enum.random(Enum.reject(0..255, &(&1 == 254)))
   end
 
-  # 172.16.0.0/12 — second octets 16–31 are RFC 1918 private (RFC 1918).
+  # Within 172.16.0.0/12, second octets 16–31 are RFC 1918 private (RFC 1918).
   defp pick_public_second_octet(172) do
     Enum.random(Enum.reject(0..255, &(&1 in 16..31)))
   end
 
   # 192: exclude second=0 entirely (covers 192.0.0.0/24 IETF assignments and
-  #      192.0.2.0/24 TEST-NET-1 — both have second=0).
+  #      192.0.2.0/24 TEST-NET-1, since both have second=0).
   #      Exclude second=168 (192.168.0.0/16 RFC 1918 class C).
   #      second=88 is kept; 192.88.99.0/24 is handled in pick_public_third_octet.
   defp pick_public_second_octet(192) do
@@ -224,17 +224,17 @@ defmodule NeoFaker.Internet.Generator do
   # ---------------------------------------------------------------------------
   @spec pick_public_third_octet(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
 
-  # 192.88.99.0/24 — deprecated 6to4 relay anycast (RFC 7526).
+  # 192.88.99.0/24 is the deprecated 6to4 relay anycast (RFC 7526).
   defp pick_public_third_octet(192, 88) do
     Enum.random(Enum.reject(0..255, &(&1 == 99)))
   end
 
-  # 198.51.100.0/24 — TEST-NET-2 (RFC 5737).
+  # 198.51.100.0/24 is TEST-NET-2 (RFC 5737).
   defp pick_public_third_octet(198, 51) do
     Enum.random(Enum.reject(0..255, &(&1 == 100)))
   end
 
-  # 203.0.113.0/24 — TEST-NET-3 (RFC 5737).
+  # 203.0.113.0/24 is TEST-NET-3 (RFC 5737).
   defp pick_public_third_octet(203, 0) do
     Enum.random(Enum.reject(0..255, &(&1 == 113)))
   end
@@ -244,9 +244,9 @@ defmodule NeoFaker.Internet.Generator do
   @doc """
   Generates a random private IPv4 address for the specified class.
 
-  - `:a` — Returns an address in the `10.0.0.0/8` range.
-  - `:b` — Returns an address in the `172.16.0.0/12` range.
-  - `:c` — Returns an address in the `192.168.0.0/16` range.
+  - `:a` returns an address in the `10.0.0.0/8` range.
+  - `:b` returns an address in the `172.16.0.0/12` range.
+  - `:c` returns an address in the `192.168.0.0/16` range.
   """
   @spec private_ipv4(atom()) :: String.t()
   def private_ipv4(:a) do

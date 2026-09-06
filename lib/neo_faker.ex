@@ -10,7 +10,7 @@ defmodule NeoFaker do
   Many modules accept a `:locale` option. Use `set_locale/1` to override the
   locale for the calling process, or pass `locale:` per call. To set a locale
   for the whole application instead (e.g. for a Phoenix app), configure
-  `config :neo_faker, locale: ...` — see
+  `config :neo_faker, locale: ...`, then see
   [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html).
 
       iex> NeoFaker.set_locale(:id_id)
@@ -70,7 +70,7 @@ defmodule NeoFaker do
   then `config :neo_faker, locale: ...`. Returns `{:ok, locale}` when either
   source has a value, or `:error` when neither does. Raises `ArgumentError` if
   the application-configured value is not an atom, or is an unsupported atom
-  (i.e. not `:default` and not in `NeoFaker.Data.supported_locales/0`) — this
+  (i.e. not `:default` and not in `NeoFaker.Data.supported_locales/0`), which
   can happen if `config :neo_faker, locale: ...` is set directly instead of
   going through `set_locale/1`, which validates before storing.
 
@@ -124,7 +124,7 @@ defmodule NeoFaker do
   Sets the locale for the calling process.
 
   The override is process-scoped (stored in the process dictionary), so
-  concurrent processes — including `async: true` ExUnit tests — never
+  concurrent processes, including `async: true` ExUnit tests, never
   interfere with each other. It does not touch `config :neo_faker, locale:
   ...`, which remains the fallback for any process that hasn't called this
   function. See the [available locales](https://hexdocs.pm/neo_faker/locales.html)

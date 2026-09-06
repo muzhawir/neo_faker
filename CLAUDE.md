@@ -30,7 +30,7 @@ before being considered done; run `mix dialyzer` too when types/specs changed.
 ## Elixir documentation lookup
 
 When you need official Elixir documentation (module reference, guides, anti-patterns, meta-programming, etc.), start from the index at
-https://elixir.hexdocs.pm/llms.txt — it lists every page and module with its relative path, e.g. `[Enum](Enum.md)`,
+https://elixir.hexdocs.pm/llms.txt, which lists every page and module with its relative path, e.g. `[Enum](Enum.md)`,
 `[Code anti-patterns](code-anti-patterns.md)`.
 
 Always fetch documentation pages as `.md`, never `.html`: take the filename from `llms.txt` and request
@@ -45,19 +45,19 @@ Each public-facing generator lives at `lib/neo_faker/<domain>.ex` (e.g. `NeoFake
 `NeoFaker.Crypto`). These modules hold the documented public API (with `@doc`/`@spec`/doctests) and delegate implementation details to private
 submodules in `lib/neo_faker/<domain>/`:
 
-- `Generator` — pure computation/randomization logic (e.g. `Address.Generator` builds lat/long). If a domain's generator logic is large enough to
-  split further, sub-parts get a `*Generator` suffix (`Internet.UsernameGenerator`, `HTTP.HeaderGenerator`, `Crypto.HashGenerator`, etc.) — never a
-  bare feature name.
-- `Validator` — validation for **positional** function arguments only (a `range`, `start`/`finish`, `min`/`max`), raising `ArgumentError` with a
+- `Generator` handles pure computation/randomization logic (e.g. `Address.Generator` builds lat/long). If a domain's generator logic is large
+  enough to split further, sub-parts get a `*Generator` suffix (`Internet.UsernameGenerator`, `HTTP.HeaderGenerator`, `Crypto.HashGenerator`, etc.),
+  never a bare feature name.
+- `Validator` handles validation for **positional** function arguments only (a `range`, `start`/`finish`, `min`/`max`), raising `ArgumentError` with a
   descriptive message. Keyword-list **options** (`opts`) are validated by a `NimbleOptions` schema instead (see "Options handling" below); a domain
   with no positional arguments to validate has no `Validator` module at all (e.g. `Blood`, `HTTP`, `Internet`, `Lorem`, `Color`, `Text`).
 
 Some domains use more specific submodule names instead of a generic `Generator` (`Person.NameGenerator`, `Person.FullNameGenerator`,
-`Text.EmojiGenerator`, `Lorem.Generator`). All of these submodules are `@moduledoc false` — never part of the public API — so renaming or
+`Text.EmojiGenerator`, `Lorem.Generator`). All of these submodules are `@moduledoc false`, never part of the public API, so renaming or
 reorganizing them is not a breaking change to consumers.
 
-Keep this generator/validator separation when adding new domains or functions: don't inline randomization logic into the public module — put it in
-the matching submodule. Never use a bare `import` of another project module (stdlib macro imports like `import Bitwise` are fine); always `alias`
+Keep this generator/validator separation when adding new domains or functions: don't inline randomization logic into the public module. Instead,
+put it in the matching submodule. Never use a bare `import` of another project module (stdlib macro imports like `import Bitwise` are fine); always `alias`
 and call with an explicit prefix, so it's clear at the call site where a function comes from.
 
 ### Options handling
@@ -78,13 +78,13 @@ end
 `NeoFaker.Helpers.Options.validate!/2` (`lib/neo_faker/helpers/options.ex`) wraps `NimbleOptions.validate/2` and re-raises as `ArgumentError`
 instead of `NimbleOptions.ValidationError`, so every function keeps its documented "Raises `ArgumentError`" contract. For validation NimbleOptions
 has no built-in type for (a business rule, or a message that must name the specific function), write a `{:ok, value} | {:error, message}` function
-in the domain's `Validator` module and reference it as `type: {:custom, Validator, :fun_name, []}` — NimbleOptions wraps whatever message that
-function returns, it doesn't replace it. **NimbleOptions validates default values against their own type too** (including through `{:custom, ...}`
-validators) — a schema default must independently satisfy its own type spec, or every call using that default will raise.
+in the domain's `Validator` module and reference it as `type: {:custom, Validator, :fun_name, []}`. NimbleOptions wraps whatever message that
+function returns; it doesn't replace it. **NimbleOptions validates default values against their own type too** (including through `{:custom, ...}`
+validators). A schema default must independently satisfy its own type spec, or every call using that default will raise.
 
 When one function forwards a subset of its own already-validated `opts` to another function that has its own independent schema, extract exactly
-that subset with `Keyword.take/2` first (see `NeoFaker.Internet.EmailGenerator` for an example) — NimbleOptions raises on any key a schema doesn't
-declare, so passing the full opts list through unchanged only works when every downstream schema declares the same keys.
+that subset with `Keyword.take/2` first (see `NeoFaker.Internet.EmailGenerator` for an example), since NimbleOptions raises on any key a schema
+doesn't declare, so passing the full opts list through unchanged only works when every downstream schema declares the same keys.
 
 ### Documentation style
 
@@ -94,8 +94,8 @@ public function's docs:
 
 - First line: one concise, imperative sentence (`"Generates a random X."`, `"Returns Y."`). A
   short prose paragraph after it may explain non-obvious behavior or mention a positional
-  parameter's role/default by name — don't add a separate "## Parameters" heading for that; it's
-  redundant with the `@spec` and the prose.
+  parameter's role/default by name. Don't add a separate "## Parameters" heading for that, since
+  it's redundant with the `@spec` and the prose.
 - Keyword-list options go under a single `## Options` heading, one `*` bullet per key:
   `` * `:key` (type or allowed values) - description. Defaults to `value`. `` When an option
   takes several named atoms that each need explaining, nest a nested `*` list under that
@@ -116,16 +116,16 @@ Key points:
 
 - `priv/data/locale.exs` is the source of truth for supported locale codes (currently `en_us`, `id_id`). `NeoFaker.Data.supported_locales/0` and
   `locale_available?/1` read from it.
-- `:default` is a special locale that is _not_ listed in `locale.exs` — `priv/data/default/` holds the baseline (US English) data set. There is no
+- `:default` is a special locale that is _not_ listed in `locale.exs`, since `priv/data/default/` holds the baseline (US English) data set. There is no
   `priv/data/en_us/` directory; `:en_us` falls back to `:default` data unless a locale-specific override file exists.
 - If a locale-specific data file doesn't exist for a given module/file, `NeoFaker.Data` silently falls back to `:default` rather than erroring
   (`ensure_locale_file_exists/3`).
 - Locale data is cached in `:persistent_term` after first read (per locale/module/file), and values are shuffled once at cache time, not re-randomized
-  per call — `Enum.random/1` picks from the cached shuffled list on every call.
-- `validate_file_name!/1` restricts data file names to a bare filename ending in `.exs` — this guards against path traversal / arbitrary file eval
+  per call, since `Enum.random/1` picks from the cached shuffled list on every call.
+- `validate_file_name!/1` restricts data file names to a bare filename ending in `.exs`, which guards against path traversal / arbitrary file eval
   via `Code.eval_string/3`. Never bypass this when adding new data lookups.
 - Locale resolution has two layers, checked in order by `NeoFaker.locale/0`: a **process-scoped** override set via `NeoFaker.set_locale/1` (stored
-  in the process dictionary, so it never leaks between processes — safe under `async: true` tests), then `config :neo_faker, locale: ...`
+  in the process dictionary, so it never leaks between processes, which is safe under `async: true` tests), then `config :neo_faker, locale: ...`
   (`Application.get_env/2`, the static default for the whole node, e.g. what a Phoenix app sets in `config/dev.exs`/`config/test.exs`).
   `NeoFaker.get_locale/0` wraps this and always returns an atom (`:default` when neither layer is set). Any domain function accepts a per-call
   `locale:` option that overrides both layers for that one call.
@@ -142,9 +142,9 @@ Generators" by matching the literal `NeoFaker.Locales.` prefix, so keep every lo
 
 `lib/neo_faker/helpers/`:
 
-- `Options` — `validate!/2`, a thin `NimbleOptions.validate/2` wrapper that re-raises as `ArgumentError` (see "Options handling" above). Every
-  domain module parsing `opts` goes through this instead of ad hoc `Keyword.get/3` + manual validation.
-- `Formatter` — shared output formatting (e.g. numbers to string).
+- `Options` provides `validate!/2`, a thin `NimbleOptions.validate/2` wrapper that re-raises as `ArgumentError` (see "Options handling" above).
+  Every domain module parsing `opts` goes through this instead of ad hoc `Keyword.get/3` + manual validation.
+- `Formatter` provides shared output formatting (e.g. numbers to string).
 
 ### Tests
 
@@ -154,9 +154,9 @@ Tests commonly call `NeoFaker.Data.fetch!/3` directly to pull the full cached da
 during tests.
 
 **Doctests are not wired up.** Every public function has `## Examples` with `iex>` blocks, but no test file has a `doctest NeoFaker.X` call, so
-`mix test` never executes them (`grep -rln doctest test/` returns nothing) — a `@doc` example can silently drift from actual behavior. Don't treat
+`mix test` never executes them (`grep -rln doctest test/` returns nothing), meaning a `@doc` example can silently drift from actual behavior. Don't treat
 an accurate-looking `## Examples` block as verified; check the real function if the behavior matters.
 
 A test that mutates `Application` env directly (bypassing `set_locale/1`, e.g. to test the raw-config validation path in `NeoFaker.locale/0`) is
-node-global and must not run `async: true` alongside anything else that reads `config :neo_faker, locale: ...` — see
+node-global and must not run `async: true` alongside anything else that reads `config :neo_faker, locale: ...`. See
 `test/neo_faker_application_env_test.exs`.

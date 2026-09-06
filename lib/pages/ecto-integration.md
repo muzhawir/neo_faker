@@ -13,7 +13,7 @@ schema, `build/2` to override fields, and `insert!/2` to persist through your `R
 
 NeoFaker is not a factory library in that sense. It has no knowledge of `Ecto.Schema`, builds no
 structs, and never touches a `Repo`. Its scope is narrower: given a field, produce a
-realistic-looking value for it — a name, an email, a date, a UUID. It belongs to the same
+realistic-looking value for it, such as a name, an email, a date, or a UUID. It belongs to the same
 category as Ruby's `Faker` or JavaScript's `Faker.js`, and it slots into the `build/1` clauses
 Ecto's guide has you write, rather than replacing them.
 
@@ -67,7 +67,7 @@ end
 ```
 
 `build(:post)`, `build(:post, title: "custom title")`, and `insert!(:post)` all behave exactly as
-described in Ecto's guide — only the values come from NeoFaker instead of being hardcoded.
+described in Ecto's guide, except the values come from NeoFaker instead of being hardcoded.
 
 Ecto's own examples use fixed placeholders, such as `title: "hello world"`. That is enough to
 illustrate the pattern, but every generated record ends up with the same shape, so edge cases in
@@ -81,12 +81,12 @@ by hand: `NeoFaker.Person`, `NeoFaker.Address`, `NeoFaker.Date`, `NeoFaker.Time`
 
 NeoFaker guarantees realism, not uniqueness. It draws from a finite, locale-specific dataset
 (see [Supported Locales](locales.html)), so `NeoFaker.Person.first_name()` can return the same
-value on two separate calls — it keeps no record of what it has already returned.
+value on two separate calls, since it keeps no record of what it has already returned.
 
 Ecto already has a complete answer for uniqueness, and NeoFaker is not part of it: a
 `unique_index` enforces it at the database, and `Ecto.Changeset.unique_constraint/3` turns a
 violation into an ordinary changeset error. `System.unique_integer/1`, which Ecto's guide uses
-for factory emails and usernames, sits at a different layer — it keeps test data from colliding
+for factory emails and usernames, sits at a different layer, since it keeps test data from colliding
 with itself by accident, rather than enforcing anything. Keep using it for that, and use
 NeoFaker only for the part of the value that does not need to be unique:
 
@@ -101,7 +101,7 @@ end
 
 `NeoFaker.Internet.username/1` and `NeoFaker.Internet.email/1` accept a `number: true` option
 that appends a random suffix. That lowers the odds of a collision for quick scripts or seed
-data, but the suffix is still random, not unique — use `System.unique_integer/1` wherever a
+data, but the suffix is still random, not unique, so use `System.unique_integer/1` wherever a
 value must not collide.
 
 ## Setup

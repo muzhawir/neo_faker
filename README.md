@@ -11,20 +11,20 @@
 [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
 NeoFaker generates realistic-looking fake data for Elixir tests, database seeds, and local
-development — names, addresses, dates, email addresses, colors, cryptographic values, and more,
-with built-in locale support.
+development, including names, addresses, dates, email addresses, colors, cryptographic values,
+and more, with built-in locale support.
 
 ## Features
 
-- **15 data domains** — `Address`, `App`, `Blood`, `Boolean`, `Color`, `Crypto`, `Date`,
+- **15 data domains.** `Address`, `App`, `Blood`, `Boolean`, `Color`, `Crypto`, `Date`,
   `Gravatar`, `HTTP`, `Internet`, `Lorem`, `Number`, `Person`, `Text`, and `Time`.
-- **Locale-aware** — generate data for a specific locale (currently `:en_us` and `:id_id`) per
+- **Locale-aware.** Generate data for a specific locale (currently `:en_us` and `:id_id`) per
   call, per process, or for the whole application. See [Supported Locales](https://hexdocs.pm/neo_faker/locales.html).
-- **Locale-exclusive generators** — country-specific formats that don't apply universally, such
+- **Locale-exclusive generators.** Country-specific formats that don't apply universally, such
   as US Social Security Numbers and Indonesian NIK/NPWP numbers.
-- **Validated options** — every function validates its options and raises `ArgumentError` with a
+- **Validated options.** Every function validates its options and raises `ArgumentError` with a
   precise message on invalid input, instead of failing silently or deep inside a helper.
-- **Reproducible output** — seed the random number generator once to get deterministic values
+- **Reproducible output.** Seed the random number generator once to get deterministic values
   across a test run.
 
 ## Requirements
@@ -70,7 +70,7 @@ safe to use inside `async: true` tests without affecting other processes.
 For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the
 top-level `config.exs`, and call `NeoFaker.start()` in `test/test_helper.exs`. If you also use
 NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for your tests, see
-the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) guide — it covers
+the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) guide, which covers
 wiring NeoFaker into the factory pattern from Ecto's own docs, plus how to keep factory-generated
 values unique where your schema requires it.
 

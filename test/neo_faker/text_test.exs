@@ -69,5 +69,22 @@ defmodule NeoFaker.TextTest do
     test "returns a random alphanumeric word" do
       assert Text.word() =~ @alphanumeric_regexp
     end
+
+    test "every entry in the word list is a single whitespace-free token" do
+      # NeoFaker.Internet builds usernames, domain labels, and slugs by joining
+      # Text.word/0 results with a separator and, in some tests, counting the
+      # parts. A multi-word entry ("ice cream") would smuggle a space into those
+      # tokens and make those tests flaky, so the source list must stay to
+      # single words only.
+      words =
+        :default
+        |> Data.fetch!(Text, "word.exs")
+        |> Map.fetch!("words")
+
+      multi_word = Enum.filter(words, &(&1 =~ ~r/\s/))
+
+      assert multi_word == [],
+             "word.exs must contain single words only, found: #{inspect(multi_word)}"
+    end
   end
 end

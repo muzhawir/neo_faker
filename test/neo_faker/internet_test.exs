@@ -29,6 +29,14 @@ defmodule NeoFaker.InternetTest do
       end)
     end
 
+    test "never contains whitespace, for either word type" do
+      for type <- [:person, :word], _ <- 1..100 do
+        username = Internet.username(username_type: type, word_count: 3)
+
+        refute username =~ ~r/\s/, "username contained whitespace: #{inspect(username)}"
+      end
+    end
+
     test "returns a username with appended number within the specified range" do
       extracted_number =
         [number: true, number_range: 100..200]
@@ -155,9 +163,14 @@ defmodule NeoFaker.InternetTest do
     end
 
     test "returns a valid email address with word username and popular email domain" do
-      email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
+      # Run many iterations: the username is built from random Text.word/0 picks,
+      # and a multi-word entry would slip a space into the local part.
+      for _ <- 1..100 do
+        email = Internet.email(username_type: :word, domain_type: :popular, popular_type: :email)
 
-      assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/)
+        assert String.match?(email, ~r/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-z]+$/),
+               "invalid email generated: #{inspect(email)}"
+      end
     end
 
     test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is not a string" do
@@ -561,6 +574,14 @@ defmodule NeoFaker.InternetTest do
       slug = Internet.slug()
 
       assert slug |> String.split("-") |> length() == 3
+    end
+
+    test "never contains whitespace" do
+      for count <- [1, 3], _ <- 1..100 do
+        slug = Internet.slug(count)
+
+        refute slug =~ ~r/\s/, "slug contained whitespace: #{inspect(slug)}"
+      end
     end
 
     test "returns a slug with the specified word count" do

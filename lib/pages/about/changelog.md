@@ -69,6 +69,12 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 - `NeoFaker.Data` no longer reseeds `:rand` as a side effect of the first read of a locale/module
   data file. This silently overrode any seed a caller had set (including via the new
   `NeoFaker.seed/1`); OTP already seeds `:rand` automatically per process.
+- Removed five multi-word entries (`"all right"`, `"ice cream"`, `"next to"`, `"no one"`,
+  `"used to"`) from the English word list. `NeoFaker.Text.word/0` is documented to return a
+  single word, and `NeoFaker.Internet.username/1`, `domain_name/1` (`type: :random`), and
+  `slug/2` build tokens by joining word picks with a separator, so a picked entry containing a
+  space produced an invalid username, domain label, or slug (e.g. `"no one_smith@…"`). A new
+  test guards the word list against whitespace entries.
 
 ### Improvements
 

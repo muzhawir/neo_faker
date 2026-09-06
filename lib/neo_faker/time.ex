@@ -30,13 +30,13 @@ defmodule NeoFaker.Time do
   @doc """
   Generates a random time offset from now.
 
-  Adds a random number of units (hours by default) drawn from `range` to the
-  current time. The default range is `-24..24`.
+  Adds a random number of units (hours by default) drawn from `range` to the current time.
+  `range` defaults to `-24..24`.
 
   ## Options
 
-  - `:unit` - Unit of the range. One of `:hour` (default), `:minute`, or `:second`.
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:unit` (`:hour`, `:minute`, or `:second`) - the unit of the range. Defaults to `:hour`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -65,12 +65,9 @@ defmodule NeoFaker.Time do
   Both `start` and `finish` are inclusive. Defaults to the full day
   (`~T[00:00:00]`–`~T[23:59:59]`).
 
-  ## Parameters
+  ## Options
 
-  - `start` - Start time, inclusive. Defaults to `~T[00:00:00]`.
-  - `finish` - End time, inclusive. Defaults to `~T[23:59:59]`.
-  - `opts` - Keyword list of options:
-    - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -116,7 +113,7 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -135,7 +132,7 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -154,7 +151,7 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -173,7 +170,7 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -194,7 +191,7 @@ defmodule NeoFaker.Time do
 
   ## Options
 
-  - `:format` - Output format. Either `:struct` (default) or `:iso8601`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 

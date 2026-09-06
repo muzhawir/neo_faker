@@ -30,7 +30,8 @@ defmodule NeoFaker.Lorem do
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -58,12 +59,12 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random sentence.
 
-  Extracts a single sentence from a randomly chosen paragraph of the given
-  text source.
+  Extracts a single sentence from a randomly chosen paragraph of the given text source.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -82,12 +83,12 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates a random word.
 
-  Extracts a single lowercase word from a randomly chosen sentence, stripped of
-  punctuation.
+  Extracts a single lowercase word from a randomly chosen sentence, stripped of punctuation.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -111,16 +112,14 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random paragraphs.
 
-  Returns a list of paragraphs. Pass `join: true` to get a single newline-separated string.
-
-  ## Parameters
-
-  - `count` - Number of paragraphs to generate. Defaults to `3`.
+  Returns a list of paragraphs. `count` sets how many are generated and defaults to `3`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins paragraphs with `"\\n\\n"`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:join` (boolean) - when `true`, joins the paragraphs with `"\\n\\n"` into a single
+      string instead of returning a list. Defaults to `false`.
 
   ## Examples
 
@@ -148,16 +147,14 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random sentences.
 
-  Returns a list of sentences. Pass `join: true` to get a single space-separated string.
-
-  ## Parameters
-
-  - `count` - Number of sentences to generate. Defaults to `5`.
+  Returns a list of sentences. `count` sets how many are generated and defaults to `5`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins sentences with `" "`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:join` (boolean) - when `true`, joins the sentences with `" "` into a single string
+      instead of returning a list. Defaults to `false`.
 
   ## Examples
 
@@ -185,16 +182,14 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random words.
 
-  Returns a list of words. Pass `join: true` to get a single space-separated string.
-
-  ## Parameters
-
-  - `count` - Number of words to generate. Defaults to `10`.
+  Returns a list of words. `count` sets how many are generated and defaults to `10`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins words with `" "`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:join` (boolean) - when `true`, joins the words with `" "` into a single string
+      instead of returning a list. Defaults to `false`.
 
   ## Examples
 

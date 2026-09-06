@@ -43,11 +43,12 @@ defmodule NeoFaker.Color do
   Generates a random CMYK color.
 
   Returns a tuple `{cyan, magenta, yellow, black}` where each component is an
-  integer percentage from 0 to 100. Pass `format: :w3c` for a CSS string.
+  integer percentage from 0 to 100.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `cmyk(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -72,12 +73,12 @@ defmodule NeoFaker.Color do
   @doc """
   Generates a random HEX color string.
 
-  Returns a `#`-prefixed hex color. Defaults to six-digit format.
+  Returns a `#`-prefixed hex color.
 
   ## Options
 
-  - `:format` - Digit length. One of `:six_digit` (default), `:three_digit`,
-    `:four_digit`, or `:eight_digit`.
+    * `:format` (`:three_digit`, `:four_digit`, `:six_digit`, or `:eight_digit`) - the digit
+      length of the output. Defaults to `:six_digit`.
 
   ## Examples
 
@@ -110,12 +111,12 @@ defmodule NeoFaker.Color do
   Generates a random HSL color.
 
   Returns a `{hue, saturation, lightness}` tuple. Hue is in degrees (0–360);
-  saturation and lightness are integer percentages (0–100). Pass `format: :w3c`
-  for a CSS string.
+  saturation and lightness are integer percentages (0–100).
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `hsl(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -142,11 +143,12 @@ defmodule NeoFaker.Color do
 
   Returns a `{hue, saturation, lightness, alpha}` tuple. Hue is in degrees (0–360),
   saturation and lightness are integer percentages (0–100), and alpha is a float
-  between 0.0 and 1.0. Pass `format: :w3c` for a CSS string.
+  between 0.0 and 1.0.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `hsla(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -176,8 +178,10 @@ defmodule NeoFaker.Color do
 
   ## Options
 
-  - `:category` - Color category. One of `:all` (default), `:basic`, or `:extended`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:category` (`:all`, `:basic`, or `:extended`) - the color category to draw from.
+      Defaults to `:all`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured
+      locale.
 
   ## Examples
 
@@ -201,11 +205,12 @@ defmodule NeoFaker.Color do
   Generates a random RGB color.
 
   Returns a `{red, green, blue}` tuple where each component is an integer from
-  0 to 255. Pass `format: :w3c` for a CSS string.
+  0 to 255.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `rgb(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -231,12 +236,12 @@ defmodule NeoFaker.Color do
   Generates a random RGBA color.
 
   Returns a `{red, green, blue, alpha}` tuple. RGB components are integers from
-  0 to 255; alpha is a float between 0.0 and 1.0. Pass `format: :w3c` for a
-  CSS string.
+  0 to 255; alpha is a float between 0.0 and 1.0.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `rgba(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -262,9 +267,12 @@ defmodule NeoFaker.Color do
   Generates a random color in a randomly selected format.
 
   With no options, picks uniformly among CMYK, HEX, HSL, HSLA, RGB, and RGBA.
-  Pass `format: :w3c` to restrict the pool to formats that support W3C strings
-  (excludes HEX), or any other `:format` value to pass it through to each
-  individual generator.
+
+  ## Options
+
+    * `:format` (`:w3c` or any other value) - when `:w3c`, restricts the pool to formats
+      that support W3C strings (excludes HEX); any other value is passed through to each
+      individual generator.
 
   ## Examples
 

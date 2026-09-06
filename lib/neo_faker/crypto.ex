@@ -29,7 +29,7 @@ defmodule NeoFaker.Crypto do
 
   ## Options
 
-  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 
@@ -53,7 +53,7 @@ defmodule NeoFaker.Crypto do
 
   ## Options
 
-  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 
@@ -77,7 +77,7 @@ defmodule NeoFaker.Crypto do
 
   ## Options
 
-  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 
@@ -101,7 +101,7 @@ defmodule NeoFaker.Crypto do
 
   ## Options
 
-  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 
@@ -119,15 +119,14 @@ defmodule NeoFaker.Crypto do
   end
 
   @doc """
-  Generates a random hash of the specified algorithm.
+  Generates a random hash for the given algorithm.
 
-  A convenience dispatcher over `md5/1`, `sha1/1`, `sha256/1`, and `sha512/1`.
+  A convenience dispatcher over `md5/1`, `sha1/1`, `sha256/1`, and `sha512/1`, selected
+  by the `type` parameter, which must be one of `:md5`, `:sha1`, `:sha256`, or `:sha512`.
 
-  ## Parameters
+  ## Options
 
-  - `type` - Hash algorithm. One of `:md5`, `:sha1`, `:sha256`, or `:sha512`.
-  - `opts` - Keyword list of options:
-    - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 
@@ -155,14 +154,13 @@ defmodule NeoFaker.Crypto do
   Generates a random secure token.
 
   Returns a URL-safe random token string suitable for API keys, session tokens,
-  and similar secrets. The `length` controls the number of **random bytes** used,
-  not the final string length (which varies by encoding).
+  and similar secrets. The `length` parameter controls the number of **random bytes**
+  used, not the final string length (which varies by encoding). Defaults to `32`.
 
-  ## Parameters
+  ## Options
 
-  - `length` - Number of random bytes. Defaults to `32`.
-  - `opts` - Keyword list of options:
-    - `:encoding` - Output encoding. Either `:base64` (URL-safe, default) or `:hex`.
+    * `:encoding` (`:base64` or `:hex`) - the output encoding. `:base64` is URL-safe.
+      Defaults to `:base64`.
 
   ## Examples
 
@@ -199,8 +197,9 @@ defmodule NeoFaker.Crypto do
 
   ## Options
 
-  - `:format` - Either `:standard` (dashes, default) or `:compact` (no dashes).
-  - `:case` - Output character case. Either `:lower` (default) or `:upper`.
+    * `:format` (`:standard` or `:compact`) - `:standard` includes dashes, `:compact`
+      omits them. Defaults to `:standard`.
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
   ## Examples
 

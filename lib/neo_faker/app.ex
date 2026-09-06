@@ -55,15 +55,15 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app author name.
 
-  Delegates to `NeoFaker.Person.full_name/1` with `:middle_name` defaulting to `false` for cleaner
-  attribution strings.
+  Delegates to `NeoFaker.Person.full_name/1`, with `:middle_name` defaulting to `false`
+  for cleaner attribution strings. Accepts the same options as `full_name/1`.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:middle_name` - Include a middle name. Defaults to `false`.
-    - `:sex` - Sex of the generated name. One of `:unisex` (default), `:female`, `:male`.
-    - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:middle_name` (boolean) - whether to include a middle name. Defaults to `false`.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the generated name. Defaults
+      to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -86,8 +86,11 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random short app description.
 
-  Returns a one-line description string selected from locale-specific data. Pass `locale:` to
-  override the application's configured locale.
+  Returns a one-line description string selected from locale-specific data.
+
+  ## Options
+
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -123,25 +126,15 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app name.
 
-  Combines a random first word and last word from locale-specific data, then formats the result
-  according to the requested style.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:style` - Case style for the name. Defaults to `nil` (title-spaced).
-    - `:locale` - Locale to use. Defaults to the application's configured locale.
+  Combines a random first word and last word from locale-specific data, then formats the
+  result according to the requested style.
 
   ## Options
 
-  The values for `:style` can be:
-
-  - `nil` - Title-spaced format, e.g. `"Neo Faker"` (default).
-  - `:camel_case` - e.g. `"neoFaker"`.
-  - `:pascal_case` - e.g. `"NeoFaker"`.
-  - `:dashed` - e.g. `"neo-faker"`.
-  - `:underscore` - e.g. `"neo_faker"`.
-  - `:single` - First word only, e.g. `"Faker"`.
+    * `:style` (`nil`, `:camel_case`, `:pascal_case`, `:dashed`, `:underscore`, or `:single`) -
+      the case style for the name. `nil` produces a title-spaced format (e.g. `"Neo Faker"`);
+      `:single` returns the first word only (e.g. `"Faker"`). Defaults to `nil`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -179,21 +172,15 @@ defmodule NeoFaker.App do
   Generates a random semantic version number.
 
   Returns a version string following the [Semantic Versioning](https://semver.org)
-  (`MAJOR.MINOR.PATCH`) standard. Use `:type` to append pre-release or build metadata.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:type` - Version format variant. Defaults to `nil` (core only).
+  (`MAJOR.MINOR.PATCH`) standard.
 
   ## Options
 
-  The values for `:type` can be:
-
-  - `nil` - Core `MAJOR.MINOR.PATCH` format, e.g. `"1.2.3"` (default).
-  - `:pre_release` - Appends a pre-release label, e.g. `"1.2.3-beta.1"`.
-  - `:build` - Appends build metadata, e.g. `"1.2.3+20250325"`.
-  - `:pre_release_build` - Appends both, e.g. `"1.2.3-rc.1+20250325"`.
+    * `:type` (`nil`, `:pre_release`, `:build`, or `:pre_release_build`) - which metadata to
+      append. `nil` returns the core version only (e.g. `"1.2.3"`); `:pre_release` appends a
+      pre-release label (e.g. `"1.2.3-beta.1"`); `:build` appends build metadata (e.g.
+      `"1.2.3+20250325"`); `:pre_release_build` appends both (e.g. `"1.2.3-rc.1+20250325"`).
+      Defaults to `nil`.
 
   ## Examples
 
@@ -248,15 +235,14 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app bundle identifier.
 
-  Returns a bundle ID in reverse-domain notation, commonly used for iOS and Android apps. The app
-  name portion is generated via `name/1` and formatted with the given `:style`. Only `:underscore`
-  and `:dashed` styles are supported.
+  Returns a bundle ID in reverse-domain notation, commonly used for iOS and Android apps.
+  The app name portion is generated via `name/1`.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:domain` - Base domain. Defaults to `"example.com"`.
-    - `:style` - Name style for the app segment. Either `:underscore` (default) or `:dashed`.
+    * `:domain` (string) - the base domain. Defaults to `"example.com"`.
+    * `:style` (`:underscore` or `:dashed`) - the name style for the app segment. Defaults to
+      `:underscore`.
 
   ## Examples
 
@@ -285,10 +271,9 @@ defmodule NeoFaker.App do
   Returns a package name in Java reverse-domain notation (e.g. for Android apps).
   The app name segment is lowercased and stripped of all non-alphanumeric characters.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:domain` - Base domain. Defaults to `"example.com"`.
+    * `:domain` (string) - the base domain. Defaults to `"example.com"`.
 
   ## Examples
 

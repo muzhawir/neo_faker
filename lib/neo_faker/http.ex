@@ -72,18 +72,10 @@ defmodule NeoFaker.HTTP do
 
   Returns a user-agent from the top 100 most common browser or crawler user-agents.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:type` - User-agent category. Defaults to `:all`.
-
   ## Options
 
-  The values for `:type` can be:
-
-  - `:all` - Random user-agent from browsers and crawlers (default).
-  - `:browser` - Browser user-agent only.
-  - `:crawler` - Crawler user-agent only.
+    * `:type` (`:all`, `:browser`, or `:crawler`) - the user-agent category. `:all` draws from
+      both browsers and crawlers. Defaults to `:all`.
 
   ## Examples
 
@@ -107,12 +99,11 @@ defmodule NeoFaker.HTTP do
   Generates a random HTTP request method.
 
   Returns one of the common methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) by default.
-  Pass `common_only: false` to include all nine standard methods.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:common_only` - When `true`, restricts to the five most common methods. Defaults to `true`.
+    * `:common_only` (boolean) - when `false`, includes all nine standard methods instead of
+      just the five most common. Defaults to `true`.
 
   ## Examples
 
@@ -157,30 +148,19 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP status code.
 
-  Returns either a simple code string (e.g. `"200"`) or a detailed one (e.g. `"200 OK"`),
-  optionally filtered to a specific status group.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:type` - Output format. Defaults to `:simple`.
-    - `:group` - Status code group to sample from. Defaults to `nil` (all groups).
+  Returns either a simple code string (e.g. `"200"`) or a detailed one (e.g. `"200 OK"`).
 
   ## Options
 
-  The values for `:type` can be:
-
-  - `:simple` - Code only, e.g. `"200"` (default).
-  - `:detailed` - Code with reason phrase, e.g. `"200 OK"`.
-
-  The values for `:group` can be:
-
-  - `nil` - All status codes (default).
-  - `:information` - 1xx Informational.
-  - `:success` - 2xx Success.
-  - `:redirection` - 3xx Redirection.
-  - `:client_error` - 4xx Client Error.
-  - `:server_error` - 5xx Server Error.
+    * `:type` (`:simple` or `:detailed`) - `:simple` returns the code only; `:detailed`
+      includes the reason phrase. Defaults to `:simple`.
+    * `:group` (an atom below, or `nil`) - restricts sampling to one status code group.
+      Defaults to `nil` (all groups).
+      * `:information` - 1xx Informational.
+      * `:success` - 2xx Success.
+      * `:redirection` - 3xx Redirection.
+      * `:client_error` - 4xx Client Error.
+      * `:server_error` - 5xx Server Error.
 
   ## Examples
 
@@ -212,10 +192,10 @@ defmodule NeoFaker.HTTP do
 
   Randomly selects from `HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, and optionally `HTTP/3`.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:include_http3` - When `true`, includes `HTTP/3` in the pool. Defaults to `true`.
+    * `:include_http3` (boolean) - when `false`, excludes `HTTP/3` from the pool. Defaults
+      to `true`.
 
   ## Examples
 
@@ -247,18 +227,11 @@ defmodule NeoFaker.HTTP do
 
   Returns a common request or response header name from a curated list of ten per category.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:type` - Header category. Defaults to `:all`.
-
   ## Options
 
-  The values for `:type` can be:
-
-  - `:all` - Request and response headers combined (default).
-  - `:request` - Request headers only, e.g. `"User-Agent"`.
-  - `:response` - Response headers only, e.g. `"Server"`.
+    * `:type` (`:all`, `:request`, or `:response`) - the header category. `:request` returns
+      headers such as `"User-Agent"`; `:response` returns headers such as `"Server"`. Defaults
+      to `:all` (both categories combined).
 
   ## Examples
 

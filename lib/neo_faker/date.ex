@@ -24,20 +24,11 @@ defmodule NeoFaker.Date do
   Generates a random date within a specified range relative to today.
 
   By default, returns a date between 365 days before and 365 days after the current date.
-  The range parameter specifies the number of days to add or subtract from today.
-
-  ## Parameters
-
-  - `range` - The range of days relative to today. Defaults to `-365..365`.
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  `range` specifies the number of days to add or subtract from today.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` - Returns an ISO 8601 formatted string.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -65,19 +56,9 @@ defmodule NeoFaker.Date do
   Both `start` and `finish` are inclusive. Defaults to a date between the Unix
   epoch (`~D[1970-01-01]`) and today.
 
-  ## Parameters
-
-  - `start` - The start date (inclusive). Defaults to `~D[1970-01-01]`.
-  - `finish` - The end date (inclusive). Defaults to today's date.
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
-
   ## Options
 
-  The values for `:format` can be:
-
-  - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` - Returns an ISO 8601 formatted string.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -104,22 +85,12 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random birthday within the specified age range.
 
-  Calculates the valid date window from the current date and `min_age`/`max_age`,
-  then returns a random date within that window.
-
-  ## Parameters
-
-  - `min_age` - The minimum age in years. Defaults to `18`.
-  - `max_age` - The maximum age in years. Defaults to `65`.
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+  Calculates the valid date window from the current date and `min_age`/`max_age` (defaulting
+  to `18` and `65` respectively), then returns a random date within that window.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:struct` - Returns a `Date` struct (default).
-  - `:iso8601` - Returns an ISO 8601 formatted string.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -156,14 +127,12 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date in the past.
 
-  Returns a random date between `days` ago and today. Equivalent to
+  Returns a random date between `days` ago (defaults to `365`) and today. Equivalent to
   `add(-days..0, opts)`.
 
-  ## Parameters
+  ## Options
 
-  - `days` - The number of days in the past to look back. Defaults to `365`.
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -182,14 +151,12 @@ defmodule NeoFaker.Date do
   @doc """
   Generates a random date in the future.
 
-  Returns a random date between today and `days` from now. Equivalent to
+  Returns a random date between today and `days` from now (defaults to `365`). Equivalent to
   `add(0..days, opts)`.
 
-  ## Parameters
+  ## Options
 
-  - `days` - The number of days ahead to look. Defaults to `365`.
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -208,13 +175,11 @@ defmodule NeoFaker.Date do
   @doc """
   Returns today's local date.
 
-  A convenience wrapper that always returns the current date without any
-  randomisation.
+  A convenience wrapper that always returns the current date without any randomisation.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:format` - Specifies the output format. Defaults to `:struct`.
+    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 

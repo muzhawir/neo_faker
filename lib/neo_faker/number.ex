@@ -17,15 +17,10 @@ defmodule NeoFaker.Number do
   @digit_range 0..9
 
   @doc """
-  Generates a random number between `min` and `max`.
+  Generates a random number between `min` and `max`, inclusive.
 
   Returns an integer when both arguments are integers, or a float when either argument is a
   float. Defaults to the range `0`–`100`.
-
-  ## Parameters
-
-  - `min` - Minimum value (inclusive). Defaults to `0`.
-  - `max` - Maximum value (inclusive). Defaults to `100`.
 
   ## Examples
 
@@ -67,14 +62,8 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random floating-point number within the given range.
 
-  Combines a randomly selected integer part from `left_digit` and a fractional part from
-  `right_digit` into a float. Defaults to `10..100` for the integer part and
-  `10_000..100_000` for the fractional part.
-
-  ## Parameters
-
-  - `left_digit` - Range for the integer part. Defaults to `10..100`.
-  - `right_digit` - Range for the fractional part. Defaults to `10_000..100_000`.
+  Combines a randomly selected integer part from `left_digit` (defaults to `10..100`) and a
+  fractional part from `right_digit` (defaults to `10_000..100_000`) into a float.
 
   ## Examples
 
@@ -112,11 +101,9 @@ defmodule NeoFaker.Number do
   def digit, do: Enum.random(@digit_range)
 
   @doc """
-  Generates a random positive integer between `1` and `max`.
+  Generates a random positive integer between `1` and `max`, inclusive.
 
-  ## Parameters
-
-  - `max` - Maximum value (inclusive). Defaults to `100`.
+  `max` defaults to `100`.
 
   ## Examples
 
@@ -140,11 +127,9 @@ defmodule NeoFaker.Number do
   end
 
   @doc """
-  Generates a random negative integer between `min` and `-1`.
+  Generates a random negative integer between `min` and `-1`, inclusive.
 
-  ## Parameters
-
-  - `min` - Minimum value (inclusive). Defaults to `-100`.
+  `min` defaults to `-100`.
 
   ## Examples
 
@@ -167,11 +152,7 @@ defmodule NeoFaker.Number do
   @doc """
   Generates a random float rounded to the specified number of decimal places.
 
-  ## Parameters
-
-  - `min` - Minimum value (inclusive). Defaults to `0.0`.
-  - `max` - Maximum value (inclusive). Defaults to `100.0`.
-  - `precision` - Number of decimal places. Defaults to `2`.
+  `min` and `max` default to `0.0` and `100.0`; `precision` defaults to `2`.
 
   ## Examples
 

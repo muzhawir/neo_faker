@@ -51,16 +51,16 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a single random character.
 
-  Returns a single character from the alphanumeric set by default. Use the
-  `:type` option to restrict the pool.
+  Returns a single character from the alphanumeric set by default.
 
   ## Options
 
-  - `:type` - Character pool to draw from. Defaults to the full alphanumeric set.
-    - `:alphabet_lower` - Lowercase letters only.
-    - `:alphabet_upper` - Uppercase letters only.
-    - `:alphabet` - Any letter (lower or upper).
-    - `:digit` - A digit (`0`–`9`).
+    * `:type` (an atom below, or `nil`) - the character pool to draw from. Defaults to `nil`
+      (the full alphanumeric set).
+      * `:alphabet_lower` - lowercase letters only.
+      * `:alphabet_upper` - uppercase letters only.
+      * `:alphabet` - any letter (lower or upper).
+      * `:digit` - a digit (`0`–`9`).
 
   ## Examples
 
@@ -89,15 +89,13 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a string of random characters.
 
-  Calls `character/1` `number` times and joins the results into a single string.
-
-  ## Parameters
-
-  - `number` - Number of characters to generate. Defaults to `11`.
+  Calls `character/1` `number` times and joins the results into a single string. `number`
+  defaults to `11`.
 
   ## Options
 
-  - `:type` - Character pool to draw from (see `character/1`). Defaults to alphanumeric.
+    * `:type` (see `character/1`'s `:type` option) - the character pool to draw from.
+      Defaults to `nil` (the full alphanumeric set).
 
   ## Examples
 
@@ -132,21 +130,20 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a random emoji.
 
-  Returns a random emoji from the specified category, or from all categories
-  when `:all` is used (default).
+  Returns a random emoji from the specified category, or from all categories by default.
 
   ## Options
 
-  - `:category` - Emoji category. Defaults to `:all`.
-    - `:all` - Any category.
-    - `:activities` - Activities.
-    - `:animals_and_nature` - Animals and nature.
-    - `:food_and_drink` - Food and drink.
-    - `:objects` - Objects.
-    - `:people_and_body` - People and body.
-    - `:smileys_and_emotion` - Smileys and emotion.
-    - `:symbols` - Symbols.
-    - `:travel_and_places` - Travel and places.
+    * `:category` (an atom below) - the emoji category. Defaults to `:all`.
+      * `:all` - any category.
+      * `:activities` - activities.
+      * `:animals_and_nature` - animals and nature.
+      * `:food_and_drink` - food and drink.
+      * `:objects` - objects.
+      * `:people_and_body` - people and body.
+      * `:smileys_and_emotion` - smileys and emotion.
+      * `:symbols` - symbols.
+      * `:travel_and_places` - travel and places.
 
   ## Examples
 
@@ -186,16 +183,13 @@ defmodule NeoFaker.Text do
   @doc """
   Generates multiple random words.
 
-  Returns a list of words by default. Pass `join: true` to get a single string.
-
-  ## Parameters
-
-  - `count` - Number of words to generate. Defaults to `5`.
+  Returns a list of words by default. `count` sets how many are generated and defaults to `5`.
 
   ## Options
 
-  - `:join` - When `true`, joins the words into a string. Defaults to `false`.
-  - `:separator` - Separator used when joining. Defaults to `" "`.
+    * `:join` (boolean) - when `true`, joins the words into a single string instead of
+      returning a list. Defaults to `false`.
+    * `:separator` (string) - the separator used when joining. Defaults to `" "`.
 
   ## Examples
 

@@ -45,8 +45,8 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -72,8 +72,8 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -99,8 +99,8 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -128,9 +128,9 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
-  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:middle_name` (boolean) - whether to include a middle name. Defaults to `true`.
 
   ## Examples
 
@@ -164,7 +164,7 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -187,7 +187,7 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -215,7 +215,7 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -237,7 +237,7 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -259,7 +259,7 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -277,12 +277,9 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random age as a non-negative integer.
+  Generates a random age as a non-negative integer between `min` and `max`, inclusive.
 
-  ## Parameters
-
-  - `min` - Minimum age, inclusive. Defaults to `0`.
-  - `max` - Maximum age, inclusive. Defaults to `120`.
+  `min` defaults to `0` and `max` defaults to `120`.
 
   ## Examples
 
@@ -319,11 +316,13 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-  - `:sex` - Sex of the name. One of `:unisex` (default), `:female`, or `:male`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
-  - `:middle_name` - Whether to include a middle name. Defaults to `true`.
-  - `:prefix` - When `true`, prepends a name prefix such as `"Mr."` or `"Dr."`. Defaults to `false`.
-  - `:suffix` - When `true`, appends a name suffix such as `"Jr."` or `"III"`. Defaults to `false`.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:middle_name` (boolean) - whether to include a middle name. Defaults to `true`.
+    * `:prefix` (boolean) - when `true`, prepends a name prefix such as `"Mr."` or `"Dr."`.
+      Defaults to `false`.
+    * `:suffix` (boolean) - when `true`, appends a name suffix such as `"Jr."` or `"III"`.
+      Defaults to `false`.
 
   ## Examples
 

@@ -40,37 +40,29 @@ defmodule NeoFaker.Gravatar do
   @doc """
   Generates a Gravatar image URL.
 
-  Returns the Gravatar avatar URL for the given email address. If `nil` is passed,
-  a random email is used.
-
-  ## Parameters
-
-  - `email` - Email address to hash. If `nil`, generates a random email.
-  - `opts` - Keyword list of options:
-    - `:size` - Image size in pixels (`1`–`2048`). Defaults to `80`.
-    - `:fallback` - Default image type. Defaults to `:identicon`.
-    - `:rating` - Maximum content rating. Defaults to `nil` (no restriction).
-    - `:force_default` - When `true`, always returns the fallback image. Defaults to `false`.
+  Returns the Gravatar avatar URL for the given `email`. If `nil` is passed (the default),
+  a random email is used instead.
 
   ## Options
 
-  The values for `:fallback` can be:
-
-  - `:identicon` - Geometric pattern based on email hash (default).
-  - `:monsterid` - Generated monster image.
-  - `:wavatar` - Generated face image.
-  - `:robohash` - Generated robot image.
-  - `:retro` - 8-bit arcade-style pixelated face.
-  - `:blank` - Transparent PNG.
-  - `:"404"` - HTTP 404 response.
-  - Custom `http://` or `https://` URL string.
-
-  The values for `:rating` can be:
-
-  - `:g` - Suitable for all audiences.
-  - `:pg` - May contain mild profanity or suggestive content.
-  - `:r` - May contain harsh profanity, violence, or nudity.
-  - `:x` - May contain explicit sexual imagery or extreme violence.
+    * `:size` (integer, `1`–`2048`) - the image size in pixels. Defaults to `80`.
+    * `:fallback` (an atom below, or a custom `http://`/`https://` URL string) - the default
+      image returned when no Gravatar is set for the email. Defaults to `:identicon`.
+      * `:identicon` - a geometric pattern based on the email hash.
+      * `:monsterid` - a generated monster image.
+      * `:wavatar` - a generated face image.
+      * `:robohash` - a generated robot image.
+      * `:retro` - an 8-bit arcade-style pixelated face.
+      * `:blank` - a transparent PNG.
+      * `:"404"` - an HTTP 404 response instead of an image.
+    * `:rating` (`:g`, `:pg`, `:r`, `:x`, or `nil`) - the maximum content rating to allow.
+      Defaults to `nil` (no restriction).
+      * `:g` - suitable for all audiences.
+      * `:pg` - may contain mild profanity or suggestive content.
+      * `:r` - may contain harsh profanity, violence, or nudity.
+      * `:x` - may contain explicit sexual imagery or extreme violence.
+    * `:force_default` (boolean) - when `true`, always returns the fallback image instead of
+      the real Gravatar. Defaults to `false`.
 
   ## Examples
 
@@ -116,25 +108,19 @@ defmodule NeoFaker.Gravatar do
   @doc """
   Generates a Gravatar profile URL.
 
-  Returns the Gravatar profile page URL for the given email address. If `nil` is
-  passed, a random email is used.
-
-  ## Parameters
-
-  - `email` - Email address to hash. If `nil`, generates a random email.
-  - `opts` - Keyword list of options:
-    - `:format` - Response format. Defaults to `:html`.
+  Returns the Gravatar profile page URL for the given `email`. If `nil` is passed (the
+  default), a random email is used instead.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:html` - HTML profile page (default).
-  - `:json` - JSON API endpoint.
-  - `:xml` - XML API endpoint.
-  - `:php` - PHP serialized data endpoint.
-  - `:vcf` - vCard/VCF endpoint.
-  - `:qr` - QR code image endpoint.
+    * `:format` (`:html`, `:json`, `:xml`, `:php`, `:vcf`, or `:qr`) - the response format.
+      Defaults to `:html`.
+      * `:html` - the HTML profile page.
+      * `:json` - the JSON API endpoint.
+      * `:xml` - the XML API endpoint.
+      * `:php` - the PHP serialized data endpoint.
+      * `:vcf` - the vCard/VCF endpoint.
+      * `:qr` - the QR code image endpoint.
 
   ## Examples
 

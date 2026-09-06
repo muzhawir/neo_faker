@@ -19,15 +19,12 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood group.
 
-  Combines a blood type (`A`, `B`, `AB`, or `O`) with an Rh factor (`+` or `-`). Use the `:format`
-  option to return only part of the result.
+  Combines a blood type (`A`, `B`, `AB`, or `O`) with an Rh factor (`+` or `-`).
 
   ## Options
 
-  - `:format` - Controls what is returned. Defaults to `:group`.
-    - `:group` - Full blood group, e.g. `"B+"` (default).
-    - `:type_only` - Blood type only, e.g. `"B"`.
-    - `:rh_only` - Rh factor only, e.g. `"+"`.
+    * `:format` (`:group`, `:type_only`, or `:rh_only`) - which part of the blood group to
+      return. Defaults to `:group`.
 
   ## Examples
 
@@ -83,12 +80,12 @@ defmodule NeoFaker.Blood do
   @doc """
   Generates a random blood type in medical notation.
 
-  Returns a descriptive string combining the ABO type and Rh factor. Set `verbose: true` for the
-  extended `"Type X, Rh Y"` form.
+  Returns a descriptive string combining the ABO type and Rh factor.
 
   ## Options
 
-  - `:verbose` - When `true`, uses full descriptive text. Defaults to `false`.
+    * `:verbose` (boolean) - when `true`, uses the full descriptive `"Type X, Rh Y"` form
+      instead of `"X Y"`. Defaults to `false`.
 
   ## Examples
 

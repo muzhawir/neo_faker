@@ -1,30 +1,22 @@
 defmodule NeoFaker.Blood.Generator do
   @moduledoc false
 
+  # Source lists for Blood.type/0 and Blood.rh_factor/0. all_types/0 and
+  # all_rh_factors/0 return these verbatim, so this order is the documented
+  # public return value, not just an internal detail; keep it ["A", "B", "AB",
+  # "O"] / ["+", "-"] if either list ever needs to change.
   @blood_types ~w[A B AB O]
   @rh_factors ~w[+ -]
 
-  @doc """
-  Generates a random ABO blood type.
-  """
   @spec type() :: String.t()
   def type, do: Enum.random(@blood_types)
 
-  @doc """
-  Generates a random Rh factor.
-  """
   @spec rh_factor() :: String.t()
   def rh_factor, do: Enum.random(@rh_factors)
 
-  @doc """
-  Returns all 4 blood types in the ABO system.
-  """
   @spec all_types() :: [String.t()]
   def all_types, do: @blood_types
 
-  @doc """
-  Returns both possible Rh factors.
-  """
   @spec all_rh_factors() :: [String.t()]
   def all_rh_factors, do: @rh_factors
 end

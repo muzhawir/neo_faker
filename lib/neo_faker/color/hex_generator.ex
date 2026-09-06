@@ -4,9 +4,7 @@ defmodule NeoFaker.Color.HexGenerator do
   @hex_digits ~w[0 1 2 3 4 5 6 7 8 9 A B C D E F]
 
   @doc """
-  Generates a random HEX color string of the specified length.
-
-  The resulting string consists of randomly selected hexadecimal digits (0-9, A-F).
+  Generates `digits` random hex characters. Digits are uppercase (A-F), never lowercase.
   """
   @spec color(3 | 4 | 6 | 8) :: String.t()
   def color(digits) when digits in [3, 4, 6, 8] do

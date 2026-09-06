@@ -12,7 +12,8 @@ defmodule NeoFaker.Internet.TldGenerator do
   @doc """
   Generates a random top-level domain (TLD) based on the specified type.
 
-  Returns a random TLD string.
+  Returns a random TLD string. `:all_except_safe` draws from every category
+  in the data file except the one tagged `"safe"`; `:all` includes it.
   """
   @spec generate_name(tld_type()) :: String.t()
   def generate_name(type) do
@@ -41,6 +42,7 @@ defmodule NeoFaker.Internet.TldGenerator do
     end
   end
 
+  # Backs :all_except_safe: same data as :all, minus the "safe" category.
   defp generate_default_name do
     :default
     |> Data.fetch!(@module, @tld_file)

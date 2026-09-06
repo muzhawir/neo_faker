@@ -27,6 +27,15 @@ defmodule NeoFaker.Time.Generator do
   @doc """
   Generates a random `Time` between two given `Time` values.
 
+  Requires `start` to already be chronologically at or before `finish`; every
+  caller (`NeoFaker.Time.between/3`, and the morning/afternoon/evening/night
+  helpers that go through it) enforces this first via
+  `NeoFaker.Time.Validator.validate_time_order!/2`, so it isn't re-checked
+  here. `Enum.min_max/1` below only picks out the smaller second-count to size
+  the random offset; the offset is still added to the literal `start`
+  argument, not to whichever value the seconds comparison found smaller, so
+  this function must not be called directly with `start > finish`.
+
   Returns:
   - a `Time` struct when the format is `:struct`
   - a string in the format `"HH:MM:SS"` when the format is `:iso8601`

@@ -15,6 +15,9 @@ defmodule NeoFaker.Text.EmojiGenerator do
           | :travel_and_places
 
   @emoji_file "emoji.exs"
+  # Hardcoded to NeoFaker.Text (not __MODULE__) so NeoFaker.Data resolves
+  # priv/data/<locale>/text/emoji.exs instead of a nonexistent
+  # priv/data/<locale>/emojigenerator/ directory derived from this module's own name.
   @module NeoFaker.Text
 
   @doc """
@@ -23,6 +26,10 @@ defmodule NeoFaker.Text.EmojiGenerator do
   Returns a random emoji from the specified category or all categories if `:all` is passed.
   """
   @spec emoji(category()) :: String.t()
+  # :all has no matching key in emoji.exs, so it fetches the whole locale map
+  # directly (bypassing the per-category random_value/3 helper) and flattens
+  # every category's list into one pool before drawing. Emoji data isn't
+  # locale-specific, so this always reads the :default file.
   def emoji(:all) do
     :default
     |> Data.fetch!(@module, @emoji_file)

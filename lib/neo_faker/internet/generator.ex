@@ -4,47 +4,47 @@ defmodule NeoFaker.Internet.Generator do
   # ---------------------------------------------------------------------------
   # IANA special-purpose blocks excluded from public_ipv4/0 (iana.org):
   #
-  #   0.0.0.0/8        – "This" network (RFC 791 / RFC 1122)
-  #   10.0.0.0/8       – RFC 1918 private class A
-  #   100.64.0.0/10    – Shared address / CGN (RFC 6598); second octets 64–127
-  #   127.0.0.0/8      – Loopback (RFC 1122)
-  #   169.254.0.0/16   – Link-local (RFC 3927); second octet 254 only
-  #   172.16.0.0/12    – RFC 1918 private class B; second octets 16–31
-  #   192.0.0.0/24     – IETF protocol assignments (RFC 6890); second=0, all thirds
-  #   192.0.2.0/24     – TEST-NET-1 (RFC 5737); second=0, third=2 (covered above)
-  #   192.88.99.0/24   – Deprecated 6to4 relay (RFC 7526); second=88, third=99
-  #   192.168.0.0/16   – RFC 1918 private class C; second=168, all thirds
-  #   198.18.0.0/15    – Benchmarking (RFC 2544); second octets 18–19
-  #   198.51.100.0/24  – TEST-NET-2 (RFC 5737); second=51, third=100
-  #   203.0.113.0/24   – TEST-NET-3 (RFC 5737); second=0, third=113
-  #   224.0.0.0/4      – Multicast (RFC 3171)
-  #   240.0.0.0/4      – Reserved / broadcast (RFC 1112)
+  #   0.0.0.0/8        "This" network (RFC 791 / RFC 1122)
+  #   10.0.0.0/8       RFC 1918 private class A
+  #   100.64.0.0/10    Shared address / CGN (RFC 6598), second octets 64-127
+  #   127.0.0.0/8      Loopback (RFC 1122)
+  #   169.254.0.0/16   Link-local (RFC 3927), second octet 254 only
+  #   172.16.0.0/12    RFC 1918 private class B, second octets 16-31
+  #   192.0.0.0/24     IETF protocol assignments (RFC 6890), second=0, all thirds
+  #   192.0.2.0/24     TEST-NET-1 (RFC 5737), second=0, third=2 (covered above)
+  #   192.88.99.0/24   Deprecated 6to4 relay (RFC 7526), second=88, third=99
+  #   192.168.0.0/16   RFC 1918 private class C, second=168, all thirds
+  #   198.18.0.0/15    Benchmarking (RFC 2544), second octets 18-19
+  #   198.51.100.0/24  TEST-NET-2 (RFC 5737), second=51, third=100
+  #   203.0.113.0/24   TEST-NET-3 (RFC 5737), second=0, third=113
+  #   224.0.0.0/4      Multicast (RFC 3171)
+  #   240.0.0.0/4      Reserved / broadcast (RFC 1112)
   #
   # Strategy: the first-octet table covers every /8 that contains at least one
-  # public address. Octets with mixed public/reserved sub-ranges (100, 169, 172,
-  # 192, 198, 203) are weighted by their count of valid second octets and then
-  # have their narrow reserved sub-ranges excluded in pick_public_second_octet/1
-  # or pick_public_third_octet/2.
+  # public address. A first octet with a mixed public/reserved range (100, 169,
+  # 172, 192, 198, 203) is weighted by its count of valid second octets, so a
+  # single :rand.uniform/1 draw over the whole table still lands on each
+  # individual public address with equal probability, not on each first octet.
+  # The narrow reserved sub-ranges inside those mixed octets are then excluded
+  # in pick_public_second_octet/1 or pick_public_third_octet/2.
   # ---------------------------------------------------------------------------
 
-  # Weights for mixed-range first octets (valid second-octet counts out of 256):
+  # Weights for mixed-range first octets (count of valid second octets, out of 256):
   #
-  #   100 – 100.64–127 reserved (/10 = 64 second octets); 256 − 64 = 192 valid
-  #   169 – 169.254 reserved (/16 = 1 second octet);      256 −  1 = 255 valid
-  #   172 – 172.16–31 reserved (/12 = 16 second octets);  256 − 16 = 240 valid
-  #   192 – second=0 (/24, IETF) and second=168 (/16, RFC1918) fully excluded;
-  #         second=88 and second=51 are public but need third-octet guards → 254 valid
-  #   198 – second=18,19 (/15) fully excluded; second=51 needs third-octet guard → 253 valid (254 − 1 for the /15)
-  #         Wait – 198: exclude 18,19 (fully reserved /15) → 254 valid second octets
-  #   203 – second=0, third=113 only; all 256 second octets valid (guard in third)
-  #
-  # Re-deriving 192: exclude second=0 (covers both 192.0.0.0/24 and 192.0.2.0/24)
-  # and second=168 (192.168.0.0/16). second=88 stays (only /24 reserved, handled
-  # in pick_public_third_octet). → 256 − 2 = 254 valid second octets.
-  #
-  # Re-deriving 198: exclude second=18 and second=19 (198.18.0.0/15). second=51
-  # stays (only one /24 reserved, handled in pick_public_third_octet).
-  # → 256 − 2 = 254 valid second octets.
+  #   100  100.64-127 reserved (a /10, 64 second octets)   -> 256 - 64 = 192 valid
+  #   169  169.254 reserved (a /16, 1 second octet)         -> 256 - 1  = 255 valid
+  #   172  172.16-31 reserved (a /12, 16 second octets)     -> 256 - 16 = 240 valid
+  #   192  second=0 (covers both the /24 IETF block and the /24 TEST-NET-1
+  #        block) and second=168 (the /16 RFC 1918 block) are fully excluded;
+  #        second=88 stays valid here since only its /24 sub-block is reserved,
+  #        which is handled later in pick_public_third_octet/2 -> 254 valid
+  #   198  second=18 and second=19 (the /15 benchmarking block) are fully
+  #        excluded; second=51 stays valid here since only its /24 sub-block is
+  #        reserved, which is handled later in pick_public_third_octet/2
+  #        -> 254 valid
+  #   203  no second octet is fully reserved (only third=113 under second=0
+  #        is), so all 256 second octets stay valid here, guarded in the third
+  #        octet instead
 
   # The table is a list of {weight, lo, hi} ranges of first octets.
   # Pure-public /8 blocks each have weight 256 (all second octets valid).
@@ -330,6 +330,10 @@ defmodule NeoFaker.Internet.Generator do
   @spec slugify(String.t()) :: String.t()
   defp slugify(word), do: String.replace(word, ~r/\s+/, "-")
 
+  # Chunks the groups into runs of equal zero-ness, keeps only the all-zero
+  # runs, and takes the longest one. Enum.max_by/3 keeps the first run it
+  # sees on a tie, which matches RFC 5952's rule of compressing whichever
+  # longest run appears first when there's more than one of the same length.
   @spec find_longest_zero_sequence(list(integer())) :: {integer(), integer()}
   defp find_longest_zero_sequence(groups) do
     groups

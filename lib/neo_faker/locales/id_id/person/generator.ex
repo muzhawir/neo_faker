@@ -1,13 +1,17 @@
 defmodule NeoFaker.Locales.IdId.Person.Generator do
   @moduledoc false
 
+  # Building blocks assembled by NeoFaker.Locales.IdId.Person.nik/0 and
+  # npwp/0.
+
   alias NeoFaker.Number
 
   @min_age_years -90
   @max_age_years -18
 
   @doc """
-  Generate a serial number with a specified maximum number and padding count.
+  Generates a zero-padded random number, used for the trailing serial part
+  of a NIK or NPWP.
   """
   @spec serial_number(non_neg_integer(), non_neg_integer()) :: String.t()
   def serial_number(max_number, pad_count) do

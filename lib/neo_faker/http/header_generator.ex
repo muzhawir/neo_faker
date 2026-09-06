@@ -1,6 +1,8 @@
 defmodule NeoFaker.HTTP.HeaderGenerator do
   @moduledoc false
 
+  # A representative sample of commonly seen header names, not an exhaustive
+  # list of every header the HTTP spec defines.
   @request_headers [
     "Accept",
     "Accept-Encoding",

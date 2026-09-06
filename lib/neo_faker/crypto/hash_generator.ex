@@ -5,6 +5,9 @@ defmodule NeoFaker.Crypto.HashGenerator do
   Generates a cryptographic hash using the given algorithm.
 
   `hash_type` is any algorithm accepted by `:crypto.hash/2` (e.g. `:md5`, `:sha`, `:sha256`).
+  There is no input to hash: this always hashes fresh random bytes, so it produces a
+  realistic-looking hash string for fake data rather than a real digest of any given value, and
+  never returns the same hash twice.
 
   ## Options
 

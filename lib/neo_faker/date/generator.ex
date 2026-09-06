@@ -5,9 +5,11 @@ defmodule NeoFaker.Date.Generator do
   @type date_format :: :struct | :iso8601
 
   @doc """
-  Generate a random date with specified range.
+  Generates a random date offset from today by a day count drawn from `range`.
 
-  Returns a random date as a `Date` struct when the format is `:struct` or a string in the format
+  `range` may include negative values (past), positive values (future), or straddle zero; the
+  offset is added to today's local date via `Date.add/2`, which handles either direction the same
+  way. Returns a `Date` struct when the format is `:struct` or a string in the format
   `YYYY-MM-DD` when the format is `:iso8601`.
   """
   @spec add(Range.t(), date_format()) :: Date.t() | String.t()
@@ -21,7 +23,7 @@ defmodule NeoFaker.Date.Generator do
   end
 
   @doc """
-  Generate a random date between two dates.
+  Generates a random date between two dates, inclusive.
 
   Returns a random date between `start` and `finish` as a `Date` struct when the format is
   `:struct` or a string in the format `YYYY-MM-DD` when the format is `:iso8601`.

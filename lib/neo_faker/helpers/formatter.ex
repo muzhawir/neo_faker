@@ -2,6 +2,10 @@ defmodule NeoFaker.Helpers.Formatter do
   @moduledoc false
   @moduledoc since: "0.14.0"
 
+  # Shared output-shaping helpers for the small set of format/case/prefix-suffix
+  # options that recur across multiple domains, so each domain module doesn't
+  # reimplement the same "if :iso8601 then to_string else pass through" branch.
+
   @doc """
   Formats a Date struct according to the specified format.
 
@@ -68,7 +72,8 @@ defmodule NeoFaker.Helpers.Formatter do
   def format_datetime(datetime, :iso8601), do: DateTime.to_iso8601(datetime)
 
   @doc """
-  Formats a color tuple to W3C format string.
+  Joins a color tuple's components into the W3C `type(v1, v2, ...)` string form, applying
+  `suffix` (e.g. `"%"`) to every component.
 
   ## Examples
 
@@ -90,7 +95,10 @@ defmodule NeoFaker.Helpers.Formatter do
   end
 
   @doc """
-  Formats a number as a string or returns as integer based on type.
+  Converts `number` to a string, or coerces it to an integer.
+
+  The `:integer` branch truncates a float toward zero (`trunc/1`), it does not round to the
+  nearest integer, so `format_number(2.9, :integer)` returns `2`, not `3`.
 
   ## Examples
 

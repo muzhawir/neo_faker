@@ -12,7 +12,8 @@ defmodule NeoFaker.Internet.DomainGenerator do
   @doc """
   Generates a popular domain name based on the specified type.
 
-  Returns a random domain from the selected category.
+  Returns a random domain from the selected category, or from every category
+  combined when `type` is `:all`.
   """
   @spec generate_popular_domain_name(domain_type()) :: String.t()
   def generate_popular_domain_name(type) do
@@ -25,7 +26,9 @@ defmodule NeoFaker.Internet.DomainGenerator do
     end
   end
 
-  # Fetch popular domains based on type
+  # :all flattens every category's list before picking, so each category
+  # doesn't need to have the same number of entries for the pick to still be
+  # roughly representative; a named type just picks from its own list.
   defp fetch_popular_domain(:all) do
     :default
     |> Data.fetch!(@module, @popular_domain_file)

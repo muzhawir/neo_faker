@@ -86,6 +86,11 @@ few internal (never public) modules live.
   (`format_datetime/2`, `format_color_w3c/3`, `with_prefix/3`, `with_suffix/3`); nothing in the
   library or its tests called them. `NeoFaker.Data.data_path/0` and `resolve_locale_config/1` are
   now `defp`. All of these were `@moduledoc false` internals, so this is not a public API change.
+- Refactored the hidden `NeoFaker.Internet.Generator` module for readability: the scattered
+  `:rand.uniform(n) - 1` calls are now named `random_octet/0`, `random_octet_except/1`, and
+  `random_ipv6_group/0` helpers; `reserved_ipv4?/3` pattern-matches the octets instead of guarding
+  on `==`; the compressed-IPv6 builder drops a redundant `case`; and `url_path/0`/`query_string/0`
+  share one word-segment helper. Output and the public `reserved_ipv4?/3` behavior are unchanged.
 
 ### Tests
 

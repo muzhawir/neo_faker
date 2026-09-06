@@ -206,27 +206,39 @@ defmodule NeoFaker.GravatarTest do
   end
 
   # ---------------------------------------------------------------------------
-  # random/0
+  # random_display/0
   # ---------------------------------------------------------------------------
 
-  describe "random/0" do
+  describe "random_display/0" do
     test "returns a valid Gravatar image URL" do
-      url = Gravatar.random()
+      url = Gravatar.random_display()
 
       assert String.match?(url, @gravatar_image_url_regexp)
     end
 
     test "returns a URL with a query string" do
-      url = Gravatar.random()
+      url = Gravatar.random_display()
 
       assert String.contains?(url, "?d=")
       assert String.contains?(url, "&s=")
     end
 
     test "returns a different URL on repeated calls" do
-      urls = Enum.map(1..10, fn _ -> Gravatar.random() end)
+      urls = Enum.map(1..10, fn _ -> Gravatar.random_display() end)
 
       assert urls |> Enum.uniq() |> length() > 1
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # random/0 (deprecated)
+  # ---------------------------------------------------------------------------
+
+  describe "random/0 (deprecated, delegates to random_display/0)" do
+    test "returns a valid Gravatar image URL" do
+      url = Gravatar.random()
+
+      assert String.match?(url, @gravatar_image_url_regexp)
     end
   end
 

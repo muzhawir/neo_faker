@@ -152,20 +152,34 @@ defmodule NeoFaker.Gravatar do
 
   ## Examples
 
-      iex> NeoFaker.Gravatar.random()
+      iex> NeoFaker.Gravatar.random_display()
       "https://gravatar.com/avatar/<hash>?d=monsterid&s=150"
 
-      iex> NeoFaker.Gravatar.random()
+      iex> NeoFaker.Gravatar.random_display()
       "https://gravatar.com/avatar/<hash>?d=wavatar&s=64"
 
   """
-  @spec random() :: String.t()
-  def random do
+  @doc since: "0.15.0"
+  @spec random_display() :: String.t()
+  def random_display do
     random_size = Enum.random([@size, 100, 120, 150, 200, 256])
     random_fallback = Enum.random(@fallback_types)
 
     display(nil, size: random_size, fallback: random_fallback)
   end
+
+  @doc """
+  Generates a Gravatar image URL with randomly selected size and fallback type.
+
+  ## Examples
+
+      iex> NeoFaker.Gravatar.random()
+      "https://gravatar.com/avatar/<hash>?d=monsterid&s=150"
+
+  """
+  @deprecated "Use random_display/0 instead"
+  @spec random() :: String.t()
+  def random, do: random_display()
 
   @doc """
   Returns the list of all valid fallback type atoms.

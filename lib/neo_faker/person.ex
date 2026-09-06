@@ -32,6 +32,14 @@ defmodule NeoFaker.Person do
 
   @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
 
+  @gender_schema NimbleOptions.new!(
+                   format: [
+                     type: {:in, [:binary, :short_binary, :non_binary]},
+                     default: :binary
+                   ],
+                   locale: [type: :atom, default: nil]
+                 )
+
   @full_name_with_title_schema NimbleOptions.new!(
                                  sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
                                  locale: [type: :atom, default: nil],
@@ -209,6 +217,50 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
+  Generates a random gender value.
+
+  ## Options
+
+    * `:format` (`:binary`, `:short_binary`, or `:non_binary`) - which gender representation to
+      return. Defaults to `:binary`.
+      * `:binary` - the full binary gender, e.g. `"Male"` or `"Female"`.
+      * `:short_binary` - the abbreviated binary gender, e.g. `"M"` or `"F"`.
+      * `:non_binary` - a non-binary gender identity string, e.g. `"Non-binary"`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+
+  ## Examples
+
+      iex> NeoFaker.Person.gender()
+      "Male"
+
+      iex> NeoFaker.Person.gender(format: :short_binary)
+      "M"
+
+      iex> NeoFaker.Person.gender(format: :non_binary)
+      "Non-binary"
+
+      iex> NeoFaker.Person.gender(locale: :id_id)
+      "Perempuan"
+
+  """
+  @doc since: "0.15.0"
+  @spec gender(keyword()) :: String.t()
+  def gender(opts \\ []) do
+    opts = Options.validate!(opts, @gender_schema)
+    format = Keyword.fetch!(opts, :format)
+    locale_opts = Keyword.take(opts, [:locale])
+
+    key =
+      case format do
+        :binary -> "binary"
+        :short_binary -> "short_binary"
+        :non_binary -> "non_binary"
+      end
+
+    Data.random_value(__MODULE__, @gender_file, key, locale_opts)
+  end
+
+  @doc """
   Generates a random binary gender.
 
   Returns either `"Male"` or `"Female"` in the configured locale.
@@ -226,10 +278,11 @@ defmodule NeoFaker.Person do
       "Perempuan"
 
   """
+  @deprecated "Use gender/1 instead, e.g. gender(format: :binary)"
   @spec binary_gender(keyword()) :: String.t()
   def binary_gender(opts \\ []) do
     opts = Options.validate!(opts, @locale_schema)
-    Data.random_value(__MODULE__, @gender_file, "binary", opts)
+    gender(Keyword.put(opts, :format, :binary))
   end
 
   @doc """
@@ -248,10 +301,11 @@ defmodule NeoFaker.Person do
       "P"
 
   """
+  @deprecated "Use gender/1 instead, e.g. gender(format: :short_binary)"
   @spec short_binary_gender(keyword()) :: String.t()
   def short_binary_gender(opts \\ []) do
     opts = Options.validate!(opts, @locale_schema)
-    Data.random_value(__MODULE__, @gender_file, "short_binary", opts)
+    gender(Keyword.put(opts, :format, :short_binary))
   end
 
   @doc """
@@ -270,10 +324,11 @@ defmodule NeoFaker.Person do
       "Non-biner"
 
   """
+  @deprecated "Use gender/1 instead, e.g. gender(format: :non_binary)"
   @spec non_binary_gender(keyword()) :: String.t()
   def non_binary_gender(opts \\ []) do
     opts = Options.validate!(opts, @locale_schema)
-    Data.random_value(__MODULE__, @gender_file, "non_binary", opts)
+    gender(Keyword.put(opts, :format, :non_binary))
   end
 
   @doc """

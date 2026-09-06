@@ -76,47 +76,61 @@ defmodule NeoFaker.PersonTest do
     end
   end
 
-  describe "binary_gender/1" do
+  describe "gender/1" do
     test "returns a binary gender from the default locale word list" do
       word_list = fetch_key(:default, "gender.exs", "binary")
 
-      assert Person.binary_gender(locale: :default) in word_list
+      assert Person.gender(locale: :default) in word_list
     end
 
     test "returns a binary gender from the id_id locale word list" do
       word_list = fetch_key(:id_id, "gender.exs", "binary")
 
-      assert Person.binary_gender(locale: :id_id) in word_list
+      assert Person.gender(locale: :id_id) in word_list
+    end
+
+    test "defaults to the binary format" do
+      word_list = fetch_key(:default, "gender.exs", "binary")
+
+      assert Person.gender(locale: :default) in word_list
+    end
+
+    test "returns a short binary gender with format: :short_binary" do
+      result = Person.gender(format: :short_binary, locale: :default)
+
+      assert String.match?(result, ~r/^[A-Z]$/)
+    end
+
+    test "returns a non-binary gender from the default locale word list with format: :non_binary" do
+      word_list = fetch_key(:default, "gender.exs", "non_binary")
+
+      assert Person.gender(format: :non_binary, locale: :default) in word_list
+    end
+
+    test "returns a non-binary gender from the id_id locale word list with format: :non_binary" do
+      word_list = fetch_key(:id_id, "gender.exs", "non_binary")
+
+      assert Person.gender(format: :non_binary, locale: :id_id) in word_list
     end
   end
 
-  describe "short_binary_gender/1" do
-    test "returns a short binary gender as a non-empty string" do
-      result = Person.short_binary_gender(locale: :default)
+  describe "deprecated gender functions" do
+    test "binary_gender/1 delegates to gender(format: :binary)" do
+      word_list = fetch_key(:default, "gender.exs", "binary")
 
-      assert is_binary(result)
-      assert String.valid?(result)
-      assert result != ""
+      assert Person.binary_gender(locale: :default) in word_list
     end
 
-    test "returns a short binary gender with a single uppercase letter" do
+    test "short_binary_gender/1 delegates to gender(format: :short_binary)" do
       result = Person.short_binary_gender(locale: :default)
 
       assert String.match?(result, ~r/^[A-Z]$/)
     end
-  end
 
-  describe "non_binary_gender/1" do
-    test "returns a non-binary gender from the default locale word list" do
+    test "non_binary_gender/1 delegates to gender(format: :non_binary)" do
       word_list = fetch_key(:default, "gender.exs", "non_binary")
 
       assert Person.non_binary_gender(locale: :default) in word_list
-    end
-
-    test "returns a non-binary gender from the id_id locale word list" do
-      word_list = fetch_key(:id_id, "gender.exs", "non_binary")
-
-      assert Person.non_binary_gender(locale: :id_id) in word_list
     end
   end
 

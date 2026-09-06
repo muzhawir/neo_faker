@@ -12,6 +12,11 @@ few internal (never public) modules live.
 
 - Added `NeoFaker.seed/1`, which seeds `:rand` for the calling process, for reproducible output in
   tests (e.g. `NeoFaker.seed(12_345)`).
+- Added `NeoFaker.Person.gender/1`, which consolidates `binary_gender/1`, `short_binary_gender/1`,
+  and `non_binary_gender/1` into a single function with a `:format` option, matching the same
+  `:format`-option pattern `NeoFaker.Blood.group/1` already used.
+- Added `NeoFaker.Gravatar.random_display/0`, replacing `random/0` with a name that reads
+  consistently alongside its siblings `display/2` and `profile/2`.
 
 ### Breaking Changes
 
@@ -32,6 +37,16 @@ few internal (never public) modules live.
 - **`NeoFaker.Internet.email/1`** no longer accepts the undocumented bare `:word_count` (or
   `:type`, for the TLD) as a fallback for `:username_word_count` (or `:domain_name_word_count`,
   `:tld_type`). Only the documented, prefixed option names are read now.
+
+### Deprecations
+
+- **`NeoFaker.Person.binary_gender/1`, `short_binary_gender/1`, and `non_binary_gender/1`** are
+  deprecated in favor of `gender/1` with the matching `:format` option (`:binary`,
+  `:short_binary`, `:non_binary`). The old functions still work and delegate to `gender/1`, but
+  emit a compile-time deprecation warning.
+- **`NeoFaker.Gravatar.random/0`** is deprecated in favor of `random_display/0`, which does the
+  exact same thing. The old function still works and delegates to `random_display/0`, but emits a
+  compile-time deprecation warning.
 
 ### Bug Fixes
 

@@ -500,10 +500,10 @@ iex> NeoFaker.Gravatar.profile(nil, format: :qr)
 "https://gravatar.com/<hash>.qr"
 ```
 
-### [`random()`](`NeoFaker.Gravatar.random/0`)
+### [`random_display()`](`NeoFaker.Gravatar.random_display/0`)
 
 ```elixir
-iex> NeoFaker.Gravatar.random()
+iex> NeoFaker.Gravatar.random_display()
 "https://gravatar.com/avatar/<hash>?d=monsterid&s=150"
 ```
 
@@ -970,34 +970,20 @@ iex> NeoFaker.Person.suffix(locale: :id_id)
 "S.Kom"
 ```
 
-### [`binary_gender(opts \\ [])`](`NeoFaker.Person.binary_gender/1`)
+### [`gender(opts \\ [])`](`NeoFaker.Person.gender/1`)
 
 ```elixir
-iex> NeoFaker.Person.binary_gender()
+iex> NeoFaker.Person.gender()
 "Male"
 
-iex> NeoFaker.Person.binary_gender(locale: :id_id)
-"Perempuan"
-```
-
-### [`short_binary_gender(opts \\ [])`](`NeoFaker.Person.short_binary_gender/1`)
-
-```elixir
-iex> NeoFaker.Person.short_binary_gender()
+iex> NeoFaker.Person.gender(format: :short_binary)
 "M"
 
-iex> NeoFaker.Person.short_binary_gender(locale: :id_id)
-"P"
-```
-
-### [`non_binary_gender(opts \\ [])`](`NeoFaker.Person.non_binary_gender/1`)
-
-```elixir
-iex> NeoFaker.Person.non_binary_gender()
+iex> NeoFaker.Person.gender(format: :non_binary)
 "Non-binary"
 
-iex> NeoFaker.Person.non_binary_gender(locale: :id_id)
-"Non-biner"
+iex> NeoFaker.Person.gender(locale: :id_id)
+"Perempuan"
 ```
 
 ### [`age(min \\ 0, max \\ 120)`](`NeoFaker.Person.age/2`)

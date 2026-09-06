@@ -40,7 +40,7 @@ config :neo_faker, locale: :default
 If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English US data).
 See the [supported locales](https://hexdocs.pm/neo_faker/locales.html) for a full list.
 
-`NeoFaker.set_locale/1` overrides the locale for the calling process only, and it never touches
+`NeoFaker.Locale.set/1` overrides the locale for the calling process only, and it never touches
 `config :neo_faker, locale: ...`, so other processes (including concurrent, `async: true` tests)
 are unaffected. Use it for a quick script or a single test; use `config` for a locale that should
 apply to the whole application.

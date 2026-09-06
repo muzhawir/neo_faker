@@ -17,6 +17,11 @@ few internal (never public) modules live.
   `:format`-option pattern `NeoFaker.Blood.group/1` already used.
 - Added `NeoFaker.Gravatar.random_display/0`, replacing `random/0` with a name that reads
   consistently alongside its siblings `display/2` and `profile/2`.
+- Added `NeoFaker.Locale`, which consolidates locale state management (`fetch/0`, `get/0`,
+  `set/1`) and the supported-locale registry (`supported/0`, `available?/1`) into a single module.
+  Previously this was split across the bare `NeoFaker` module (state) and the hidden
+  `NeoFaker.Data` module (registry), which also depended on each other in both directions.
+  `NeoFaker.Data` now depends one-way on `NeoFaker.Locale` instead.
 
 ### Breaking Changes
 
@@ -37,6 +42,10 @@ few internal (never public) modules live.
 - **`NeoFaker.Internet.email/1`** no longer accepts the undocumented bare `:word_count` (or
   `:type`, for the TLD) as a fallback for `:username_word_count` (or `:domain_name_word_count`,
   `:tld_type`). Only the documented, prefixed option names are read now.
+- **`NeoFaker.Data.supported_locales/0` and `locale_available?/1`** are removed, moved to
+  `NeoFaker.Locale.supported/0` and `available?/1`. `NeoFaker.Data` was always `@moduledoc false`
+  (internal), so there's no deprecated delegate here, only the documented `NeoFaker` functions
+  below get one.
 
 ### Deprecations
 
@@ -47,6 +56,9 @@ few internal (never public) modules live.
 - **`NeoFaker.Gravatar.random/0`** is deprecated in favor of `random_display/0`, which does the
   exact same thing. The old function still works and delegates to `random_display/0`, but emits a
   compile-time deprecation warning.
+- **`NeoFaker.locale/0`, `set_locale/1`, and `get_locale/0`** are deprecated in favor of
+  `NeoFaker.Locale.fetch/0`, `set/1`, and `get/0`. The old functions still work and delegate to
+  `NeoFaker.Locale`, but emit a compile-time deprecation warning.
 
 ### Bug Fixes
 
@@ -74,9 +86,10 @@ few internal (never public) modules live.
   `NeoFaker.Lorem` never reads (the real, documented option is `:text`); the assertions passed
   vacuously before because the unrecognized option was silently ignored.
 - Split the two tests in `NeoFakerTest` that mutate `Application` env directly (bypassing
-  `set_locale/1`, to exercise the raw-config validation path) into a new
-  `NeoFakerApplicationEnvTest`, kept `async: false` since that kind of mutation is inherently
-  node-global regardless of the locale-scoping change above.
+  `set_locale/1`, to exercise the raw-config validation path) into
+  `NeoFaker.LocaleApplicationEnvTest`, kept `async: false` since that kind of mutation is
+  inherently node-global regardless of the locale-scoping change above. Moved alongside the new
+  `NeoFaker.LocaleTest` once locale management moved to `NeoFaker.Locale`.
 
 ## v0.14.0 (2026-03-11)
 

@@ -108,14 +108,16 @@ sub-function they're forwarded to (`## Username options`, `## Domain name option
 
 ### Locale system
 
-`NeoFaker.Data` (`lib/neo_faker/data.ex`) is the single data-loading layer used by every domain module via `random_value/4` (and `fetch!/3` directly
-in tests). It reads locale data from `priv/data/<locale>/<module_dir>/<file>.exs`, where `<module_dir>` is the calling module's last name segment,
-lowercased (derived automatically via `Module.split/1`).
+`NeoFaker.Locale` (`lib/neo_faker/locale.ex`) is the single owner of locale state and the list of supported locale codes. `NeoFaker.Data`
+(`lib/neo_faker/data.ex`) is the data-loading layer used by every domain module via `random_value/4` (and `fetch!/3` directly in tests); it depends
+one-way on `NeoFaker.Locale` to resolve which locale is active, never the other way around. It reads locale data from
+`priv/data/<locale>/<module_dir>/<file>.exs`, where `<module_dir>` is the calling module's last name segment, lowercased (derived automatically via
+`Module.split/1`).
 
 Key points:
 
-- `priv/data/locale.exs` is the source of truth for supported locale codes (currently `en_us`, `id_id`). `NeoFaker.Data.supported_locales/0` and
-  `locale_available?/1` read from it.
+- `priv/data/locale.exs` is the source of truth for supported locale codes (currently `en_us`, `id_id`). `NeoFaker.Locale.supported/0` and
+  `available?/1` read from it.
 - `:default` is a special locale that is _not_ listed in `locale.exs`, since `priv/data/default/` holds the baseline (US English) data set. There is no
   `priv/data/en_us/` directory; `:en_us` falls back to `:default` data unless a locale-specific override file exists.
 - If a locale-specific data file doesn't exist for a given module/file, `NeoFaker.Data` silently falls back to `:default` rather than erroring
@@ -124,11 +126,12 @@ Key points:
   per call, since `Enum.random/1` picks from the cached shuffled list on every call.
 - `validate_file_name!/1` restricts data file names to a bare filename ending in `.exs`, which guards against path traversal / arbitrary file eval
   via `Code.eval_string/3`. Never bypass this when adding new data lookups.
-- Locale resolution has two layers, checked in order by `NeoFaker.locale/0`: a **process-scoped** override set via `NeoFaker.set_locale/1` (stored
-  in the process dictionary, so it never leaks between processes, which is safe under `async: true` tests), then `config :neo_faker, locale: ...`
-  (`Application.get_env/2`, the static default for the whole node, e.g. what a Phoenix app sets in `config/dev.exs`/`config/test.exs`).
-  `NeoFaker.get_locale/0` wraps this and always returns an atom (`:default` when neither layer is set). Any domain function accepts a per-call
-  `locale:` option that overrides both layers for that one call.
+- Locale resolution has two layers, checked in order by `NeoFaker.Locale.fetch/0`: a **process-scoped** override set via `NeoFaker.Locale.set/1`
+  (stored in the process dictionary, so it never leaks between processes, which is safe under `async: true` tests), then `config :neo_faker,
+  locale: ...` (`Application.get_env/2`, the static default for the whole node, e.g. what a Phoenix app sets in `config/dev.exs`/`config/test.exs`).
+  `NeoFaker.Locale.get/0` wraps this and always returns an atom (`:default` when neither layer is set). Any domain function accepts a per-call
+  `locale:` option that overrides both layers for that one call. `NeoFaker.locale/0`, `set_locale/1`, and `get_locale/0` still exist as `@deprecated`
+  delegates to `NeoFaker.Locale.*` for backward compatibility; use the `NeoFaker.Locale` names in new code.
 
 ### Locale-exclusive modules
 

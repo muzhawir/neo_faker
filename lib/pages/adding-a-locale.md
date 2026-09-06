@@ -105,10 +105,9 @@ Add your locale code to `priv/data/locale.exs`, keeping the list alphabetically 
 ]
 ```
 
-This is the single source of truth `NeoFaker.Data.supported_locales/0` and
-`NeoFaker.Data.locale_available?/1` read from. Skipping this step means every function silently
-falls back to `:default` instead of using your new files, since an unregistered locale is treated
-as unsupported.
+This is the single source of truth `NeoFaker.Locale.supported/0` and `NeoFaker.Locale.available?/1`
+read from. Skipping this step means every function silently falls back to `:default` instead of
+using your new files, since an unregistered locale is treated as unsupported.
 
 ## 5. Add locale-exclusive generators (optional)
 
@@ -209,7 +208,7 @@ mix docs
 Then sanity-check the new locale interactively:
 
 ```elixir
-iex> NeoFaker.set_locale(:your_locale)
+iex> NeoFaker.Locale.set(:your_locale)
 :ok
 iex> NeoFaker.Address.city()
 "..."

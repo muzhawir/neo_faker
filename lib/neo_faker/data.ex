@@ -1,7 +1,7 @@
 defmodule NeoFaker.Data do
   @moduledoc false
 
-  @locale_file Path.join([:neo_faker |> :code.priv_dir() |> to_string(), "data", "locale.exs"])
+  alias NeoFaker.Locale
 
   # ---------------------------------------------------------------------------
   # Public API – used by every faker module
@@ -59,12 +59,12 @@ defmodule NeoFaker.Data do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Resolves the locale to use, falling back to `NeoFaker.get_locale/0` (which
+  Resolves the locale to use, falling back to `NeoFaker.Locale.get/0` (which
   itself checks the calling process's override, then the app config) when no
   explicit `locale` is given.
   """
   @spec resolve_locale_config(nil | atom()) :: atom()
-  def resolve_locale_config(nil), do: resolve_locale(NeoFaker.get_locale())
+  def resolve_locale_config(nil), do: resolve_locale(Locale.get())
   def resolve_locale_config(locale), do: resolve_locale(locale)
 
   # ---------------------------------------------------------------------------
@@ -82,53 +82,7 @@ defmodule NeoFaker.Data do
   # ---------------------------------------------------------------------------
 
   @spec resolve_locale(atom()) :: atom()
-  defp resolve_locale(locale), do: if(locale_available?(locale), do: locale, else: :default)
-
-  @doc """
-  Returns the sorted list of all supported locale atoms from `priv/data/locale.exs`.
-
-  The `:default` sentinel is **not** included; use `locale_available?/1` or
-  check for `:default` explicitly. Results are cached in `:persistent_term`
-  after the first call, so repeated invocations are O(1).
-
-  ## Examples
-
-      iex> NeoFaker.Data.supported_locales()
-      [:en_us, :id_id]
-
-  """
-  @spec supported_locales() :: [atom()]
-  def supported_locales do
-    load_locale_set() |> Enum.map(&String.to_atom/1) |> Enum.sort()
-  end
-
-  @doc """
-  Returns `true` when `locale` is listed in `priv/data/locale.exs`, `false`
-  otherwise.
-
-  The result of reading `locale.exs` is cached in `:persistent_term` on the
-  first call, so subsequent calls are O(1) lookups.
-  """
-  @spec locale_available?(atom()) :: boolean()
-  def locale_available?(locale) do
-    MapSet.member?(load_locale_set(), Atom.to_string(locale))
-  end
-
-  # Loads (or retrieves from cache) the MapSet of locale strings from locale.exs.
-  @spec load_locale_set() :: MapSet.t(String.t())
-  defp load_locale_set do
-    key = {__MODULE__, :available_locales}
-
-    case :persistent_term.get(key, nil) do
-      nil ->
-        loaded = @locale_file |> read_data_file!() |> MapSet.new()
-        :persistent_term.put(key, loaded)
-        loaded
-
-      loaded ->
-        loaded
-    end
-  end
+  defp resolve_locale(locale), do: if(Locale.available?(locale), do: locale, else: :default)
 
   @spec read_data_file!(String.t()) :: any()
   defp read_data_file!(path) do

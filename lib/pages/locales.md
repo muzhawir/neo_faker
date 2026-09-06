@@ -24,13 +24,13 @@ There are three ways to control which locale a function draws from, checked in t
 
 1. **Per call.** Pass `locale: :id_id` (or any supported locale) directly to the function.
    This overrides everything else for that one call only.
-2. **Per process.** Call `NeoFaker.set_locale/1` once, and every subsequent call in that
+2. **Per process.** Call `NeoFaker.Locale.set/1` once, and every subsequent call in that
    process uses it until changed. This is process-scoped (stored in the process dictionary), so
    it's safe to use inside `async: true` tests without affecting other tests running
    concurrently.
 3. **Application-wide.** Set `config :neo_faker, locale: ...` in your config files. This is the
-   fallback used by any process that hasn't called `set_locale/1`, and the right choice for a
-   whole application's default (e.g. a Phoenix app's `config/dev.exs`).
+   fallback used by any process that hasn't called `NeoFaker.Locale.set/1`, and the right choice
+   for a whole application's default (e.g. a Phoenix app's `config/dev.exs`).
 
 ```elixir
 # Per call, overrides everything else for this one call
@@ -38,15 +38,15 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 
 # Per process, affects every call in the current process from here on
-iex> NeoFaker.set_locale(:id_id)
+iex> NeoFaker.Locale.set(:id_id)
 :ok
 iex> NeoFaker.App.description()
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-If an unsupported locale is passed to either `set_locale/1` or a function's `:locale` option,
-NeoFaker raises `ArgumentError` listing the currently supported locales, the same list shown in
-the table above, read live from `priv/data/locale.exs`.
+If an unsupported locale is passed to either `NeoFaker.Locale.set/1` or a function's `:locale`
+option, NeoFaker raises `ArgumentError` listing the currently supported locales, the same list
+shown in the table above, read live from `priv/data/locale.exs`.
 
 See the [configuration instructions](https://hexdocs.pm/neo_faker/getting-started.html#configuration)
 for how to set the application-wide default, including notes for Phoenix projects.

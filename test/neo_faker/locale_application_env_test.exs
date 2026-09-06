@@ -1,11 +1,13 @@
-defmodule NeoFakerApplicationEnvTest do
+defmodule NeoFaker.LocaleApplicationEnvTest do
   use ExUnit.Case, async: false
 
   # `Application.put_env/3` and `Application.delete_env/2` mutate node-global state, not
   # process-scoped state, so these tests must not run concurrently with anything else that
   # reads `config :neo_faker, locale: ...` (including other async test files).
 
-  describe "locale/0" do
+  alias NeoFaker.Locale
+
+  describe "fetch/0" do
     test "raises ArgumentError when a bogus atom is stored directly in application env" do
       original = Application.get_env(:neo_faker, :locale)
 
@@ -19,12 +21,12 @@ defmodule NeoFakerApplicationEnvTest do
       Application.put_env(:neo_faker, :locale, :bogus_locale)
 
       assert_raise ArgumentError, ~r/Unsupported locale :bogus_locale/, fn ->
-        NeoFaker.locale()
+        Locale.fetch()
       end
     end
   end
 
-  describe "get_locale/0" do
+  describe "get/0" do
     test "returns :default when no locale is set" do
       original = Application.get_env(:neo_faker, :locale)
 
@@ -36,7 +38,7 @@ defmodule NeoFakerApplicationEnvTest do
       end)
 
       Application.delete_env(:neo_faker, :locale)
-      assert NeoFaker.get_locale() == :default
+      assert Locale.get() == :default
     end
   end
 end

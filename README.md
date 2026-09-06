@@ -62,7 +62,7 @@ config :neo_faker, locale: :default
 ```
 
 If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English (US)
-data). `NeoFaker.set_locale/1` overrides the locale for the calling process only, which makes it
+data). `NeoFaker.Locale.set/1` overrides the locale for the calling process only, which makes it
 safe to use inside `async: true` tests without affecting other processes.
 
 ### Using with Phoenix

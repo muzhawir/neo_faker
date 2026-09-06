@@ -2,6 +2,8 @@
 
 A quick reference for every random data generator function, grouped by domain. Every function
 accepting a keyword list of options ships with a default, so each one works with zero arguments.
+For country-specific formats that don't fit a shared `:locale` option (US Social Security
+Numbers, Indonesian NIK/NPWP, and so on), see the [Locale Cheat Sheet](locale-cheat.html).
 
 ## [Address](`NeoFaker.Address`)
 
@@ -1144,32 +1146,4 @@ iex> NeoFaker.Time.now()
 
 iex> NeoFaker.Time.now(format: :iso8601)
 "15:22:10"
-```
-
-## Locale-exclusive generators
-
-{: .col-2}
-
-Country-specific formats that don't fit a shared `:locale` option. See
-[Supported Locales](locales.html#locale-exclusive-generators) for background.
-
-### [`NeoFaker.Locales.EnUs.Person.ssn()`](`NeoFaker.Locales.EnUs.Person.ssn/0`)
-
-```elixir
-iex> NeoFaker.Locales.EnUs.Person.ssn()
-"184-63-2006"
-```
-
-### [`NeoFaker.Locales.IdId.Person.nik()`](`NeoFaker.Locales.IdId.Person.nik/0`)
-
-```elixir
-iex> NeoFaker.Locales.IdId.Person.nik()
-"7645504903500640"
-```
-
-### [`NeoFaker.Locales.IdId.Person.npwp()`](`NeoFaker.Locales.IdId.Person.npwp/0`)
-
-```elixir
-iex> NeoFaker.Locales.IdId.Person.npwp()
-"7645504903500640"
 ```

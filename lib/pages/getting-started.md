@@ -105,7 +105,9 @@ end
 ## Next steps
 
 - [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html), a one-page reference of every
-  function with examples, grouped by domain.
+  domain generator function with examples, grouped by domain.
+- [Locale Cheat Sheet](https://hexdocs.pm/neo_faker/locale-cheat.html), the same kind of
+  reference for locale-exclusive generators, grouped by locale.
 - [Supported Locales](https://hexdocs.pm/neo_faker/locales.html), covering the list of
   available locales and how locale resolution works across processes, config, and per-call
   overrides.

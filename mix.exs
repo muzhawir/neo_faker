@@ -52,7 +52,7 @@ defmodule NeoFaker.MixProject do
   defp groups_for_extras do
     [
       Guides: ~r/lib\/pages\/(getting-started|locales|ecto-integration|adding-a-locale)\.md/,
-      Reference: ~r/lib\/pages\/cheat\.cheatmd/,
+      Reference: ~r/lib\/pages\/(cheat|locale-cheat)\.cheatmd/,
       About: ~r/lib\/pages\/changelog\.md/
     ]
   end

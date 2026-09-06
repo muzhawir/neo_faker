@@ -192,8 +192,8 @@ end
 
 - Add a row for your locale to the "Available Locales" table in `lib/pages/locales.md`.
 - If you added locale-exclusive generators, add an example for them to the "Locale-exclusive
-  generators" section of `lib/pages/locales.md` and to the same section of
-  `lib/pages/cheat.cheatmd`.
+  generators" section of `lib/pages/locales.md`, and a new locale section (or a new entry under
+  an existing one) in `lib/pages/locale-cheat.cheatmd`.
 - Update the locale list in the "Locale-aware" bullet of `README.md`'s Features section.
 
 ## 8. Verify

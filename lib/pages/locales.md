@@ -65,8 +65,9 @@ iex> NeoFaker.Locales.IdId.Person.nik()
 "7645504903500640"
 ```
 
-See the "Locale Random Generators" group in the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
-for the full list.
+See the [Locale Cheat Sheet](locale-cheat.html) for a quick reference grouped by locale, or the
+"Locale Random Generators" group in the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
+for the full module docs.
 
 ## Adding a new locale
 

@@ -17,7 +17,7 @@ defmodule NeoFaker.Data do
     - `key`     – The key inside the data file (e.g. `"first_names"`).
     - `opts`    – Keyword options. Supports `:locale`.
   """
-  @spec random_value(atom(), String.t(), String.t(), Keyword.t()) :: any()
+  @spec random_value(atom(), String.t(), String.t(), keyword()) :: any()
   def random_value(module, file, key, opts \\ []) do
     validate_file_name!(file)
 
@@ -59,13 +59,12 @@ defmodule NeoFaker.Data do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Resolves the locale to use, falling back to the app config or `:default`.
+  Resolves the locale to use, falling back to `NeoFaker.get_locale/0` (which
+  itself checks the calling process's override, then the app config) when no
+  explicit `locale` is given.
   """
   @spec resolve_locale_config(nil | atom()) :: atom()
-  def resolve_locale_config(nil) do
-    :neo_faker |> Application.get_env(:locale) |> resolve_locale()
-  end
-
+  def resolve_locale_config(nil), do: resolve_locale(NeoFaker.get_locale())
   def resolve_locale_config(locale), do: resolve_locale(locale)
 
   # ---------------------------------------------------------------------------
@@ -144,8 +143,6 @@ defmodule NeoFaker.Data do
       Path.join([data_path(), Atom.to_string(locale), module_name, validate_file_name!(file)])
 
     if File.exists?(file_path) do
-      :rand.seed(:exsplus, :os.timestamp())
-
       data =
         file_path
         |> read_data_file!()

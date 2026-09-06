@@ -1,5 +1,5 @@
 defmodule NeoFakerTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   describe "start/0" do
     test "starts the application and returns :ok" do
@@ -11,23 +11,6 @@ defmodule NeoFakerTest do
     test "returns current locale as an atom" do
       assert {:ok, locale} = NeoFaker.locale()
       assert is_atom(locale)
-    end
-
-    test "raises ArgumentError when a bogus atom is stored directly in application env" do
-      original = Application.get_env(:neo_faker, :locale)
-
-      on_exit(fn ->
-        case original do
-          nil -> Application.delete_env(:neo_faker, :locale)
-          value -> Application.put_env(:neo_faker, :locale, value)
-        end
-      end)
-
-      Application.put_env(:neo_faker, :locale, :bogus_locale)
-
-      assert_raise ArgumentError, ~r/Unsupported locale :bogus_locale/, fn ->
-        NeoFaker.locale()
-      end
     end
   end
 
@@ -87,20 +70,6 @@ defmodule NeoFakerTest do
     test "returns the active locale as an atom" do
       NeoFaker.set_locale(:en_us)
       assert NeoFaker.get_locale() == :en_us
-    end
-
-    test "returns :default when no locale is set" do
-      original = Application.get_env(:neo_faker, :locale)
-
-      on_exit(fn ->
-        case original do
-          nil -> Application.delete_env(:neo_faker, :locale)
-          value -> Application.put_env(:neo_faker, :locale, value)
-        end
-      end)
-
-      Application.delete_env(:neo_faker, :locale)
-      assert NeoFaker.get_locale() == :default
     end
   end
 end

@@ -46,7 +46,7 @@ iex> NeoFaker.App.description()
 
 If an unsupported locale is passed to either `NeoFaker.Locale.set/1` or a function's `:locale`
 option, NeoFaker raises `ArgumentError` listing the currently supported locales, the same list
-shown in the table above, read live from `priv/data/locale.exs`.
+shown in the table above and returned by `NeoFaker.Locale.supported/0`.
 
 See the [configuration instructions](https://hexdocs.pm/neo_faker/getting-started.html#configuration)
 for how to set the application-wide default, including notes for Phoenix projects.
@@ -71,11 +71,11 @@ for the full module docs.
 
 ## Adding a new locale
 
-Locale support is data-driven: a new locale needs a directory under `priv/data/<locale>/`
-mirroring the domains it covers (only the files you provide are used, and anything missing falls
-back to `:default`, so a partial locale is valid), and its code added to the list in
-`priv/data/locale.exs` (kept alphabetically sorted). Locale-exclusive generators, if any, go
-under `lib/neo_faker/locales/<locale>/`.
+A new locale needs a directory under `priv/data/<locale>/` mirroring the domains it covers (only
+the files you provide are used, and anything missing falls back to `:default`, so a partial
+locale is valid), and its code added to the `@supported_locales` list in `NeoFaker.Locale` (kept
+alphabetically sorted). Locale-exclusive generators, if any, go under
+`lib/neo_faker/locales/<locale>/`.
 
 See [Adding a Locale](adding-a-locale.html) for the full contributor walkthrough, from picking a
 locale code through opening the pull request. Open an issue or pull request on

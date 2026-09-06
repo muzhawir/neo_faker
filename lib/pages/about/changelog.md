@@ -79,8 +79,8 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 - Dropped every bare `import` of a project module in favor of `alias` and explicit calls.
 - Removed four unused helpers from the hidden `NeoFaker.Helpers.Formatter` module
   (`format_datetime/2`, `format_color_w3c/3`, `with_prefix/3`, `with_suffix/3`); nothing in the
-  library or its tests called them. `NeoFaker.Data.data_path/0` and `resolve_locale_config/1` are
-  now `defp`. All of these were `@moduledoc false` internals, so this is not a public API change.
+  library or its tests called them. These were `@moduledoc false` internals, so this is not a
+  public API change.
 - Refactored the hidden `NeoFaker.Internet.Generator` module for readability: the scattered
   `:rand.uniform(n) - 1` calls are now named `random_octet/0`, `random_octet_except/1`, and
   `random_ipv6_group/0` helpers; `reserved_ipv4?/3` pattern-matches the octets instead of guarding
@@ -91,6 +91,14 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
   listed them explicitly in `mix.exs` so the sidebar order is deliberate. The "Adding a Locale"
   guide now sits under its own "Contributing" group, separate from the user-facing guides. ExDoc
   still publishes each page at the same `<name>.html` URL, so no documentation links change.
+- Simplified the locale and data backend (all `@moduledoc false` internals, no public API or
+  behavior change). `priv/data/locale.exs` is removed: the supported-locale list is now the
+  `@supported_locales` module attribute in `NeoFaker.Locale`, dropping a runtime file read (via
+  `Code.eval_string/3`) and its `:persistent_term` cache. Adding a locale was always a code change
+  anyway, so the list lives next to the code that enforces it. `NeoFaker.Data` collapsed its
+  two-step locale resolution and its repeated file-name validation into a single internal `load/3`
+  path shared by `random_value/4` and `fetch!/3`; `fetch!/3` now applies the same per-file
+  `:default` fallback that `random_value/4` always had, instead of raising `File.Error`.
 
 ### Tests
 

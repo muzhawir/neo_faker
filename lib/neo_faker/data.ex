@@ -11,151 +11,109 @@ defmodule NeoFaker.Data do
 
   alias NeoFaker.Locale
 
-  # ---------------------------------------------------------------------------
-  # Entry points used by every domain module
-  # ---------------------------------------------------------------------------
-
   @doc """
   Returns a random value from the specified locale data file.
 
   This is what a domain module's public function calls to get one value out of
-  its data file, so it's the one function most call sites in `lib/neo_faker/`
-  actually use, `fetch!/3` below is for reaching the raw cached map instead.
+  its data file.
 
     * `module` - the calling module, used to derive the data subdirectory
       (e.g. `NeoFaker.Person` reads from `priv/data/<locale>/person/`).
     * `file` - the bare data file name, e.g. `"first_names.exs"`. Must pass
       `validate_file_name!/1`.
     * `key` - the map key to read inside that file, e.g. `"first_names"`.
-    * `opts` - forwarded from the caller; only `:locale` is read here.
+    * `opts` - forwarded from the caller; only `:locale` is read here. When it
+      is absent, the active locale from `NeoFaker.Locale.get/0` is used.
   """
   @spec random_value(atom(), String.t(), String.t(), keyword()) :: any()
   def random_value(module, file, key, opts \\ []) do
     validate_file_name!(file)
 
-    locale =
-      opts[:locale]
-      |> resolve_locale_config()
-      |> ensure_locale_file_exists(module, file)
-
-    locale
-    |> fetch!(module, file)
+    opts[:locale]
+    |> load(module, file)
     |> Map.fetch!(key)
     |> Enum.random()
   end
 
   @doc """
-  Fetches the full cached map for a given locale, module, and file.
+  Returns the full cached map for a given locale, module, and file.
 
-  `random_value/4` calls this and then picks one value out of it; tests call
-  it directly to get the whole list a domain function draws from, so they can
-  assert a generated value came from the real data set instead of hardcoding
-  a copy of it. Loads from disk into `:persistent_term` on the first call for
-  a given locale/module/file triple; every call after that is a cache hit.
+  `random_value/4` picks one value out of this; tests call it directly to get
+  the whole list a domain function draws from, so they can assert a generated
+  value came from the real data set. Same per-file `:default` fallback as
+  `random_value/4`: a locale that doesn't have this specific file reads the
+  `:default` copy instead.
   """
   @spec fetch!(atom(), atom(), String.t()) :: map()
   def fetch!(locale, module, file) do
     validate_file_name!(file)
-    resolved_locale = resolve_locale_config(locale)
-    key = cache_key(resolved_locale, module, file)
+    load(locale, module, file)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Loading and caching
+  # ---------------------------------------------------------------------------
+
+  # Resolves the locale (per-file, falling back to `:default`), then returns the
+  # file's cached map, reading and deduplicating it from disk on the first call
+  # for that locale/module/file triple. `nil` means "no explicit locale given",
+  # so the active locale from `NeoFaker.Locale` is used.
+  @spec load(atom() | nil, atom(), String.t()) :: map()
+  defp load(locale, module, file) do
+    locale = resolve_locale(locale || Locale.get(), module, file)
+    key = {__MODULE__, locale, module, Path.rootname(file)}
 
     case :persistent_term.get(key, nil) do
       nil ->
-        put_cache!(resolved_locale, module, file)
-        :persistent_term.get(key)
+        data = read_data_file!(data_file_path(locale, module, file))
+        :persistent_term.put(key, data)
+        data
 
-      value ->
-        value
+      data ->
+        data
     end
   end
 
-  # ---------------------------------------------------------------------------
-  # Locale resolution
-  # ---------------------------------------------------------------------------
+  # A locale can be unregistered, or registered but missing this one file (e.g.
+  # `:id_id` has no `http/user_agent.exs`). Either way the read falls back to
+  # `:default`, the baseline set `:en_us` already uses. Setting an unsupported
+  # locale is rejected upfront by `NeoFaker.Locale.set/1`; this is the softer
+  # per-call, per-file net.
+  @spec resolve_locale(atom(), atom(), String.t()) :: atom()
+  defp resolve_locale(locale, module, file) do
+    if File.exists?(data_file_path(locale, module, file)), do: locale, else: :default
+  end
 
-  # Resolves the locale to use, falling back to `NeoFaker.Locale.get/0` (which
-  # itself checks the calling process's override, then the app config) when no
-  # explicit `locale` is given.
-  #
-  # This only decides *which locale the caller wants*; it doesn't check whether
-  # that locale actually has the requested file. `ensure_locale_file_exists/3`,
-  # called separately by `random_value/4`, handles the per-file fallback.
-  @spec resolve_locale_config(nil | atom()) :: atom()
-  defp resolve_locale_config(nil), do: resolve_locale(Locale.get())
-  defp resolve_locale_config(locale), do: resolve_locale(locale)
+  # `priv/data/<locale>/<module dir>/<file>`. Goes through `:code.priv_dir/1`
+  # rather than a path relative to this source file, so it still resolves once
+  # the app is compiled into a release, where `priv/` moves next to the compiled
+  # `.beam` files instead of staying beside `lib/`.
+  @spec data_file_path(atom(), atom(), String.t()) :: String.t()
+  defp data_file_path(locale, module, file) do
+    priv_data = :neo_faker |> :code.priv_dir() |> to_string() |> Path.join("data")
 
-  # ---------------------------------------------------------------------------
-  # Disk helpers
-  # ---------------------------------------------------------------------------
-
-  # Returns the path to the `priv/data` directory.
-  #
-  # Goes through `:code.priv_dir/1` rather than a path relative to this source
-  # file, so it still resolves correctly once the app is compiled into a
-  # release, where `priv/` moves alongside the compiled `.beam` files instead of
-  # staying next to `lib/`.
-  @spec data_path() :: String.t()
-  defp data_path, do: :neo_faker |> :code.priv_dir() |> to_string() |> Path.join("data")
-
-  # ---------------------------------------------------------------------------
-  # Internals
-  # ---------------------------------------------------------------------------
-
-  # A requested locale that isn't registered in priv/data/locale.exs silently
-  # becomes :default, the same way a missing per-file override does elsewhere
-  # in this module, so an unsupported `locale:` option never raises here.
-  # NeoFaker.Locale.set/1 is the layer that raises for that instead, at the
-  # point the caller sets the locale rather than every time data is read.
-  @spec resolve_locale(atom()) :: atom()
-  defp resolve_locale(locale), do: if(Locale.available?(locale), do: locale, else: :default)
+    Path.join([priv_data, Atom.to_string(locale), module_dir_name(module), file])
+  end
 
   # Every locale data file is a bare `%{...}` map literal, so evaluating it is
-  # enough to get the data back; there's no need for a real Code.exs loader.
-  @spec read_data_file!(String.t()) :: any()
+  # enough; there's no need for a real `Code` loader. Each list value is
+  # deduplicated but kept in file order (the per-call pick is `Enum.random/1`,
+  # which is uniform regardless of order).
+  @spec read_data_file!(String.t()) :: map()
   defp read_data_file!(path) do
-    path |> File.read!() |> Code.eval_string([], __ENV__) |> elem(0)
+    path
+    |> File.read!()
+    |> Code.eval_string([], __ENV__)
+    |> elem(0)
+    |> Map.new(fn {key, list} -> {key, Enum.uniq(list)} end)
   end
 
-  # Reads `locale`'s file from disk and caches it. Only called after
-  # ensure_locale_file_exists/3 has already picked a locale known to have the
-  # file, so the `File.exists?/1` check here is a defensive re-check, not the
-  # place fallback-to-:default happens.
-  @spec put_cache!(atom(), atom(), String.t()) :: :ok
-  defp put_cache!(locale, module, file) do
-    module_name = module_dir_name(module)
-
-    file_path =
-      Path.join([data_path(), Atom.to_string(locale), module_name, validate_file_name!(file)])
-
-    if File.exists?(file_path) do
-      data =
-        file_path
-        |> read_data_file!()
-        |> Map.new(fn {key, val} -> {key, Enum.uniq(val)} end)
-
-      :persistent_term.put(cache_key(locale, module, file), data)
-    else
-      raise(File.Error, reason: :enoent)
-    end
-  end
-
-  @spec cache_key(atom(), atom(), String.t()) :: tuple()
-  defp cache_key(locale, module, file) do
-    {__MODULE__, locale, module, Path.rootname(file)}
-  end
-
-  # This is the actual per-file fallback: a locale can be fully registered and
-  # still not have every file (e.g. :id_id has no http/user_agent.exs), so
-  # each lookup checks the specific file it needs rather than trusting the
-  # locale as a whole.
-  @spec ensure_locale_file_exists(atom(), atom(), String.t()) :: atom()
-  defp ensure_locale_file_exists(locale, module, file) do
-    module_name = module_dir_name(module)
-
-    file_path =
-      Path.join([data_path(), Atom.to_string(locale), module_name, validate_file_name!(file)])
-
-    if File.exists?(file_path), do: locale, else: :default
+  # NeoFaker.Person -> "person": every domain's data lives under its own last
+  # name segment, lowercased. This derivation is the whole module-to-directory
+  # mapping; it isn't configured anywhere.
+  @spec module_dir_name(atom()) :: String.t()
+  defp module_dir_name(module) do
+    module |> Module.split() |> List.last() |> String.downcase()
   end
 
   # Validates that `file` is a bare filename (no directory component) with a
@@ -175,13 +133,5 @@ defmodule NeoFaker.Data do
   defp validate_file_name!(file) do
     raise ArgumentError,
           "data file name must be a string, got: #{inspect(file)}"
-  end
-
-  # Every domain module's data lives under its own last name segment, so
-  # NeoFaker.Person reads priv/data/<locale>/person/, not a name configured
-  # anywhere, this derivation is the only thing making that mapping automatic.
-  @spec module_dir_name(atom()) :: String.t()
-  defp module_dir_name(module) do
-    module |> Module.split() |> List.last() |> String.downcase()
   end
 end

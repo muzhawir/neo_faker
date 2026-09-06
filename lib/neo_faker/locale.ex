@@ -29,7 +29,13 @@ defmodule NeoFaker.Locale do
   @moduledoc since: "0.15.0"
 
   @locale_key {__MODULE__, :locale}
-  @locale_file Path.join([:neo_faker |> :code.priv_dir() |> to_string(), "data", "locale.exs"])
+
+  # The supported locale codes. `:default` is deliberately absent, it is the
+  # baseline data set under `priv/data/default/`, not a locale you select. Keep
+  # this list alphabetically sorted. Adding a locale also means adding
+  # `priv/data/<code>/` data files and a `lib/neo_faker/locales/<code>/` module,
+  # so the supported set only ever changes alongside a code change anyway.
+  @supported_locales ~w(en_us id_id)a
 
   @doc """
   Returns the current locale, preferring a process-scoped override over the
@@ -109,9 +115,8 @@ defmodule NeoFaker.Locale do
       iex> NeoFaker.Locale.set(:bogus)
       ** (ArgumentError) Unsupported locale :bogus. Expected one of [:default, :en_us, :id_id] or see the available locales documentation.
 
-  The list of supported locales in the error message is generated dynamically
-  from `priv/data/locale.exs`, so it will always reflect the actual supported
-  locales (including any added in future releases).
+  The list of supported locales in the error message is built from `supported/0`,
+  so it always reflects the actual supported set.
 
   """
   @spec set(atom()) :: :ok
@@ -154,11 +159,10 @@ defmodule NeoFaker.Locale do
   end
 
   @doc """
-  Returns the sorted list of all supported locale atoms from `priv/data/locale.exs`.
+  Returns the sorted list of all supported locale atoms.
 
   The `:default` sentinel is **not** included; use `available?/1` or check
-  for `:default` explicitly. Results are cached in `:persistent_term` after
-  the first call, so repeated invocations are O(1).
+  for `:default` explicitly.
 
   ## Examples
 
@@ -167,16 +171,12 @@ defmodule NeoFaker.Locale do
 
   """
   @spec supported() :: [atom()]
-  def supported do
-    load_locale_set() |> Enum.map(&String.to_atom/1) |> Enum.sort()
-  end
+  def supported, do: @supported_locales
 
   @doc """
-  Returns `true` when `locale` is listed in `priv/data/locale.exs`, `false`
-  otherwise.
+  Returns `true` when `locale` is one of the supported codes, `false` otherwise.
 
-  The result of reading `locale.exs` is cached in `:persistent_term` on the
-  first call, so subsequent calls are O(1) lookups.
+  `:default` is not treated as "available" here; check for it explicitly.
 
   ## Examples
 
@@ -188,31 +188,8 @@ defmodule NeoFaker.Locale do
 
   """
   @spec available?(atom()) :: boolean()
-  def available?(locale) do
-    MapSet.member?(load_locale_set(), Atom.to_string(locale))
-  end
+  def available?(locale), do: locale in @supported_locales
 
   @spec supported_and_default() :: String.t()
   defp supported_and_default, do: [:default | supported()] |> Enum.sort() |> inspect()
-
-  # Loads (or retrieves from cache) the MapSet of locale strings from locale.exs.
-  @spec load_locale_set() :: MapSet.t(String.t())
-  defp load_locale_set do
-    key = {__MODULE__, :available_locales}
-
-    case :persistent_term.get(key, nil) do
-      nil ->
-        loaded = @locale_file |> read_data_file!() |> MapSet.new()
-        :persistent_term.put(key, loaded)
-        loaded
-
-      loaded ->
-        loaded
-    end
-  end
-
-  @spec read_data_file!(String.t()) :: any()
-  defp read_data_file!(path) do
-    path |> File.read!() |> Code.eval_string([], __ENV__) |> elem(0)
-  end
 end

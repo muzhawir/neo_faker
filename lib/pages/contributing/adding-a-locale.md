@@ -11,13 +11,11 @@ works from the caller's side.
 ## 1. Pick a locale code
 
 A locale code is a lowercase `<language>_<COUNTRY>` pair, joined by an underscore, e.g. `en_us`,
-`id_id`. Check `priv/data/locale.exs` to make sure the code isn't already taken:
+`id_id`. Check `NeoFaker.Locale.supported/0` to make sure the code isn't already taken:
 
 ```elixir
-[
-  "en_us",
-  "id_id"
-]
+iex> NeoFaker.Locale.supported()
+[:en_us, :id_id]
 ```
 
 If you're unsure a locale is worth adding, or want feedback on scope before writing any code,
@@ -87,27 +85,25 @@ through:
 
 - The filename must be a bare name ending in `.exs`, no subdirectories. Match the existing
   filenames in `priv/data/default/` exactly rather than inventing new ones.
-- Values are deduplicated and shuffled once when first loaded, then cached, so there's no need
-  to pre-shuffle or worry about duplicate entries yourself, though keeping the list free of
-  obvious duplicates is still good practice for review.
+- Values are deduplicated once when first loaded, then cached (the per-call pick is a uniform
+  random draw, so list order doesn't matter), so there's no need to worry about duplicate entries
+  yourself, though keeping the list free of obvious duplicates is still good practice for review.
 - Aim for a reasonably sized list (dozens of entries, not two or three), so generated data
   doesn't repeat noticeably in a short test run.
 
 ## 4. Register the locale code
 
-Add your locale code to `priv/data/locale.exs`, keeping the list alphabetically sorted:
+Add your locale code to the `@supported_locales` module attribute in `lib/neo_faker/locale.ex`,
+keeping the list alphabetically sorted:
 
 ```elixir
-[
-  "en_us",
-  "id_id",
-  "your_locale"
-]
+@supported_locales ~w(en_us id_id your_locale)a
 ```
 
-This is the single source of truth `NeoFaker.Locale.supported/0` and `NeoFaker.Locale.available?/1`
-read from. Skipping this step means every function silently falls back to `:default` instead of
-using your new files, since an unregistered locale is treated as unsupported.
+This attribute is the single source of truth `NeoFaker.Locale.supported/0` and
+`NeoFaker.Locale.available?/1` read from. Skipping this step means every function silently falls
+back to `:default` instead of using your new files, since an unregistered locale is treated as
+unsupported.
 
 ## 5. Add locale-exclusive generators (optional)
 
@@ -218,7 +214,7 @@ iex> NeoFaker.Person.full_name()
 
 If a function still returns `:default`-looking data, double-check the directory name under
 `priv/data/your_locale/` matches the module's downcased last segment exactly, and that the locale
-code is registered in `priv/data/locale.exs`.
+code is listed in `@supported_locales` in `lib/neo_faker/locale.ex`.
 
 ## 9. Open the pull request
 

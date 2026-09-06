@@ -123,12 +123,13 @@ one-way on `NeoFaker.Locale` to resolve which locale is active, never the other 
 
 Key points:
 
-- `priv/data/locale.exs` is the source of truth for supported locale codes (currently `en_us`, `id_id`). `NeoFaker.Locale.supported/0` and
-  `available?/1` read from it.
-- `:default` is a special locale that is _not_ listed in `locale.exs`, since `priv/data/default/` holds the baseline (US English) data set. There is no
+- The `@supported_locales` module attribute in `NeoFaker.Locale` (`lib/neo_faker/locale.ex`) is the source of truth for supported locale codes
+  (currently `en_us`, `id_id`). `NeoFaker.Locale.supported/0` and `available?/1` read from it. Adding a locale is a code change regardless (it needs
+  `priv/data/<code>/` files and usually a `lib/neo_faker/locales/<code>/` module), so the list lives next to the code that enforces it, not in a data file.
+- `:default` is a special locale that is _not_ in `@supported_locales`, since `priv/data/default/` holds the baseline (US English) data set. There is no
   `priv/data/en_us/` directory; `:en_us` falls back to `:default` data unless a locale-specific override file exists.
 - If a locale-specific data file doesn't exist for a given module/file, `NeoFaker.Data` silently falls back to `:default` rather than erroring
-  (`ensure_locale_file_exists/3`).
+  (`resolve_locale/3`), and the same fallback applies to `fetch!/3` (used by tests), not just `random_value/4`.
 - Locale data is cached in `:persistent_term` after first read (per locale/module/file), keyed by the `{NeoFaker.Data, locale, module, file}` tuple.
   Each list in the file is deduplicated with `Enum.uniq/1` at cache time but kept in file order; the per-call pick is `Enum.random/1` on the cached
   list (`NeoFaker.Data.random_value/4`), so randomness happens per call, not at cache time.

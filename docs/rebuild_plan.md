@@ -1,6 +1,6 @@
 # NeoFaker Rebuild Plan
 
-Status: **approved — §8 decisions locked, execution in progress (see §9 for phase status)**
+Status: **complete — all six phases shipped (see §9 for details, §10 for final status)**
 Scope: full rewrite of `lib/neo_faker/**`, backend and public API. Breaking changes are
 accepted (pre-1.0, current `~> 0.14`); old versions will be flagged outdated on Hex once this
 ships. Target version: **0.15.0**.
@@ -366,10 +366,42 @@ no single giant diff.
       entries were left untouched (they document past releases as they were at the time).
       Verified: `mix format` clean, `mix test` 325 passed, `mix dialyzer` 0 errors, `mix docs`
       builds and confirms version `0.15.0` in generated output.
-- [ ] **Phase 6 — final verification.** Full `mise run format|lint|analyze|fix` chain, `mix
-      docs` clean build, smoke-test against the same throwaway Phoenix app used earlier in this
-      project to confirm the process-scoped locale change doesn't break the documented Phoenix
-      integration path.
+- [x] **Phase 6 — final verification.** Done.
+
+  Two more real bugs surfaced here, both fixed:
+  - **`mix credo --strict` was crashing outright**, not just failing — a pre-existing
+    incompatibility between Credo 1.7.17 and the sigil AST shape Elixir 1.20.4 produces
+    (`FunctionClauseError` in `Credo.Code.Token.position/1`), unrelated to this rebuild but
+    blocking the CI-mirroring check this plan's own checklist relies on. Fixed by upgrading to
+    Credo 1.7.19 (already satisfies the existing `~> 1.7` constraint, no `mix.exs` change).
+    `mix credo --strict` now runs clean: 434 mods/funs, no issues.
+  - **`NeoFaker.seed/1` (added in phase 1) was not actually deterministic.** Found by extending
+    the throwaway Phoenix app's smoke test with a reseed-and-compare check — same seed produced
+    different `Person.full_name/0` output on first vs. second call. Root cause:
+    `NeoFaker.Data.put_cache!/3` shuffled each data file's value list once, on first read into
+    `:persistent_term` — consuming `:rand` state only on a cache miss, never on a cache hit, so
+    the amount of randomness "spent" before the real `Enum.random/1` pick depended on whether the
+    cache happened to be warm. The shuffle was also pure dead weight on its own terms:
+    `Enum.random/1` already selects uniformly regardless of list order, so shuffling first didn't
+    change the output distribution at all. Removed (kept `Enum.uniq/1` for dedup); `NeoFaker.seed/1`
+    is now verified deterministic across repeated calls, cache-cold or cache-warm.
+
+  Verification performed:
+  - `mise run fix` (format → credo → dialyzer → test) — all green, 325 tests passed.
+  - `mix docs` — clean build, confirmed `0.15.0` in generated output.
+  - Re-ran the throwaway Phoenix app (`mix phx.new demo --no-ecto ...` from earlier validation)
+    against the rebuilt `neo_faker` via its `path:` dependency: `mix deps.get` resolves the new
+    `nimble_options` transitive dependency correctly; extended its smoke test with two new cases
+    (process-scoped `set_locale/1` isolation across a `Task`, and `NeoFaker.seed/1` determinism)
+    — both pass; `MIX_ENV=dev mix run` and `mix phx.server` both boot and run cleanly.
+
+## 10. Status: rebuild complete
+
+All six phases are done and verified. `neo_faker` is at `0.15.0`. Remaining follow-ups are the
+open items already on record: the throwaway Phoenix app under the session scratchpad can be
+deleted (or kept for future validation — not committed to the repo either way), and
+`lib/pages/ecto-integration.md` (unrelated prior work, still uncommitted) is a separate decision
+for the user.
 
 Each phase's checkbox is ticked in this file as it lands, so the plan doc doubles as the
 progress tracker.

@@ -49,52 +49,6 @@ defmodule NeoFaker.Helpers.Formatter do
   def format_time(time, :iso8601), do: Time.to_iso8601(time)
 
   @doc """
-  Formats a DateTime struct according to the specified format.
-
-  ## Options
-
-  - `:struct` - Returns the DateTime struct as-is
-  - `:iso8601` - Returns an ISO 8601 formatted string
-
-  ## Examples
-
-      iex> dt = ~U[2025-03-25 15:22:10Z]
-      iex> NeoFaker.Helpers.Formatter.format_datetime(dt, :struct)
-      ~U[2025-03-25 15:22:10Z]
-
-      iex> dt = ~U[2025-03-25 15:22:10Z]
-      iex> NeoFaker.Helpers.Formatter.format_datetime(dt, :iso8601)
-      "2025-03-25T15:22:10Z"
-
-  """
-  @spec format_datetime(DateTime.t(), :struct | :iso8601) :: DateTime.t() | String.t()
-  def format_datetime(datetime, :struct), do: datetime
-  def format_datetime(datetime, :iso8601), do: DateTime.to_iso8601(datetime)
-
-  @doc """
-  Joins a color tuple's components into the W3C `type(v1, v2, ...)` string form, applying
-  `suffix` (e.g. `"%"`) to every component.
-
-  ## Examples
-
-      iex> NeoFaker.Helpers.Formatter.format_color_w3c({255, 128, 64}, "rgb")
-      "rgb(255, 128, 64)"
-
-      iex> NeoFaker.Helpers.Formatter.format_color_w3c({0, 25, 50, 100}, "cmyk", "%")
-      "cmyk(0%, 25%, 50%, 100%)"
-
-  """
-  @spec format_color_w3c(tuple(), String.t(), String.t()) :: String.t()
-  def format_color_w3c(color_tuple, color_type, suffix \\ "") when is_tuple(color_tuple) do
-    values =
-      color_tuple
-      |> Tuple.to_list()
-      |> Enum.map_join(", ", &"#{&1}#{suffix}")
-
-    "#{color_type}(#{values})"
-  end
-
-  @doc """
   Converts `number` to a string, or coerces it to an integer.
 
   The `:integer` branch truncates a float toward zero (`trunc/1`), it does not round to the
@@ -160,36 +114,4 @@ defmodule NeoFaker.Helpers.Formatter do
   def apply_case(string, :upper), do: String.upcase(string)
   def apply_case(string, :lower), do: String.downcase(string)
   def apply_case(string, :none), do: string
-
-  @doc """
-  Adds or removes a prefix from a string based on a boolean condition.
-
-  ## Examples
-
-      iex> NeoFaker.Helpers.Formatter.with_prefix("example", ".", true)
-      ".example"
-
-      iex> NeoFaker.Helpers.Formatter.with_prefix("example", ".", false)
-      "example"
-
-  """
-  @spec with_prefix(String.t(), String.t(), boolean()) :: String.t()
-  def with_prefix(string, prefix, true), do: prefix <> string
-  def with_prefix(string, _prefix, false), do: string
-
-  @doc """
-  Adds or removes a suffix from a string based on a boolean condition.
-
-  ## Examples
-
-      iex> NeoFaker.Helpers.Formatter.with_suffix("example", ".com", true)
-      "example.com"
-
-      iex> NeoFaker.Helpers.Formatter.with_suffix("example", ".com", false)
-      "example"
-
-  """
-  @spec with_suffix(String.t(), String.t(), boolean()) :: String.t()
-  def with_suffix(string, suffix, true), do: string <> suffix
-  def with_suffix(string, _suffix, false), do: string
 end

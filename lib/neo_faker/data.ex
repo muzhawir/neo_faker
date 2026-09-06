@@ -73,33 +73,29 @@ defmodule NeoFaker.Data do
   # Locale resolution
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Resolves the locale to use, falling back to `NeoFaker.Locale.get/0` (which
-  itself checks the calling process's override, then the app config) when no
-  explicit `locale` is given.
-
-  This only decides *which locale the caller wants*; it doesn't check whether
-  that locale actually has the requested file. `ensure_locale_file_exists/3`,
-  called separately by `random_value/4`, handles the per-file fallback.
-  """
+  # Resolves the locale to use, falling back to `NeoFaker.Locale.get/0` (which
+  # itself checks the calling process's override, then the app config) when no
+  # explicit `locale` is given.
+  #
+  # This only decides *which locale the caller wants*; it doesn't check whether
+  # that locale actually has the requested file. `ensure_locale_file_exists/3`,
+  # called separately by `random_value/4`, handles the per-file fallback.
   @spec resolve_locale_config(nil | atom()) :: atom()
-  def resolve_locale_config(nil), do: resolve_locale(Locale.get())
-  def resolve_locale_config(locale), do: resolve_locale(locale)
+  defp resolve_locale_config(nil), do: resolve_locale(Locale.get())
+  defp resolve_locale_config(locale), do: resolve_locale(locale)
 
   # ---------------------------------------------------------------------------
   # Disk helpers
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Returns the path to the `priv/data` directory.
-
-  Goes through `:code.priv_dir/1` rather than a path relative to this source
-  file, so it still resolves correctly once the app is compiled into a
-  release, where `priv/` moves alongside the compiled `.beam` files instead of
-  staying next to `lib/`.
-  """
+  # Returns the path to the `priv/data` directory.
+  #
+  # Goes through `:code.priv_dir/1` rather than a path relative to this source
+  # file, so it still resolves correctly once the app is compiled into a
+  # release, where `priv/` moves alongside the compiled `.beam` files instead of
+  # staying next to `lib/`.
   @spec data_path() :: String.t()
-  def data_path, do: :neo_faker |> :code.priv_dir() |> to_string() |> Path.join("data")
+  defp data_path, do: :neo_faker |> :code.priv_dir() |> to_string() |> Path.join("data")
 
   # ---------------------------------------------------------------------------
   # Internals

@@ -82,6 +82,10 @@ few internal (never public) modules live.
   codebase. These modules are all `@moduledoc false` and were never part of the public API, so
   this is an internal reorganization, not a breaking change.
 - Dropped every bare `import` of a project module in favor of `alias` and explicit calls.
+- Removed four unused helpers from the hidden `NeoFaker.Helpers.Formatter` module
+  (`format_datetime/2`, `format_color_w3c/3`, `with_prefix/3`, `with_suffix/3`); nothing in the
+  library or its tests called them. `NeoFaker.Data.data_path/0` and `resolve_locale_config/1` are
+  now `defp`. All of these were `@moduledoc false` internals, so this is not a public API change.
 
 ### Tests
 

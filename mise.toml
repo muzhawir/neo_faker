@@ -7,33 +7,28 @@ elixir = "1.20.4-otp-29"
 # Task definitions
 #
 # Each task depends on the one before it (`depends`), so the full chain is
-# only spelled out once — in `fix` — instead of every task repeating every
-# earlier step's commands. Run with `mise run <task>` or `mise run <alias>`.
+# only spelled out once, in `fix`, instead of every task repeating every
+# earlier step's commands. Run with `mise run <task>`.
 
 [tasks.format]
 description = "Format the codebase"
-alias = "f"
 run = "mix format"
 
 [tasks.test]
 description = "Run the test suite"
-alias = "t"
 run = "mix test"
 
 [tasks.lint]
 description = "Format and lint the codebase"
-alias = "l"
 depends = ["format"]
 run = "mix credo --strict"
 
 [tasks.analyze]
 description = "Format, lint, and analyze the codebase"
-alias = "a"
 depends = ["lint"]
 run = "mix dialyzer"
 
 [tasks.fix]
 description = "Format, lint, analyze, and test the codebase"
-alias = "x"
 depends = ["analyze"]
 run = "mix test"

@@ -23,9 +23,15 @@ mix docs # build ExDoc documentation (uses lib/pages/*.md, *.cheatmd)
 
 `mise.toml` defines composite tasks (`mise run format|lint|analyze|fix`) that chain the above in order: format → credo → dialyzer → test.
 
-Two CI workflows mirror these checks: `lint.yml` (format check + credo + test, runs on PRs into non-main branches) and `build.yml`
-(format check + credo + dialyzer + test, runs on `main`). Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test`
-before being considered done; run `mix dialyzer` too when types/specs changed.
+Two CI workflows mirror these checks, both running every step with `MIX_ENV=test` and `mix compile --warnings-as-errors`:
+
+- `lint.yml` (PRs into non-main branches): one job, single toolchain, running format check + credo + test.
+- `build.yml` (push/PR to `main`): a `test` job matrixed over the oldest supported toolchain (Elixir 1.18 / OTP 27, the `~> 1.18` floor)
+  and the current one (kept in sync with `mise.toml`), plus a `static` job on the current toolchain running format check + credo + dialyzer.
+  Dialyzer's PLT is cached via the `:dialyzer` `plt_local_path` config in `mix.exs` (`priv/plts/`, gitignored).
+
+Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test` before being considered done; run `mix dialyzer`
+too when types/specs changed.
 
 ## Elixir documentation lookup
 

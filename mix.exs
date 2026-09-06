@@ -7,6 +7,7 @@ defmodule NeoFaker.MixProject do
       version: "0.15.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
+      dialyzer: dialyzer(),
       description: description(),
       package: package(),
       deps: deps(),
@@ -14,6 +15,16 @@ defmodule NeoFaker.MixProject do
       source_url: "https://github.com/muzhawir/neo_faker",
       homepage_url: "https://hex.pm/packages/neo_faker",
       docs: &docs/0
+    ]
+  end
+
+  # Store the PLT under priv/plts so CI can cache it as a single directory.
+  # `:mix` is added because application/0 lists it in :extra_applications.
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix]
     ]
   end
 

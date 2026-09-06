@@ -1,54 +1,120 @@
-name: Elixir CI
+name: Build & Test
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
   workflow_dispatch:
 
+# Least privilege: these jobs only read the checkout.
+permissions:
+  contents: read
+
+# A new push to the same ref cancels an in-progress run for it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# credo, dialyxir and styler are `only: [:dev, :test]`; run every step in one
+# env so a single deps/_build cache is shared across all steps and jobs.
+env:
+  MIX_ENV: test
+
 jobs:
-  build:
-    name: Build & Test
+  test:
+    name: Test (Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest supported toolchain: mix.exs requires Elixir ~> 1.18.
+          - elixir: "1.18"
+            otp: "27"
+          # Current dev toolchain, kept in sync with mise.toml.
+          - elixir: "1.20.4"
+            otp: "29.0.6"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Elixir
+        id: beam
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Restore deps and _build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Check for unused dependencies
+        run: mix deps.unlock --check-unused
+
+      - name: Compile (warnings as errors)
+        run: mix compile --warnings-as-errors
+
+      - name: Run tests
+        run: mix test
+
+  static:
+    name: Static analysis
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Elixir
+        id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: "1.19.4"
-          otp-version: "28.3"
+          elixir-version: "1.20.4"
+          otp-version: "29.0.6"
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
+      - name: Restore deps and _build cache
+        uses: actions/cache@v4
         with:
-          path: deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
 
-      - name: Cache build
-        uses: actions/cache@v3
+      - name: Restore Dialyzer PLT cache
+        uses: actions/cache@v4
         with:
-          path: _build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-build-
+          path: priv/plts
+          key: ${{ runner.os }}-plt-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-plt-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
 
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Check code formatting
+      - name: Compile (warnings as errors)
+        run: mix compile --warnings-as-errors
+
+      - name: Check formatting
         run: mix format --check-formatted
 
-      - name: Compile dependencies
-        run: mix deps.compile
-
-      - name: Run Credo (static analysis)
+      - name: Run Credo
         run: mix credo --strict
 
-      - name: Run Dialyzer (type checking)
-        run: mix dialyzer
+      - name: Build PLT
+        run: mix dialyzer --plt
 
-      - name: Run tests
-        run: mix test
+      - name: Run Dialyzer
+        run: mix dialyzer --format github

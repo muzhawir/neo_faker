@@ -1,42 +1,39 @@
-# Tools configurations
+# Tools configuration
 
 [tools]
-
 erlang = "29.0.6"
 elixir = "1.20.4-otp-29"
 
 # Task definitions
+#
+# Each task depends on the one before it (`depends`), so the full chain is
+# only spelled out once — in `fix` — instead of every task repeating every
+# earlier step's commands. Run with `mise run <task>` or `mise run <alias>`.
 
 [tasks.format]
-
 description = "Format the codebase"
-run = [
-  "mix format"
-]
+alias = "f"
+run = "mix format"
+
+[tasks.test]
+description = "Run the test suite"
+alias = "t"
+run = "mix test"
 
 [tasks.lint]
-
 description = "Format and lint the codebase"
-run = [
-  "mix format",
-  "mix credo"
-]
+alias = "l"
+depends = ["format"]
+run = "mix credo"
 
 [tasks.analyze]
-
 description = "Format, lint, and analyze the codebase"
-run = [
-  "mix format",
-  "mix credo",
-  "mix dialyzer"
-]
+alias = "a"
+depends = ["lint"]
+run = "mix dialyzer"
 
 [tasks.fix]
-
 description = "Format, lint, analyze, and test the codebase"
-run = [
-  "mix format",
-  "mix credo",
-  "mix dialyzer",
-  "mix test"
-]
+alias = "x"
+depends = ["analyze"]
+run = "mix test"

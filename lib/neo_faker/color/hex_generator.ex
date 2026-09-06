@@ -8,6 +8,7 @@ defmodule NeoFaker.Color.HexGenerator do
 
   The resulting string consists of randomly selected hexadecimal digits (0-9, A-F).
   """
+  @spec color(3 | 4 | 6 | 8) :: String.t()
   def color(digits) when digits in [3, 4, 6, 8] do
     Enum.map_join(1..digits, fn _ -> Enum.random(@hex_digits) end)
   end

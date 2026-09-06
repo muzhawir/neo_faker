@@ -39,5 +39,6 @@ defmodule NeoFaker.Date.Generator do
   @doc """
   Returns the current local date as a `Date` struct.
   """
+  @spec local_date_now() :: Date.t()
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())
 end

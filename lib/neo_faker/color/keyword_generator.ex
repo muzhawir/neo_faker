@@ -11,6 +11,7 @@ defmodule NeoFaker.Color.KeywordGenerator do
   If `category` is `:all`, selects a random color from all available keyword colors for the given
   locale. Otherwise, selects a random color from the specified category.
   """
+  @spec color(:all | atom(), atom()) :: String.t()
   def color(:all, locale) do
     locale
     |> Data.fetch!(@module, "keyword.exs")

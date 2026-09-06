@@ -2,26 +2,14 @@ defmodule NeoFaker.Crypto.HashGenerator do
   @moduledoc false
 
   @doc """
-  Generates a cryptographic hash.
+  Generates a cryptographic hash using the given algorithm.
 
-  Computes a hash using the specified algorithm and applies optional transformations,
-  such as case formatting.
-
-  ## Parameters
-
-  - `hash_type` - The hashing algorithm to use (e.g., `:md5`, `:sha`, `:sha256`).
-  - `options` - A list of options to modify the hash output.
+  `hash_type` is any algorithm accepted by `:crypto.hash/2` (e.g. `:md5`, `:sha`, `:sha256`).
 
   ## Options
 
-  The accepted options are:
+    * `:case` (`:lower` or `:upper`) - the output character case. Defaults to `:lower`.
 
-  - `:case` - Determines whether the hash is returned in lowercase or uppercase.
-
-  The values for `:case` can be:
-
-  - `:lower` - uses lower case characters (default)
-  - `:upper` - uses upper case characters
   """
   @spec generate_hash(atom(), keyword()) :: String.t()
   def generate_hash(hash_type, opts \\ []) do

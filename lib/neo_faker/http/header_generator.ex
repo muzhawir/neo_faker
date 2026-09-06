@@ -28,15 +28,9 @@ defmodule NeoFaker.HTTP.HeaderGenerator do
   ]
 
   @doc """
-  Generates a random HTTP header name based on the specified type.
+  Generates a random HTTP header name from the given category.
 
-  Returns a randomly selected header name string.
-
-  ## Parameters
-
-  - `:request` - Returns a random request header name.
-  - `:response` - Returns a random response header name.
-  - `:all` - Returns a random header name from both request and response headers.
+  `:request` and `:response` draw from their own list; `:all` draws from both combined.
   """
   @spec name(:all | :request | :response) :: String.t()
   def name(:request), do: Enum.random(@request_headers)

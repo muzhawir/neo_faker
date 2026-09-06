@@ -2,8 +2,8 @@ defmodule NeoFaker.Address do
   @moduledoc """
   Functions for generating random address data.
 
-  Provides utilities to generate street names, city names, country names, building
-  numbers, and geographic coordinates with support for multiple locales.
+  Provides utilities to generate street names, city names, country names, building numbers, and
+  geographic coordinates with support for multiple locales.
   """
   @moduledoc since: "0.12.0"
 
@@ -40,8 +40,8 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random building number within a specified range.
 
-  Returns the building number as a string by default, or as an integer when
-  `type: :integer` is passed.
+  Returns the building number as a string by default, or as an integer when `type: :integer` is
+  passed.
 
   ## Parameters
 
@@ -74,10 +74,8 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random city name.
 
-  The city name is selected from locale-specific data. Pass `locale:` to use a
-  different locale. See the
-  [available locales](https://hexdocs.pm/neo_faker/locales.html)
-  for supported codes.
+  The city name is selected from locale-specific data. Pass `locale:` to use a different locale.
+  See the [available locales](https://hexdocs.pm/neo_faker/locales.html) for supported codes.
 
   ## Examples
 
@@ -97,10 +95,9 @@ defmodule NeoFaker.Address do
   @doc """
   Generates a random country name.
 
-  The country name is selected from locale-specific data. Pass `locale:` to use a
-  different locale. See the
-  [available locales](https://hexdocs.pm/neo_faker/locales.html)
-  for supported codes.
+  The country name is selected from locale-specific data. Pass `locale:` to use a different
+  locale. See the [available locales](https://hexdocs.pm/neo_faker/locales.html) for supported
+  codes.
 
   ## Examples
 
@@ -120,8 +117,8 @@ defmodule NeoFaker.Address do
   @doc """
   Generates random geographic coordinates.
 
-  Returns a `{latitude, longitude}` tuple by default. Use the `:type` option to
-  return a single value, and `:precision` to control decimal places.
+  Returns a `{latitude, longitude}` tuple by default. Use the `:type` option to return a single
+  value, and `:precision` to control decimal places.
 
   ## Parameters
 

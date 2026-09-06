@@ -2,9 +2,9 @@ defmodule NeoFaker.App do
   @moduledoc """
   Functions for generating app metadata.
 
-  Provides utilities to generate random app-related information, including author
-  names, app names, descriptions, versions, licenses, bundle identifiers, and
-  package names with support for multiple locales and formatting options.
+  Provides utilities to generate random app-related information, including author names, app
+  names, descriptions, versions, licenses, bundle identifiers, and package names with support for
+  multiple locales and formatting options.
   """
   @moduledoc since: "0.4.0"
 
@@ -55,8 +55,8 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app author name.
 
-  Delegates to `NeoFaker.Person.full_name/1` with `:middle_name` defaulting to
-  `false` for cleaner attribution strings.
+  Delegates to `NeoFaker.Person.full_name/1` with `:middle_name` defaulting to `false` for cleaner
+  attribution strings.
 
   ## Parameters
 
@@ -86,8 +86,8 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random short app description.
 
-  Returns a one-line description string selected from locale-specific data.
-  Pass `locale:` to override the application's configured locale.
+  Returns a one-line description string selected from locale-specific data. Pass `locale:` to
+  override the application's configured locale.
 
   ## Examples
 
@@ -108,8 +108,8 @@ defmodule NeoFaker.App do
   Generates a random open-source license name.
 
   Returns a name from a curated list sourced from
-  [ChooseALicense](https://choosealicense.com/appendix), such as
-  `"MIT License"`, `"Apache License 2.0"`, or `"GNU General Public License v3.0"`.
+  [ChooseALicense](https://choosealicense.com/appendix), such as `"MIT License"`,
+  `"Apache License 2.0"`, or `"GNU General Public License v3.0"`.
 
   ## Examples
 
@@ -123,8 +123,8 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app name.
 
-  Combines a random first word and last word from locale-specific data, then
-  formats the result according to the requested style.
+  Combines a random first word and last word from locale-specific data, then formats the result
+  according to the requested style.
 
   ## Parameters
 
@@ -248,9 +248,9 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random app bundle identifier.
 
-  Returns a bundle ID in reverse-domain notation, commonly used for iOS and
-  Android apps. The app name portion is generated via `name/1` and formatted
-  with the given `:style`. Only `:underscore` and `:dashed` styles are supported.
+  Returns a bundle ID in reverse-domain notation, commonly used for iOS and Android apps. The app
+  name portion is generated via `name/1` and formatted with the given `:style`. Only `:underscore`
+  and `:dashed` styles are supported.
 
   ## Parameters
 

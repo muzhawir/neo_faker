@@ -29,11 +29,18 @@ defmodule NeoFaker.InternetTest do
       end)
     end
 
-    test "never contains whitespace, for either word type" do
-      for type <- [:person, :word], _ <- 1..100 do
-        username = Internet.username(username_type: type, word_count: 3)
+    test "word segments are bare tokens, so the joiner count is exact, for either word type" do
+      # A dictionary word carrying a space, hyphen, or apostrophe ("long-term",
+      # "o'clock") would otherwise read as an extra segment.
+      for type <- [:person, :word], joiner <- [:dot, :dash, :underscore], _ <- 1..50 do
+        sep = %{dot: ".", dash: "-", underscore: "_"}[joiner]
+        username = Internet.username(username_type: type, word_count: 3, joiner: joiner)
 
-        refute username =~ ~r/\s/, "username contained whitespace: #{inspect(username)}"
+        assert username |> String.split(sep) |> length() == 3,
+               "expected 3 #{sep}-separated segments in: #{inspect(username)}"
+
+        refute username =~ ~r/[^a-z0-9._-]/,
+               "username had an unexpected character: #{inspect(username)}"
       end
     end
 
@@ -50,18 +57,28 @@ defmodule NeoFaker.InternetTest do
   end
 
   describe "domain_name/1" do
-    test "returns a single random word by default" do
-      domain = Internet.domain_name()
+    test "returns a single lowercase alphanumeric word by default" do
+      for _ <- 1..100 do
+        domain = Internet.domain_name()
 
-      assert is_binary(domain)
-      assert String.match?(domain, ~r/^[a-z]+$/)
+        assert is_binary(domain)
+
+        assert String.match?(domain, ~r/^[a-z0-9]+$/),
+               "unexpected domain label: #{inspect(domain)}"
+      end
     end
 
     test "returns multiple words joined by dash when word_count > 1" do
-      domain = Internet.domain_name(word_count: 3)
+      # Run many iterations: a word carrying its own hyphen ("long-term") would
+      # otherwise inflate the dash-split count.
+      for _ <- 1..100 do
+        domain = Internet.domain_name(word_count: 3)
 
-      assert is_binary(domain)
-      assert domain |> String.split("-") |> length() == 3
+        assert is_binary(domain)
+
+        assert domain |> String.split("-") |> length() == 3,
+               "unexpected domain: #{inspect(domain)}"
+      end
     end
 
     test "returns a popular domain name when type: :popular" do
@@ -576,11 +593,17 @@ defmodule NeoFaker.InternetTest do
       assert slug |> String.split("-") |> length() == 3
     end
 
-    test "never contains whitespace" do
-      for count <- [1, 3], _ <- 1..100 do
+    test "is only lowercase alphanumerics and the separator, so the word count is exact" do
+      # Regression: dictionary entries like "long-term" / "o'clock" used to leak
+      # their punctuation into the slug and inflate String.split counts.
+      for count <- [1, 3, 5], _ <- 1..50 do
         slug = Internet.slug(count)
 
-        refute slug =~ ~r/\s/, "slug contained whitespace: #{inspect(slug)}"
+        assert slug |> String.split("-") |> length() == count,
+               "expected #{count} parts in slug: #{inspect(slug)}"
+
+        assert slug =~ ~r/^[a-z0-9]+(-[a-z0-9]+)*$/,
+               "slug had an unexpected character: #{inspect(slug)}"
       end
     end
 

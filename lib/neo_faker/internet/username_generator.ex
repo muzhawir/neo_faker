@@ -1,27 +1,31 @@
 defmodule NeoFaker.Internet.UsernameGenerator do
   @moduledoc false
 
+  alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Person
 
   @type word_type :: :person | :word
   @type separator_type :: :all | :dot | :underscore | :dash
 
   @doc """
-  Generates a single lowercase word to use as one segment of a username.
+  Generates a single lowercase alphanumeric word to use as one segment of a
+  username.
 
   `:person` returns a random first or last name; `:word` returns a random
-  common word. The caller (`NeoFaker.Internet.username/1`) joins multiple
-  calls together with `joiner/1`; this function never combines words itself.
+  common word. Either way the result is run through `Formatter.slugify/1`, so a
+  name or word with a hyphen, apostrophe, space, or accent still yields a bare
+  token. The caller (`NeoFaker.Internet.username/1`) joins multiple calls
+  together with `joiner/1`; this function never combines words itself.
   """
   @spec word(word_type()) :: String.t()
   def word(type) do
-    case type do
-      :person ->
-        [Person.first_name(), Person.last_name()] |> Enum.random() |> String.downcase()
+    raw =
+      case type do
+        :person -> Enum.random([Person.first_name(), Person.last_name()])
+        :word -> NeoFaker.Text.word()
+      end
 
-      :word ->
-        String.downcase(NeoFaker.Text.word())
-    end
+    Formatter.slugify(raw)
   end
 
   @doc """

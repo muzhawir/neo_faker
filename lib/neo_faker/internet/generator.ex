@@ -1,6 +1,8 @@
 defmodule NeoFaker.Internet.Generator do
   @moduledoc false
 
+  alias NeoFaker.Helpers.Formatter
+
   # Randomization backend for `NeoFaker.Internet`: IPv4/IPv6 addresses, URL
   # paths, and query strings. The public module owns option parsing and output
   # casing; everything here just produces raw random values.
@@ -337,16 +339,9 @@ defmodule NeoFaker.Internet.Generator do
   @spec random_ipv6_group() :: non_neg_integer()
   defp random_ipv6_group, do: :rand.uniform(0x10_000) - 1
 
-  # A single lowercased, slugified word from NeoFaker.Text, safe to drop into a
-  # URL path segment or query-string key.
+  # A single lowercase alphanumeric word from NeoFaker.Text, safe to drop into a
+  # URL path segment or query-string key (Formatter.slugify/1 strips any hyphen,
+  # apostrophe, or space a dictionary entry might carry).
   @spec random_word_segment() :: String.t()
-  defp random_word_segment do
-    NeoFaker.Text.word() |> String.downcase() |> slugify()
-  end
-
-  # Replaces runs of whitespace with hyphens so multi-word entries returned by
-  # NeoFaker.Text.word/0 (e.g. "all right", "ice cream") become valid single-token
-  # URL path segments and query-string keys (e.g. "all-right").
-  @spec slugify(String.t()) :: String.t()
-  defp slugify(word), do: String.replace(word, ~r/\s+/, "-")
+  defp random_word_segment, do: Formatter.slugify(NeoFaker.Text.word())
 end

@@ -183,7 +183,7 @@ defmodule NeoFaker.Internet do
     case Keyword.fetch!(opts, :type) do
       :random ->
         Enum.map_join(1..Keyword.fetch!(opts, :word_count), "-", fn _ ->
-          String.downcase(NeoFaker.Text.word())
+          Formatter.slugify(NeoFaker.Text.word())
         end)
 
       :popular ->
@@ -527,7 +527,7 @@ defmodule NeoFaker.Internet do
     opts = NimbleOptions.validate!(opts, @slug_schema)
 
     Enum.map_join(1..word_count, Keyword.fetch!(opts, :separator), fn _ ->
-      String.downcase(NeoFaker.Text.word())
+      Formatter.slugify(NeoFaker.Text.word())
     end)
   end
 end

@@ -55,8 +55,8 @@ defmodule NeoFaker.Time do
     TimeValidator.validate_range!(range)
     opts = Options.validate!(opts, @add_schema)
 
-    time = TimeGenerator.add(range, opts[:unit], :struct)
-    Formatter.format_time(time, opts[:format])
+    time = TimeGenerator.add(range, Keyword.fetch!(opts, :unit), :struct)
+    Formatter.format_time(time, Keyword.fetch!(opts, :format))
   end
 
   @doc """
@@ -91,7 +91,7 @@ defmodule NeoFaker.Time do
 
     time = TimeGenerator.between(start, finish, :struct)
 
-    Formatter.format_time(time, opts[:format])
+    Formatter.format_time(time, Keyword.fetch!(opts, :format))
   end
 
   @doc """
@@ -208,6 +208,6 @@ defmodule NeoFaker.Time do
   @spec now(keyword()) :: Time.t() | String.t()
   def now(opts \\ []) do
     opts = Options.validate!(opts, @format_schema)
-    Formatter.format_time(Time.utc_now(), opts[:format])
+    Formatter.format_time(Time.utc_now(), Keyword.fetch!(opts, :format))
   end
 end

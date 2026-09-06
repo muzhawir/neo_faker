@@ -3,7 +3,7 @@ defmodule NeoFaker.Internet.DomainGenerator do
 
   alias NeoFaker.Data
 
-  @type domain_type :: :all | :ecommerce | :email | :search | :social | :default
+  @type domain_type :: :all | :ecommerce | :email | :search | :social
 
   @module NeoFaker.Internet
 
@@ -22,12 +22,11 @@ defmodule NeoFaker.Internet.DomainGenerator do
       :email -> fetch_popular_domain(:email)
       :search -> fetch_popular_domain(:search)
       :social -> fetch_popular_domain(:social)
-      _ -> fetch_popular_domain(:default)
     end
   end
 
   # Fetch popular domains based on type
-  defp fetch_popular_domain(type) when type in [:all, :default] do
+  defp fetch_popular_domain(:all) do
     :default
     |> Data.fetch!(@module, @popular_domain_file)
     |> Map.values()

@@ -27,12 +27,11 @@ defmodule NeoFaker.Lorem.Generator do
   @doc """
   Extracts a random paragraph from the given text.
 
-  Splits the text on double newlines, shuffles the resulting paragraphs, and returns the first
-  one.
+  Splits the text on double newlines and returns one paragraph at random.
   """
   @spec extract_paragraph(String.t()) :: String.t()
   def extract_paragraph(text) do
-    text |> String.split("\n\n") |> Enum.shuffle() |> List.first()
+    text |> String.split("\n\n") |> Enum.random()
   end
 
   @doc """

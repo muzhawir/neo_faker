@@ -52,7 +52,7 @@ defmodule NeoFaker.Boolean do
     opts = Options.validate!(opts, @options_schema)
     result = Generator.boolean(true_ratio)
 
-    if opts[:integer] do
+    if Keyword.fetch!(opts, :integer) do
       Formatter.format_boolean(result, :integer)
     else
       result

@@ -65,7 +65,7 @@ defmodule NeoFaker.Address do
 
     number = Number.between(range.first, range.last)
 
-    case opts[:type] do
+    case Keyword.fetch!(opts, :type) do
       :string -> Formatter.format_number(number, :string)
       :integer -> number
     end
@@ -159,10 +159,10 @@ defmodule NeoFaker.Address do
   def coordinate(opts \\ []) do
     opts = Options.validate!(opts, @coordinate_schema)
 
-    latitude = Generator.latitude(opts[:precision])
-    longitude = Generator.longitude(opts[:precision])
+    latitude = Generator.latitude(Keyword.fetch!(opts, :precision))
+    longitude = Generator.longitude(Keyword.fetch!(opts, :precision))
 
-    case opts[:type] do
+    case Keyword.fetch!(opts, :type) do
       :latitude -> latitude
       :longitude -> longitude
       :full -> {latitude, longitude}

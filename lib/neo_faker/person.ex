@@ -64,7 +64,7 @@ defmodule NeoFaker.Person do
   @spec first_name(keyword()) :: String.t()
   def first_name(opts \\ []) do
     opts = Options.validate!(opts, @name_schema)
-    NameGenerator.name(opts[:locale], "first_names", opts[:sex])
+    NameGenerator.name(Keyword.fetch!(opts, :locale), "first_names", Keyword.fetch!(opts, :sex))
   end
 
   @doc """
@@ -91,7 +91,7 @@ defmodule NeoFaker.Person do
   @spec middle_name(keyword()) :: String.t()
   def middle_name(opts \\ []) do
     opts = Options.validate!(opts, @name_schema)
-    NameGenerator.name(opts[:locale], "middle_names", opts[:sex])
+    NameGenerator.name(Keyword.fetch!(opts, :locale), "middle_names", Keyword.fetch!(opts, :sex))
   end
 
   @doc """
@@ -118,7 +118,7 @@ defmodule NeoFaker.Person do
   @spec last_name(keyword()) :: String.t()
   def last_name(opts \\ []) do
     opts = Options.validate!(opts, @name_schema)
-    NameGenerator.name(opts[:locale], "last_names", opts[:sex])
+    NameGenerator.name(Keyword.fetch!(opts, :locale), "last_names", Keyword.fetch!(opts, :sex))
   end
 
   @doc """
@@ -151,7 +151,12 @@ defmodule NeoFaker.Person do
   @spec full_name(keyword()) :: String.t()
   def full_name(opts \\ []) do
     opts = Options.validate!(opts, @full_name_schema)
-    FullNameGenerator.name(opts[:sex], opts[:locale], opts[:middle_name])
+
+    FullNameGenerator.name(
+      Keyword.fetch!(opts, :sex),
+      Keyword.fetch!(opts, :locale),
+      Keyword.fetch!(opts, :middle_name)
+    )
   end
 
   @doc """
@@ -339,9 +344,9 @@ defmodule NeoFaker.Person do
     locale_opts = Keyword.take(opts, [:locale])
 
     [
-      if(opts[:prefix], do: prefix(locale_opts)),
+      if(Keyword.fetch!(opts, :prefix), do: prefix(locale_opts)),
       full_name(name_opts),
-      if(opts[:suffix], do: suffix(locale_opts))
+      if(Keyword.fetch!(opts, :suffix), do: suffix(locale_opts))
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join(" ")

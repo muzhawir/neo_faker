@@ -79,7 +79,6 @@ defmodule NeoFaker.App do
   """
   @spec author(keyword()) :: String.t()
   def author(opts \\ []) do
-    # Set default middle_name to false for cleaner author names
     opts_with_defaults = Keyword.put_new(opts, :middle_name, false)
     Person.full_name(opts_with_defaults)
   end
@@ -163,10 +162,17 @@ defmodule NeoFaker.App do
   def name(opts \\ []) do
     opts = Options.validate!(opts, @name_schema)
 
-    first_name = Data.random_value(__MODULE__, @name_file, "first_names", locale: opts[:locale])
-    last_name = Data.random_value(__MODULE__, @name_file, "last_names", locale: opts[:locale])
+    first_name =
+      Data.random_value(__MODULE__, @name_file, "first_names",
+        locale: Keyword.fetch!(opts, :locale)
+      )
 
-    NameGenerator.format_text({first_name, last_name}, opts[:style])
+    last_name =
+      Data.random_value(__MODULE__, @name_file, "last_names",
+        locale: Keyword.fetch!(opts, :locale)
+      )
+
+    NameGenerator.format_text({first_name, last_name}, Keyword.fetch!(opts, :style))
   end
 
   @doc """
@@ -210,7 +216,7 @@ defmodule NeoFaker.App do
 
     core = SemverGenerator.semver_core()
 
-    case opts[:type] do
+    case Keyword.fetch!(opts, :type) do
       nil ->
         core
 
@@ -268,8 +274,9 @@ defmodule NeoFaker.App do
   def bundle_id(opts \\ []) do
     opts = Options.validate!(opts, @bundle_id_schema)
 
-    app_name = name(style: opts[:style])
-    "#{DomainGenerator.reverse_domain!(opts[:domain])}.#{String.downcase(app_name)}"
+    app_name = name(style: Keyword.fetch!(opts, :style))
+
+    "#{DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))}.#{String.downcase(app_name)}"
   end
 
   @doc """
@@ -296,9 +303,8 @@ defmodule NeoFaker.App do
   def package_name(opts \\ []) do
     opts = Options.validate!(opts, @package_name_schema)
 
-    # Package names use lowercase, no special characters
     app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
 
-    "#{DomainGenerator.reverse_domain!(opts[:domain])}.#{app_name}"
+    "#{DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))}.#{app_name}"
   end
 end

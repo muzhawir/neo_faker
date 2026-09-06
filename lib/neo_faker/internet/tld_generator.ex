@@ -38,9 +38,6 @@ defmodule NeoFaker.Internet.TldGenerator do
 
       :country_code ->
         Data.random_value(@module, @tld_file, "country_code")
-
-      _ ->
-        generate_default_name()
     end
   end
 

@@ -56,7 +56,7 @@ defmodule NeoFaker.Date do
     Validator.validate_range!(range)
     opts = Options.validate!(opts, @format_schema)
 
-    range |> Generator.add(:struct) |> Formatter.format_date(opts[:format])
+    range |> Generator.add(:struct) |> Formatter.format_date(Keyword.fetch!(opts, :format))
   end
 
   @doc """
@@ -96,7 +96,9 @@ defmodule NeoFaker.Date do
     Validator.validate_date_order!(start, finish)
     opts = Options.validate!(opts, @format_schema)
 
-    start |> Generator.between(finish, :struct) |> Formatter.format_date(opts[:format])
+    start
+    |> Generator.between(finish, :struct)
+    |> Formatter.format_date(Keyword.fetch!(opts, :format))
   end
 
   @doc """
@@ -146,7 +148,9 @@ defmodule NeoFaker.Date do
 
     finish_date = Date.shift(today, year: -min_age)
 
-    start_date |> Generator.between(finish_date, :struct) |> Formatter.format_date(opts[:format])
+    start_date
+    |> Generator.between(finish_date, :struct)
+    |> Formatter.format_date(Keyword.fetch!(opts, :format))
   end
 
   @doc """
@@ -225,6 +229,6 @@ defmodule NeoFaker.Date do
   def today(opts \\ []) do
     opts = Options.validate!(opts, @format_schema)
     date = Generator.local_date_now()
-    Formatter.format_date(date, opts[:format])
+    Formatter.format_date(date, Keyword.fetch!(opts, :format))
   end
 end

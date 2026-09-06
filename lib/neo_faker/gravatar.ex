@@ -94,19 +94,19 @@ defmodule NeoFaker.Gravatar do
   def display(email \\ nil, opts \\ []) do
     opts = Options.validate!(opts, @display_schema)
 
-    validated_size = Generator.image_size(opts[:size])
+    validated_size = Generator.image_size(Keyword.fetch!(opts, :size))
 
-    base_url = Generator.gravatar_url(email, validated_size, opts[:fallback])
+    base_url = Generator.gravatar_url(email, validated_size, Keyword.fetch!(opts, :fallback))
 
     # Add optional parameters
     url_with_rating =
-      if opts[:rating] do
-        base_url <> "&r=#{opts[:rating]}"
+      if Keyword.fetch!(opts, :rating) do
+        base_url <> "&r=#{Keyword.fetch!(opts, :rating)}"
       else
         base_url
       end
 
-    if opts[:force_default] do
+    if Keyword.fetch!(opts, :force_default) do
       url_with_rating <> "&f=y"
     else
       url_with_rating
@@ -155,7 +155,7 @@ defmodule NeoFaker.Gravatar do
     hash = Generator.email_hash(email)
     base_url = "https://gravatar.com/#{hash}"
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :html -> base_url
       other -> "#{base_url}.#{other}"
     end

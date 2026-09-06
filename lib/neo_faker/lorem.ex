@@ -47,7 +47,7 @@ defmodule NeoFaker.Lorem do
   @spec paragraph(keyword()) :: String.t()
   def paragraph(opts \\ []) do
     opts = Options.validate!(opts, @text_schema)
-    file = Generator.text_file(opts[:text])
+    file = Generator.text_file(Keyword.fetch!(opts, :text))
 
     __MODULE__
     |> Data.random_value(file, "text", opts)
@@ -138,7 +138,7 @@ defmodule NeoFaker.Lorem do
 
     paragraphs_list = Enum.map(1..count, fn _ -> paragraph(text_opts) end)
 
-    if opts[:join] do
+    if Keyword.fetch!(opts, :join) do
       Enum.join(paragraphs_list, "\n\n")
     else
       paragraphs_list
@@ -175,7 +175,7 @@ defmodule NeoFaker.Lorem do
 
     sentences_list = Enum.map(1..count, fn _ -> sentence(text_opts) end)
 
-    if opts[:join] do
+    if Keyword.fetch!(opts, :join) do
       Enum.join(sentences_list, " ")
     else
       sentences_list
@@ -212,7 +212,7 @@ defmodule NeoFaker.Lorem do
 
     words_list = Enum.map(1..count, fn _ -> word(text_opts) end)
 
-    if opts[:join] do
+    if Keyword.fetch!(opts, :join) do
       Enum.join(words_list, " ")
     else
       words_list

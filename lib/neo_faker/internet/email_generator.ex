@@ -14,7 +14,7 @@ defmodule NeoFaker.Internet.EmailGenerator do
     username_opts =
       opts
       |> Keyword.take([:joiner, :username_type, :number, :number_range])
-      |> Keyword.put(:word_count, opts[:username_word_count])
+      |> Keyword.put(:word_count, Keyword.fetch!(opts, :username_word_count))
 
     Internet.username(username_opts)
   end
@@ -30,8 +30,8 @@ defmodule NeoFaker.Internet.EmailGenerator do
     domain_name_opts =
       opts
       |> Keyword.take([:popular_type, :domain_name])
-      |> Keyword.put(:word_count, opts[:domain_name_word_count])
-      |> Keyword.put(:type, opts[:domain_type])
+      |> Keyword.put(:word_count, Keyword.fetch!(opts, :domain_name_word_count))
+      |> Keyword.put(:type, Keyword.fetch!(opts, :domain_type))
 
     Internet.domain_name(domain_name_opts)
   end
@@ -44,6 +44,6 @@ defmodule NeoFaker.Internet.EmailGenerator do
   """
   @spec generate_tld(keyword()) :: String.t()
   def generate_tld(opts) do
-    Internet.tld(type: opts[:tld_type])
+    Internet.tld(type: Keyword.fetch!(opts, :tld_type))
   end
 end

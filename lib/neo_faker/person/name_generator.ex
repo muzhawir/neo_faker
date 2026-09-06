@@ -27,10 +27,6 @@ defmodule NeoFaker.Person.NameGenerator do
           Data.random_value(@module, @female_name_file, key, locale: locale),
           Data.random_value(@module, @male_name_file, key, locale: locale)
         ])
-
-      other ->
-        raise ArgumentError,
-              "Invalid gender: #{inspect(other)}. Expected :female, :male, or :unisex."
     end
   end
 end

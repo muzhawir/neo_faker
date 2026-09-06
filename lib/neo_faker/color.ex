@@ -63,7 +63,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @w3c_format_schema)
     color_tuple = CmykGenerator.color_tuple()
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :w3c -> CmykGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
@@ -96,7 +96,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @hex_schema)
 
     digits =
-      case opts[:format] do
+      case Keyword.fetch!(opts, :format) do
         :three_digit -> 3
         :four_digit -> 4
         :six_digit -> 6
@@ -131,7 +131,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @w3c_format_schema)
     color_tuple = HslGenerator.color_tuple()
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :w3c -> HslGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
@@ -162,7 +162,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @w3c_format_schema)
     color_tuple = HslaGenerator.color_tuple()
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :w3c -> HslaGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
@@ -194,7 +194,7 @@ defmodule NeoFaker.Color do
   @spec keyword(keyword()) :: String.t()
   def keyword(opts \\ []) do
     opts = Options.validate!(opts, @keyword_schema)
-    KeywordGenerator.color(opts[:category], opts[:locale])
+    KeywordGenerator.color(Keyword.fetch!(opts, :category), Keyword.fetch!(opts, :locale))
   end
 
   @doc """
@@ -221,7 +221,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @w3c_format_schema)
     color_tuple = RgbGenerator.color_tuple()
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :w3c -> RgbGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
@@ -252,7 +252,7 @@ defmodule NeoFaker.Color do
     opts = Options.validate!(opts, @w3c_format_schema)
     color_tuple = RgbaGenerator.color_tuple()
 
-    case opts[:format] do
+    case Keyword.fetch!(opts, :format) do
       :w3c -> RgbaGenerator.color_w3c(color_tuple)
       nil -> color_tuple
     end
@@ -280,13 +280,11 @@ defmodule NeoFaker.Color do
     format_specified = Keyword.has_key?(opts, :format)
 
     if format_specified do
-      # User specified a format, use it
-      case Keyword.get(opts, :format) do
+      case Keyword.fetch!(opts, :format) do
         :w3c -> Enum.random([cmyk(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
         _ -> Enum.random([cmyk(opts), hex(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
       end
     else
-      # Random format selection
       Enum.random([cmyk(), hex(), hsl(), hsla(), rgb(), rgba()])
     end
   end

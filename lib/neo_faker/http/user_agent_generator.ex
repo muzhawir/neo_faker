@@ -28,10 +28,6 @@ defmodule NeoFaker.HTTP.UserAgentGenerator do
 
       :crawler ->
         Data.random_value(@module, @user_agent_file, "crawlers")
-
-      other ->
-        raise ArgumentError,
-              "Invalid user agent type: #{inspect(other)}. Expected :all, :browser, or :crawler."
     end
   end
 end

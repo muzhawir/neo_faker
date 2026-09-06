@@ -83,7 +83,7 @@ defmodule NeoFaker.Text do
   @spec character(keyword()) :: String.t()
   def character(opts \\ []) do
     opts = Options.validate!(opts, @character_schema)
-    Generator.character(opts[:type])
+    Generator.character(Keyword.fetch!(opts, :type))
   end
 
   @doc """
@@ -166,7 +166,7 @@ defmodule NeoFaker.Text do
   @spec emoji(keyword()) :: String.t()
   def emoji(opts \\ []) do
     opts = Options.validate!(opts, @emoji_schema)
-    EmojiGenerator.emoji(opts[:category])
+    EmojiGenerator.emoji(Keyword.fetch!(opts, :category))
   end
 
   @doc """
@@ -217,8 +217,8 @@ defmodule NeoFaker.Text do
 
     words_list = Enum.map(1..count, fn _ -> word() end)
 
-    if opts[:join] do
-      Enum.join(words_list, opts[:separator])
+    if Keyword.fetch!(opts, :join) do
+      Enum.join(words_list, Keyword.fetch!(opts, :separator))
     else
       words_list
     end

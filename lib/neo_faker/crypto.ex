@@ -180,7 +180,7 @@ defmodule NeoFaker.Crypto do
     opts = Options.validate!(opts, @token_schema)
     random_bytes = :crypto.strong_rand_bytes(length)
 
-    case opts[:encoding] do
+    case Keyword.fetch!(opts, :encoding) do
       :base64 -> Base.url_encode64(random_bytes, padding: false)
       :hex -> Base.encode16(random_bytes, case: :lower)
     end
@@ -218,12 +218,11 @@ defmodule NeoFaker.Crypto do
   def uuid(opts \\ []) do
     opts = Options.validate!(opts, @uuid_schema)
 
-    # Generate random bytes
     <<a::32, b::16, c::16, d::16, e::48>> = :crypto.strong_rand_bytes(16)
 
     # Set version 4 and variant bits
     uuid_string =
-      case opts[:format] do
+      case Keyword.fetch!(opts, :format) do
         :standard ->
           "~8.16.0b-~4.16.0b-4~3.16.0b-~4.16.0b-~12.16.0b"
           |> :io_lib.format([a, b, c &&& 0x0FFF, (d &&& 0x3FFF) ||| 0x8000, e])
@@ -235,7 +234,7 @@ defmodule NeoFaker.Crypto do
           |> IO.iodata_to_binary()
       end
 
-    case opts[:case] do
+    case Keyword.fetch!(opts, :case) do
       :lower -> String.downcase(uuid_string)
       :upper -> String.upcase(uuid_string)
     end

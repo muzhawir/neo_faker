@@ -38,13 +38,8 @@ defmodule NeoFaker.HTTP.HeaderGenerator do
   - `:response` - Returns a random response header name.
   - `:all` - Returns a random header name from both request and response headers.
   """
-  @spec name(atom()) :: String.t()
+  @spec name(:all | :request | :response) :: String.t()
   def name(:request), do: Enum.random(@request_headers)
   def name(:response), do: Enum.random(@response_headers)
   def name(:all), do: Enum.random(@request_headers ++ @response_headers)
-
-  def name(type) do
-    raise ArgumentError,
-          "Invalid header type. Expected one of [:all, :request, :response], got: #{inspect(type)}"
-  end
 end

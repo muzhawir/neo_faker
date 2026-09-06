@@ -139,15 +139,15 @@ defmodule NeoFaker.Internet do
   @spec username(keyword()) :: String.t()
   def username(opts \\ []) do
     opts = Options.validate!(opts, @username_schema)
-    joiner = UsernameGenerator.joiner(opts[:joiner])
+    joiner = UsernameGenerator.joiner(Keyword.fetch!(opts, :joiner))
 
     base =
-      Enum.map_join(1..opts[:word_count], joiner, fn _ ->
-        UsernameGenerator.word(opts[:username_type])
+      Enum.map_join(1..Keyword.fetch!(opts, :word_count), joiner, fn _ ->
+        UsernameGenerator.word(Keyword.fetch!(opts, :username_type))
       end)
 
-    if opts[:number] do
-      base <> joiner <> "#{Enum.random(opts[:number_range])}"
+    if Keyword.fetch!(opts, :number) do
+      base <> joiner <> "#{Enum.random(Keyword.fetch!(opts, :number_range))}"
     else
       base
     end
@@ -202,15 +202,17 @@ defmodule NeoFaker.Internet do
   def domain_name(opts \\ []) do
     opts = Options.validate!(opts, @domain_name_schema)
 
-    case opts[:type] do
+    case Keyword.fetch!(opts, :type) do
       :random ->
-        Enum.map_join(1..opts[:word_count], "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
+        Enum.map_join(1..Keyword.fetch!(opts, :word_count), "-", fn _ ->
+          String.downcase(NeoFaker.Text.word())
+        end)
 
       :popular ->
-        DomainGenerator.generate_popular_domain_name(opts[:popular_type])
+        DomainGenerator.generate_popular_domain_name(Keyword.fetch!(opts, :popular_type))
 
       :custom ->
-        custom_domain = opts[:domain_name]
+        custom_domain = Keyword.fetch!(opts, :domain_name)
 
         if custom_domain == "" do
           raise ArgumentError,
@@ -262,9 +264,9 @@ defmodule NeoFaker.Internet do
   @spec tld(keyword()) :: String.t()
   def tld(opts \\ []) do
     opts = Options.validate!(opts, @tld_schema)
-    tld_name = TldGenerator.generate_name(opts[:type])
+    tld_name = TldGenerator.generate_name(Keyword.fetch!(opts, :type))
 
-    if opts[:dot] do
+    if Keyword.fetch!(opts, :dot) do
       "." <> tld_name
     else
       tld_name
@@ -320,7 +322,7 @@ defmodule NeoFaker.Internet do
     domain_name = EmailGenerator.generate_domain_name(opts)
     tld = EmailGenerator.generate_tld(opts)
 
-    if opts[:domain_type] in [:popular, :custom] do
+    if Keyword.fetch!(opts, :domain_type) in [:popular, :custom] do
       "#{username}@#{domain_name}"
     else
       "#{username}@#{domain_name}#{tld}"
@@ -363,8 +365,8 @@ defmodule NeoFaker.Internet do
   def ipv4(opts \\ []) do
     opts = Options.validate!(opts, @ipv4_schema)
 
-    if opts[:private] do
-      class = opts[:class] || Enum.random([:a, :b, :c])
+    if Keyword.fetch!(opts, :private) do
+      class = Keyword.fetch!(opts, :class) || Enum.random([:a, :b, :c])
       Generator.private_ipv4(class)
     else
       Generator.public_ipv4()
@@ -400,7 +402,7 @@ defmodule NeoFaker.Internet do
     opts = Options.validate!(opts, @ipv6_schema)
 
     ip_address =
-      if opts[:compressed] do
+      if Keyword.fetch!(opts, :compressed) do
         Generator.compressed_ipv6()
       else
         Enum.map_join(1..8, ":", fn _ ->
@@ -410,7 +412,10 @@ defmodule NeoFaker.Internet do
         end)
       end
 
-    Formatter.apply_case(ip_address, if(opts[:uppercase], do: :upper, else: :lower))
+    Formatter.apply_case(
+      ip_address,
+      if(Keyword.fetch!(opts, :uppercase), do: :upper, else: :lower)
+    )
   end
 
   @doc """
@@ -452,13 +457,16 @@ defmodule NeoFaker.Internet do
     opts = Options.validate!(opts, @mac_address_schema)
 
     mac_address =
-      Enum.map_join(1..6, opts[:separator], fn _ ->
+      Enum.map_join(1..6, Keyword.fetch!(opts, :separator), fn _ ->
         (:rand.uniform(0x100) - 1)
         |> Integer.to_string(16)
         |> String.pad_leading(2, "0")
       end)
 
-    Formatter.apply_case(mac_address, if(opts[:uppercase], do: :upper, else: :lower))
+    Formatter.apply_case(
+      mac_address,
+      if(Keyword.fetch!(opts, :uppercase), do: :upper, else: :lower)
+    )
   end
 
   @doc """
@@ -504,7 +512,7 @@ defmodule NeoFaker.Internet do
     domain_opts =
       opts
       |> Keyword.take([:word_count, :popular_type, :domain_name])
-      |> Keyword.put(:type, opts[:domain_type])
+      |> Keyword.put(:type, Keyword.fetch!(opts, :domain_type))
 
     domain = domain_name(domain_opts)
 
@@ -512,20 +520,20 @@ defmodule NeoFaker.Internet do
     # "gmail.com"), so appending a TLD would produce "gmail.com.net". Only
     # word-based (:random) domains need a TLD appended.
     base_url =
-      if opts[:domain_type] == :random do
-        "#{opts[:protocol]}://#{domain}#{tld()}"
+      if Keyword.fetch!(opts, :domain_type) == :random do
+        "#{Keyword.fetch!(opts, :protocol)}://#{domain}#{tld()}"
       else
-        "#{opts[:protocol]}://#{domain}"
+        "#{Keyword.fetch!(opts, :protocol)}://#{domain}"
       end
 
     url_with_path =
-      if opts[:path] do
+      if Keyword.fetch!(opts, :path) do
         "#{base_url}/#{Generator.url_path()}"
       else
         base_url
       end
 
-    if opts[:query] do
+    if Keyword.fetch!(opts, :query) do
       "#{url_with_path}?#{Generator.query_string()}"
     else
       url_with_path
@@ -559,7 +567,7 @@ defmodule NeoFaker.Internet do
   def slug(word_count \\ 3, opts \\ []) when is_integer(word_count) and word_count > 0 do
     opts = Options.validate!(opts, @slug_schema)
 
-    Enum.map_join(1..word_count, opts[:separator], fn _ ->
+    Enum.map_join(1..word_count, Keyword.fetch!(opts, :separator), fn _ ->
       String.downcase(NeoFaker.Text.word())
     end)
   end

@@ -100,7 +100,7 @@ defmodule NeoFaker.HTTP do
   @spec user_agent(keyword()) :: String.t()
   def user_agent(opts \\ []) do
     opts = Options.validate!(opts, @user_agent_schema)
-    UserAgentGenerator.name(opts[:type])
+    UserAgentGenerator.name(Keyword.fetch!(opts, :type))
   end
 
   @doc """
@@ -128,7 +128,7 @@ defmodule NeoFaker.HTTP do
     opts = Options.validate!(opts, @request_method_schema)
 
     methods =
-      if opts[:common_only] do
+      if Keyword.fetch!(opts, :common_only) do
         ["GET", "POST", "PUT", "DELETE", "PATCH"]
       else
         @request_methods
@@ -201,9 +201,10 @@ defmodule NeoFaker.HTTP do
   def status_code(opts \\ []) do
     opts = Options.validate!(opts, @status_code_schema)
 
-    opts[:group]
+    opts
+    |> Keyword.fetch!(:group)
     |> StatusCodeGenerator.generates!()
-    |> StatusCodeGenerator.number(type: opts[:type])
+    |> StatusCodeGenerator.number(type: Keyword.fetch!(opts, :type))
   end
 
   @doc """
@@ -232,7 +233,7 @@ defmodule NeoFaker.HTTP do
     versions = ["HTTP/1.0", "HTTP/1.1", "HTTP/2"]
 
     versions =
-      if opts[:include_http3] do
+      if Keyword.fetch!(opts, :include_http3) do
         versions ++ ["HTTP/3"]
       else
         versions
@@ -274,7 +275,7 @@ defmodule NeoFaker.HTTP do
   @spec header_name(keyword()) :: String.t()
   def header_name(opts \\ []) do
     opts = Options.validate!(opts, @header_name_schema)
-    HeaderGenerator.name(opts[:type])
+    HeaderGenerator.name(Keyword.fetch!(opts, :type))
   end
 
   @doc """

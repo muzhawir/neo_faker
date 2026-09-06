@@ -53,18 +53,28 @@ defmodule NeoFaker.MixProject do
     ]
   end
 
+  # Listed explicitly (rather than globbed) so the sidebar order is intentional.
+  # Each file lives under the lib/pages/ subfolder matching its group below.
+  # ExDoc flattens every extra to `<basename>.html` regardless of subfolder, so
+  # inter-page links stay `[text](getting-started.html)` and never reference the
+  # folder.
   defp extra_pages do
-    List.flatten([
-      Path.wildcard("lib/pages/**/*.md"),
-      Path.wildcard("lib/pages/**/*.cheatmd")
-    ])
+    [
+      "lib/pages/guides/getting-started.md",
+      "lib/pages/guides/locales.md",
+      "lib/pages/guides/ecto-integration.md",
+      "lib/pages/guides/adding-a-locale.md",
+      "lib/pages/reference/cheat.cheatmd",
+      "lib/pages/reference/locale-cheat.cheatmd",
+      "lib/pages/about/changelog.md"
+    ]
   end
 
   defp groups_for_extras do
     [
-      Guides: ~r/lib\/pages\/(getting-started|locales|ecto-integration|adding-a-locale)\.md/,
-      Reference: ~r/lib\/pages\/(cheat|locale-cheat)\.cheatmd/,
-      About: ~r/lib\/pages\/changelog\.md/
+      Guides: ~r{lib/pages/guides/},
+      Reference: ~r{lib/pages/reference/},
+      About: ~r{lib/pages/about/}
     ]
   end
 

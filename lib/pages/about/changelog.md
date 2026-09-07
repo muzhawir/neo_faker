@@ -100,8 +100,9 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 - Refactored the hidden `NeoFaker.Internet.Generator` module for readability: the scattered
   `:rand.uniform(n) - 1` calls are now named `random_octet/0`, `random_octet_except/1`, and
   `random_ipv6_group/0` helpers; `reserved_ipv4?/3` pattern-matches the octets instead of guarding
-  on `==`; the compressed-IPv6 builder drops a redundant `case`; and `url_path/0`/`query_string/0`
-  share one word-segment helper. Output and the public `reserved_ipv4?/3` behavior are unchanged.
+  on `==`; the compressed-IPv6 builder drops a redundant `case` and splits its formatting into a
+  pure `compress_ipv6_groups/1` function; and `url_path/0`/`query_string/0` share one word-segment
+  helper. Output and the public `reserved_ipv4?/3` behavior are unchanged.
 - Sorted the documentation source pages into `lib/pages/guides/`, `lib/pages/reference/`,
   `lib/pages/contributing/`, and `lib/pages/about/` subfolders, one per ExDoc sidebar group, and
   listed them explicitly in `mix.exs` so the sidebar order is deliberate. The "Adding a Locale"
@@ -137,6 +138,12 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 - Removed the delegate tests for the deleted functions above (`NeoFakerTest`'s locale describes,
   `person_test`'s "deprecated gender functions", `gravatar_test`'s `random/0`). `NeoFaker.LocaleTest`
   and the `gender/1` / `random_display/0` tests already cover the replacements.
+- Overhauled every domain's test file, raising total line coverage from ~76% to 100%. The last
+  gaps were in the hidden `NeoFaker.Internet.Generator`: three reserved-`/24` sub-block branches
+  in `pick_public_third_octet/2` and the zero-run compression path of `compressed_ipv6/0`, all
+  reachable from `public_ipv4/0` / `compressed_ipv6/0` only on random draws too rare to hit in a
+  test. Both are now exercised through the pure `compress_ipv6_groups/1` function and a
+  now-public `pick_public_third_octet/2`, against fixed inputs.
 
 ## v0.14.0 (2026-03-11)
 

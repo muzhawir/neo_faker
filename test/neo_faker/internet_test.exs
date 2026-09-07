@@ -749,6 +749,32 @@ defmodule NeoFaker.InternetTest do
       end
     end
 
+    test "compress_ipv6_groups/1 collapses the longest zero run to '::'" do
+      assert Generator.compress_ipv6_groups([1, 0, 0, 0, 2, 3, 4, 5]) == "1::2:3:4:5"
+      assert Generator.compress_ipv6_groups([0, 0, 1, 2, 3, 4, 5, 6]) == "::1:2:3:4:5:6"
+      assert Generator.compress_ipv6_groups([1, 2, 3, 4, 5, 6, 0, 0]) == "1:2:3:4:5:6::"
+      assert Generator.compress_ipv6_groups([0, 0, 0, 0, 0, 0, 0, 0]) == "::"
+    end
+
+    test "compress_ipv6_groups/1 keeps the earliest run on a tie (RFC 5952)" do
+      assert Generator.compress_ipv6_groups([0, 0, 1, 0, 0, 2, 3, 4]) == "::1:0:0:2:3:4"
+    end
+
+    test "compress_ipv6_groups/1 leaves lone zeros and zero-free lists uncompressed" do
+      assert Generator.compress_ipv6_groups([0, 1, 0, 2, 0, 3, 4, 5]) == "0:1:0:2:0:3:4:5"
+      assert Generator.compress_ipv6_groups([1, 2, 3, 4, 5, 6, 7, 8]) == "1:2:3:4:5:6:7:8"
+    end
+
+    test "pick_public_third_octet/2 skips the reserved /24 sub-blocks" do
+      for _ <- 1..100 do
+        refute Generator.pick_public_third_octet(192, 88) == 99
+        refute Generator.pick_public_third_octet(198, 51) == 100
+        refute Generator.pick_public_third_octet(203, 0) == 113
+      end
+
+      assert Generator.pick_public_third_octet(10, 20) in 0..255
+    end
+
     test "url_path/0 is 1..3 lowercase alphanumeric segments" do
       for _ <- 1..50 do
         path = Generator.url_path()

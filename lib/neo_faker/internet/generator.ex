@@ -227,19 +227,24 @@ defmodule NeoFaker.Internet.Generator do
 
   defp pick_public_second_octet(_first), do: random_octet()
 
-  # Third-octet guards for the sub-/16 reservations that survive the second octet.
+  @doc """
+  Picks a public third octet for a given first/second octet pair.
+
+  Skips the sub-/16 reservations that survive the second-octet guard:
+
+  - `192.88.99.0/24` covers the deprecated 6to4 relay anycast (RFC 7526)
+  - `198.51.100.0/24` covers TEST-NET-2 (RFC 5737)
+  - `203.0.113.0/24` covers TEST-NET-3 (RFC 5737)
+
+  Any other pair returns a plain random octet. Public rather than private so the
+  narrow reserved branches can be tested directly, instead of relying on
+  `public_ipv4/0` drawing the exact second octet that reaches them.
+  """
   @spec pick_public_third_octet(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
-
-  # 192.88.99.0/24 — deprecated 6to4 relay anycast (RFC 7526).
-  defp pick_public_third_octet(192, 88), do: random_octet_except([99])
-
-  # 198.51.100.0/24 — TEST-NET-2 (RFC 5737).
-  defp pick_public_third_octet(198, 51), do: random_octet_except([100])
-
-  # 203.0.113.0/24 — TEST-NET-3 (RFC 5737).
-  defp pick_public_third_octet(203, 0), do: random_octet_except([113])
-
-  defp pick_public_third_octet(_first, _second), do: random_octet()
+  def pick_public_third_octet(192, 88), do: random_octet_except([99])
+  def pick_public_third_octet(198, 51), do: random_octet_except([100])
+  def pick_public_third_octet(203, 0), do: random_octet_except([113])
+  def pick_public_third_octet(_first, _second), do: random_octet()
 
   # ---------------------------------------------------------------------------
   # IPv6
@@ -253,15 +258,28 @@ defmodule NeoFaker.Internet.Generator do
   """
   @spec compressed_ipv6() :: String.t()
   def compressed_ipv6 do
-    groups = Enum.map(1..8, fn _ -> random_ipv6_group() end)
+    1..8 |> Enum.map(fn _ -> random_ipv6_group() end) |> compress_ipv6_groups()
+  end
+
+  @doc """
+  Renders a list of 16-bit groups as a compressed IPv6 address string.
+
+  Collapses the longest run of consecutive all-zero groups into `"::"`; on a tie
+  the earliest run wins, matching RFC 5952. An empty head or tail becomes a
+  leading or trailing `"::"`, and an all-zero input becomes `"::"`.
+
+  Split out from `compressed_ipv6/0` so the formatting can be tested against
+  fixed group lists, without depending on two random groups independently
+  landing on zero.
+  """
+  @spec compress_ipv6_groups(list(non_neg_integer())) :: String.t()
+  def compress_ipv6_groups(groups) do
     {zero_start, zero_length} = find_longest_zero_sequence(groups)
 
     if zero_length > 1 do
       head = groups |> Enum.take(zero_start) |> format_ipv6_groups()
       tail = groups |> Enum.drop(zero_start + zero_length) |> format_ipv6_groups()
 
-      # `head <> "::" <> tail` is correct in every case: an empty head or tail
-      # collapses to a leading/trailing "::", and two empty sides give "::".
       head <> "::" <> tail
     else
       format_ipv6_groups(groups)

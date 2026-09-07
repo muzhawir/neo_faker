@@ -535,7 +535,7 @@ iex> NeoFaker.HTTP.user_agent(type: :crawler)
 "ahrefsbot"
 
 iex> NeoFaker.HTTP.user_agent(type: :ai)
-"claudebot"
+"claude-user"
 ```
 
 ### [`request_method(opts \\ [])`](`NeoFaker.HTTP.request_method/1`)
@@ -598,7 +598,7 @@ iex> NeoFaker.HTTP.header_name(type: :response)
 
 ```elixir
 iex> NeoFaker.HTTP.all_request_methods()
-["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT"]
+["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT", "QUERY"]
 ```
 
 ### [`all_referrer_policies()`](`NeoFaker.HTTP.all_referrer_policies/0`)

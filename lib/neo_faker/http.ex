@@ -20,7 +20,8 @@ defmodule NeoFaker.HTTP do
     "HEAD",
     "OPTIONS",
     "TRACE",
-    "CONNECT"
+    "CONNECT",
+    "QUERY"
   ]
 
   @referrer_policies [
@@ -92,7 +93,7 @@ defmodule NeoFaker.HTTP do
       "ahrefsbot"
 
       iex> NeoFaker.HTTP.user_agent(type: :ai)
-      "claudebot"
+      "claude-user"
 
   """
   @spec user_agent(keyword()) :: String.t()
@@ -104,12 +105,12 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP request method.
 
-  Returns one of the common methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) by default.
+  Returns one of the common methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `QUERY`) by default.
 
   ## Options
 
-    * `:common_only` (boolean) - when `false`, includes all nine standard methods instead of
-      just the five most common. Defaults to `true`.
+    * `:common_only` (boolean) - when `false`, includes all ten standard methods instead of just
+      the six most common. Defaults to `true`.
 
   ## Examples
 
@@ -126,7 +127,7 @@ defmodule NeoFaker.HTTP do
 
     methods =
       if Keyword.fetch!(opts, :common_only) do
-        ["GET", "POST", "PUT", "DELETE", "PATCH"]
+        @request_methods -- ["HEAD", "OPTIONS", "TRACE", "CONNECT"]
       else
         @request_methods
       end
@@ -263,7 +264,7 @@ defmodule NeoFaker.HTTP do
   ## Examples
 
       iex> NeoFaker.HTTP.all_request_methods()
-      ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT"]
+      ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT", "QUERY"]
 
   """
   @spec all_request_methods() :: [String.t()]

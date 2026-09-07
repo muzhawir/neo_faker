@@ -7,8 +7,19 @@ defmodule NeoFaker.HTTPTest do
   alias NeoFaker.HTTP.UserAgentGenerator
 
   @all_groups [:information, :success, :redirection, :client_error, :server_error]
-  @common_methods ["GET", "POST", "PUT", "DELETE", "PATCH"]
-  @all_methods ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT"]
+  @common_methods ["GET", "POST", "PUT", "DELETE", "PATCH", "QUERY"]
+  @all_methods [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS",
+    "TRACE",
+    "CONNECT",
+    "QUERY"
+  ]
   @referrer_policies [
     "no-referrer",
     "no-referrer-when-downgrade",
@@ -87,8 +98,14 @@ defmodule NeoFaker.HTTPTest do
       assert HTTP.request_method() in @common_methods
     end
 
-    test "returns any of the nine standard methods when common_only: false" do
+    test "returns any of the ten standard methods when common_only: false" do
       for _ <- 1..200, do: assert(HTTP.request_method(common_only: false) in @all_methods)
+    end
+
+    test "never returns an uncommon method by default" do
+      for _ <- 1..200 do
+        refute HTTP.request_method() in ["HEAD", "OPTIONS", "TRACE", "CONNECT"]
+      end
     end
   end
 

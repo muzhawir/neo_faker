@@ -17,6 +17,8 @@ private modules live.
 - `NeoFaker.HTTP.user_agent/1` takes `type: :ai`, drawing from a new list of AI crawler and agent
   bot tokens (`"gptbot"`, `"claudebot"`, `"perplexitybot"`, and so on); `:all` includes them.
   Crawler user-agents are now bare bot tokens rather than full UA strings.
+- `NeoFaker.HTTP.request_method/1` and `all_request_methods/0` now include the `QUERY` method.
+  It counts as common, so the default (`common_only: true`) pool is six methods, not five.
 - `NeoFaker.Locale` owns all locale state (`fetch/0`, `get/0`, `set/1`) and the supported-locale list
   (`supported/0`, `available?/1`), previously split between `NeoFaker` and the hidden `NeoFaker.Data`.
 - `NeoFaker.Gravatar.random_display/0` replaces `random/0`.

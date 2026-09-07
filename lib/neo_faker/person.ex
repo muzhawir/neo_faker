@@ -268,9 +268,10 @@ defmodule NeoFaker.Person do
   # abbreviations of the binary values, not distinct identities.
   @spec random_any_gender(keyword()) :: String.t()
   defp random_any_gender(locale_opts) do
-    gender_data = Data.fetch!(locale_opts[:locale], __MODULE__, @gender_file)
+    %{"binary" => binary, "non_binary" => non_binary} =
+      Data.fetch!(locale_opts[:locale], __MODULE__, @gender_file)
 
-    Enum.random(gender_data["binary"] ++ gender_data["non_binary"])
+    Enum.random(binary ++ non_binary)
   end
 
   @doc """

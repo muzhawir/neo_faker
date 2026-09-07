@@ -4,15 +4,19 @@ defmodule NeoFaker.Lorem do
 
   Provides utilities to generate random paragraphs, sentences, and words sourced
   from either the classic Lorem Ipsum text or Marcus Aurelius' *Meditations*.
-  All functions accept a `text:` option to switch between sources.
+  All functions accept a `text:` option to switch between sources. The plural
+  functions return a list; join it yourself with `Enum.join/2` if you need a
+  single string.
   """
   @moduledoc since: "0.8.0"
 
-  import NeoFaker.Data, only: [random_value: 4]
+  alias NeoFaker.Data
+  alias NeoFaker.Lorem.Generator
 
-  alias NeoFaker.Helpers.Options
-  alias NeoFaker.Lorem.Parser
-  alias NeoFaker.Lorem.Validator
+  @text_schema NimbleOptions.new!(
+                 text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
+                 locale: [type: :atom, default: nil]
+               )
 
   @doc """
   Generates a random paragraph.
@@ -21,7 +25,8 @@ defmodule NeoFaker.Lorem do
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -35,28 +40,26 @@ defmodule NeoFaker.Lorem do
       something new and good, and cease to be whirled around."
 
   """
-  @spec paragraph(Keyword.t()) :: String.t()
+  @spec paragraph(keyword()) :: String.t()
   def paragraph(opts \\ []) do
-    text_source = Options.get(opts, :text, :lorem)
-    Validator.validate_text_source!(text_source)
-
-    file = Parser.text_file(text_source)
+    opts = NimbleOptions.validate!(opts, @text_schema)
+    file = Generator.text_file(Keyword.fetch!(opts, :text))
 
     __MODULE__
-    |> random_value(file, "text", opts)
-    |> Parser.normalize()
-    |> Parser.extract_paragraph()
+    |> Data.random_value(file, "text", opts)
+    |> Generator.normalize()
+    |> Generator.extract_paragraph()
   end
 
   @doc """
   Generates a random sentence.
 
-  Extracts a single sentence from a randomly chosen paragraph of the given
-  text source.
+  Extracts a single sentence from a randomly chosen paragraph of the given text source.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -67,20 +70,20 @@ defmodule NeoFaker.Lorem do
       "Do the things external which fall upon thee distract thee?"
 
   """
-  @spec sentence(Keyword.t()) :: String.t()
+  @spec sentence(keyword()) :: String.t()
   def sentence(opts \\ []) do
-    opts |> paragraph() |> Parser.split_sentences() |> Enum.random()
+    opts |> paragraph() |> Generator.split_sentences() |> Enum.random()
   end
 
   @doc """
   Generates a random word.
 
-  Extracts a single lowercase word from a randomly chosen sentence, stripped of
-  punctuation.
+  Extracts a single lowercase word from a randomly chosen sentence, stripped of punctuation.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
@@ -91,12 +94,12 @@ defmodule NeoFaker.Lorem do
       "distract"
 
   """
-  @spec word(Keyword.t()) :: String.t()
+  @spec word(keyword()) :: String.t()
   def word(opts \\ []) do
     opts
     |> sentence()
-    |> Parser.remove_punctuation()
-    |> Parser.split_words()
+    |> Generator.remove_punctuation()
+    |> Generator.split_words()
     |> Enum.random()
     |> String.downcase()
   end
@@ -104,104 +107,69 @@ defmodule NeoFaker.Lorem do
   @doc """
   Generates multiple random paragraphs.
 
-  Returns a list of paragraphs. Pass `join: true` to get a single newline-separated string.
-
-  ## Parameters
-
-  - `count` - Number of paragraphs to generate. Defaults to `3`.
+  Returns a list of paragraphs. `count` sets how many are generated and defaults to `3`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins paragraphs with `"\\n\\n"`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
       iex> NeoFaker.Lorem.paragraphs(2)
       ["First paragraph...", "Second paragraph..."]
 
-      iex> NeoFaker.Lorem.paragraphs(2, join: true)
-      "First paragraph...\\n\\nSecond paragraph..."
-
   """
-  @spec paragraphs(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec paragraphs(pos_integer(), keyword()) :: [String.t()]
   def paragraphs(count \\ 3, opts \\ []) when is_integer(count) and count > 0 do
-    paragraphs_list = Enum.map(1..count, fn _ -> paragraph(opts) end)
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    if Options.get(opts, :join, false) do
-      Enum.join(paragraphs_list, "\n\n")
-    else
-      paragraphs_list
-    end
+    Enum.map(1..count, fn _ -> paragraph(opts) end)
   end
 
   @doc """
   Generates multiple random sentences.
 
-  Returns a list of sentences. Pass `join: true` to get a single space-separated string.
-
-  ## Parameters
-
-  - `count` - Number of sentences to generate. Defaults to `5`.
+  Returns a list of sentences. `count` sets how many are generated and defaults to `5`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins sentences with `" "`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
       iex> NeoFaker.Lorem.sentences(3)
       ["First sentence.", "Second sentence.", "Third sentence."]
 
-      iex> NeoFaker.Lorem.sentences(3, join: true)
-      "First sentence. Second sentence. Third sentence."
-
   """
-  @spec sentences(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec sentences(pos_integer(), keyword()) :: [String.t()]
   def sentences(count \\ 5, opts \\ []) when is_integer(count) and count > 0 do
-    sentences_list = Enum.map(1..count, fn _ -> sentence(opts) end)
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    if Options.get(opts, :join, false) do
-      Enum.join(sentences_list, " ")
-    else
-      sentences_list
-    end
+    Enum.map(1..count, fn _ -> sentence(opts) end)
   end
 
   @doc """
   Generates multiple random words.
 
-  Returns a list of words. Pass `join: true` to get a single space-separated string.
-
-  ## Parameters
-
-  - `count` - Number of words to generate. Defaults to `10`.
+  Returns a list of words. `count` sets how many are generated and defaults to `10`.
 
   ## Options
 
-  - `:text` - Text source. Either `:lorem` (default) or `:meditations`.
-  - `:join` - When `true`, joins words with `" "`. Defaults to `false`.
+    * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
 
       iex> NeoFaker.Lorem.words(5)
       ["suspendisse", "justo", "venenatis", "sapien", "accumsan"]
 
-      iex> NeoFaker.Lorem.words(5, join: true)
-      "suspendisse justo venenatis sapien accumsan"
-
   """
-  @spec words(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
+  @spec words(pos_integer(), keyword()) :: [String.t()]
   def words(count \\ 10, opts \\ []) when is_integer(count) and count > 0 do
-    join = Options.get(opts, :join, false)
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    words_list = Enum.map(1..count, fn _ -> word(opts) end)
-
-    if join do
-      Enum.join(words_list, " ")
-    else
-      words_list
-    end
+    Enum.map(1..count, fn _ -> word(opts) end)
   end
 end

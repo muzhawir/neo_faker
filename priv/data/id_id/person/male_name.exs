@@ -39,6 +39,7 @@
     "Mahendra",
     "Muhammad",
     "Mukti",
+    "Muzhawir",
     "Naufal",
     "Nova",
     "Nugroho",
@@ -162,6 +163,7 @@
   "last_names" => [
     "Abdullah",
     "Adinata",
+    "Amri",
     "Ardana",
     "Bakhtiar",
     "Baskoro",

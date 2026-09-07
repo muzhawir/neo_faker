@@ -1,43 +1,29 @@
 defmodule NeoFaker.Date.Generator do
   @moduledoc false
 
-  @typedoc "Date format either `Date` struct or iso8601 `YYYY-MM-DD`"
-  @type date_format :: :struct | :iso8601
-
   @doc """
-  Generate a random date with specified range.
+  Generates a random date offset from today by a day count drawn from `range`.
 
-  Returns a random date as a `Date` struct when the format is `:struct` or a string in the format
-  `YYYY-MM-DD` when the format is `:iso8601`.
+  `range` may include negative values (past), positive values (future), or straddle zero; the
+  offset is added to today's local date via `Date.add/2`, which handles either direction the same
+  way.
   """
-  @spec add(Range.t(), date_format()) :: Date.t() | String.t()
-  def add(range, format) do
-    date = NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.add(Enum.random(range))
-
-    case format do
-      :struct -> date
-      :iso8601 -> Date.to_iso8601(date)
-    end
+  @spec add(Range.t()) :: Date.t()
+  def add(range) do
+    NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.add(Enum.random(range))
   end
 
   @doc """
-  Generate a random date between two dates.
-
-  Returns a random date between `start` and `finish` as a `Date` struct when the format is
-  `:struct` or a string in the format `YYYY-MM-DD` when the format is `:iso8601`.
+  Generates a random date between two dates, inclusive.
   """
-  @spec between(Date.t(), Date.t(), date_format()) :: Date.t() | String.t()
-  def between(start, finish, format) do
-    date = start |> Date.range(finish) |> Enum.random()
-
-    case format do
-      :struct -> date
-      :iso8601 -> Date.to_iso8601(date)
-    end
+  @spec between(Date.t(), Date.t()) :: Date.t()
+  def between(start, finish) do
+    start |> Date.range(finish) |> Enum.random()
   end
 
   @doc """
   Returns the current local date as a `Date` struct.
   """
+  @spec local_date_now() :: Date.t()
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())
 end

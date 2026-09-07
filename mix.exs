@@ -4,9 +4,10 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.14.0",
+      version: "0.15.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
+      dialyzer: dialyzer(),
       description: description(),
       package: package(),
       deps: deps(),
@@ -14,6 +15,16 @@ defmodule NeoFaker.MixProject do
       source_url: "https://github.com/muzhawir/neo_faker",
       homepage_url: "https://hex.pm/packages/neo_faker",
       docs: &docs/0
+    ]
+  end
+
+  # Store the PLT under priv/plts so CI can cache it as a single directory.
+  # `:mix` is added because application/0 lists it in :extra_applications.
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix]
     ]
   end
 
@@ -37,37 +48,48 @@ defmodule NeoFaker.MixProject do
       main: "getting-started",
       logo: "priv/assets/logo/doc_logo.svg",
       extras: extra_pages(),
+      groups_for_extras: groups_for_extras(),
       groups_for_modules: groups_for_modules()
     ]
   end
 
+  # Listed explicitly (rather than globbed) so the sidebar order is intentional.
   defp extra_pages do
-    List.flatten([
-      Path.wildcard("lib/pages/**/*.md"),
-      Path.wildcard("lib/pages/**/*.cheatmd")
-    ])
+    [
+      "lib/pages/guides/getting-started.md",
+      "lib/pages/guides/locales.md",
+      "lib/pages/guides/ecto-integration.md",
+      "lib/pages/reference/cheat.cheatmd",
+      "lib/pages/reference/locale-cheat.cheatmd",
+      "lib/pages/contributing/adding-a-locale.md",
+      "lib/pages/about/changelog.md"
+    ]
+  end
+
+  defp groups_for_extras do
+    [
+      Guides: ~r{lib/pages/guides/},
+      Reference: ~r{lib/pages/reference/},
+      Contributing: ~r{lib/pages/contributing/},
+      About: ~r{lib/pages/about/}
+    ]
   end
 
   defp groups_for_modules do
     [
-      "Random Generators": ~r/^NeoFaker(?!\.[A-Z][a-z][A-Z][a-z]\.)/,
-      "Locale Random Generators": ~r/^NeoFaker\.[A-Z][a-z][A-Z][a-z]\..+/
+      "Random Generators": ~r/^NeoFaker(?!\.Locales\.)/,
+      "Locale Random Generators": ~r/^NeoFaker\.Locales\..+/
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
-  def application do
-    [
-      extra_applications: [:logger, :mix]
-    ]
-  end
+  def application, do: [extra_applications: [:logger, :mix]]
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40.1", only: :dev, runtime: false},
+      {:nimble_options, "~> 1.1"},
       {:styler, "~> 1.11", only: [:dev, :test], runtime: false}
     ]
   end

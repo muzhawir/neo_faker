@@ -8,25 +8,43 @@ defmodule NeoFaker.Color do
   """
   @moduledoc since: "0.8.0"
 
-  alias NeoFaker.Color.CMYK
-  alias NeoFaker.Color.HEX
-  alias NeoFaker.Color.HSL
-  alias NeoFaker.Color.HSLA
-  alias NeoFaker.Color.Keyword, as: KeywordColor
-  alias NeoFaker.Color.RGB
-  alias NeoFaker.Color.RGBA
-  alias NeoFaker.Color.Validator
-  alias NeoFaker.Helpers.Options
+  alias NeoFaker.Color.CmykGenerator
+  alias NeoFaker.Color.HexGenerator
+  alias NeoFaker.Color.HslaGenerator
+  alias NeoFaker.Color.HslGenerator
+  alias NeoFaker.Color.KeywordGenerator
+  alias NeoFaker.Color.RgbaGenerator
+  alias NeoFaker.Color.RgbGenerator
+
+  @hex_formats [:three_digit, :four_digit, :six_digit, :eight_digit]
+
+  @w3c_format_schema NimbleOptions.new!(format: [type: {:in, [nil, :w3c]}, default: nil])
+
+  @hex_schema NimbleOptions.new!(format: [type: {:in, @hex_formats}, default: :six_digit])
+
+  @keyword_schema NimbleOptions.new!(
+                    category: [type: {:in, [:all, :basic, :extended]}, default: :all],
+                    locale: [type: :atom, default: nil]
+                  )
+
+  @typedoc """
+  Any value a color-generating function in this module can return: a tuple of numeric
+  components, or a W3C-formatted CSS string. Which shape comes back depends on the
+  `:format` option (and, for `random/1`, on which format is randomly picked), which is
+  intentional, not an accident of implementation.
+  """
+  @type any_color :: tuple() | String.t()
 
   @doc """
   Generates a random CMYK color.
 
   Returns a tuple `{cyan, magenta, yellow, black}` where each component is an
-  integer percentage from 0 to 100. Pass `format: :w3c` for a CSS string.
+  integer percentage from 0 to 100.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `cmyk(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -37,25 +55,26 @@ defmodule NeoFaker.Color do
       "cmyk(0%, 25%, 50%, 100%)"
 
   """
-  @spec cmyk(Keyword.t()) :: tuple() | String.t()
+  @spec cmyk(keyword()) :: any_color()
   def cmyk(opts \\ []) do
-    color_tuple = CMYK.color_tuple()
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
+    color_tuple = CmykGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> CMYK.color_w3c(color_tuple)
-      _ -> color_tuple
+    case Keyword.fetch!(opts, :format) do
+      :w3c -> CmykGenerator.color_w3c(color_tuple)
+      nil -> color_tuple
     end
   end
 
   @doc """
   Generates a random HEX color string.
 
-  Returns a `#`-prefixed hex color. Defaults to six-digit format.
+  Returns a `#`-prefixed hex color.
 
   ## Options
 
-  - `:format` - Digit length. One of `:six_digit` (default), `:three_digit`,
-    `:four_digit`, or `:eight_digit`.
+    * `:format` (`:three_digit`, `:four_digit`, `:six_digit`, or `:eight_digit`) - the digit
+      length of the output. Defaults to `:six_digit`.
 
   ## Examples
 
@@ -69,33 +88,31 @@ defmodule NeoFaker.Color do
       "#613583FF"
 
   """
-  @spec hex(Keyword.t()) :: String.t()
+  @spec hex(keyword()) :: String.t()
   def hex(opts \\ []) do
-    format = Options.get(opts, :format, :six_digit)
-
-    Validator.validate_hex_format!(format)
+    opts = NimbleOptions.validate!(opts, @hex_schema)
 
     digits =
-      case format do
+      case Keyword.fetch!(opts, :format) do
         :three_digit -> 3
         :four_digit -> 4
         :six_digit -> 6
         :eight_digit -> 8
       end
 
-    "#" <> HEX.color(digits)
+    "#" <> HexGenerator.color(digits)
   end
 
   @doc """
   Generates a random HSL color.
 
   Returns a `{hue, saturation, lightness}` tuple. Hue is in degrees (0–360);
-  saturation and lightness are integer percentages (0–100). Pass `format: :w3c`
-  for a CSS string.
+  saturation and lightness are integer percentages (0–100).
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `hsl(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -106,13 +123,14 @@ defmodule NeoFaker.Color do
       "hsl(180, 50%, 75%)"
 
   """
-  @spec hsl(Keyword.t()) :: tuple() | String.t()
+  @spec hsl(keyword()) :: any_color()
   def hsl(opts \\ []) do
-    color_tuple = HSL.color_tuple()
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
+    color_tuple = HslGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> HSL.color_w3c(color_tuple)
-      _ -> color_tuple
+    case Keyword.fetch!(opts, :format) do
+      :w3c -> HslGenerator.color_w3c(color_tuple)
+      nil -> color_tuple
     end
   end
 
@@ -121,11 +139,12 @@ defmodule NeoFaker.Color do
 
   Returns a `{hue, saturation, lightness, alpha}` tuple. Hue is in degrees (0–360),
   saturation and lightness are integer percentages (0–100), and alpha is a float
-  between 0.0 and 1.0. Pass `format: :w3c` for a CSS string.
+  between 0.0 and 1.0.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `hsla(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -136,13 +155,14 @@ defmodule NeoFaker.Color do
       "hsla(180, 50%, 75%, 0.8)"
 
   """
-  @spec hsla(Keyword.t()) :: tuple() | String.t()
+  @spec hsla(keyword()) :: any_color()
   def hsla(opts \\ []) do
-    color_tuple = HSLA.color_tuple()
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
+    color_tuple = HslaGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> HSLA.color_w3c(color_tuple)
-      _ -> color_tuple
+    case Keyword.fetch!(opts, :format) do
+      :w3c -> HslaGenerator.color_w3c(color_tuple)
+      nil -> color_tuple
     end
   end
 
@@ -154,8 +174,10 @@ defmodule NeoFaker.Color do
 
   ## Options
 
-  - `:category` - Color category. One of `:all` (default), `:basic`, or `:extended`.
-  - `:locale` - Locale to use. Defaults to the application's configured locale.
+    * `:category` (`:all`, `:basic`, or `:extended`) - the color category to draw from.
+      Defaults to `:all`.
+    * `:locale` (atom) - the locale to use. Defaults to the application's configured
+      locale.
 
   ## Examples
 
@@ -169,25 +191,22 @@ defmodule NeoFaker.Color do
       "ungu"
 
   """
-  @spec keyword(Keyword.t()) :: String.t()
+  @spec keyword(keyword()) :: String.t()
   def keyword(opts \\ []) do
-    category = Options.get(opts, :category, :all)
-    locale = Options.get(opts, :locale, :default)
-
-    Validator.validate_color_category!(category)
-
-    KeywordColor.color(category, locale)
+    opts = NimbleOptions.validate!(opts, @keyword_schema)
+    KeywordGenerator.color(Keyword.fetch!(opts, :category), Keyword.fetch!(opts, :locale))
   end
 
   @doc """
   Generates a random RGB color.
 
   Returns a `{red, green, blue}` tuple where each component is an integer from
-  0 to 255. Pass `format: :w3c` for a CSS string.
+  0 to 255.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `rgb(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -198,13 +217,14 @@ defmodule NeoFaker.Color do
       "rgb(255, 128, 64)"
 
   """
-  @spec rgb(Keyword.t()) :: tuple() | String.t()
+  @spec rgb(keyword()) :: any_color()
   def rgb(opts \\ []) do
-    color_tuple = RGB.color_tuple()
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
+    color_tuple = RgbGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> RGB.color_w3c(color_tuple)
-      _ -> color_tuple
+    case Keyword.fetch!(opts, :format) do
+      :w3c -> RgbGenerator.color_w3c(color_tuple)
+      nil -> color_tuple
     end
   end
 
@@ -212,12 +232,12 @@ defmodule NeoFaker.Color do
   Generates a random RGBA color.
 
   Returns a `{red, green, blue, alpha}` tuple. RGB components are integers from
-  0 to 255; alpha is a float between 0.0 and 1.0. Pass `format: :w3c` for a
-  CSS string.
+  0 to 255; alpha is a float between 0.0 and 1.0.
 
   ## Options
 
-  - `:format` - Output format. Either `nil` (tuple, default) or `:w3c` (CSS string).
+    * `:format` (`nil` or `:w3c`) - when `:w3c`, returns a CSS `rgba(...)` string instead
+      of a tuple. Defaults to `nil`.
 
   ## Examples
 
@@ -228,13 +248,14 @@ defmodule NeoFaker.Color do
       "rgba(255, 128, 64, 0.8)"
 
   """
-  @spec rgba(Keyword.t()) :: tuple() | String.t()
+  @spec rgba(keyword()) :: any_color()
   def rgba(opts \\ []) do
-    color_tuple = RGBA.color_tuple()
+    opts = NimbleOptions.validate!(opts, @w3c_format_schema)
+    color_tuple = RgbaGenerator.color_tuple()
 
-    case Validator.get_and_validate_color_format!(opts) do
-      :w3c -> RGBA.color_w3c(color_tuple)
-      _ -> color_tuple
+    case Keyword.fetch!(opts, :format) do
+      :w3c -> RgbaGenerator.color_w3c(color_tuple)
+      nil -> color_tuple
     end
   end
 
@@ -242,9 +263,12 @@ defmodule NeoFaker.Color do
   Generates a random color in a randomly selected format.
 
   With no options, picks uniformly among CMYK, HEX, HSL, HSLA, RGB, and RGBA.
-  Pass `format: :w3c` to restrict the pool to formats that support W3C strings
-  (excludes HEX), or any other `:format` value to pass it through to each
-  individual generator.
+
+  ## Options
+
+    * `:format` (`:w3c` or any other value) - when `:w3c`, restricts the pool to formats
+      that support W3C strings (excludes HEX); any other value is passed through to each
+      individual generator.
 
   ## Examples
 
@@ -255,18 +279,16 @@ defmodule NeoFaker.Color do
       "#613583"
 
   """
-  @spec random(Keyword.t()) :: tuple() | String.t()
+  @spec random(keyword()) :: any_color()
   def random(opts \\ []) do
     format_specified = Keyword.has_key?(opts, :format)
 
     if format_specified do
-      # User specified a format, use it
-      case Options.get(opts, :format, nil) do
+      case Keyword.fetch!(opts, :format) do
         :w3c -> Enum.random([cmyk(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
         _ -> Enum.random([cmyk(opts), hex(opts), hsl(opts), hsla(opts), rgb(opts), rgba(opts)])
       end
     else
-      # Random format selection
       Enum.random([cmyk(), hex(), hsl(), hsla(), rgb(), rgba()])
     end
   end

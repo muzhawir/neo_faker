@@ -8,17 +8,77 @@ defmodule NeoFaker.Internet do
   @moduledoc since: "0.13.0"
 
   alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Helpers.Options
-  alias NeoFaker.Internet.Domain
-  alias NeoFaker.Internet.Email
+  alias NeoFaker.Internet.DomainGenerator
+  alias NeoFaker.Internet.EmailGenerator
   alias NeoFaker.Internet.Generator
-  alias NeoFaker.Internet.TLD
-  alias NeoFaker.Internet.Username
-  alias NeoFaker.Internet.Validator
+  alias NeoFaker.Internet.TldGenerator
+  alias NeoFaker.Internet.UsernameGenerator
 
-  @username_word_count 2
-  @domain_word_count 1
-  @number_range 1..1000
+  @joiners [:all, :dot, :underscore, :dash]
+  @username_types [:person, :word]
+  @domain_types [:random, :popular, :custom]
+  @popular_types [:all, :ecommerce, :email, :search, :social]
+  @tld_types [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]
+
+  @username_schema NimbleOptions.new!(
+                     word_count: [type: :pos_integer, default: 2],
+                     joiner: [type: {:in, @joiners}, default: :all],
+                     username_type: [type: {:in, @username_types}, default: :person],
+                     number: [type: :boolean, default: false],
+                     number_range: [type: {:struct, Range}, default: 1..1000]
+                   )
+
+  @domain_name_schema NimbleOptions.new!(
+                        word_count: [type: :pos_integer, default: 1],
+                        type: [type: {:in, @domain_types}, default: :random],
+                        popular_type: [type: {:in, @popular_types}, default: :all],
+                        domain_name: [type: :string, default: "example.com"]
+                      )
+
+  @tld_schema NimbleOptions.new!(
+                dot: [type: :boolean, default: true],
+                type: [type: {:in, @tld_types}, default: :all_except_safe]
+              )
+
+  @email_schema NimbleOptions.new!(
+                  username_word_count: [type: :pos_integer, default: 2],
+                  joiner: [type: {:in, @joiners}, default: :all],
+                  username_type: [type: {:in, @username_types}, default: :person],
+                  number: [type: :boolean, default: false],
+                  number_range: [type: {:struct, Range}, default: 1..1000],
+                  domain_name_word_count: [type: :pos_integer, default: 1],
+                  domain_type: [type: {:in, @domain_types}, default: :random],
+                  popular_type: [type: {:in, @popular_types}, default: :all],
+                  domain_name: [type: :string, default: "example.com"],
+                  tld_type: [type: {:in, @tld_types}, default: :all_except_safe]
+                )
+
+  @ipv4_schema NimbleOptions.new!(
+                 private: [type: :boolean, default: false],
+                 class: [type: {:in, [nil, :a, :b, :c]}, default: nil]
+               )
+
+  @ipv6_schema NimbleOptions.new!(
+                 uppercase: [type: :boolean, default: true],
+                 compressed: [type: :boolean, default: false]
+               )
+
+  @mac_address_schema NimbleOptions.new!(
+                        uppercase: [type: :boolean, default: true],
+                        separator: [type: {:in, [":", "-", ""]}, default: ":"]
+                      )
+
+  @url_schema NimbleOptions.new!(
+                protocol: [type: {:in, [:http, :https]}, default: :https],
+                domain_type: [type: {:in, @domain_types}, default: :random],
+                path: [type: :boolean, default: false],
+                query: [type: :boolean, default: false],
+                word_count: [type: :pos_integer, default: 1],
+                popular_type: [type: {:in, @popular_types}, default: :all],
+                domain_name: [type: :string, default: "example.com"]
+              )
+
+  @slug_schema NimbleOptions.new!(separator: [type: :string, default: "-"])
 
   @doc """
   Generates a random username.
@@ -26,28 +86,17 @@ defmodule NeoFaker.Internet do
   Returns a username string composed of words joined by a separator, with an optional
   numeric suffix.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:word_count` - Number of words in the username. Defaults to `2`.
-    - `:joiner` - Separator between words. Defaults to `:all`.
-    - `:username_type` - Word source for the username. Defaults to `:person`.
-    - `:number` - When `true`, appends a random number. Defaults to `false`.
-    - `:number_range` - Range to sample the appended number from. Defaults to `1..1000`.
-
   ## Options
 
-  The values for `:joiner` can be:
-
-  - `:all` - Any of the available joiners (default).
-  - `:dot` - Dot (`.`).
-  - `:underscore` - Underscore (`_`).
-  - `:dash` - Dash (`-`).
-
-  The values for `:username_type` can be:
-
-  - `:person` - Random first or last names (default).
-  - `:word` - Random words.
+    * `:word_count` (positive integer) - the number of words in the username. Defaults
+      to `2`.
+    * `:joiner` (`:all`, `:dot`, `:underscore`, or `:dash`) - the separator between words.
+      `:all` picks any of the available joiners at random. Defaults to `:all`.
+    * `:username_type` (`:person` or `:word`) - the word source. `:person` draws from random
+      first or last names; `:word` draws from random words. Defaults to `:person`.
+    * `:number` (boolean) - when `true`, appends a random number. Defaults to `false`.
+    * `:number_range` (`Range`) - the range to sample the appended number from. Defaults
+      to `1..1000`.
 
   ## Examples
 
@@ -64,27 +113,18 @@ defmodule NeoFaker.Internet do
       "jane_smith_42"
 
   """
-  @spec username(Keyword.t()) :: String.t()
+  @spec username(keyword()) :: String.t()
   def username(opts \\ []) do
-    word_count = Options.get(opts, :word_count, @username_word_count)
-    joiner_type = Options.get(opts, :joiner, :all)
-    username_type = Options.get(opts, :username_type, :person)
-    include_number = Options.get(opts, :number, false)
-    number_range = Options.get(opts, :number_range, @number_range)
-
-    Validator.validate_username_joiner!(joiner_type)
-    Validator.validate_username_type!(username_type)
-    Validator.validate_word_count!(word_count)
-
-    joiner = Username.joiner(joiner_type)
+    opts = NimbleOptions.validate!(opts, @username_schema)
+    joiner = UsernameGenerator.joiner(Keyword.fetch!(opts, :joiner))
 
     base =
-      Enum.map_join(1..word_count, joiner, fn _ ->
-        Username.word(username_type)
+      Enum.map_join(1..Keyword.fetch!(opts, :word_count), joiner, fn _ ->
+        UsernameGenerator.word(Keyword.fetch!(opts, :username_type))
       end)
 
-    if include_number do
-      base <> joiner <> "#{Enum.random(number_range)}"
+    if Keyword.fetch!(opts, :number) do
+      base <> joiner <> "#{Enum.random(Keyword.fetch!(opts, :number_range))}"
     else
       base
     end
@@ -96,29 +136,19 @@ defmodule NeoFaker.Internet do
   Returns a domain name string based on the specified type. Can produce random
   word-based names, popular real-world domains, or a user-supplied custom domain.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:word_count` - Number of words in a random domain name. Defaults to `1`.
-    - `:type` - Domain name strategy. Defaults to `:random`.
-    - `:popular_type` - Popular domain category when `:type` is `:popular`. Defaults to `:all`.
-    - `:domain_name` - Custom domain string when `:type` is `:custom`. Defaults to `"example.com"`.
-
   ## Options
 
-  The values for `:type` can be:
-
-  - `:random` - Random word-based domain name (default).
-  - `:popular` - Domain name from a list of popular real-world domains.
-  - `:custom` - User-supplied domain name via `:domain_name`.
-
-  The values for `:popular_type` can be:
-
-  - `:all` - All popular domains (default).
-  - `:ecommerce` - Popular e-commerce domains.
-  - `:email` - Popular email service domains.
-  - `:search` - Popular search engine domains.
-  - `:social` - Popular social media domains.
+    * `:word_count` (positive integer) - the number of words in a random domain name.
+      Defaults to `1`.
+    * `:type` (`:random`, `:popular`, or `:custom`) - the domain name strategy. Defaults
+      to `:random`.
+      * `:random` - a random word-based domain name.
+      * `:popular` - a domain name from a list of popular real-world domains.
+      * `:custom` - the user-supplied domain name given via `:domain_name`.
+    * `:popular_type` (`:all`, `:ecommerce`, `:email`, `:search`, or `:social`) - the popular
+      domain category, used when `:type` is `:popular`. Defaults to `:all`.
+    * `:domain_name` (string) - the custom domain, used when `:type` is `:custom`. Defaults
+      to `"example.com"`.
 
   ## Examples
 
@@ -137,30 +167,26 @@ defmodule NeoFaker.Internet do
   """
   @spec domain_name(keyword()) :: String.t()
   def domain_name(opts \\ []) do
-    word_count = Options.get(opts, :word_count, @domain_word_count)
-    domain_type = Options.get(opts, :type, :random)
-    popular_type = Options.get(opts, :popular_type, :all)
+    opts = NimbleOptions.validate!(opts, @domain_name_schema)
 
-    Validator.validate_domain_type!(domain_type)
-
-    case domain_type do
+    case Keyword.fetch!(opts, :type) do
       :random ->
-        Validator.validate_word_count!(word_count)
-        Enum.map_join(1..word_count, "-", fn _ -> String.downcase(NeoFaker.Text.word()) end)
+        Enum.map_join(1..Keyword.fetch!(opts, :word_count), "-", fn _ ->
+          Formatter.slugify(NeoFaker.Text.word())
+        end)
 
       :popular ->
-        Validator.validate_popular_domain_type!(popular_type)
-        Domain.generate_popular_domain_name(popular_type)
+        DomainGenerator.generate_popular_domain_name(Keyword.fetch!(opts, :popular_type))
 
       :custom ->
-        custom_domain = Options.get(opts, :domain_name, "example.com")
+        custom_domain = Keyword.fetch!(opts, :domain_name)
 
-        if is_binary(custom_domain) and custom_domain != "" do
-          custom_domain
-        else
+        if custom_domain == "" do
           raise ArgumentError,
                 "Invalid :domain_name #{inspect(custom_domain)}. Expected a non-empty string, " <>
                   "e.g. \"example.com\"."
+        else
+          custom_domain
         end
     end
   end
@@ -170,22 +196,16 @@ defmodule NeoFaker.Internet do
 
   Returns a TLD string, with a leading dot by default.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:dot` - When `true`, prepends a dot to the TLD. Defaults to `true`.
-    - `:type` - TLD category. Defaults to `:all_except_safe`.
-
   ## Options
 
-  The values for `:type` can be:
-
-  - `:all_except_safe` - All TLD categories except safe TLDs (default).
-  - `:all` - All TLD categories, including safe TLDs.
-  - `:safe` - Safe TLDs, e.g. `.example`.
-  - `:generic` - Generic TLDs, e.g. `.com`.
-  - `:sponsored` - Sponsored TLDs, e.g. `.edu`.
-  - `:country_code` - Country code TLDs, e.g. `.id`.
+    * `:dot` (boolean) - when `false`, omits the leading dot. Defaults to `true`.
+    * `:type` (an atom below) - the TLD category. Defaults to `:all_except_safe`.
+      * `:all_except_safe` - all TLD categories except safe TLDs.
+      * `:all` - all TLD categories, including safe TLDs.
+      * `:safe` - safe TLDs, e.g. `.example`.
+      * `:generic` - generic TLDs, e.g. `.com`.
+      * `:sponsored` - sponsored TLDs, e.g. `.edu`.
+      * `:country_code` - country code TLDs, e.g. `.id`.
 
   ## Examples
 
@@ -202,16 +222,12 @@ defmodule NeoFaker.Internet do
       "net"
 
   """
-  @spec tld(Keyword.t()) :: String.t()
+  @spec tld(keyword()) :: String.t()
   def tld(opts \\ []) do
-    tld_type = Options.get(opts, :type, :all_except_safe)
-    include_dot = Options.get(opts, :dot, true)
+    opts = NimbleOptions.validate!(opts, @tld_schema)
+    tld_name = TldGenerator.generate_name(Keyword.fetch!(opts, :type))
 
-    Validator.validate_tld_type!(tld_type)
-
-    tld_name = TLD.generate_name(tld_type)
-
-    if include_dot do
+    if Keyword.fetch!(opts, :dot) do
       "." <> tld_name
     else
       tld_name
@@ -222,27 +238,35 @@ defmodule NeoFaker.Internet do
   Generates a random email address.
 
   Combines username, domain name, and TLD generation into a single email address string.
-  Accepts all the same options as `username/1`, `domain_name/1`, and `tld/1`, prefixed
-  by their context.
+  Accepts all the same options as `username/1`, `domain_name/1`, and `tld/1`, each prefixed
+  by its context below.
 
-  ## Username Options
+  ## Username options
 
-  - `:username_word_count` - Number of words in the username. Defaults to `2`.
-  - `:joiner` - Separator between username words. Defaults to `:all`.
-  - `:username_type` - Word source. Defaults to `:person`.
-  - `:number` - When `true`, appends a random number to the username. Defaults to `false`.
-  - `:number_range` - Range for the appended number. Defaults to `1..1000`.
+    * `:username_word_count` (positive integer) - the number of words in the username.
+      Defaults to `2`.
+    * `:joiner` (`:all`, `:dot`, `:underscore`, or `:dash`) - the separator between username
+      words. Defaults to `:all`.
+    * `:username_type` (`:person` or `:word`) - the word source. Defaults to `:person`.
+    * `:number` (boolean) - when `true`, appends a random number to the username. Defaults
+      to `false`.
+    * `:number_range` (`Range`) - the range for the appended number. Defaults to `1..1000`.
 
-  ## Domain Name Options
+  ## Domain name options
 
-  - `:domain_name_word_count` - Number of words in the domain name. Defaults to `1`.
-  - `:domain_type` - Domain name strategy. Defaults to `:random`.
-  - `:popular_type` - Popular domain category when `:domain_type` is `:popular`. Defaults to `:all`.
-  - `:domain_name` - Custom domain when `:domain_type` is `:custom`. Defaults to `"example.com"`.
+    * `:domain_name_word_count` (positive integer) - the number of words in the domain name.
+      Defaults to `1`.
+    * `:domain_type` (`:random`, `:popular`, or `:custom`) - the domain name strategy.
+      Defaults to `:random`.
+    * `:popular_type` (`:all`, `:ecommerce`, `:email`, `:search`, or `:social`) - the popular
+      domain category, used when `:domain_type` is `:popular`. Defaults to `:all`.
+    * `:domain_name` (string) - the custom domain, used when `:domain_type` is `:custom`.
+      Defaults to `"example.com"`.
 
-  ## TLD Options
+  ## TLD options
 
-  - `:tld_type` - TLD category. Defaults to `:all_except_safe`.
+    * `:tld_type` (an atom accepted by `tld/1`'s `:type` option) - the TLD category.
+      Defaults to `:all_except_safe`.
 
   ## Examples
 
@@ -259,15 +283,15 @@ defmodule NeoFaker.Internet do
       "josé@elixir-lang.org"
 
   """
-  @spec email(Keyword.t()) :: String.t()
+  @spec email(keyword()) :: String.t()
   def email(opts \\ []) do
-    username = Email.generate_username(opts)
-    domain_name = Email.generate_domain_name(opts)
-    tld = Email.generate_tld(opts)
+    opts = NimbleOptions.validate!(opts, @email_schema)
 
-    domain_type = Options.get(opts, :domain_type, :random)
+    username = EmailGenerator.generate_username(opts)
+    domain_name = EmailGenerator.generate_domain_name(opts)
+    tld = EmailGenerator.generate_tld(opts)
 
-    if domain_type in [:popular, :custom] do
+    if Keyword.fetch!(opts, :domain_type) in [:popular, :custom] do
       "#{username}@#{domain_name}"
     else
       "#{username}@#{domain_name}#{tld}"
@@ -277,22 +301,17 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random IPv4 address.
 
-  Returns a dotted-decimal IPv4 address string. Pass `private: true` to generate
-  an address from a RFC 1918 private range.
-
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:private` - When `true`, generates a private IP address. Defaults to `false`.
-    - `:class` - Private IP class when `:private` is `true`. Randomly selected by default.
+  Returns a dotted-decimal IPv4 address string.
 
   ## Options
 
-  The values for `:class` can be:
-
-  - `:a` - Class A range (10.0.0.0/8).
-  - `:b` - Class B range (172.16.0.0/12).
-  - `:c` - Class C range (192.168.0.0/16).
+    * `:private` (boolean) - when `true`, generates an address from an RFC 1918 private
+      range instead of a public one. Defaults to `false`.
+    * `:class` (`:a`, `:b`, `:c`, or `nil`) - the private IP class, used when `:private` is
+      `true`. Defaults to `nil` (randomly selected).
+      * `:a` - Class A range (`10.0.0.0/8`).
+      * `:b` - Class B range (`172.16.0.0/12`).
+      * `:c` - Class C range (`192.168.0.0/16`).
 
   ## Examples
 
@@ -306,13 +325,12 @@ defmodule NeoFaker.Internet do
       "10.25.30.100"
 
   """
-  @spec ipv4(Keyword.t()) :: String.t()
+  @spec ipv4(keyword()) :: String.t()
   def ipv4(opts \\ []) do
-    private = Options.get(opts, :private, false)
+    opts = NimbleOptions.validate!(opts, @ipv4_schema)
 
-    if private do
-      class = Options.get(opts, :class, Enum.random([:a, :b, :c]))
-      Validator.validate_ipv4_class!(class)
+    if Keyword.fetch!(opts, :private) do
+      class = Keyword.fetch!(opts, :class) || Enum.random([:a, :b, :c])
       Generator.private_ipv4(class)
     else
       Generator.public_ipv4()
@@ -322,14 +340,14 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random IPv6 address.
 
-  Returns a colon-separated hexadecimal IPv6 address string. Supports uppercase
-  and compressed (`::`) notation.
+  Returns a colon-separated hexadecimal IPv6 address string.
 
-  ## Parameters
+  ## Options
 
-  - `opts` - Keyword list of options:
-    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
-    - `:compressed` - When `true`, uses compressed `::` notation. Defaults to `false`.
+    * `:uppercase` (boolean) - when `false`, returns the address in lowercase. Defaults
+      to `true`.
+    * `:compressed` (boolean) - when `true`, uses compressed `::` notation. Defaults
+      to `false`.
 
   ## Examples
 
@@ -343,12 +361,12 @@ defmodule NeoFaker.Internet do
       "2001:db8::8a2e:370:7334"
 
   """
-  @spec ipv6(Keyword.t()) :: String.t()
+  @spec ipv6(keyword()) :: String.t()
   def ipv6(opts \\ []) do
-    uppercase = Options.get(opts, :uppercase, true)
+    opts = NimbleOptions.validate!(opts, @ipv6_schema)
 
     ip_address =
-      if Options.get(opts, :compressed, false) do
+      if Keyword.fetch!(opts, :compressed) do
         Generator.compressed_ipv6()
       else
         Enum.map_join(1..8, ":", fn _ ->
@@ -358,7 +376,10 @@ defmodule NeoFaker.Internet do
         end)
       end
 
-    Formatter.apply_case(ip_address, if(uppercase, do: :upper, else: :lower))
+    Formatter.apply_case(
+      ip_address,
+      if(Keyword.fetch!(opts, :uppercase), do: :upper, else: :lower)
+    )
   end
 
   @doc """
@@ -366,19 +387,11 @@ defmodule NeoFaker.Internet do
 
   Returns a hexadecimal MAC address string with configurable separator and casing.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:uppercase` - When `true`, returns the address in uppercase. Defaults to `true`.
-    - `:separator` - Separator between octets. Defaults to `":"`.
-
   ## Options
 
-  The values for `:separator` can be:
-
-  - `":"` - Colon (default).
-  - `"-"` - Dash.
-  - `""` - No separator.
+    * `:uppercase` (boolean) - when `false`, returns the address in lowercase. Defaults
+      to `true`.
+    * `:separator` (`":"`, `"-"`, or `""`) - the separator between octets. Defaults to `":"`.
 
   ## Examples
 
@@ -395,21 +408,21 @@ defmodule NeoFaker.Internet do
       "744e44b0d093"
 
   """
-  @spec mac_address(Keyword.t()) :: String.t()
+  @spec mac_address(keyword()) :: String.t()
   def mac_address(opts \\ []) do
-    uppercase = Options.get(opts, :uppercase, true)
-    separator = Options.get(opts, :separator, ":")
-
-    Validator.validate_mac_separator!(separator)
+    opts = NimbleOptions.validate!(opts, @mac_address_schema)
 
     mac_address =
-      Enum.map_join(1..6, separator, fn _ ->
+      Enum.map_join(1..6, Keyword.fetch!(opts, :separator), fn _ ->
         (:rand.uniform(0x100) - 1)
         |> Integer.to_string(16)
         |> String.pad_leading(2, "0")
       end)
 
-    Formatter.apply_case(mac_address, if(uppercase, do: :upper, else: :lower))
+    Formatter.apply_case(
+      mac_address,
+      if(Keyword.fetch!(opts, :uppercase), do: :upper, else: :lower)
+    )
   end
 
   @doc """
@@ -418,20 +431,13 @@ defmodule NeoFaker.Internet do
   Returns a URL string built from a protocol, domain name, and TLD. Optionally
   appends a random path and/or query string.
 
-  ## Parameters
-
-  - `opts` - Keyword list of options:
-    - `:protocol` - URL scheme. Defaults to `:https`.
-    - `:domain_type` - Domain name strategy. Defaults to `:random`.
-    - `:path` - When `true`, appends a random path. Defaults to `false`.
-    - `:query` - When `true`, appends random query parameters. Defaults to `false`.
-
   ## Options
 
-  The values for `:protocol` can be:
-
-  - `:https` - HTTPS (default).
-  - `:http` - HTTP.
+    * `:protocol` (`:https` or `:http`) - the URL scheme. Defaults to `:https`.
+    * `:domain_type` (`:random`, `:popular`, or `:custom`) - the domain name strategy, as in
+      `domain_name/1`. Defaults to `:random`.
+    * `:path` (boolean) - when `true`, appends a random path. Defaults to `false`.
+    * `:query` (boolean) - when `true`, appends random query parameters. Defaults to `false`.
 
   ## Examples
 
@@ -448,19 +454,14 @@ defmodule NeoFaker.Internet do
       "https://example.com/api/v1?key=value&id=123"
 
   """
-  @spec url(Keyword.t()) :: String.t()
+  @spec url(keyword()) :: String.t()
   def url(opts \\ []) do
-    protocol = Options.get(opts, :protocol, :https)
-    include_path = Options.get(opts, :path, false)
-    include_query = Options.get(opts, :query, false)
+    opts = NimbleOptions.validate!(opts, @url_schema)
 
-    # Normalise :domain_type (url/1 API) -> :type (domain_name/1 API), mirroring
-    # how Email.generate_domain_name/1 handles the same translation.
-    domain_type = Keyword.get(opts, :domain_type, Keyword.get(opts, :type, :random))
-    domain_opts = Keyword.put(opts, :type, domain_type)
-
-    Validator.validate_protocol!(protocol)
-    Validator.validate_domain_type!(domain_type)
+    domain_opts =
+      opts
+      |> Keyword.take([:word_count, :popular_type, :domain_name])
+      |> Keyword.put(:type, Keyword.fetch!(opts, :domain_type))
 
     domain = domain_name(domain_opts)
 
@@ -468,20 +469,20 @@ defmodule NeoFaker.Internet do
     # "gmail.com"), so appending a TLD would produce "gmail.com.net". Only
     # word-based (:random) domains need a TLD appended.
     base_url =
-      if domain_type == :random do
-        "#{protocol}://#{domain}#{tld(opts)}"
+      if Keyword.fetch!(opts, :domain_type) == :random do
+        "#{Keyword.fetch!(opts, :protocol)}://#{domain}#{tld()}"
       else
-        "#{protocol}://#{domain}"
+        "#{Keyword.fetch!(opts, :protocol)}://#{domain}"
       end
 
     url_with_path =
-      if include_path do
+      if Keyword.fetch!(opts, :path) do
         "#{base_url}/#{Generator.url_path()}"
       else
         base_url
       end
 
-    if include_query do
+    if Keyword.fetch!(opts, :query) do
       "#{url_with_path}?#{Generator.query_string()}"
     else
       url_with_path
@@ -491,13 +492,12 @@ defmodule NeoFaker.Internet do
   @doc """
   Generates a random URL-friendly slug.
 
-  Returns a lowercase, word-joined string suitable for use in URLs.
+  Returns a lowercase, word-joined string suitable for use in URLs. `word_count` sets the
+  number of words and defaults to `3`.
 
-  ## Parameters
+  ## Options
 
-  - `word_count` - Number of words in the slug. Defaults to `3`.
-  - `opts` - Keyword list of options:
-    - `:separator` - Separator between words. Defaults to `"-"`.
+    * `:separator` (string) - the separator between words. Defaults to `"-"`.
 
   ## Examples
 
@@ -511,12 +511,12 @@ defmodule NeoFaker.Internet do
       "hello_world"
 
   """
-  @spec slug(pos_integer(), Keyword.t()) :: String.t()
+  @spec slug(pos_integer(), keyword()) :: String.t()
   def slug(word_count \\ 3, opts \\ []) when is_integer(word_count) and word_count > 0 do
-    separator = Options.get(opts, :separator, "-")
+    opts = NimbleOptions.validate!(opts, @slug_schema)
 
-    Enum.map_join(1..word_count, separator, fn _ ->
-      String.downcase(NeoFaker.Text.word())
+    Enum.map_join(1..word_count, Keyword.fetch!(opts, :separator), fn _ ->
+      Formatter.slugify(NeoFaker.Text.word())
     end)
   end
 end

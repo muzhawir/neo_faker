@@ -2,47 +2,59 @@ name: Lint & Test
 
 on:
   pull_request:
-    branches-ignore: ["main"]
+    branches-ignore: [main]
   workflow_dispatch:
+
+# Least privilege: this job only reads the checkout.
+permissions:
+  contents: read
+
+# A new push to the same PR branch cancels an in-progress run for it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# credo and styler are `only: [:dev, :test]`; run every step in one env so a
+# single deps/_build cache is shared across steps (and with build.yml).
+env:
+  MIX_ENV: test
 
 jobs:
   lint:
     name: Lint & Test
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Elixir
+        id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: "1.19.4"
-          otp-version: "28.3"
+          # Kept in sync with mise.toml; the full version matrix lives in build.yml.
+          elixir-version: "1.20.4"
+          otp-version: "29.0.6"
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
+      - name: Restore deps and _build cache
+        uses: actions/cache@v4
         with:
-          path: deps
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-
-
-      - name: Cache build
-        uses: actions/cache@v3
-        with:
-          path: _build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-build-
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
 
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Check code formatting
+      - name: Compile (warnings as errors)
+        run: mix compile --warnings-as-errors
+
+      - name: Check formatting
         run: mix format --check-formatted
 
-      - name: Run Credo (static analysis)
+      - name: Run Credo
         run: mix credo --strict
 
       - name: Run tests

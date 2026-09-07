@@ -2,34 +2,36 @@ defmodule NeoFaker.BooleanTest do
   use ExUnit.Case, async: true
 
   alias NeoFaker.Boolean
+  alias NeoFaker.Boolean.Generator
 
-  describe "boolean/2" do
-    test "returns a boolean value with default ratio" do
+  describe "boolean/1" do
+    test "returns a boolean with the default ratio" do
       assert Boolean.boolean() in [true, false]
     end
 
-    test "returns a boolean value with explicit true_ratio" do
-      assert Boolean.boolean(50) in [true, false]
-    end
-
-    test "returns an integer value when integer: true" do
-      assert Boolean.boolean(50, integer: true) in [1, 0]
-    end
-
-    test "returns false when true_ratio is 0" do
+    test "always returns false for a 0 ratio" do
       assert Boolean.boolean(0) == false
     end
 
-    test "returns true when true_ratio is 100" do
+    test "always returns true for a 100 ratio" do
       assert Boolean.boolean(100) == true
     end
 
-    test "returns 0 when true_ratio is 0 and integer: true" do
-      assert Boolean.boolean(0, integer: true) == 0
-    end
+    test "raises ArgumentError when true_ratio is outside 0..100" do
+      assert_raise ArgumentError, ~r/true_ratio must be between 0 and 100/, fn ->
+        Boolean.boolean(101)
+      end
 
-    test "returns 1 when true_ratio is 100 and integer: true" do
-      assert Boolean.boolean(100, integer: true) == 1
+      assert_raise ArgumentError, ~r/true_ratio must be between 0 and 100/, fn ->
+        Boolean.boolean(-1)
+      end
+    end
+  end
+
+  describe "Generator.boolean/1" do
+    test "is deterministic at the extremes" do
+      assert Generator.boolean(100) == true
+      assert Generator.boolean(0) == false
     end
   end
 end

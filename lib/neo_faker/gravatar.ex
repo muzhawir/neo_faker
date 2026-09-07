@@ -10,50 +10,55 @@ defmodule NeoFaker.Gravatar do
 
   alias NeoFaker.Gravatar.Generator
   alias NeoFaker.Gravatar.Validator
-  alias NeoFaker.Helpers.Options
 
   @typedoc "Email address."
   @type email :: String.t() | nil
 
   @fallback_types [:identicon, :monsterid, :wavatar, :robohash, :retro, :blank, :"404"]
+  @ratings [:g, :pg, :r, :x]
+  @profile_formats [:html, :json, :xml, :php, :vcf, :qr]
   @min_size 1
   @max_size 2048
   @size 80
 
+  @display_schema NimbleOptions.new!(
+                    size: [type: {:custom, Validator, :validate_size, []}, default: @size],
+                    fallback: [
+                      type: {:custom, Validator, :validate_and_format_fallback, []},
+                      default: :identicon
+                    ],
+                    rating: [type: {:in, [nil | @ratings]}, default: nil],
+                    force_default: [type: :boolean, default: false]
+                  )
+
+  @profile_schema NimbleOptions.new!(format: [type: {:in, @profile_formats}, default: :html])
+
   @doc """
   Generates a Gravatar image URL.
 
-  Returns the Gravatar avatar URL for the given email address. If `nil` is passed,
-  a random email is used.
-
-  ## Parameters
-
-  - `email` - Email address to hash. If `nil`, generates a random email.
-  - `opts` - Keyword list of options:
-    - `:size` - Image size in pixels (`1`–`2048`). Defaults to `80`.
-    - `:fallback` - Default image type. Defaults to `:identicon`.
-    - `:rating` - Maximum content rating. Defaults to `nil` (no restriction).
-    - `:force_default` - When `true`, always returns the fallback image. Defaults to `false`.
+  Returns the Gravatar avatar URL for the given `email`. If `nil` is passed (the default),
+  a random email is used instead.
 
   ## Options
 
-  The values for `:fallback` can be:
-
-  - `:identicon` - Geometric pattern based on email hash (default).
-  - `:monsterid` - Generated monster image.
-  - `:wavatar` - Generated face image.
-  - `:robohash` - Generated robot image.
-  - `:retro` - 8-bit arcade-style pixelated face.
-  - `:blank` - Transparent PNG.
-  - `:"404"` - HTTP 404 response.
-  - Custom `http://` or `https://` URL string.
-
-  The values for `:rating` can be:
-
-  - `:g` - Suitable for all audiences.
-  - `:pg` - May contain mild profanity or suggestive content.
-  - `:r` - May contain harsh profanity, violence, or nudity.
-  - `:x` - May contain explicit sexual imagery or extreme violence.
+    * `:size` (integer, `1`–`2048`) - the image size in pixels. Defaults to `80`.
+    * `:fallback` (an atom below, or a custom `http://`/`https://` URL string) - the default
+      image returned when no Gravatar is set for the email. Defaults to `:identicon`.
+      * `:identicon` - a geometric pattern based on the email hash.
+      * `:monsterid` - a generated monster image.
+      * `:wavatar` - a generated face image.
+      * `:robohash` - a generated robot image.
+      * `:retro` - an 8-bit arcade-style pixelated face.
+      * `:blank` - a transparent PNG.
+      * `:"404"` - an HTTP 404 response instead of an image.
+    * `:rating` (`:g`, `:pg`, `:r`, `:x`, or `nil`) - the maximum content rating to allow.
+      Defaults to `nil` (no restriction).
+      * `:g` - suitable for all audiences.
+      * `:pg` - may contain mild profanity or suggestive content.
+      * `:r` - may contain harsh profanity, violence, or nudity.
+      * `:x` - may contain explicit sexual imagery or extreme violence.
+    * `:force_default` (boolean) - when `true`, always returns the fallback image instead of
+      the real Gravatar. Defaults to `false`.
 
   ## Examples
 
@@ -73,30 +78,23 @@ defmodule NeoFaker.Gravatar do
       "https://gravatar.com/avatar/<hashed_email>?d=identicon&s=80&f=y"
 
   """
-  @spec display(email(), Keyword.t()) :: String.t()
+  @spec display(email(), keyword()) :: String.t()
   def display(email \\ nil, opts \\ []) do
-    size = Options.get(opts, :size, @size)
-    fallback = Options.get(opts, :fallback, :identicon)
-    rating = Options.get(opts, :rating, nil)
-    force_default = Options.get(opts, :force_default, false)
+    opts = NimbleOptions.validate!(opts, @display_schema)
 
-    Validator.validate_size!(size)
-    fallback_string = Validator.validate_and_format_fallback!(fallback)
-    Validator.validate_rating!(rating)
+    validated_size = Generator.image_size(Keyword.fetch!(opts, :size))
 
-    validated_size = Generator.image_size(size)
-
-    base_url = Generator.gravatar_url(email, validated_size, fallback_string)
+    base_url = Generator.gravatar_url(email, validated_size, Keyword.fetch!(opts, :fallback))
 
     # Add optional parameters
     url_with_rating =
-      if rating do
-        base_url <> "&r=#{rating}"
+      if Keyword.fetch!(opts, :rating) do
+        base_url <> "&r=#{Keyword.fetch!(opts, :rating)}"
       else
         base_url
       end
 
-    if force_default do
+    if Keyword.fetch!(opts, :force_default) do
       url_with_rating <> "&f=y"
     else
       url_with_rating
@@ -106,25 +104,19 @@ defmodule NeoFaker.Gravatar do
   @doc """
   Generates a Gravatar profile URL.
 
-  Returns the Gravatar profile page URL for the given email address. If `nil` is
-  passed, a random email is used.
-
-  ## Parameters
-
-  - `email` - Email address to hash. If `nil`, generates a random email.
-  - `opts` - Keyword list of options:
-    - `:format` - Response format. Defaults to `:html`.
+  Returns the Gravatar profile page URL for the given `email`. If `nil` is passed (the
+  default), a random email is used instead.
 
   ## Options
 
-  The values for `:format` can be:
-
-  - `:html` - HTML profile page (default).
-  - `:json` - JSON API endpoint.
-  - `:xml` - XML API endpoint.
-  - `:php` - PHP serialized data endpoint.
-  - `:vcf` - vCard/VCF endpoint.
-  - `:qr` - QR code image endpoint.
+    * `:format` (`:html`, `:json`, `:xml`, `:php`, `:vcf`, or `:qr`) - the response format.
+      Defaults to `:html`.
+      * `:html` - the HTML profile page.
+      * `:json` - the JSON API endpoint.
+      * `:xml` - the XML API endpoint.
+      * `:php` - the PHP serialized data endpoint.
+      * `:vcf` - the vCard/VCF endpoint.
+      * `:qr` - the QR code image endpoint.
 
   ## Examples
 
@@ -138,15 +130,14 @@ defmodule NeoFaker.Gravatar do
       "https://gravatar.com/<hash>.xml"
 
   """
-  @spec profile(email(), Keyword.t()) :: String.t()
+  @spec profile(email(), keyword()) :: String.t()
   def profile(email \\ nil, opts \\ []) do
-    format = Options.get(opts, :format, :html)
-    Validator.validate_profile_format!(format)
+    opts = NimbleOptions.validate!(opts, @profile_schema)
 
     hash = Generator.email_hash(email)
     base_url = "https://gravatar.com/#{hash}"
 
-    case format do
+    case Keyword.fetch!(opts, :format) do
       :html -> base_url
       other -> "#{base_url}.#{other}"
     end
@@ -157,15 +148,16 @@ defmodule NeoFaker.Gravatar do
 
   ## Examples
 
-      iex> NeoFaker.Gravatar.random()
+      iex> NeoFaker.Gravatar.random_display()
       "https://gravatar.com/avatar/<hash>?d=monsterid&s=150"
 
-      iex> NeoFaker.Gravatar.random()
+      iex> NeoFaker.Gravatar.random_display()
       "https://gravatar.com/avatar/<hash>?d=wavatar&s=64"
 
   """
-  @spec random() :: String.t()
-  def random do
+  @doc since: "0.15.0"
+  @spec random_display() :: String.t()
+  def random_display do
     random_size = Enum.random([@size, 100, 120, 150, 200, 256])
     random_fallback = Enum.random(@fallback_types)
 

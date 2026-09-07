@@ -1,23 +1,6 @@
 defmodule NeoFaker.Person.Validator do
   @moduledoc false
 
-  alias NeoFaker.Helpers.Options
-
-  @sex [:unisex, :male, :female]
-
-  @doc """
-  Validates that the given `sex` value is one of `:unisex`, `:male`, or `:female`.
-
-  Raises `ArgumentError` if the value is invalid.
-  """
-  @spec validate_sex!(atom()) :: :ok
-  def validate_sex!(sex) do
-    case Options.validate_enum(:sex, sex, @sex) do
-      :ok -> :ok
-      {:error, reason} -> raise ArgumentError, reason
-    end
-  end
-
   @doc """
   Validates that `min` and `max` form a valid non-negative age range.
 

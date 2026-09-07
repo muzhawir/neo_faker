@@ -101,44 +101,44 @@ defmodule NeoFaker.GravatarTest do
       assert String.contains?(url, "&s=")
     end
 
-    test "raises ArgumentError when size is below 1" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is below 1" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: 0)
       end
     end
 
-    test "raises ArgumentError when size is above 2048" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is above 2048" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: 2049)
       end
     end
 
-    test "raises ArgumentError when size is not an integer" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when size is not an integer" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, size: "large")
       end
     end
 
-    test "raises ArgumentError when fallback is an unknown atom" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback is an unknown atom" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: :unknown)
       end
     end
 
-    test "raises ArgumentError when fallback string does not start with http:// or https://" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback string does not start with http:// or https://" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: "ftp://example.com/img.png")
       end
     end
 
-    test "raises ArgumentError when fallback is neither an atom nor a string" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when fallback is neither an atom nor a string" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, fallback: 42)
       end
     end
 
-    test "raises ArgumentError when rating is an invalid atom" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError when rating is an invalid atom" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.display(@john_doe_email, rating: :nc17)
       end
     end
@@ -198,33 +198,33 @@ defmodule NeoFaker.GravatarTest do
       assert String.starts_with?(url, "https://gravatar.com/")
     end
 
-    test "raises ArgumentError for an unsupported profile format" do
-      assert_raise ArgumentError, fn ->
+    test "raises NimbleOptions.ValidationError for an unsupported profile format" do
+      assert_raise NimbleOptions.ValidationError, fn ->
         Gravatar.profile(@john_doe_email, format: :yaml)
       end
     end
   end
 
   # ---------------------------------------------------------------------------
-  # random/0
+  # random_display/0
   # ---------------------------------------------------------------------------
 
-  describe "random/0" do
+  describe "random_display/0" do
     test "returns a valid Gravatar image URL" do
-      url = Gravatar.random()
+      url = Gravatar.random_display()
 
       assert String.match?(url, @gravatar_image_url_regexp)
     end
 
     test "returns a URL with a query string" do
-      url = Gravatar.random()
+      url = Gravatar.random_display()
 
       assert String.contains?(url, "?d=")
       assert String.contains?(url, "&s=")
     end
 
     test "returns a different URL on repeated calls" do
-      urls = Enum.map(1..10, fn _ -> Gravatar.random() end)
+      urls = Enum.map(1..10, fn _ -> Gravatar.random_display() end)
 
       assert urls |> Enum.uniq() |> length() > 1
     end
@@ -280,6 +280,74 @@ defmodule NeoFaker.GravatarTest do
 
       assert range.first == 1
       assert range.last == 2048
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Generator
+  # ---------------------------------------------------------------------------
+
+  describe "Generator" do
+    alias NeoFaker.Gravatar.Generator
+
+    test "image_size/1 falls back to the default when given nil" do
+      assert Generator.image_size(nil) == 80
+    end
+
+    test "image_size/1 returns a valid size unchanged" do
+      assert Generator.image_size(120) == 120
+    end
+
+    test "display/2 accepts an explicit nil size and uses the default" do
+      url = Gravatar.display(@john_doe_email, size: nil)
+
+      assert String.contains?(url, "s=80")
+    end
+
+    test "email_hash/1 hashes nil to a fresh value each call" do
+      assert Generator.email_hash(nil) != Generator.email_hash(nil)
+    end
+
+    test "email_hash/1 is stable and case-insensitive for a real address" do
+      assert Generator.email_hash("A.B@Example.com") == Generator.email_hash("a.b@example.com")
+    end
+
+    test "email_hash/1 raises ArgumentError for a malformed address" do
+      assert_raise ArgumentError, ~r/Invalid email address/, fn ->
+        Generator.email_hash("not-an-email")
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Validator
+  # ---------------------------------------------------------------------------
+
+  describe "Validator" do
+    alias NeoFaker.Gravatar.Validator
+
+    test "validate_size/1 accepts nil and in-range integers" do
+      assert Validator.validate_size(nil) == {:ok, nil}
+      assert Validator.validate_size(80) == {:ok, 80}
+    end
+
+    test "validate_size/1 rejects out-of-range integers and non-integers" do
+      assert {:error, _} = Validator.validate_size(0)
+      assert {:error, _} = Validator.validate_size(5000)
+      assert {:error, _} = Validator.validate_size("80")
+    end
+
+    test "validate_and_format_fallback/1 accepts known atoms and http(s) URLs" do
+      assert Validator.validate_and_format_fallback(:retro) == {:ok, "retro"}
+
+      assert Validator.validate_and_format_fallback("https://x.test/a.png") ==
+               {:ok, "https://x.test/a.png"}
+    end
+
+    test "validate_and_format_fallback/1 rejects unknown atoms, bad URLs, and other types" do
+      assert {:error, _} = Validator.validate_and_format_fallback(:unknown)
+      assert {:error, _} = Validator.validate_and_format_fallback("ftp://x.test/a.png")
+      assert {:error, _} = Validator.validate_and_format_fallback(42)
     end
   end
 end

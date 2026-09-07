@@ -1,0 +1,37 @@
+# Locale Cheat Sheet
+
+A quick reference for every locale-exclusive generator function, grouped by locale. These are
+country-specific formats that don't fit a shared `:locale` option, for example a US Social
+Security Number has no Indonesian equivalent to fall back to. See
+[Supported Locales](locales.html#locale-exclusive-generators) for background. For the
+general-purpose domain generators (Address, Person, Blood, and so on), see the
+[Cheat Sheet](cheat.html).
+
+## English (US) - Default
+
+{: .col-2}
+
+### [`NeoFaker.Locales.EnUs.Person.ssn()`](`NeoFaker.Locales.EnUs.Person.ssn/0`)
+
+```elixir
+iex> NeoFaker.Locales.EnUs.Person.ssn()
+"184-63-2006"
+```
+
+## Indonesian
+
+{: .col-2}
+
+### [`NeoFaker.Locales.IdId.Person.nik()`](`NeoFaker.Locales.IdId.Person.nik/0`)
+
+```elixir
+iex> NeoFaker.Locales.IdId.Person.nik()
+"7645504903500640"
+```
+
+### [`NeoFaker.Locales.IdId.Person.npwp()`](`NeoFaker.Locales.IdId.Person.npwp/0`)
+
+```elixir
+iex> NeoFaker.Locales.IdId.Person.npwp()
+"7645504903500640"
+```

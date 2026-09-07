@@ -9,28 +9,45 @@ defmodule NeoFaker.Text do
   @moduledoc since: "0.8.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Options
   alias NeoFaker.Text.EmojiGenerator
   alias NeoFaker.Text.Generator
-  alias NeoFaker.Text.Validator
 
   @word_file "word.exs"
 
   @character_count 11
 
+  @character_types [:alphabet_lower, :alphabet_upper, :alphabet, :digit]
+  @emoji_categories [
+    :all,
+    :activities,
+    :animals_and_nature,
+    :food_and_drink,
+    :objects,
+    :people_and_body,
+    :smileys_and_emotion,
+    :symbols,
+    :travel_and_places
+  ]
+
+  @character_schema NimbleOptions.new!(
+                      type: [type: {:in, [nil | @character_types]}, default: nil]
+                    )
+
+  @emoji_schema NimbleOptions.new!(category: [type: {:in, @emoji_categories}, default: :all])
+
   @doc """
   Generates a single random character.
 
-  Returns a single character from the alphanumeric set by default. Use the
-  `:type` option to restrict the pool.
+  Returns a single character from the alphanumeric set by default.
 
   ## Options
 
-  - `:type` - Character pool to draw from. Defaults to the full alphanumeric set.
-    - `:alphabet_lower` - Lowercase letters only.
-    - `:alphabet_upper` - Uppercase letters only.
-    - `:alphabet` - Any letter (lower or upper).
-    - `:digit` - A digit (`0`–`9`).
+    * `:type` (an atom below, or `nil`) - the character pool to draw from. Defaults to `nil`
+      (the full alphanumeric set).
+      * `:alphabet_lower` - lowercase letters only.
+      * `:alphabet_upper` - uppercase letters only.
+      * `:alphabet` - any letter (lower or upper).
+      * `:digit` - a digit (`0`–`9`).
 
   ## Examples
 
@@ -50,28 +67,22 @@ defmodule NeoFaker.Text do
       "X"
 
   """
-  @spec character(Keyword.t()) :: String.t()
-  def character(opts \\ [])
-  def character([]), do: Generator.character(nil)
-
-  def character(opts) when is_list(opts) do
-    type = Options.get(opts, :type, nil)
-    Validator.validate_character_type!(type)
-    Generator.character(type)
+  @spec character(keyword()) :: String.t()
+  def character(opts \\ []) do
+    opts = NimbleOptions.validate!(opts, @character_schema)
+    Generator.character(Keyword.fetch!(opts, :type))
   end
 
   @doc """
   Generates a string of random characters.
 
-  Calls `character/1` `number` times and joins the results into a single string.
-
-  ## Parameters
-
-  - `number` - Number of characters to generate. Defaults to `11`.
+  Calls `character/1` `number` times and joins the results into a single string. `number`
+  defaults to `11`.
 
   ## Options
 
-  - `:type` - Character pool to draw from (see `character/1`). Defaults to alphanumeric.
+    * `:type` (see `character/1`'s `:type` option) - the character pool to draw from.
+      Defaults to `nil` (the full alphanumeric set).
 
   ## Examples
 
@@ -88,7 +99,7 @@ defmodule NeoFaker.Text do
       "xyzabcdefg"
 
   """
-  @spec characters(pos_integer(), Keyword.t()) :: String.t()
+  @spec characters(pos_integer(), keyword()) :: String.t()
   def characters(number \\ @character_count, opts \\ [])
 
   def characters(number, opts) when is_integer(number) and number > 0 and is_list(opts) do
@@ -106,21 +117,20 @@ defmodule NeoFaker.Text do
   @doc """
   Generates a random emoji.
 
-  Returns a random emoji from the specified category, or from all categories
-  when `:all` is used (default).
+  Returns a random emoji from the specified category, or from all categories by default.
 
   ## Options
 
-  - `:category` - Emoji category. Defaults to `:all`.
-    - `:all` - Any category.
-    - `:activities` - Activities.
-    - `:animals_and_nature` - Animals and nature.
-    - `:food_and_drink` - Food and drink.
-    - `:objects` - Objects.
-    - `:people_and_body` - People and body.
-    - `:smileys_and_emotion` - Smileys and emotion.
-    - `:symbols` - Symbols.
-    - `:travel_and_places` - Travel and places.
+    * `:category` (an atom below) - the emoji category. Defaults to `:all`.
+      * `:all` - any category.
+      * `:activities` - activities.
+      * `:animals_and_nature` - animals and nature.
+      * `:food_and_drink` - food and drink.
+      * `:objects` - objects.
+      * `:people_and_body` - people and body.
+      * `:smileys_and_emotion` - smileys and emotion.
+      * `:symbols` - symbols.
+      * `:travel_and_places` - travel and places.
 
   ## Examples
 
@@ -137,11 +147,10 @@ defmodule NeoFaker.Text do
       "🐶"
 
   """
-  @spec emoji(Keyword.t()) :: String.t()
+  @spec emoji(keyword()) :: String.t()
   def emoji(opts \\ []) do
-    category = Options.get(opts, :category, :all)
-    Validator.validate_emoji_category!(category)
-    EmojiGenerator.emoji(category)
+    opts = NimbleOptions.validate!(opts, @emoji_schema)
+    EmojiGenerator.emoji(Keyword.fetch!(opts, :category))
   end
 
   @doc """
@@ -161,49 +170,27 @@ defmodule NeoFaker.Text do
   @doc """
   Generates multiple random words.
 
-  Returns a list of words by default. Pass `join: true` to get a single string.
-
-  ## Parameters
-
-  - `count` - Number of words to generate. Defaults to `5`.
-
-  ## Options
-
-  - `:join` - When `true`, joins the words into a string. Defaults to `false`.
-  - `:separator` - Separator used when joining. Defaults to `" "`.
+  Returns a list of words. `count` sets how many are generated and defaults to `5`. Join them
+  yourself with `Enum.join/2` if you need a single string.
 
   ## Examples
 
       iex> NeoFaker.Text.words(3)
       ["computer", "elixir", "phoenix"]
 
-      iex> NeoFaker.Text.words(3, join: true)
-      "computer elixir phoenix"
-
-      iex> NeoFaker.Text.words(3, join: true, separator: "-")
-      "computer-elixir-phoenix"
-
   """
-  @spec words(pos_integer(), Keyword.t()) :: [String.t()] | String.t()
-  def words(count \\ 5, opts \\ [])
+  @spec words(pos_integer()) :: [String.t()]
+  def words(count \\ 5)
 
-  def words(count, opts) when is_integer(count) and count > 0 do
-    join = Options.get(opts, :join, false)
-
-    words_list = Enum.map(1..count, fn _ -> word() end)
-
-    if join do
-      Enum.join(words_list, Options.get(opts, :separator, " "))
-    else
-      words_list
-    end
+  def words(count) when is_integer(count) and count > 0 do
+    Enum.map(1..count, fn _ -> word() end)
   end
 
-  def words(count, _opts) when is_integer(count) do
+  def words(count) when is_integer(count) do
     raise ArgumentError, "count must be a positive integer, got: #{count}"
   end
 
-  def words(count, _opts) do
+  def words(count) do
     raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"
   end
 end

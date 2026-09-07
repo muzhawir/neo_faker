@@ -532,7 +532,10 @@ iex> NeoFaker.HTTP.user_agent(type: :browser)
 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
 iex> NeoFaker.HTTP.user_agent(type: :crawler)
-"Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
+"ahrefsbot"
+
+iex> NeoFaker.HTTP.user_agent(type: :ai)
+"claudebot"
 ```
 
 ### [`request_method(opts \\ [])`](`NeoFaker.HTTP.request_method/1`)

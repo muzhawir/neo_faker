@@ -6,28 +6,24 @@ defmodule NeoFaker.HTTP.UserAgentGenerator do
   @module NeoFaker.HTTP
   @user_agent_file "user_agent.exs"
 
-  @type type :: :all | :browser | :crawler
+  @type type :: :all | :browser | :crawler | :ai
 
   @doc """
-  Generates a random user-agent string from all available user-agent data.
+  Returns a random user-agent for the given category.
 
-  Returns a randomly selected user-agent string, which may represent a browser or crawler.
+  `:all` draws from every category combined; `:browser`, `:crawler`, and `:ai` draw from
+  their own list.
   """
   @spec name(type()) :: String.t()
-  def name(type) do
-    case type do
-      :all ->
-        :default
-        |> Data.fetch!(@module, @user_agent_file)
-        |> Map.values()
-        |> List.flatten()
-        |> Enum.random()
-
-      :browser ->
-        Data.random_value(@module, @user_agent_file, "browsers")
-
-      :crawler ->
-        Data.random_value(@module, @user_agent_file, "crawlers")
-    end
+  def name(:all) do
+    :default
+    |> Data.fetch!(@module, @user_agent_file)
+    |> Map.values()
+    |> List.flatten()
+    |> Enum.random()
   end
+
+  def name(:browser), do: Data.random_value(@module, @user_agent_file, "browsers")
+  def name(:crawler), do: Data.random_value(@module, @user_agent_file, "crawlers")
+  def name(:ai), do: Data.random_value(@module, @user_agent_file, "ai")
 end

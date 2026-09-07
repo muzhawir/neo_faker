@@ -49,6 +49,10 @@ defmodule NeoFaker.HTTPTest do
     :default |> Data.fetch!(HTTP, "user_agent.exs") |> Map.fetch!(key)
   end
 
+  defp all_user_agents do
+    :default |> Data.fetch!(HTTP, "user_agent.exs") |> Map.values() |> List.flatten()
+  end
+
   describe "user_agent/1" do
     test "returns a non-empty string by default" do
       result = HTTP.user_agent()
@@ -61,14 +65,16 @@ defmodule NeoFaker.HTTPTest do
       assert HTTP.user_agent(type: :browser) in user_agents("browsers")
     end
 
-    test "returns a crawler user-agent when type: :crawler" do
+    test "returns a crawler bot token when type: :crawler" do
       assert HTTP.user_agent(type: :crawler) in user_agents("crawlers")
     end
 
-    test "type: :all draws from browsers and crawlers combined" do
-      combined = user_agents("browsers") ++ user_agents("crawlers")
+    test "returns an AI bot token when type: :ai" do
+      assert HTTP.user_agent(type: :ai) in user_agents("ai")
+    end
 
-      assert HTTP.user_agent(type: :all) in combined
+    test "type: :all draws from every category" do
+      assert HTTP.user_agent(type: :all) in all_user_agents()
     end
 
     test "raises NimbleOptions.ValidationError for an unknown type" do
@@ -180,7 +186,8 @@ defmodule NeoFaker.HTTPTest do
     test "returns a value for each type" do
       assert UserAgentGenerator.name(:browser) in user_agents("browsers")
       assert UserAgentGenerator.name(:crawler) in user_agents("crawlers")
-      assert UserAgentGenerator.name(:all) in (user_agents("browsers") ++ user_agents("crawlers"))
+      assert UserAgentGenerator.name(:ai) in user_agents("ai")
+      assert UserAgentGenerator.name(:all) in all_user_agents()
     end
   end
 end

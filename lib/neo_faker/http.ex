@@ -35,7 +35,7 @@ defmodule NeoFaker.HTTP do
   ]
 
   @user_agent_schema NimbleOptions.new!(
-                       type: [type: {:in, [:all, :browser, :crawler]}, default: :all]
+                       type: [type: {:in, [:all, :browser, :crawler, :ai]}, default: :all]
                      )
 
   @request_method_schema NimbleOptions.new!(common_only: [type: :boolean, default: true])
@@ -67,14 +67,18 @@ defmodule NeoFaker.HTTP do
                       )
 
   @doc """
-  Generates a random HTTP user-agent string.
+  Generates a random HTTP user-agent.
 
-  Returns a user-agent from the top 100 most common browser or crawler user-agents.
+  Browsers are full user-agent strings; crawlers and AI agents are the bare bot tokens
+  (`"gptbot"`, `"ahrefsbot"`) that identify them in a `User-Agent` header.
 
   ## Options
 
-    * `:type` (`:all`, `:browser`, or `:crawler`) - the user-agent category. `:all` draws from
-      both browsers and crawlers. Defaults to `:all`.
+    * `:type` (`:all`, `:browser`, `:crawler`, or `:ai`) - the user-agent category. `:all` draws
+      from every category. Defaults to `:all`.
+      * `:browser` - a real browser user-agent string.
+      * `:crawler` - a search/SEO crawler bot token.
+      * `:ai` - an AI crawler or agent bot token (`"gptbot"`, `"claudebot"`, `"perplexitybot"`).
 
   ## Examples
 
@@ -85,7 +89,10 @@ defmodule NeoFaker.HTTP do
       "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
 
       iex> NeoFaker.HTTP.user_agent(type: :crawler)
-      "Mozilla/5.0 (compatible; Google-InspectionTool/1.0)"
+      "ahrefsbot"
+
+      iex> NeoFaker.HTTP.user_agent(type: :ai)
+      "claudebot"
 
   """
   @spec user_agent(keyword()) :: String.t()

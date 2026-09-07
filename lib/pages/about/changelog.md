@@ -14,6 +14,9 @@ private modules live.
   pools the binary and non-binary identities). Replaces `binary_gender/1`, `short_binary_gender/1`,
   `non_binary_gender/1`.
 - `NeoFaker.Address.latitude/1` and `longitude/1` return a single coordinate component.
+- `NeoFaker.HTTP.user_agent/1` takes `type: :ai`, drawing from a new list of AI crawler and agent
+  bot tokens (`"gptbot"`, `"claudebot"`, `"perplexitybot"`, and so on); `:all` includes them.
+  Crawler user-agents are now bare bot tokens rather than full UA strings.
 - `NeoFaker.Locale` owns all locale state (`fetch/0`, `get/0`, `set/1`) and the supported-locale list
   (`supported/0`, `available?/1`), previously split between `NeoFaker` and the hidden `NeoFaker.Data`.
 - `NeoFaker.Gravatar.random_display/0` replaces `random/0`.

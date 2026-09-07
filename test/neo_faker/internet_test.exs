@@ -5,6 +5,13 @@ defmodule NeoFaker.InternetTest do
   alias NeoFaker.Internet.Generator
 
   describe "username/1" do
+    test "returns a two-word username with no options" do
+      username = Internet.username()
+
+      assert is_binary(username) and String.valid?(username)
+      assert username |> String.split([".", "-", "_"]) |> length() == 2
+    end
+
     test "returns a username with the specified word count" do
       username = Internet.username(word_count: 3)
 
@@ -388,13 +395,22 @@ defmodule NeoFaker.InternetTest do
     # sufficient here — we are no longer relying on chance to hit tiny /24 blocks.
     # -------------------------------------------------------------------------
 
-    test "public_ipv4/0 never returns a reserved address across 200 samples" do
-      for _ <- 1..200 do
-        ip = Internet.ipv4()
-        [a, b, c, _d] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
+    test "public_ipv4/0 never returns a reserved address across many samples" do
+      # A large sample also reliably exercises the mixed public/reserved first
+      # octets (100, 169, 172, 192, 198, 203) and their second-octet guards.
+      first_octets =
+        for _ <- 1..4000 do
+          ip = Internet.ipv4()
+          [a, b, c, _d] = ip |> String.split(".") |> Enum.map(&String.to_integer/1)
 
-        refute reserved?(a, b, c),
-               "#{ip}: expected a publicly routable address but got a reserved one"
+          refute reserved?(a, b, c),
+                 "#{ip}: expected a publicly routable address but got a reserved one"
+
+          a
+        end
+
+      for octet <- [100, 169, 172, 192, 198, 203] do
+        assert octet in first_octets, "expected first octet #{octet} in a 4000-sample run"
       end
     end
 
@@ -645,6 +661,124 @@ defmodule NeoFaker.InternetTest do
       slugs = Enum.map(1..10, fn _ -> Internet.slug() end)
 
       assert slugs |> Enum.uniq() |> length() > 1
+    end
+
+    test "raises FunctionClauseError for a non-positive word count" do
+      assert_raise FunctionClauseError, fn -> Internet.slug(0) end
+    end
+  end
+
+  describe "domain_name/1 popular categories" do
+    alias NeoFaker.Internet.DomainGenerator
+
+    test "returns a domain for every popular_type" do
+      for type <- [:all, :ecommerce, :email, :search, :social] do
+        domain = Internet.domain_name(type: :popular, popular_type: type)
+
+        assert is_binary(domain) and String.contains?(domain, ".")
+      end
+    end
+
+    test "DomainGenerator.generate_popular_domain_name/1 covers every branch" do
+      for type <- [:all, :ecommerce, :email, :search, :social] do
+        assert is_binary(DomainGenerator.generate_popular_domain_name(type))
+      end
+    end
+  end
+
+  describe "username/1 option validation" do
+    test "raises NimbleOptions.ValidationError for an unknown joiner" do
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.username(joiner: :space) end
+    end
+
+    test "raises NimbleOptions.ValidationError for an unknown username_type" do
+      assert_raise NimbleOptions.ValidationError, fn ->
+        Internet.username(username_type: :robot)
+      end
+    end
+  end
+
+  describe "tld/1 option validation" do
+    test "raises NimbleOptions.ValidationError for an unknown type" do
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.tld(type: :vanity) end
+    end
+  end
+
+  describe "ipv6/1 compressed notation" do
+    test "returns a compressed address when compressed: true" do
+      for _ <- 1..50 do
+        ip = Internet.ipv6(compressed: true)
+
+        assert String.valid?(ip)
+        assert String.match?(ip, ~r/^[0-9A-F:]+$/)
+      end
+    end
+
+    test "compressed lowercase notation is honoured" do
+      ip = Internet.ipv6(compressed: true, uppercase: false)
+
+      assert String.match?(ip, ~r/^[0-9a-f:]+$/)
+    end
+  end
+
+  describe "url/1 with popular and custom domains" do
+    test "appends a path and query to a popular-domain URL without a duplicate TLD" do
+      url = Internet.url(domain_type: :popular, path: true, query: true)
+
+      assert String.contains?(url, "?")
+      [_scheme, rest] = String.split(url, "://", parts: 2)
+      host = rest |> String.split(["/", "?"]) |> List.first()
+
+      assert length(String.split(host, ".")) <= 2
+    end
+
+    test "custom domain URL keeps the given domain verbatim" do
+      url = Internet.url(domain_type: :custom, domain_name: "elixir-lang.org", path: true)
+
+      assert String.contains?(url, "elixir-lang.org/")
+    end
+  end
+
+  describe "Generator" do
+    test "compressed_ipv6/0 collapses zero runs and never yields ':::'" do
+      for _ <- 1..200 do
+        ip = Generator.compressed_ipv6()
+
+        refute String.contains?(ip, ":::")
+        assert String.valid?(ip)
+      end
+    end
+
+    test "url_path/0 is 1..3 lowercase alphanumeric segments" do
+      for _ <- 1..50 do
+        path = Generator.url_path()
+        segments = String.split(path, "/")
+
+        assert length(segments) in 1..3
+        assert Enum.all?(segments, &String.match?(&1, ~r/^[a-z0-9]+$/))
+      end
+    end
+
+    test "query_string/0 is 1..3 key=value pairs" do
+      for _ <- 1..50 do
+        query = Generator.query_string()
+        pairs = String.split(query, "&")
+
+        assert length(pairs) in 1..3
+
+        assert Enum.all?(pairs, fn pair ->
+                 [k, v] = String.split(pair, "=")
+                 String.match?(k, ~r/^[a-z0-9]+$/) and String.to_integer(v) in 1..1000
+               end)
+      end
+    end
+
+    test "private_ipv4/1 builds an address in the right block for every class" do
+      assert String.starts_with?(Generator.private_ipv4(:a), "10.")
+      assert String.starts_with?(Generator.private_ipv4(:c), "192.168.")
+
+      [_a, b | _] = :b |> Generator.private_ipv4() |> String.split(".")
+      assert String.to_integer(b) in 16..31
     end
   end
 end

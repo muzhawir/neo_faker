@@ -282,4 +282,72 @@ defmodule NeoFaker.GravatarTest do
       assert range.last == 2048
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Generator
+  # ---------------------------------------------------------------------------
+
+  describe "Generator" do
+    alias NeoFaker.Gravatar.Generator
+
+    test "image_size/1 falls back to the default when given nil" do
+      assert Generator.image_size(nil) == 80
+    end
+
+    test "image_size/1 returns a valid size unchanged" do
+      assert Generator.image_size(120) == 120
+    end
+
+    test "display/2 accepts an explicit nil size and uses the default" do
+      url = Gravatar.display(@john_doe_email, size: nil)
+
+      assert String.contains?(url, "s=80")
+    end
+
+    test "email_hash/1 hashes nil to a fresh value each call" do
+      assert Generator.email_hash(nil) != Generator.email_hash(nil)
+    end
+
+    test "email_hash/1 is stable and case-insensitive for a real address" do
+      assert Generator.email_hash("A.B@Example.com") == Generator.email_hash("a.b@example.com")
+    end
+
+    test "email_hash/1 raises ArgumentError for a malformed address" do
+      assert_raise ArgumentError, ~r/Invalid email address/, fn ->
+        Generator.email_hash("not-an-email")
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Validator
+  # ---------------------------------------------------------------------------
+
+  describe "Validator" do
+    alias NeoFaker.Gravatar.Validator
+
+    test "validate_size/1 accepts nil and in-range integers" do
+      assert Validator.validate_size(nil) == {:ok, nil}
+      assert Validator.validate_size(80) == {:ok, 80}
+    end
+
+    test "validate_size/1 rejects out-of-range integers and non-integers" do
+      assert {:error, _} = Validator.validate_size(0)
+      assert {:error, _} = Validator.validate_size(5000)
+      assert {:error, _} = Validator.validate_size("80")
+    end
+
+    test "validate_and_format_fallback/1 accepts known atoms and http(s) URLs" do
+      assert Validator.validate_and_format_fallback(:retro) == {:ok, "retro"}
+
+      assert Validator.validate_and_format_fallback("https://x.test/a.png") ==
+               {:ok, "https://x.test/a.png"}
+    end
+
+    test "validate_and_format_fallback/1 rejects unknown atoms, bad URLs, and other types" do
+      assert {:error, _} = Validator.validate_and_format_fallback(:unknown)
+      assert {:error, _} = Validator.validate_and_format_fallback("ftp://x.test/a.png")
+      assert {:error, _} = Validator.validate_and_format_fallback(42)
+    end
+  end
 end

@@ -341,4 +341,95 @@ defmodule NeoFaker.AppTest do
       end
     end
   end
+
+  describe "author/1" do
+    test "omits the middle name by default" do
+      assert App.author() |> String.split() |> length() == 2
+    end
+
+    test "includes a middle name when middle_name: true" do
+      assert [middle_name: true] |> App.author() |> String.split() |> length() == 3
+    end
+
+    test "accepts a sex option" do
+      assert String.valid?(App.author(sex: :female))
+    end
+  end
+
+  describe "name/2 remaining styles" do
+    test "returns an underscored lowercase name when style: :underscore" do
+      assert String.match?(App.name(style: :underscore), ~r/^[a-z0-9]+_[a-z0-9]+$/)
+    end
+
+    test "returns a single capitalised word when style: :single" do
+      assert String.match?(App.name(style: :single), ~r/^[A-Z][a-z0-9]*$/)
+    end
+
+    test "returns a title-spaced name when style is nil" do
+      assert App.name() |> String.split() |> length() == 2
+    end
+
+    test "raises NimbleOptions.ValidationError for an unknown style" do
+      assert_raise NimbleOptions.ValidationError, fn -> App.name(style: :kebab) end
+    end
+  end
+
+  describe "semver/1 option validation" do
+    test "raises NimbleOptions.ValidationError for an unknown type" do
+      assert_raise NimbleOptions.ValidationError, fn -> App.semver(type: :nightly) end
+    end
+  end
+
+  describe "NameGenerator.format_text/2" do
+    alias NeoFaker.App.NameGenerator
+
+    test "formats a name for every style" do
+      pair = {"neo", "faker"}
+
+      assert NameGenerator.format_text(pair, nil) == "neo faker"
+      assert NameGenerator.format_text(pair, :camel_case) == "neoFaker"
+      assert NameGenerator.format_text(pair, :pascal_case) == "NeoFaker"
+      assert NameGenerator.format_text(pair, :dashed) == "Neo-faker"
+      assert NameGenerator.format_text(pair, :underscore) == "neo_faker"
+      assert NameGenerator.format_text(pair, :single) in ["Neo", "Faker"]
+    end
+  end
+
+  describe "DomainGenerator.reverse_domain!/1" do
+    alias NeoFaker.App.DomainGenerator
+
+    test "reverses and sanitises labels" do
+      assert DomainGenerator.reverse_domain!("example.com") == "com.example"
+      assert DomainGenerator.reverse_domain!("My-Company.IO") == "io.mycompany"
+      assert DomainGenerator.reverse_domain!("a.b.c") == "c.b.a"
+    end
+
+    test "raises ArgumentError when every label is empty after sanitisation" do
+      assert_raise ArgumentError, ~r/produced no valid labels/, fn ->
+        DomainGenerator.reverse_domain!("...")
+      end
+    end
+  end
+
+  describe "SemverGenerator" do
+    alias NeoFaker.App.SemverGenerator
+
+    test "semver_core/0 is MAJOR.MINOR.PATCH within the documented ranges" do
+      [major, minor, patch] =
+        SemverGenerator.semver_core() |> String.split(".") |> Enum.map(&String.to_integer/1)
+
+      assert major in 0..9 and minor in 0..20 and patch in 1..30
+    end
+
+    test "semver_pre_release/0 is label.N" do
+      [label, n] = String.split(SemverGenerator.semver_pre_release(), ".")
+
+      assert label in ~w[alpha beta rc]
+      assert String.to_integer(n) in 1..10
+    end
+
+    test "semver_build_number/0 is an 8-digit YYYYMMDD string" do
+      assert String.match?(SemverGenerator.semver_build_number(), ~r/^\d{8}$/)
+    end
+  end
 end

@@ -136,6 +136,18 @@ defmodule NeoFaker.HTTP do
   end
 
   @doc """
+  Returns the list of all valid HTTP request methods.
+
+  ## Examples
+
+      iex> NeoFaker.HTTP.all_request_methods()
+      ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT", "QUERY"]
+
+  """
+  @spec all_request_methods() :: [String.t()]
+  def all_request_methods, do: @request_methods
+
+  @doc """
   Generates a random HTTP referrer policy.
 
   Returns one of the eight standard `Referrer-Policy` header values.
@@ -151,6 +163,18 @@ defmodule NeoFaker.HTTP do
   """
   @spec referrer_policy() :: String.t()
   def referrer_policy, do: Enum.random(@referrer_policies)
+
+  @doc """
+  Returns the list of all valid referrer policy strings.
+
+  ## Examples
+
+      iex> NeoFaker.HTTP.all_referrer_policies()
+      ["no-referrer", "no-referrer-when-downgrade", ...]
+
+  """
+  @spec all_referrer_policies() :: [String.t()]
+  def all_referrer_policies, do: @referrer_policies
 
   @doc """
   Generates a random HTTP status code.
@@ -257,28 +281,4 @@ defmodule NeoFaker.HTTP do
     opts = NimbleOptions.validate!(opts, @header_name_schema)
     HeaderGenerator.name(Keyword.fetch!(opts, :type))
   end
-
-  @doc """
-  Returns the list of all valid HTTP request methods.
-
-  ## Examples
-
-      iex> NeoFaker.HTTP.all_request_methods()
-      ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE", "CONNECT", "QUERY"]
-
-  """
-  @spec all_request_methods() :: [String.t()]
-  def all_request_methods, do: @request_methods
-
-  @doc """
-  Returns the list of all valid referrer policy strings.
-
-  ## Examples
-
-      iex> NeoFaker.HTTP.all_referrer_policies()
-      ["no-referrer", "no-referrer-when-downgrade", ...]
-
-  """
-  @spec all_referrer_policies() :: [String.t()]
-  def all_referrer_policies, do: @referrer_policies
 end

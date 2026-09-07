@@ -125,6 +125,38 @@ defmodule NeoFaker.PersonTest do
 
       assert Person.gender(format: :non_binary, locale: :id_id) in word_list
     end
+
+    test "format: :all draws from the binary and non-binary lists combined" do
+      combined =
+        fetch_key(:default, "gender.exs", "binary") ++
+          fetch_key(:default, "gender.exs", "non_binary")
+
+      short_binary = fetch_key(:default, "gender.exs", "short_binary")
+
+      for _ <- 1..200 do
+        result = Person.gender(format: :all, locale: :default)
+
+        assert result in combined
+        refute result in short_binary
+      end
+    end
+
+    test "format: :all yields both a binary and a non-binary value across many draws" do
+      binary = fetch_key(:default, "gender.exs", "binary")
+      non_binary = fetch_key(:default, "gender.exs", "non_binary")
+
+      results = for _ <- 1..500, do: Person.gender(format: :all, locale: :default)
+
+      assert Enum.any?(results, &(&1 in binary))
+      assert Enum.any?(results, &(&1 in non_binary))
+    end
+
+    test "format: :all honours the locale" do
+      combined =
+        fetch_key(:id_id, "gender.exs", "binary") ++ fetch_key(:id_id, "gender.exs", "non_binary")
+
+      assert Person.gender(format: :all, locale: :id_id) in combined
+    end
   end
 
   describe "full_name_with_title/1" do

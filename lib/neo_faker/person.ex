@@ -33,7 +33,7 @@ defmodule NeoFaker.Person do
 
   @gender_schema NimbleOptions.new!(
                    format: [
-                     type: {:in, [:binary, :short_binary, :non_binary]},
+                     type: {:in, [:binary, :short_binary, :non_binary, :all]},
                      default: :binary
                    ],
                    locale: [type: :atom, default: nil]
@@ -220,11 +220,14 @@ defmodule NeoFaker.Person do
 
   ## Options
 
-    * `:format` (`:binary`, `:short_binary`, or `:non_binary`) - which gender representation to
-      return. Defaults to `:binary`.
+    * `:format` (`:binary`, `:short_binary`, `:non_binary`, or `:all`) - which gender
+      representation to return. Defaults to `:binary`.
       * `:binary` - the full binary gender, e.g. `"Male"` or `"Female"`.
       * `:short_binary` - the abbreviated binary gender, e.g. `"M"` or `"F"`.
       * `:non_binary` - a non-binary gender identity string, e.g. `"Non-binary"`.
+      * `:all` - the binary and non-binary identities combined, e.g. `"Female"` or
+        `"Genderfluid"`. The abbreviated `:short_binary` codes are left out, since they are
+        just shorthand for the binary values.
     * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
 
   ## Examples
@@ -238,6 +241,9 @@ defmodule NeoFaker.Person do
       iex> NeoFaker.Person.gender(format: :non_binary)
       "Non-binary"
 
+      iex> NeoFaker.Person.gender(format: :all)
+      "Genderfluid"
+
       iex> NeoFaker.Person.gender(locale: :id_id)
       "Perempuan"
 
@@ -249,14 +255,22 @@ defmodule NeoFaker.Person do
     format = Keyword.fetch!(opts, :format)
     locale_opts = Keyword.take(opts, [:locale])
 
-    key =
-      case format do
-        :binary -> "binary"
-        :short_binary -> "short_binary"
-        :non_binary -> "non_binary"
-      end
+    case format do
+      :binary -> Data.random_value(__MODULE__, @gender_file, "binary", locale_opts)
+      :short_binary -> Data.random_value(__MODULE__, @gender_file, "short_binary", locale_opts)
+      :non_binary -> Data.random_value(__MODULE__, @gender_file, "non_binary", locale_opts)
+      :all -> random_any_gender(locale_opts)
+    end
+  end
 
-    Data.random_value(__MODULE__, @gender_file, key, locale_opts)
+  # `:all` draws from the binary and non-binary identities pooled together. The
+  # `short_binary` list is deliberately excluded: its entries ("M"/"F") are just
+  # abbreviations of the binary values, not distinct identities.
+  @spec random_any_gender(keyword()) :: String.t()
+  defp random_any_gender(locale_opts) do
+    gender_data = Data.fetch!(locale_opts[:locale], __MODULE__, @gender_file)
+
+    Enum.random(gender_data["binary"] ++ gender_data["non_binary"])
   end
 
   @doc """

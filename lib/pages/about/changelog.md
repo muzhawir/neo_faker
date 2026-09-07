@@ -13,9 +13,10 @@ v0.20.0.
 - Added `NeoFaker.seed/1`, which seeds `:rand` for the calling process, for reproducible output in
   tests (e.g. `NeoFaker.seed(12_345)`).
 - Added `NeoFaker.Person.gender/1`, a single function with a `:format` option (`:binary`,
-  `:short_binary`, `:non_binary`) that replaces the separate `binary_gender/1`,
-  `short_binary_gender/1`, and `non_binary_gender/1` functions, matching the same
-  `:format`-option pattern `NeoFaker.Blood.group/1` already used.
+  `:short_binary`, `:non_binary`, and `:all`, the last pooling the binary and non-binary
+  identities) that replaces the separate `binary_gender/1`, `short_binary_gender/1`, and
+  `non_binary_gender/1` functions, matching the same `:format`-option pattern
+  `NeoFaker.Blood.group/1` already used.
 - Added `NeoFaker.Gravatar.random_display/0`, replacing `random/0` with a name that reads
   consistently alongside its siblings `display/2` and `profile/2`.
 - Added `NeoFaker.Locale`, which consolidates locale state management (`fetch/0`, `get/0`,

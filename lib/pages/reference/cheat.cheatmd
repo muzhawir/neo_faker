@@ -36,7 +36,7 @@ iex> NeoFaker.Address.country()
 "United States"
 
 iex> NeoFaker.Address.country(locale: :id_id)
-"Indonesia"
+"Amerika Serikat"
 ```
 
 ### [`coordinate(opts \\ [])`](`NeoFaker.Address.coordinate/1`)

@@ -85,7 +85,7 @@ defmodule NeoFaker.Address do
       "United States"
 
       iex> NeoFaker.Address.country(locale: :id_id)
-      "Indonesia"
+      "Amerika Serikat"
 
   """
   @spec country(keyword()) :: String.t()

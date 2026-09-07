@@ -66,7 +66,7 @@ iex> NeoFaker.Internet.email()
 "jose@example.com"
 
 iex> NeoFaker.Address.city(locale: :id_id)
-"Palu"
+"Sigi"
 
 iex> NeoFaker.Date.past(30)
 ~D[2025-02-25]

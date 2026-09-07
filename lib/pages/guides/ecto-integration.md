@@ -37,7 +37,7 @@ defmodule MyApp.Factory do
   def build(:post) do
     %MyApp.Post{
       title: NeoFaker.Lorem.sentence(),
-      body: NeoFaker.Lorem.paragraphs(3, join: true),
+      body: NeoFaker.Lorem.paragraphs(3) |> Enum.join("\n\n"),
       inserted_at: NeoFaker.Date.past(30)
     }
   end

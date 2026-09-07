@@ -13,6 +13,7 @@ defmodule NeoFaker.App do
   alias NeoFaker.App.SemverGenerator
   alias NeoFaker.App.Validator
   alias NeoFaker.Data
+  alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Person
 
   @description_file "description.exs"
@@ -293,7 +294,7 @@ defmodule NeoFaker.App do
   def package_name(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @package_name_schema)
 
-    app_name = name() |> String.downcase() |> String.replace(~r/[^a-z0-9]/, "")
+    app_name = Formatter.slugify(name())
 
     "#{DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))}.#{app_name}"
   end

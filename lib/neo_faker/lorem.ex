@@ -4,7 +4,9 @@ defmodule NeoFaker.Lorem do
 
   Provides utilities to generate random paragraphs, sentences, and words sourced
   from either the classic Lorem Ipsum text or Marcus Aurelius' *Meditations*.
-  All functions accept a `text:` option to switch between sources.
+  All functions accept a `text:` option to switch between sources. The plural
+  functions return a list; join it yourself with `Enum.join/2` if you need a
+  single string.
   """
   @moduledoc since: "0.8.0"
 
@@ -12,12 +14,6 @@ defmodule NeoFaker.Lorem do
   alias NeoFaker.Lorem.Generator
 
   @text_schema NimbleOptions.new!(
-                 text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
-                 locale: [type: :atom, default: nil]
-               )
-
-  @join_schema NimbleOptions.new!(
-                 join: [type: :boolean, default: false],
                  text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
                  locale: [type: :atom, default: nil]
                )
@@ -117,30 +113,18 @@ defmodule NeoFaker.Lorem do
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
     * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
-    * `:join` (boolean) - when `true`, joins the paragraphs with `"\\n\\n"` into a single
-      string instead of returning a list. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.paragraphs(2)
       ["First paragraph...", "Second paragraph..."]
 
-      iex> NeoFaker.Lorem.paragraphs(2, join: true)
-      "First paragraph...\\n\\nSecond paragraph..."
-
   """
-  @spec paragraphs(pos_integer(), keyword()) :: [String.t()] | String.t()
+  @spec paragraphs(pos_integer(), keyword()) :: [String.t()]
   def paragraphs(count \\ 3, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @join_schema)
-    text_opts = Keyword.take(opts, [:text, :locale])
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    paragraphs_list = Enum.map(1..count, fn _ -> paragraph(text_opts) end)
-
-    if Keyword.fetch!(opts, :join) do
-      Enum.join(paragraphs_list, "\n\n")
-    else
-      paragraphs_list
-    end
+    Enum.map(1..count, fn _ -> paragraph(opts) end)
   end
 
   @doc """
@@ -152,30 +136,18 @@ defmodule NeoFaker.Lorem do
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
     * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
-    * `:join` (boolean) - when `true`, joins the sentences with `" "` into a single string
-      instead of returning a list. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.sentences(3)
       ["First sentence.", "Second sentence.", "Third sentence."]
 
-      iex> NeoFaker.Lorem.sentences(3, join: true)
-      "First sentence. Second sentence. Third sentence."
-
   """
-  @spec sentences(pos_integer(), keyword()) :: [String.t()] | String.t()
+  @spec sentences(pos_integer(), keyword()) :: [String.t()]
   def sentences(count \\ 5, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @join_schema)
-    text_opts = Keyword.take(opts, [:text, :locale])
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    sentences_list = Enum.map(1..count, fn _ -> sentence(text_opts) end)
-
-    if Keyword.fetch!(opts, :join) do
-      Enum.join(sentences_list, " ")
-    else
-      sentences_list
-    end
+    Enum.map(1..count, fn _ -> sentence(opts) end)
   end
 
   @doc """
@@ -187,29 +159,17 @@ defmodule NeoFaker.Lorem do
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
     * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
-    * `:join` (boolean) - when `true`, joins the words with `" "` into a single string
-      instead of returning a list. Defaults to `false`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.words(5)
       ["suspendisse", "justo", "venenatis", "sapien", "accumsan"]
 
-      iex> NeoFaker.Lorem.words(5, join: true)
-      "suspendisse justo venenatis sapien accumsan"
-
   """
-  @spec words(pos_integer(), keyword()) :: [String.t()] | String.t()
+  @spec words(pos_integer(), keyword()) :: [String.t()]
   def words(count \\ 10, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @join_schema)
-    text_opts = Keyword.take(opts, [:text, :locale])
+    opts = NimbleOptions.validate!(opts, @text_schema)
 
-    words_list = Enum.map(1..count, fn _ -> word(text_opts) end)
-
-    if Keyword.fetch!(opts, :join) do
-      Enum.join(words_list, " ")
-    else
-      words_list
-    end
+    Enum.map(1..count, fn _ -> word(opts) end)
   end
 end

@@ -4,12 +4,12 @@ defmodule NeoFaker.Time do
 
   Provides utilities to generate random times, including times relative to now,
   times within a specific range, time zones, and named periods (morning, afternoon,
-  evening, night). All functions support both `Time` struct and ISO 8601 string output.
+  evening, night). Every function returns a `Time` struct; call `Time.to_iso8601/1`
+  yourself if you need a string.
   """
   @moduledoc since: "0.10.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Time.Generator, as: TimeGenerator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
@@ -19,12 +19,7 @@ defmodule NeoFaker.Time do
   @midnight ~T[00:00:00]
   @end_of_day ~T[23:59:59]
 
-  @add_schema NimbleOptions.new!(
-                unit: [type: {:in, [:hour, :minute, :second]}, default: :hour],
-                format: [type: {:in, [:struct, :iso8601]}, default: :struct]
-              )
-
-  @format_schema NimbleOptions.new!(format: [type: {:in, [:struct, :iso8601]}, default: :struct])
+  @add_schema NimbleOptions.new!(unit: [type: {:in, [:hour, :minute, :second]}, default: :hour])
 
   @doc """
   Generates a random time offset from now.
@@ -35,7 +30,6 @@ defmodule NeoFaker.Time do
   ## Options
 
     * `:unit` (`:hour`, `:minute`, or `:second`) - the unit of the range. Defaults to `:hour`.
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -45,17 +39,13 @@ defmodule NeoFaker.Time do
       iex> NeoFaker.Time.add(-2..2, unit: :minute)
       ~T[07:23:10]
 
-      iex> NeoFaker.Time.add(0..10, format: :iso8601)
-      "15:22:10"
-
   """
-  @spec add(Range.t(), keyword()) :: Time.t() | String.t()
+  @spec add(Range.t(), keyword()) :: Time.t()
   def add(range \\ @time_range, opts \\ []) do
     TimeValidator.validate_range!(range)
     opts = NimbleOptions.validate!(opts, @add_schema)
 
-    time = TimeGenerator.add(range, Keyword.fetch!(opts, :unit), :struct)
-    Formatter.format_time(time, Keyword.fetch!(opts, :format))
+    TimeGenerator.add(range, Keyword.fetch!(opts, :unit))
   end
 
   @doc """
@@ -63,10 +53,6 @@ defmodule NeoFaker.Time do
 
   Both `start` and `finish` are inclusive. Defaults to the full day
   (`~T[00:00:00]`–`~T[23:59:59]`).
-
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
@@ -76,18 +62,12 @@ defmodule NeoFaker.Time do
       iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
       ~T[19:30:11]
 
-      iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
-      "15:22:10"
-
   """
-  @spec between(Time.t(), Time.t(), keyword()) :: Time.t() | String.t()
-  def between(start \\ @midnight, finish \\ @end_of_day, opts \\ []) do
+  @spec between(Time.t(), Time.t()) :: Time.t()
+  def between(start \\ @midnight, finish \\ @end_of_day) do
     TimeValidator.validate_time_order!(start, finish)
-    opts = NimbleOptions.validate!(opts, @format_schema)
 
-    time = TimeGenerator.between(start, finish, :struct)
-
-    Formatter.format_time(time, Keyword.fetch!(opts, :format))
+    TimeGenerator.between(start, finish)
   end
 
   @doc """
@@ -110,100 +90,62 @@ defmodule NeoFaker.Time do
   @doc """
   Generates a random morning time (06:00–11:59).
 
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
-
   ## Examples
 
       iex> NeoFaker.Time.morning()
       ~T[08:30:15]
 
-      iex> NeoFaker.Time.morning(format: :iso8601)
-      "09:45:22"
-
   """
-  @spec morning(keyword()) :: Time.t() | String.t()
-  def morning(opts \\ []), do: between(~T[06:00:00], ~T[11:59:59], opts)
+  @spec morning() :: Time.t()
+  def morning, do: between(~T[06:00:00], ~T[11:59:59])
 
   @doc """
   Generates a random afternoon time (12:00–17:59).
-
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
       iex> NeoFaker.Time.afternoon()
       ~T[14:30:15]
 
-      iex> NeoFaker.Time.afternoon(format: :iso8601)
-      "15:45:22"
-
   """
-  @spec afternoon(keyword()) :: Time.t() | String.t()
-  def afternoon(opts \\ []), do: between(~T[12:00:00], ~T[17:59:59], opts)
+  @spec afternoon() :: Time.t()
+  def afternoon, do: between(~T[12:00:00], ~T[17:59:59])
 
   @doc """
   Generates a random evening time (18:00–23:59).
-
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
       iex> NeoFaker.Time.evening()
       ~T[20:30:15]
 
-      iex> NeoFaker.Time.evening(format: :iso8601)
-      "21:45:22"
-
   """
-  @spec evening(keyword()) :: Time.t() | String.t()
-  def evening(opts \\ []), do: between(~T[18:00:00], ~T[23:59:59], opts)
+  @spec evening() :: Time.t()
+  def evening, do: between(~T[18:00:00], ~T[23:59:59])
 
   @doc """
   Generates a random night time (00:00–05:59).
-
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
 
   ## Examples
 
       iex> NeoFaker.Time.night()
       ~T[02:30:15]
 
-      iex> NeoFaker.Time.night(format: :iso8601)
-      "03:45:22"
-
   """
-  @spec night(keyword()) :: Time.t() | String.t()
-  def night(opts \\ []), do: between(~T[00:00:00], ~T[05:59:59], opts)
+  @spec night() :: Time.t()
+  def night, do: between(~T[00:00:00], ~T[05:59:59])
 
   @doc """
   Returns the current UTC time.
 
-  A convenience wrapper that returns `Time.utc_now()` with optional formatting.
-
-  ## Options
-
-    * `:format` (`:struct` or `:iso8601`) - the output format. Defaults to `:struct`.
+  A thin convenience wrapper around `Time.utc_now/0`.
 
   ## Examples
 
       iex> NeoFaker.Time.now()
-      ~T[15:22:10]
-
-      iex> NeoFaker.Time.now(format: :iso8601)
-      "15:22:10"
+      ~T[15:22:10.123456]
 
   """
-  @spec now(keyword()) :: Time.t() | String.t()
-  def now(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @format_schema)
-    Formatter.format_time(Time.utc_now(), Keyword.fetch!(opts, :format))
-  end
+  @spec now() :: Time.t()
+  def now, do: Time.utc_now()
 end

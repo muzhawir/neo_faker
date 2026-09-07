@@ -22,7 +22,7 @@ defmodule NeoFaker.HTTP.StatusCodeGenerator do
   def generates!(group) do
     :default
     |> Data.fetch!(NeoFaker.HTTP, "status_code.exs")
-    |> Map.get(Atom.to_string(group))
+    |> Map.fetch!(Atom.to_string(group))
   end
 
   @doc """

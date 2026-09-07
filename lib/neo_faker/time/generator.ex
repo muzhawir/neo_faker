@@ -1,56 +1,38 @@
 defmodule NeoFaker.Time.Generator do
   @moduledoc false
 
-  @type time_format :: :struct | :iso8601
   @type time_unit :: :hour | :minute | :second
 
   @doc """
   Generates a random time by adding a random value from the given range to the current local
   time in the specified unit.
-
-  Returns the resulting time as a `Time` struct when the format is `:struct`, or as an ISO 8601
-  string when the format is `:iso8601`.
   """
-  @spec add(Range.t(), time_unit(), time_format()) :: Time.t() | String.t()
-  def add(range, unit, format) do
-    time =
-      NaiveDateTime.local_now()
-      |> Time.add(Enum.random(range), unit)
-      |> Time.truncate(:second)
-
-    case format do
-      :struct -> time
-      :iso8601 -> Time.to_iso8601(time)
-    end
+  @spec add(Range.t(), time_unit()) :: Time.t()
+  def add(range, unit) do
+    NaiveDateTime.local_now()
+    |> Time.add(Enum.random(range), unit)
+    |> Time.truncate(:second)
   end
 
   @doc """
   Generates a random `Time` between two given `Time` values.
 
   Requires `start` to already be chronologically at or before `finish`; every
-  caller (`NeoFaker.Time.between/3`, and the morning/afternoon/evening/night
+  caller (`NeoFaker.Time.between/2`, and the morning/afternoon/evening/night
   helpers that go through it) enforces this first via
   `NeoFaker.Time.Validator.validate_time_order!/2`, so it isn't re-checked
   here. `Enum.min_max/1` below only picks out the smaller second-count to size
   the random offset; the offset is still added to the literal `start`
   argument, not to whichever value the seconds comparison found smaller, so
   this function must not be called directly with `start > finish`.
-
-  Returns:
-  - a `Time` struct when the format is `:struct`
-  - a string in the format `"HH:MM:SS"` when the format is `:iso8601`
   """
-  @spec between(Time.t(), Time.t(), time_format()) :: Time.t() | String.t()
-  def between(start, finish, format) do
+  @spec between(Time.t(), Time.t()) :: Time.t()
+  def between(start, finish) do
     {start_seconds, _} = Time.to_seconds_after_midnight(start)
     {finish_seconds, _} = Time.to_seconds_after_midnight(finish)
     {min_sec, max_sec} = Enum.min_max([start_seconds, finish_seconds])
     amount_to_add = Enum.random(min_sec..max_sec) - min_sec
-    time = Time.add(start, amount_to_add, :second)
 
-    case format do
-      :struct -> time
-      :iso8601 -> Time.to_iso8601(time)
-    end
+    Time.add(start, amount_to_add, :second)
   end
 end

@@ -83,8 +83,8 @@ Most functions accept a keyword list of options to control the output shape, so 
 function's own documentation for the options it supports:
 
 ```elixir
-iex> NeoFaker.Date.past(30, format: :iso8601)
-"2025-02-25"
+iex> NeoFaker.Person.age(18, 65)
+42
 
 iex> NeoFaker.Color.hex(format: :eight_digit)
 "#613583FF"

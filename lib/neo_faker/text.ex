@@ -42,11 +42,6 @@ defmodule NeoFaker.Text do
                   ]
                 )
 
-  @words_schema NimbleOptions.new!(
-                  join: [type: :boolean, default: false],
-                  separator: [type: :string, default: " "]
-                )
-
   @doc """
   Generates a single random character.
 
@@ -182,46 +177,27 @@ defmodule NeoFaker.Text do
   @doc """
   Generates multiple random words.
 
-  Returns a list of words by default. `count` sets how many are generated and defaults to `5`.
-
-  ## Options
-
-    * `:join` (boolean) - when `true`, joins the words into a single string instead of
-      returning a list. Defaults to `false`.
-    * `:separator` (string) - the separator used when joining. Defaults to `" "`.
+  Returns a list of words. `count` sets how many are generated and defaults to `5`. Join them
+  yourself with `Enum.join/2` if you need a single string.
 
   ## Examples
 
       iex> NeoFaker.Text.words(3)
       ["computer", "elixir", "phoenix"]
 
-      iex> NeoFaker.Text.words(3, join: true)
-      "computer elixir phoenix"
-
-      iex> NeoFaker.Text.words(3, join: true, separator: "-")
-      "computer-elixir-phoenix"
-
   """
-  @spec words(pos_integer(), keyword()) :: [String.t()] | String.t()
-  def words(count \\ 5, opts \\ [])
+  @spec words(pos_integer()) :: [String.t()]
+  def words(count \\ 5)
 
-  def words(count, opts) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @words_schema)
-
-    words_list = Enum.map(1..count, fn _ -> word() end)
-
-    if Keyword.fetch!(opts, :join) do
-      Enum.join(words_list, Keyword.fetch!(opts, :separator))
-    else
-      words_list
-    end
+  def words(count) when is_integer(count) and count > 0 do
+    Enum.map(1..count, fn _ -> word() end)
   end
 
-  def words(count, _opts) when is_integer(count) do
+  def words(count) when is_integer(count) do
     raise ArgumentError, "count must be a positive integer, got: #{count}"
   end
 
-  def words(count, _opts) do
+  def words(count) do
     raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"
   end
 end

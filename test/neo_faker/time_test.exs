@@ -28,10 +28,6 @@ defmodule NeoFaker.TimeTest do
       end
     end
 
-    test "returns an ISO 8601 string when format: :iso8601" do
-      assert FakeTime.add(0..0, format: :iso8601) =~ ~r/^\d{2}:\d{2}:\d{2}$/
-    end
-
     test "raises ArgumentError for a descending range" do
       assert_raise ArgumentError, ~r/first must be less than or equal to last/, fn ->
         FakeTime.add(10..1//-1)
@@ -45,19 +41,17 @@ defmodule NeoFaker.TimeTest do
     test "raises NimbleOptions.ValidationError for an unknown unit" do
       assert_raise NimbleOptions.ValidationError, fn -> FakeTime.add(0..0, unit: :day) end
     end
+
+    test "raises NimbleOptions.ValidationError for the removed :format option" do
+      assert_raise NimbleOptions.ValidationError, fn -> FakeTime.add(0..0, format: :iso8601) end
+    end
   end
 
-  describe "between/3" do
+  describe "between/2" do
     test "returns the exact time when start and finish are equal" do
       now = local_time()
 
       assert FakeTime.between(now, now) == now
-    end
-
-    test "returns an ISO 8601 string when format: :iso8601" do
-      now = local_time()
-
-      assert FakeTime.between(now, now, format: :iso8601) == Time.to_iso8601(now)
     end
 
     test "returns a time within the given bounds" do
@@ -84,48 +78,37 @@ defmodule NeoFaker.TimeTest do
   end
 
   describe "named period helpers" do
-    test "morning/1 stays within 06:00..11:59" do
+    test "morning/0 stays within 06:00..11:59" do
       assert_between(FakeTime.morning(), ~T[06:00:00], ~T[11:59:59])
     end
 
-    test "afternoon/1 stays within 12:00..17:59" do
+    test "afternoon/0 stays within 12:00..17:59" do
       assert_between(FakeTime.afternoon(), ~T[12:00:00], ~T[17:59:59])
     end
 
-    test "evening/1 stays within 18:00..23:59" do
+    test "evening/0 stays within 18:00..23:59" do
       assert_between(FakeTime.evening(), ~T[18:00:00], ~T[23:59:59])
     end
 
-    test "night/1 stays within 00:00..05:59" do
+    test "night/0 stays within 00:00..05:59" do
       assert_between(FakeTime.night(), ~T[00:00:00], ~T[05:59:59])
-    end
-
-    test "each helper honours format: :iso8601" do
-      for helper <- [:morning, :afternoon, :evening, :night] do
-        assert apply(FakeTime, helper, [[format: :iso8601]]) =~ ~r/^\d{2}:\d{2}:\d{2}$/
-      end
     end
   end
 
-  describe "now/1" do
+  describe "now/0" do
     test "returns the current time as a struct" do
       assert %Time{} = FakeTime.now()
-    end
-
-    test "returns the current time as an ISO 8601 string" do
-      assert FakeTime.now(format: :iso8601) =~ ~r/^\d{2}:\d{2}:\d{2}/
     end
   end
 
   describe "Generator" do
-    test "add/3 returns a struct or an ISO 8601 string" do
-      assert %Time{} = Generator.add(0..0, :second, :struct)
-      assert Generator.add(0..0, :second, :iso8601) =~ ~r/^\d{2}:\d{2}:\d{2}$/
+    test "add/2 returns a Time struct" do
+      assert %Time{} = Generator.add(0..0, :second)
     end
 
-    test "between/3 returns a struct or an ISO 8601 string" do
-      assert %Time{} = Generator.between(~T[08:00:00], ~T[09:00:00], :struct)
-      assert Generator.between(~T[08:00:00], ~T[08:00:00], :iso8601) == "08:00:00"
+    test "between/2 returns a Time struct within bounds" do
+      assert %Time{} = Generator.between(~T[08:00:00], ~T[09:00:00])
+      assert Generator.between(~T[08:00:00], ~T[08:00:00]) == ~T[08:00:00]
     end
   end
 

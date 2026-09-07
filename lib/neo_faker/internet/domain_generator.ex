@@ -40,7 +40,7 @@ defmodule NeoFaker.Internet.DomainGenerator do
   defp fetch_popular_domain(type) do
     :default
     |> Data.fetch!(@module, @popular_domain_file)
-    |> Map.get(Atom.to_string(type))
+    |> Map.fetch!(Atom.to_string(type))
     |> Enum.random()
   end
 end

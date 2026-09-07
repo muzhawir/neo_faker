@@ -10,8 +10,6 @@ defmodule NeoFaker.Address do
   alias NeoFaker.Address.Generator
   alias NeoFaker.Address.Validator
   alias NeoFaker.Data
-  alias NeoFaker.Helpers.Formatter
-  alias NeoFaker.Number
 
   @city_file "city.exs"
   @country_file "country.exs"
@@ -19,53 +17,31 @@ defmodule NeoFaker.Address do
   @building_number_range 1..100
   @coordinate_precision 6
 
-  @building_number_schema NimbleOptions.new!(
-                            type: [
-                              type: {:custom, Validator, :validate_building_number_type, []},
-                              default: :string
-                            ]
-                          )
-
   @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
 
-  @coordinate_schema NimbleOptions.new!(
-                       type: [
-                         type: {:custom, Validator, :validate_coordinate_type, []},
-                         default: :full
-                       ],
-                       precision: [type: :non_neg_integer, default: @coordinate_precision]
-                     )
+  @precision_schema NimbleOptions.new!(
+                      precision: [type: :non_neg_integer, default: @coordinate_precision]
+                    )
 
   @doc """
-  Generates a random building number within the given `range`.
+  Generates a random building number within the given `range`, as a string.
 
-  Returns the building number as a string by default, or as an integer when `type: :integer`
-  is passed. `range` defaults to `1..100`.
-
-  ## Options
-
-    * `:type` (`:string` or `:integer`) - the return type. Defaults to `:string`.
+  `range` defaults to `1..100`. Call `String.to_integer/1` yourself if you need an integer.
 
   ## Examples
 
       iex> NeoFaker.Address.building_number()
       "42"
 
-      iex> NeoFaker.Address.building_number(1..100, type: :integer)
-      25
+      iex> NeoFaker.Address.building_number(1..100)
+      "25"
 
   """
-  @spec building_number(Range.t(), keyword()) :: integer() | String.t()
-  def building_number(range \\ @building_number_range, opts \\ []) do
+  @spec building_number(Range.t()) :: String.t()
+  def building_number(range \\ @building_number_range) do
     Validator.validate_range!(range)
-    opts = NimbleOptions.validate!(opts, @building_number_schema)
 
-    number = Number.between(range.first, range.last)
-
-    case Keyword.fetch!(opts, :type) do
-      :string -> Formatter.format_number(number, :string)
-      :integer -> number
-    end
+    range |> Enum.random() |> Integer.to_string()
   end
 
   @doc """
@@ -119,14 +95,12 @@ defmodule NeoFaker.Address do
   end
 
   @doc """
-  Generates random geographic coordinates.
+  Generates a random `{latitude, longitude}` coordinate pair.
 
-  Returns a `{latitude, longitude}` tuple by default.
+  For a single component, use `latitude/1` or `longitude/1`.
 
   ## Options
 
-    * `:type` (`:full`, `:latitude`, or `:longitude`) - which coordinate(s) to return.
-      Defaults to `:full`.
     * `:precision` (non-negative integer) - the number of decimal places. Defaults to `6`.
 
   ## Examples
@@ -134,29 +108,60 @@ defmodule NeoFaker.Address do
       iex> NeoFaker.Address.coordinate()
       {11.5831672, 165.3662683}
 
-      iex> NeoFaker.Address.coordinate(type: :latitude)
-      11.5831672
-
-      iex> NeoFaker.Address.coordinate(type: :longitude)
-      165.3662683
-
       iex> NeoFaker.Address.coordinate(precision: 2)
       {11.58, 165.37}
 
-      iex> NeoFaker.Address.coordinate(type: :latitude, precision: 4)
+  """
+  @spec coordinate(keyword()) :: {float(), float()}
+  def coordinate(opts \\ []) do
+    precision = opts |> NimbleOptions.validate!(@precision_schema) |> Keyword.fetch!(:precision)
+
+    {Generator.latitude(precision), Generator.longitude(precision)}
+  end
+
+  @doc """
+  Generates a random latitude between `-90.0` and `90.0`.
+
+  ## Options
+
+    * `:precision` (non-negative integer) - the number of decimal places. Defaults to `6`.
+
+  ## Examples
+
+      iex> NeoFaker.Address.latitude()
+      11.5831672
+
+      iex> NeoFaker.Address.latitude(precision: 4)
       11.5832
 
   """
-  @spec coordinate(keyword()) :: {float(), float()} | float()
-  def coordinate(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @coordinate_schema)
-    latitude = Generator.latitude(Keyword.fetch!(opts, :precision))
-    longitude = Generator.longitude(Keyword.fetch!(opts, :precision))
+  @spec latitude(keyword()) :: float()
+  def latitude(opts \\ []) do
+    precision = opts |> NimbleOptions.validate!(@precision_schema) |> Keyword.fetch!(:precision)
 
-    case Keyword.fetch!(opts, :type) do
-      :latitude -> latitude
-      :longitude -> longitude
-      :full -> {latitude, longitude}
-    end
+    Generator.latitude(precision)
+  end
+
+  @doc """
+  Generates a random longitude between `-180.0` and `180.0`.
+
+  ## Options
+
+    * `:precision` (non-negative integer) - the number of decimal places. Defaults to `6`.
+
+  ## Examples
+
+      iex> NeoFaker.Address.longitude()
+      165.3662683
+
+      iex> NeoFaker.Address.longitude(precision: 4)
+      165.3663
+
+  """
+  @spec longitude(keyword()) :: float()
+  def longitude(opts \\ []) do
+    precision = opts |> NimbleOptions.validate!(@precision_schema) |> Keyword.fetch!(:precision)
+
+    Generator.longitude(precision)
   end
 end

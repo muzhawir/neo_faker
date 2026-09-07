@@ -60,15 +60,16 @@ defmodule NeoFaker.LoremTest do
       assert length(Lorem.paragraphs()) == 3
     end
 
-    test "joins with blank lines when join: true" do
-      joined = Lorem.paragraphs(2, join: true)
-
-      assert is_binary(joined)
-      assert String.contains?(joined, "\n\n")
+    test "every entry is a non-blank string" do
+      assert Enum.all?(Lorem.paragraphs(3), &(is_binary(&1) and &1 =~ ~r/\S/))
     end
 
     test "passes the text source through" do
       assert length(Lorem.paragraphs(2, text: :meditations)) == 2
+    end
+
+    test "raises NimbleOptions.ValidationError for the removed :join option" do
+      assert_raise NimbleOptions.ValidationError, fn -> Lorem.paragraphs(2, join: true) end
     end
 
     test "raises FunctionClauseError for a non-positive count" do
@@ -82,10 +83,8 @@ defmodule NeoFaker.LoremTest do
       assert length(Lorem.sentences()) == 5
     end
 
-    test "joins with a single space when join: true" do
-      joined = Lorem.sentences(3, join: true)
-
-      assert is_binary(joined)
+    test "every entry is a non-blank string" do
+      assert Enum.all?(Lorem.sentences(4), &(is_binary(&1) and &1 =~ ~r/\S/))
     end
 
     test "raises FunctionClauseError for a non-positive count" do
@@ -99,14 +98,7 @@ defmodule NeoFaker.LoremTest do
       assert length(Lorem.words()) == 10
     end
 
-    test "joins with a single space when join: true" do
-      joined = Lorem.words(5, join: true)
-
-      assert is_binary(joined)
-      assert joined |> String.split(" ") |> length() == 5
-    end
-
-    test "passes text and locale through without leaking them into the schema" do
+    test "passes text and locale through" do
       assert length(Lorem.words(3, text: :meditations, locale: :default)) == 3
     end
 

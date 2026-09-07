@@ -97,20 +97,16 @@ defmodule NeoFaker.TextTest do
     end
   end
 
-  describe "words/2" do
-    test "returns a list of the requested size by default" do
+  describe "words/1" do
+    test "returns a list of the requested size" do
       assert length(Text.words(4)) == 4
       assert length(Text.words()) == 5
     end
 
-    test "joins with a space when join: true" do
-      assert 3 |> Text.words(join: true) |> String.split(" ") |> length() == 3
-    end
+    test "every entry is a single lowercase word from the list" do
+      words = :default |> Data.fetch!(Text, "word.exs") |> Map.fetch!("words")
 
-    test "joins with a custom separator" do
-      # Use a separator that cannot occur inside a word (the list contains
-      # hyphenated entries like "long-term", so "-" would over-split).
-      assert 3 |> Text.words(join: true, separator: "|") |> String.split("|") |> length() == 3
+      assert Enum.all?(Text.words(10), &(&1 in words))
     end
 
     test "raises ArgumentError for a non-positive count" do

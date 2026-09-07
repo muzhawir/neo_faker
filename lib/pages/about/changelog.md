@@ -58,6 +58,31 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
   `NeoFaker.Locale.supported/0` and `available?/1`. `NeoFaker.Data` was always `@moduledoc false`
   (internal), so there's no deprecated delegate here, only the documented `NeoFaker` functions
   below get one.
+- **Options that switched a function's return type are gone; every function now has one return
+  type.** An anti-pattern audit (see `what-anti-patterns.md`) flagged "alternative return types":
+  a keyword option silently changing a struct into a string, or a list into a string.
+  - **`NeoFaker.Date` and `NeoFaker.Time`: the `:format` option is removed.** Every function
+    returns a `Date` / `Time` struct. For an ISO 8601 string, pipe through `Date.to_iso8601/1` /
+    `Time.to_iso8601/1`. The dropped option also drops an argument from most signatures: Date is
+    now `add(range)`, `between(start, finish)`, `birthday(min_age, max_age)`, `past(days)`,
+    `future(days)`, `today()`; Time is `between(start, finish)` and `morning()`..`night()` and
+    `now()` (Time `add(range, opts)` keeps its `:unit` option). `NeoFaker.Date.past/1` and
+    `NeoFaker.Date.future/1` now raise `ArgumentError` (was `FunctionClauseError`) for a
+    non-positive day count.
+  - **`NeoFaker.Lorem` `paragraphs`/`sentences`/`words` and `NeoFaker.Text` `words`: the `:join`
+    option (and `Text.words`' `:separator`) is removed.** They always return a list; join it
+    yourself with `Enum.join/2`. `NeoFaker.Text.words/1` loses its `opts` argument entirely.
+  - **`NeoFaker.Address.coordinate/1`: the `:type` option is removed.** It always returns a
+    `{latitude, longitude}` tuple. New `NeoFaker.Address.latitude/1` and
+    `NeoFaker.Address.longitude/1` return a single component (both take `:precision`).
+  - **`NeoFaker.Address.building_number/1`: the `:type` option (and the second argument) is
+    removed.** It always returns a string (the previous default); call `String.to_integer/1` for
+    an integer.
+  - **`NeoFaker.Boolean.boolean/1`: the `:integer` option (and the second argument) is removed.**
+    It always returns a boolean; use `if NeoFaker.Boolean.boolean(30), do: 1, else: 0` for `0`/`1`.
+- **`NeoFaker.Helpers.Formatter` (internal, `@moduledoc false`) drops `format_date/2`,
+  `format_time/2`, `format_number/2`, and `format_boolean/2`** along with the options above. Only
+  `apply_case/2` and `slugify/1` remain.
 
 ### Bug Fixes
 
@@ -89,6 +114,14 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 
 ### Improvements
 
+- Ran the full Elixir anti-pattern catalogue (`what-anti-patterns.md`) over `lib/` and closed
+  every finding. Besides the return-type changes in Breaking Changes: two hidden generators
+  (`Internet.DomainGenerator`, `HTTP.StatusCodeGenerator`) now use `Map.fetch!/2` instead of
+  `Map.get/2` for keys their schema guarantees, so a malformed data file fails loudly at the
+  source; `App.package_name/1` reuses `Formatter.slugify/1` instead of an inline copy of it;
+  `Person.age/2` no longer duplicates the integer checks that `Person.Validator` already does;
+  and the two internal `NeoFaker.Internet.Generator` seams exposed for tests are marked
+  `@doc false`.
 - Every domain's private submodules now follow one naming convention
   (`<Domain>.Generator`/`<Domain>.Validator`) instead of five different ad hoc shapes across the
   codebase. These modules are all `@moduledoc false` and were never part of the public API, so

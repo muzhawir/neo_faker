@@ -9,14 +9,14 @@ Numbers, Indonesian NIK/NPWP, and so on), see the [Locale Cheat Sheet](locale-ch
 
 {: .col-2}
 
-### [`building_number(range \\ 1..100, opts \\ [])`](`NeoFaker.Address.building_number/2`)
+### [`building_number(range \\ 1..100)`](`NeoFaker.Address.building_number/1`)
 
 ```elixir
 iex> NeoFaker.Address.building_number()
 "42"
 
-iex> NeoFaker.Address.building_number(1..100, type: :integer)
-25
+iex> NeoFaker.Address.building_number(1..100)
+"25"
 ```
 
 ### [`city(opts \\ [])`](`NeoFaker.Address.city/1`)
@@ -45,17 +45,18 @@ iex> NeoFaker.Address.country(locale: :id_id)
 iex> NeoFaker.Address.coordinate()
 {11.5831672, 165.3662683}
 
-iex> NeoFaker.Address.coordinate(type: :latitude)
-11.5831672
-
-iex> NeoFaker.Address.coordinate(type: :longitude)
-165.3662683
-
 iex> NeoFaker.Address.coordinate(precision: 2)
 {11.58, 165.37}
+```
 
-iex> NeoFaker.Address.coordinate(type: :latitude, precision: 4)
-11.5832
+### [`latitude(opts \\ [])`](`NeoFaker.Address.latitude/1`) / [`longitude(opts \\ [])`](`NeoFaker.Address.longitude/1`)
+
+```elixir
+iex> NeoFaker.Address.latitude()
+11.5831672
+
+iex> NeoFaker.Address.longitude(precision: 4)
+165.3663
 ```
 
 ## [App](`NeoFaker.App`)
@@ -213,7 +214,7 @@ iex> NeoFaker.Blood.all_rh_factors()
 
 {: .col-1}
 
-### [`boolean(true_ratio \\ 50, opts \\ [])`](`NeoFaker.Boolean.boolean/2`)
+### [`boolean(true_ratio \\ 50)`](`NeoFaker.Boolean.boolean/1`)
 
 ```elixir
 iex> NeoFaker.Boolean.boolean()
@@ -221,9 +222,6 @@ false
 
 iex> NeoFaker.Boolean.boolean(75)
 true
-
-iex> NeoFaker.Boolean.boolean(75, integer: true)
-1
 
 iex> NeoFaker.Boolean.boolean(0)
 false
@@ -397,7 +395,9 @@ iex> NeoFaker.Crypto.uuid(case: :upper)
 
 {: .col-2}
 
-### [`add(range \\ -365..365, opts \\ [])`](`NeoFaker.Date.add/2`)
+Every function returns a `Date` struct; pipe through `Date.to_iso8601/1` for a string.
+
+### [`add(range \\ -365..365)`](`NeoFaker.Date.add/1`)
 
 ```elixir
 iex> NeoFaker.Date.add()
@@ -405,12 +405,9 @@ iex> NeoFaker.Date.add()
 
 iex> NeoFaker.Date.add(0..31)
 ~D[2025-03-30]
-
-iex> NeoFaker.Date.add(0..31, format: :iso8601)
-"2025-03-30"
 ```
 
-### [`between(start, finish, opts \\ [])`](`NeoFaker.Date.between/3`)
+### [`between(start, finish)`](`NeoFaker.Date.between/2`)
 
 ```elixir
 iex> NeoFaker.Date.between()
@@ -418,12 +415,9 @@ iex> NeoFaker.Date.between()
 
 iex> NeoFaker.Date.between(~D[2020-01-01], ~D[2025-01-01])
 ~D[2022-08-17]
-
-iex> NeoFaker.Date.between(~D[2025-03-25], ~D[2025-03-25], format: :iso8601)
-"2025-03-25"
 ```
 
-### [`birthday(min_age \\ 18, max_age \\ 65, opts \\ [])`](`NeoFaker.Date.birthday/3`)
+### [`birthday(min_age \\ 18, max_age \\ 65)`](`NeoFaker.Date.birthday/2`)
 
 ```elixir
 iex> NeoFaker.Date.birthday()
@@ -431,39 +425,33 @@ iex> NeoFaker.Date.birthday()
 
 iex> NeoFaker.Date.birthday(18, 65)
 ~D[1998-03-04]
-
-iex> NeoFaker.Date.birthday(18, 65, format: :iso8601)
-"1999-05-06"
 ```
 
-### [`past(days \\ 365, opts \\ [])`](`NeoFaker.Date.past/2`)
+### [`past(days \\ 365)`](`NeoFaker.Date.past/1`)
 
 ```elixir
 iex> NeoFaker.Date.past()
 ~D[2024-10-01]
 
-iex> NeoFaker.Date.past(30, format: :iso8601)
-"2025-02-25"
+iex> NeoFaker.Date.past(30)
+~D[2025-02-25]
 ```
 
-### [`future(days \\ 365, opts \\ [])`](`NeoFaker.Date.future/2`)
+### [`future(days \\ 365)`](`NeoFaker.Date.future/1`)
 
 ```elixir
 iex> NeoFaker.Date.future()
 ~D[2026-01-10]
 
-iex> NeoFaker.Date.future(30, format: :iso8601)
-"2025-04-24"
+iex> NeoFaker.Date.future(30)
+~D[2025-04-24]
 ```
 
-### [`today(opts \\ [])`](`NeoFaker.Date.today/1`)
+### [`today()`](`NeoFaker.Date.today/0`)
 
 ```elixir
 iex> NeoFaker.Date.today()
 ~D[2025-03-25]
-
-iex> NeoFaker.Date.today(format: :iso8601)
-"2025-03-25"
 ```
 
 ## [Gravatar](`NeoFaker.Gravatar`)
@@ -786,14 +774,13 @@ iex> NeoFaker.Lorem.word(text: :meditations)
 "distract"
 ```
 
+The plural functions return a list; join it yourself with `Enum.join/2`.
+
 ### [`paragraphs(count \\ 3, opts \\ [])`](`NeoFaker.Lorem.paragraphs/2`)
 
 ```elixir
 iex> NeoFaker.Lorem.paragraphs(2)
 ["First paragraph...", "Second paragraph..."]
-
-iex> NeoFaker.Lorem.paragraphs(2, join: true)
-"First paragraph...\n\nSecond paragraph..."
 ```
 
 ### [`sentences(count \\ 5, opts \\ [])`](`NeoFaker.Lorem.sentences/2`)
@@ -801,9 +788,6 @@ iex> NeoFaker.Lorem.paragraphs(2, join: true)
 ```elixir
 iex> NeoFaker.Lorem.sentences(3)
 ["First sentence.", "Second sentence.", "Third sentence."]
-
-iex> NeoFaker.Lorem.sentences(3, join: true)
-"First sentence. Second sentence. Third sentence."
 ```
 
 ### [`words(count \\ 10, opts \\ [])`](`NeoFaker.Lorem.words/2`)
@@ -811,9 +795,6 @@ iex> NeoFaker.Lorem.sentences(3, join: true)
 ```elixir
 iex> NeoFaker.Lorem.words(5)
 ["suspendisse", "justo", "venenatis", "sapien", "accumsan"]
-
-iex> NeoFaker.Lorem.words(5, join: true)
-"suspendisse justo venenatis sapien accumsan"
 ```
 
 ## [Number](`NeoFaker.Number`)
@@ -1060,22 +1041,18 @@ iex> NeoFaker.Text.word()
 "computer"
 ```
 
-### [`words(count \\ 5, opts \\ [])`](`NeoFaker.Text.words/2`)
+### [`words(count \\ 5)`](`NeoFaker.Text.words/1`)
 
 ```elixir
 iex> NeoFaker.Text.words(3)
 ["computer", "elixir", "phoenix"]
-
-iex> NeoFaker.Text.words(3, join: true)
-"computer elixir phoenix"
-
-iex> NeoFaker.Text.words(3, join: true, separator: "-")
-"computer-elixir-phoenix"
 ```
 
 ## [Time](`NeoFaker.Time`)
 
 {: .col-2}
+
+Every function returns a `Time` struct; pipe through `Time.to_iso8601/1` for a string.
 
 ### [`add(range \\ -24..24, opts \\ [])`](`NeoFaker.Time.add/2`)
 
@@ -1085,12 +1062,9 @@ iex> NeoFaker.Time.add()
 
 iex> NeoFaker.Time.add(-2..2, unit: :minute)
 ~T[07:23:10]
-
-iex> NeoFaker.Time.add(0..10, format: :iso8601)
-"15:22:10"
 ```
 
-### [`between(start, finish, opts \\ [])`](`NeoFaker.Time.between/3`)
+### [`between(start, finish)`](`NeoFaker.Time.between/2`)
 
 ```elixir
 iex> NeoFaker.Time.between()
@@ -1098,33 +1072,30 @@ iex> NeoFaker.Time.between()
 
 iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
 ~T[19:30:11]
-
-iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59], format: :iso8601)
-"19:30:11"
 ```
 
-### [`morning(opts \\ [])`](`NeoFaker.Time.morning/1`)
+### [`morning()`](`NeoFaker.Time.morning/0`)
 
 ```elixir
 iex> NeoFaker.Time.morning()
 ~T[08:30:15]
 ```
 
-### [`afternoon(opts \\ [])`](`NeoFaker.Time.afternoon/1`)
+### [`afternoon()`](`NeoFaker.Time.afternoon/0`)
 
 ```elixir
 iex> NeoFaker.Time.afternoon()
 ~T[14:30:15]
 ```
 
-### [`evening(opts \\ [])`](`NeoFaker.Time.evening/1`)
+### [`evening()`](`NeoFaker.Time.evening/0`)
 
 ```elixir
 iex> NeoFaker.Time.evening()
 ~T[20:30:15]
 ```
 
-### [`night(opts \\ [])`](`NeoFaker.Time.night/1`)
+### [`night()`](`NeoFaker.Time.night/0`)
 
 ```elixir
 iex> NeoFaker.Time.night()
@@ -1138,12 +1109,9 @@ iex> NeoFaker.Time.time_zone()
 "Asia/Makassar"
 ```
 
-### [`now(opts \\ [])`](`NeoFaker.Time.now/1`)
+### [`now()`](`NeoFaker.Time.now/0`)
 
 ```elixir
 iex> NeoFaker.Time.now()
-~T[15:22:10]
-
-iex> NeoFaker.Time.now(format: :iso8601)
-"15:22:10"
+~T[15:22:10.123456]
 ```

@@ -11,7 +11,7 @@ defmodule NeoFaker.DateTest do
   # narrow it, letting us reach the runtime guard clauses meant for arbitrary input.
   defp opaque(term), do: Enum.random([term])
 
-  describe "add/2" do
+  describe "add/1" do
     test "returns today's date when the range is 0..0" do
       before = today()
       result = FakeDate.add(0..0)
@@ -19,12 +19,6 @@ defmodule NeoFaker.DateTest do
       assert %Date{} = result
       assert Date.compare(result, before) != :lt
       assert Date.compare(result, today()) != :gt
-    end
-
-    test "returns an ISO 8601 string when format: :iso8601" do
-      result = FakeDate.add(0..0, format: :iso8601)
-
-      assert {:ok, _} = Date.from_iso8601(result)
     end
 
     test "stays within a positive range from today" do
@@ -62,13 +56,9 @@ defmodule NeoFaker.DateTest do
         FakeDate.add(opaque([1, 2, 3]))
       end
     end
-
-    test "raises NimbleOptions.ValidationError for an unknown format" do
-      assert_raise NimbleOptions.ValidationError, fn -> FakeDate.add(0..0, format: :rfc3339) end
-    end
   end
 
-  describe "between/3" do
+  describe "between/2" do
     test "returns a Date struct within the given bounds" do
       result = FakeDate.between(~D[2020-01-01], ~D[2020-12-31])
 
@@ -76,10 +66,8 @@ defmodule NeoFaker.DateTest do
       assert Date.compare(result, ~D[2020-12-31]) != :gt
     end
 
-    test "returns an ISO 8601 string when format: :iso8601" do
-      result = FakeDate.between(~D[2020-01-01], ~D[2020-01-01], format: :iso8601)
-
-      assert result == "2020-01-01"
+    test "returns the exact date when start equals finish" do
+      assert FakeDate.between(~D[2020-01-01], ~D[2020-01-01]) == ~D[2020-01-01]
     end
 
     test "uses the epoch and today as defaults" do
@@ -96,7 +84,7 @@ defmodule NeoFaker.DateTest do
     end
   end
 
-  describe "birthday/3" do
+  describe "birthday/2" do
     test "returns a Date struct within the requested age window" do
       before = today()
       result = FakeDate.birthday(18, 65)
@@ -106,10 +94,6 @@ defmodule NeoFaker.DateTest do
 
       refute Date.before?(result, lower)
       refute Date.after?(result, upper)
-    end
-
-    test "returns an ISO 8601 string when format: :iso8601" do
-      assert FakeDate.birthday(18, 65, format: :iso8601) =~ ~r/^\d{4}-\d{2}-\d{2}$/
     end
 
     test "uses the default 18..65 window" do
@@ -145,7 +129,14 @@ defmodule NeoFaker.DateTest do
     end
   end
 
-  describe "past/2" do
+  describe "past/1" do
+    test "defaults to the last 365 days" do
+      result = FakeDate.past()
+
+      assert Date.compare(result, Date.add(today(), -365)) != :lt
+      assert Date.compare(result, today()) != :gt
+    end
+
     test "returns a date between `days` ago and today" do
       before = today()
       result = FakeDate.past(30)
@@ -154,16 +145,19 @@ defmodule NeoFaker.DateTest do
       assert Date.compare(result, today()) != :gt
     end
 
-    test "returns an ISO 8601 string when format: :iso8601" do
-      assert {:ok, _} = Date.from_iso8601(FakeDate.past(365, format: :iso8601))
-    end
-
-    test "raises FunctionClauseError for a non-positive day count" do
-      assert_raise FunctionClauseError, fn -> FakeDate.past(0) end
+    test "raises ArgumentError for a non-positive day count" do
+      assert_raise ArgumentError, ~r/days must be a positive integer/, fn -> FakeDate.past(0) end
     end
   end
 
-  describe "future/2" do
+  describe "future/1" do
+    test "defaults to the next 365 days" do
+      result = FakeDate.future()
+
+      assert Date.compare(result, today()) != :lt
+      assert Date.compare(result, Date.add(today(), 365)) != :gt
+    end
+
     test "returns a date between today and `days` from now" do
       before = today()
       result = FakeDate.future(30)
@@ -172,34 +166,28 @@ defmodule NeoFaker.DateTest do
       assert Date.compare(result, Date.add(today(), 30)) != :gt
     end
 
-    test "returns an ISO 8601 string when format: :iso8601" do
-      assert {:ok, _} = Date.from_iso8601(FakeDate.future(365, format: :iso8601))
-    end
-
-    test "raises FunctionClauseError for a non-positive day count" do
-      assert_raise FunctionClauseError, fn -> FakeDate.future(-1) end
+    test "raises ArgumentError for a non-positive day count" do
+      assert_raise ArgumentError, ~r/days must be a positive integer/, fn ->
+        FakeDate.future(-1)
+      end
     end
   end
 
-  describe "today/1" do
+  describe "today/0" do
     test "returns today's date as a struct" do
       assert FakeDate.today() == today()
-    end
-
-    test "returns today's date as an ISO 8601 string" do
-      assert FakeDate.today(format: :iso8601) == Date.to_iso8601(today())
     end
   end
 
   describe "Generator" do
-    test "add/2 returns a struct or an ISO 8601 string" do
-      assert %Date{} = Generator.add(0..0, :struct)
-      assert Generator.add(0..0, :iso8601) == Date.to_iso8601(today())
+    test "add/1 returns a Date struct" do
+      assert %Date{} = Generator.add(0..0)
+      assert Generator.add(0..0) == today()
     end
 
-    test "between/3 returns a struct or an ISO 8601 string" do
-      assert %Date{} = Generator.between(~D[2020-01-01], ~D[2020-01-01], :struct)
-      assert Generator.between(~D[2020-01-01], ~D[2020-01-01], :iso8601) == "2020-01-01"
+    test "between/2 returns a Date struct within bounds" do
+      assert Generator.between(~D[2020-01-01], ~D[2020-01-01]) == ~D[2020-01-01]
+      assert %Date{} = Generator.between(~D[2020-01-01], ~D[2020-12-31])
     end
 
     test "local_date_now/0 returns today" do

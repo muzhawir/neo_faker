@@ -292,19 +292,10 @@ defmodule NeoFaker.Person do
 
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
-  def age(min \\ 0, max \\ @max_age)
-
-  def age(min, max) when is_integer(min) and is_integer(max) do
+  def age(min \\ 0, max \\ @max_age) do
     Validator.validate_age_range!(min, max)
+
     Enum.random(min..max)
-  end
-
-  def age(min, _max) when not is_integer(min) do
-    raise ArgumentError, "min must be an integer, got: #{inspect(min)}"
-  end
-
-  def age(_min, max) when not is_integer(max) do
-    raise ArgumentError, "max must be an integer, got: #{inspect(max)}"
   end
 
   @doc """

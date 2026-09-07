@@ -743,7 +743,7 @@ iex> NeoFaker.Internet.slug(2, separator: "_")
 
 ## [Lorem](`NeoFaker.Lorem`)
 
-{: .col-1}
+{: .col-2}
 
 ### [`paragraph(opts \\ [])`](`NeoFaker.Lorem.paragraph/1`)
 

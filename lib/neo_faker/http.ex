@@ -79,7 +79,7 @@ defmodule NeoFaker.HTTP do
       from every category. Defaults to `:all`.
       * `:browser` - a real browser user-agent string.
       * `:crawler` - a search/SEO crawler bot token.
-      * `:ai` - an AI crawler or agent bot token (`"gptbot"`, `"claudebot"`, `"perplexitybot"`).
+      * `:ai` - an AI crawler or agent bot token (`"gptbot"`, `"claude-user"`, `"perplexitybot"`).
 
   ## Examples
 

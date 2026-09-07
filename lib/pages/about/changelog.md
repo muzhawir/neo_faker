@@ -15,7 +15,7 @@ private modules live.
   `non_binary_gender/1`.
 - `NeoFaker.Address.latitude/1` and `longitude/1` return a single coordinate component.
 - `NeoFaker.HTTP.user_agent/1` takes `type: :ai`, drawing from a new list of AI crawler and agent
-  bot tokens (`"gptbot"`, `"claudebot"`, `"perplexitybot"`, and so on); `:all` includes them.
+  bot tokens (`"gptbot"`, `"claude-user"`, `"perplexitybot"`, and so on); `:all` includes them.
   Crawler user-agents are now bare bot tokens rather than full UA strings.
 - `NeoFaker.HTTP.request_method/1` and `all_request_methods/0` now include the `QUERY` method.
   It counts as common, so the default (`common_only: true`) pool is six methods, not five.

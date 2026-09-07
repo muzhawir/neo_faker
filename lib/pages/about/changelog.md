@@ -2,182 +2,79 @@
 
 ## v0.15.0 (2026-09-06)
 
-This release is a large internal architecture rewrite. A handful of thin top-level functions were
-removed outright rather than deprecated (see Breaking Changes); each has a one-to-one replacement.
-Beyond that, what changed is how locale state is scoped, how options are validated, and where a
-few internal (never public) modules live. A formal deprecation cycle for future removals begins in
-v0.20.0.
+A large internal rewrite. Some thin top-level functions were removed outright rather than deprecated (a formal
+deprecation cycle begins in v0.20.0); each has a one-to-one replacement. Options that changed a function's return
+type were removed. Everything else is internal: how locale state is scoped, how options are validated, and where the
+private modules live.
 
 ### Features
 
-- Added `NeoFaker.seed/1`, which seeds `:rand` for the calling process, for reproducible output in
-  tests (e.g. `NeoFaker.seed(12_345)`).
-- Added `NeoFaker.Person.gender/1`, a single function with a `:format` option (`:binary`,
-  `:short_binary`, `:non_binary`, and `:all`, the last pooling the binary and non-binary
-  identities) that replaces the separate `binary_gender/1`, `short_binary_gender/1`, and
-  `non_binary_gender/1` functions, matching the same `:format`-option pattern
-  `NeoFaker.Blood.group/1` already used.
-- Added `NeoFaker.Gravatar.random_display/0`, replacing `random/0` with a name that reads
-  consistently alongside its siblings `display/2` and `profile/2`.
-- Added `NeoFaker.Locale`, which consolidates locale state management (`fetch/0`, `get/0`,
-  `set/1`) and the supported-locale registry (`supported/0`, `available?/1`) into a single module.
-  Previously this was split across the bare `NeoFaker` module (state) and the hidden
-  `NeoFaker.Data` module (registry), which also depended on each other in both directions.
-  `NeoFaker.Data` now depends one-way on `NeoFaker.Locale` instead.
+- `NeoFaker.seed/1` seeds `:rand` for the calling process, for reproducible output in tests.
+- `NeoFaker.Person.gender/1` takes a `:format` option (`:binary`, `:short_binary`, `:non_binary`, or `:all`, which
+  pools the binary and non-binary identities). Replaces `binary_gender/1`, `short_binary_gender/1`,
+  `non_binary_gender/1`.
+- `NeoFaker.Address.latitude/1` and `longitude/1` return a single coordinate component.
+- `NeoFaker.Locale` owns all locale state (`fetch/0`, `get/0`, `set/1`) and the supported-locale list
+  (`supported/0`, `available?/1`), previously split between `NeoFaker` and the hidden `NeoFaker.Data`.
+- `NeoFaker.Gravatar.random_display/0` replaces `random/0`.
 
 ### Breaking Changes
 
-- **`NeoFaker.locale/0`, `NeoFaker.set_locale/1`, and `NeoFaker.get_locale/0` are removed.** Use
-  `NeoFaker.Locale.fetch/0`, `NeoFaker.Locale.set/1`, and `NeoFaker.Locale.get/0` instead. Same
-  signatures and return values, just on the new module.
-- **`NeoFaker.Person.binary_gender/1`, `short_binary_gender/1`, and `non_binary_gender/1` are
-  removed.** Use `gender/1` with the matching `:format` option: `gender(format: :binary)`,
-  `gender(format: :short_binary)`, `gender(format: :non_binary)`.
-- **`NeoFaker.Gravatar.random/0` is removed.** Use `random_display/0`, which does the exact same
-  thing.
-- **`NeoFaker.Locale.set/1` is process-scoped**, not node-global. It does not write to
-  `Application.put_env/3`; it stores the override in the calling process's process dictionary.
-  A locale set in one process (including one ExUnit test) no longer affects any other process.
-  Set a locale for the whole application via `config :neo_faker, locale: ...` instead (unchanged).
-- **Locale-exclusive modules moved namespace**: `NeoFaker.EnUs.*` and `NeoFaker.IdId.*` are now
-  `NeoFaker.Locales.EnUs.*` and `NeoFaker.Locales.IdId.*` (e.g.
-  `NeoFaker.Locales.EnUs.Person.ssn/0`). Update any direct reference to these module names.
-- **`nimble_options ~> 1.1`** is now a runtime dependency (previously zero runtime dependencies).
-- **Invalid options now raise `NimbleOptions.ValidationError`, not `ArgumentError`**, on every
-  function that accepts an `opts` keyword list. Options are validated by calling
-  `NimbleOptions.validate!/2` directly; the internal `NeoFaker.Helpers.Options` wrapper that
-  re-raised `NimbleOptions` errors as `ArgumentError` has been removed. Messages are
-  `NimbleOptions`' own wording (e.g. `"invalid value for :format option: expected one of [...],
-got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`max`, counts) and
-  unsupported-locale errors still raise `ArgumentError`. Update any `rescue`/`assert_raise` in
-  your own code that expected `ArgumentError` for a bad option.
-- **`NeoFaker.Internet.email/1`** no longer accepts the undocumented bare `:word_count` (or
-  `:type`, for the TLD) as a fallback for `:username_word_count` (or `:domain_name_word_count`,
-  `:tld_type`). Only the documented, prefixed option names are read now.
-- **`NeoFaker.Data.supported_locales/0` and `locale_available?/1`** are removed, moved to
-  `NeoFaker.Locale.supported/0` and `available?/1`. `NeoFaker.Data` was always `@moduledoc false`
-  (internal), so there's no deprecated delegate here, only the documented `NeoFaker` functions
-  below get one.
-- **Options that switched a function's return type are gone; every function now has one return
-  type.** An anti-pattern audit (see `what-anti-patterns.md`) flagged "alternative return types":
-  a keyword option silently changing a struct into a string, or a list into a string.
-  - **`NeoFaker.Date` and `NeoFaker.Time`: the `:format` option is removed.** Every function
-    returns a `Date` / `Time` struct. For an ISO 8601 string, pipe through `Date.to_iso8601/1` /
-    `Time.to_iso8601/1`. The dropped option also drops an argument from most signatures: Date is
-    now `add(range)`, `between(start, finish)`, `birthday(min_age, max_age)`, `past(days)`,
-    `future(days)`, `today()`; Time is `between(start, finish)` and `morning()`..`night()` and
-    `now()` (Time `add(range, opts)` keeps its `:unit` option). `NeoFaker.Date.past/1` and
-    `NeoFaker.Date.future/1` now raise `ArgumentError` (was `FunctionClauseError`) for a
-    non-positive day count.
-  - **`NeoFaker.Lorem` `paragraphs`/`sentences`/`words` and `NeoFaker.Text` `words`: the `:join`
-    option (and `Text.words`' `:separator`) is removed.** They always return a list; join it
-    yourself with `Enum.join/2`. `NeoFaker.Text.words/1` loses its `opts` argument entirely.
-  - **`NeoFaker.Address.coordinate/1`: the `:type` option is removed.** It always returns a
-    `{latitude, longitude}` tuple. New `NeoFaker.Address.latitude/1` and
-    `NeoFaker.Address.longitude/1` return a single component (both take `:precision`).
-  - **`NeoFaker.Address.building_number/1`: the `:type` option (and the second argument) is
-    removed.** It always returns a string (the previous default); call `String.to_integer/1` for
-    an integer.
-  - **`NeoFaker.Boolean.boolean/1`: the `:integer` option (and the second argument) is removed.**
-    It always returns a boolean; use `if NeoFaker.Boolean.boolean(30), do: 1, else: 0` for `0`/`1`.
-- **`NeoFaker.Helpers.Formatter` (internal, `@moduledoc false`) drops `format_date/2`,
-  `format_time/2`, `format_number/2`, and `format_boolean/2`** along with the options above. Only
-  `apply_case/2` and `slugify/1` remain.
+- **Invalid options raise `NimbleOptions.ValidationError`, not `ArgumentError`.** The internal `Helpers.Options`
+  wrapper is gone; `NimbleOptions.validate!/2` is called directly. Positional-argument and unsupported-locale errors
+  still raise `ArgumentError`.
+- **`:format` is removed from `NeoFaker.Date` and `NeoFaker.Time`.** They always return a `Date` / `Time` struct;
+  call `Date.to_iso8601/1` / `Time.to_iso8601/1` for a string. Signatures lose an argument, e.g.
+  `NeoFaker.Date.add/1`, `NeoFaker.Date.between/2`, `NeoFaker.Time.between/2`; the period helpers
+  (`NeoFaker.Time.morning/0` through `night/0`) and `NeoFaker.Time.now/0` take no arguments, while
+  `NeoFaker.Time.add/2` keeps `:unit`. `NeoFaker.Date.past/1` and `NeoFaker.Date.future/1` now raise
+  `ArgumentError` for a non-positive day count.
+- **`:join` is removed from `NeoFaker.Lorem` `paragraphs`/`sentences`/`words` and `NeoFaker.Text.words`.** They
+  always return a list; join it with `Enum.join/2`. `NeoFaker.Text.words/1` no longer takes options.
+- **`:type` is removed from `NeoFaker.Address.coordinate/1`** (always a `{lat, lng}` tuple) **and
+  `building_number/1`** (always a string; the second argument is gone too).
+- **`:integer` is removed from `NeoFaker.Boolean.boolean/1`** (always a boolean; the second argument is gone too).
+- **`NeoFaker.Locale.set/1` is process-scoped, not node-global.** It writes to the process dictionary, not
+  `Application.put_env/3`, so it never leaks between processes. Use `config :neo_faker, locale: ...` for a node-wide
+  default.
+- **Locale-exclusive modules moved:** `NeoFaker.EnUs.*` / `NeoFaker.IdId.*` are now `NeoFaker.Locales.EnUs.*` /
+  `NeoFaker.Locales.IdId.*`.
+- **Removed, each with a drop-in replacement:** `NeoFaker.locale/0`, `set_locale/1`, `get_locale/0` (use
+  `NeoFaker.Locale.fetch/0`, `set/1`, `get/0`); `Person.binary_gender/1`, `short_binary_gender/1`,
+  `non_binary_gender/1` (use `gender/1`); `Gravatar.random/0` (use `random_display/0`);
+  `Data.supported_locales/0`, `locale_available?/1` (use `NeoFaker.Locale.supported/0`, `available?/1`).
+- **`NeoFaker.Internet.email/1`** reads only the prefixed option names now (`:username_word_count`,
+  `:domain_name_word_count`, `:tld_type`), not the bare `:word_count` / `:type` fallbacks.
+- **`nimble_options ~> 1.1`** is now a runtime dependency.
 
 ### Bug Fixes
 
-- **`NeoFaker.Person.first_name/1`, `middle_name/1`, `last_name/1`, `full_name/1`,
-  `NeoFaker.App.name/1`, and `NeoFaker.Color.keyword/1`** now correctly fall back to the
-  configured locale (`NeoFaker.Locale.set/1` or `config :neo_faker, locale: ...`) when no
-  `locale:` option is given. Previously they hardcoded the `:default` locale, silently ignoring
-  the configured one. For example, `NeoFaker.Locale.set(:id_id)` followed by
-  `NeoFaker.Person.first_name()` still returned an English name.
-- `NeoFaker.Data` no longer reseeds `:rand` as a side effect of the first read of a locale/module
-  data file. This silently overrode any seed a caller had set (including via the new
-  `NeoFaker.seed/1`); OTP already seeds `:rand` automatically per process.
-- **`NeoFaker.Internet.username/1`, `domain_name/1` (`type: :random`), and `slug/2`** now emit
-  only lowercase alphanumeric segments. They join random `NeoFaker.Text.word/0` picks with a
-  separator, but a picked word could carry a space (`"ice cream"`), a hyphen (`"long-term"`), an
-  apostrophe (`"o'clock"`), or an accent, which leaked into the output as an invalid character or
-  an extra segment (`"no one_smith@…"`, a slug that split into the wrong number of parts). Each
-  segment is now run through a shared `NeoFaker.Helpers.Formatter.slugify/1` helper. The five
-  phrase entries (`"all right"`, `"ice cream"`, `"next to"`, `"no one"`, `"used to"`) were also
-  removed from the word list, since `Text.word/0` is documented to return a single word, and a
-  test now guards the list against whitespace entries. `url_path/0` and `query_string/0` use the
-  same helper (previously they replaced spaces with `-`; they now drop them, matching the other
-  token builders).
-- **`NeoFaker.Lorem.word/1` and `sentence/1`** no longer raise `Enum.EmptyError` on the rare draw
-  where the source text is split around a blank fragment (a source string with a trailing space
-  after its final sentence, e.g. Meditations' `"This in Carnuntum. "`, produced an empty
-  "sentence", and `word/1` then drew from a wordless list). Sentence and paragraph splitting now
-  discard blank fragments.
+- `Person.first_name/1`, `middle_name/1`, `last_name/1`, `full_name/1`, `App.name/1`, and `Color.keyword/1` now
+  honour the configured locale when no `:locale` option is passed; they hardcoded `:default` before.
+- `NeoFaker.Data` no longer reseeds `:rand` on the first read of a data file, which silently overrode a caller's
+  seed.
+- `Internet.username/1`, `domain_name/1` (`type: :random`), and `slug/2` now emit only lowercase alphanumeric
+  segments; a word carrying a space, hyphen, apostrophe, or accent used to leak through. Phrase entries were dropped
+  from the word list.
+- `Lorem.word/1` and `sentence/1` no longer raise `Enum.EmptyError` when the source text splits around a blank
+  fragment.
 
 ### Improvements
 
-- Ran the full Elixir anti-pattern catalogue (`what-anti-patterns.md`) over `lib/` and closed
-  every finding. Besides the return-type changes in Breaking Changes: two hidden generators
-  (`Internet.DomainGenerator`, `HTTP.StatusCodeGenerator`) now use `Map.fetch!/2` instead of
-  `Map.get/2` for keys their schema guarantees, so a malformed data file fails loudly at the
-  source; `App.package_name/1` reuses `Formatter.slugify/1` instead of an inline copy of it;
-  `Person.age/2` no longer duplicates the integer checks that `Person.Validator` already does;
-  and the two internal `NeoFaker.Internet.Generator` seams exposed for tests are marked
-  `@doc false`.
-- Every domain's private submodules now follow one naming convention
-  (`<Domain>.Generator`/`<Domain>.Validator`) instead of five different ad hoc shapes across the
-  codebase. These modules are all `@moduledoc false` and were never part of the public API, so
-  this is an internal reorganization, not a breaking change.
-- Dropped every bare `import` of a project module in favor of `alias` and explicit calls.
-- Removed four unused helpers from the hidden `NeoFaker.Helpers.Formatter` module
-  (`format_datetime/2`, `format_color_w3c/3`, `with_prefix/3`, `with_suffix/3`); nothing in the
-  library or its tests called them. These were `@moduledoc false` internals, so this is not a
-  public API change.
-- Refactored the hidden `NeoFaker.Internet.Generator` module for readability: the scattered
-  `:rand.uniform(n) - 1` calls are now named `random_octet/0`, `random_octet_except/1`, and
-  `random_ipv6_group/0` helpers; `reserved_ipv4?/3` pattern-matches the octets instead of guarding
-  on `==`; the compressed-IPv6 builder drops a redundant `case` and splits its formatting into a
-  pure `compress_ipv6_groups/1` function; and `url_path/0`/`query_string/0` share one word-segment
-  helper. Output and the public `reserved_ipv4?/3` behavior are unchanged.
-- Sorted the documentation source pages into `lib/pages/guides/`, `lib/pages/reference/`,
-  `lib/pages/contributing/`, and `lib/pages/about/` subfolders, one per ExDoc sidebar group, and
-  listed them explicitly in `mix.exs` so the sidebar order is deliberate. The "Adding a Locale"
-  guide now sits under its own "Contributing" group, separate from the user-facing guides. ExDoc
-  still publishes each page at the same `<name>.html` URL, so no documentation links change.
-- Simplified the locale and data backend (all `@moduledoc false` internals, no public API or
-  behavior change). `priv/data/locale.exs` is removed: the supported-locale list is now the
-  `@supported_locales` module attribute in `NeoFaker.Locale`, dropping a runtime file read (via
-  `Code.eval_string/3`) and its `:persistent_term` cache. Adding a locale was always a code change
-  anyway, so the list lives next to the code that enforces it. `NeoFaker.Data` collapsed its
-  two-step locale resolution and its repeated file-name validation into a single internal `load/3`
-  path shared by `random_value/4` and `fetch!/3`; `fetch!/3` now applies the same per-file
-  `:default` fallback that `random_value/4` always had, instead of raising `File.Error`.
-
-### Tests
-
-- Fixed a pre-existing bug in `lorem_test.exs`: two tests asserted on a `type:` option that
-  `NeoFaker.Lorem` never reads (the real, documented option is `:text`); the assertions passed
-  vacuously before because the unrecognized option was silently ignored.
-- Widened `app_test.exs`'s default-format name check to accept an all-caps word (the name list
-  includes `"AI"`), and ran the `NeoFaker.Lorem`, `NeoFaker.App`, and `NeoFaker.Internet`
-  word/token tests over many iterations so a rare bad draw fails deterministically instead of
-  roughly one run in twenty.
-- Split the two tests in `NeoFakerTest` that mutate `Application` env directly (bypassing
-  `NeoFaker.Locale.set/1`, to exercise the raw-config validation path) into
-  `NeoFaker.LocaleApplicationEnvTest`, kept `async: false` since that kind of mutation is
-  inherently node-global regardless of the locale-scoping change above. Moved alongside the new
-  `NeoFaker.LocaleTest` once locale management moved to `NeoFaker.Locale`.
-- Updated the option-validation tests in `address_test`, `app_test`, `gravatar_test`, and
-  `internet_test` to expect `NimbleOptions.ValidationError` instead of `ArgumentError`. Tests for
-  positional arguments and for the empty-string `:domain_name` guard (which still raises
-  `ArgumentError` from the generator, not the schema) are unchanged.
-- Removed the delegate tests for the deleted functions above (`NeoFakerTest`'s locale describes,
-  `person_test`'s "deprecated gender functions", `gravatar_test`'s `random/0`). `NeoFaker.LocaleTest`
-  and the `gender/1` / `random_display/0` tests already cover the replacements.
-- Overhauled every domain's test file, raising total line coverage from ~76% to 100%. The last
-  gaps were in the hidden `NeoFaker.Internet.Generator`: three reserved-`/24` sub-block branches
-  in `pick_public_third_octet/2` and the zero-run compression path of `compressed_ipv6/0`, all
-  reachable from `public_ipv4/0` / `compressed_ipv6/0` only on random draws too rare to hit in a
-  test. Both are now exercised through the pure `compress_ipv6_groups/1` function and a
-  now-public `pick_public_third_octet/2`, against fixed inputs.
+- Ran the full Elixir anti-pattern catalogue over `lib/` and closed every finding. Beyond the return-type changes
+  above: `Map.fetch!/2` instead of `Map.get/2` for schema-guaranteed keys, `App.package_name/1` reuses
+  `Formatter.slugify/1`, `Person.age/2` drops validation it duplicated, and two test-only `Internet.Generator`
+  functions are marked `@doc false`.
+- Private submodules (all `@moduledoc false`) now follow one naming convention: `<Domain>.Generator` and
+  `<Domain>.Validator`. Every bare `import` of a project module was replaced with an `alias`.
+- Locale and data backend simplified (internal only): `priv/data/locale.exs` is replaced by a module attribute in
+  `NeoFaker.Locale`, and `NeoFaker.Data` collapsed to one `load/3` path shared by `random_value/4` and `fetch!/3`,
+  which now share the per-file `:default` fallback.
+- `NeoFaker.Internet.Generator` refactored for readability (named octet helpers, pattern-matched `reserved_ipv4?/3`,
+  a pure `compress_ipv6_groups/1`); output is unchanged.
+- Documentation pages sorted into `guides/`, `reference/`, `contributing/`, and `about/` subfolders, one per ExDoc
+  sidebar group. URLs are unchanged.
+- Test suite overhauled across every domain; total line coverage is now 100%.
 
 ## v0.14.0 (2026-03-11)
 
@@ -311,7 +208,8 @@ Added new module `NeoFaker.Internet` to handle internet-related data generation,
 
 ### Features
 
-- Added `NeoFaker.Address` for generating random address components: building numbers, cities, countries, and coordinates.
+- Added `NeoFaker.Address` for generating random address components: building numbers, cities, countries, and
+  coordinates.
 - Added `NeoFaker.Time.time_zone/0` for generating random time zones.
 
 ### Improvements

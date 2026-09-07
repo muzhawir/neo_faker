@@ -35,37 +35,23 @@ defmodule NeoFaker.HTTP do
     "unsafe-url"
   ]
 
-  @user_agent_schema NimbleOptions.new!(
-                       type: [type: {:in, [:all, :browser, :crawler, :ai]}, default: :all]
-                     )
+  @user_agent_types [:all, :browser, :crawler, :ai]
+  @status_code_types [:simple, :detailed]
+  @status_code_groups [:information, :success, :redirection, :client_error, :server_error]
+  @header_name_types [:all, :request, :response]
+
+  @user_agent_schema NimbleOptions.new!(type: [type: {:in, @user_agent_types}, default: :all])
 
   @request_method_schema NimbleOptions.new!(common_only: [type: :boolean, default: true])
 
   @status_code_schema NimbleOptions.new!(
-                        type: [type: {:in, [:simple, :detailed]}, default: :simple],
-                        group: [
-                          type:
-                            {:or,
-                             [
-                               nil,
-                               {:in,
-                                [
-                                  :information,
-                                  :success,
-                                  :redirection,
-                                  :client_error,
-                                  :server_error
-                                ]}
-                             ]},
-                          default: nil
-                        ]
+                        type: [type: {:in, @status_code_types}, default: :simple],
+                        group: [type: {:in, [nil | @status_code_groups]}, default: nil]
                       )
 
   @protocol_version_schema NimbleOptions.new!(include_http3: [type: :boolean, default: true])
 
-  @header_name_schema NimbleOptions.new!(
-                        type: [type: {:in, [:all, :request, :response]}, default: :all]
-                      )
+  @header_name_schema NimbleOptions.new!(type: [type: {:in, @header_name_types}, default: :all])
 
   @doc """
   Generates a random HTTP header name.

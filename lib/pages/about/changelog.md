@@ -80,6 +80,11 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
   test now guards the list against whitespace entries. `url_path/0` and `query_string/0` use the
   same helper (previously they replaced spaces with `-`; they now drop them, matching the other
   token builders).
+- **`NeoFaker.Lorem.word/1` and `sentence/1`** no longer raise `Enum.EmptyError` on the rare draw
+  where the source text is split around a blank fragment (a source string with a trailing space
+  after its final sentence, e.g. Meditations' `"This in Carnuntum. "`, produced an empty
+  "sentence", and `word/1` then drew from a wordless list). Sentence and paragraph splitting now
+  discard blank fragments.
 
 ### Improvements
 
@@ -116,6 +121,10 @@ got: ..."`). Positional-argument validation (ranges, `start`/`finish`, `min`/`ma
 - Fixed a pre-existing bug in `lorem_test.exs`: two tests asserted on a `type:` option that
   `NeoFaker.Lorem` never reads (the real, documented option is `:text`); the assertions passed
   vacuously before because the unrecognized option was silently ignored.
+- Widened `app_test.exs`'s default-format name check to accept an all-caps word (the name list
+  includes `"AI"`), and ran the `NeoFaker.Lorem`, `NeoFaker.App`, and `NeoFaker.Internet`
+  word/token tests over many iterations so a rare bad draw fails deterministically instead of
+  roughly one run in twenty.
 - Split the two tests in `NeoFakerTest` that mutate `Application` env directly (bypassing
   `NeoFaker.Locale.set/1`, to exercise the raw-config validation path) into
   `NeoFaker.LocaleApplicationEnvTest`, kept `async: false` since that kind of mutation is

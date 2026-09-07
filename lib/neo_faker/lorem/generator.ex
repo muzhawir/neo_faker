@@ -26,19 +26,31 @@ defmodule NeoFaker.Lorem.Generator do
 
   @spec extract_paragraph(String.t()) :: String.t()
   def extract_paragraph(text) do
-    text |> String.split("\n\n") |> Enum.random()
+    text |> split_non_blank("\n\n") |> Enum.random()
   end
 
   @doc """
   Splits on `.`, `!`, or `?` followed by whitespace, keeping the delimiter
   attached to the sentence it ends.
+
+  Blank fragments are dropped, so a source string with a trailing space after
+  its final sentence (`"This in Carnuntum. "`) does not yield an empty
+  "sentence" that would later crash `Enum.random/1` on a wordless list.
   """
   @spec split_sentences(String.t()) :: [String.t()]
-  def split_sentences(text), do: String.split(text, @sentence_delimiter_regexp)
+  def split_sentences(text), do: split_non_blank(text, @sentence_delimiter_regexp)
 
   @spec remove_punctuation(String.t()) :: String.t()
   def remove_punctuation(text), do: String.replace(text, @punctuation_regexp, "")
 
   @spec split_words(String.t()) :: [String.t()]
   def split_words(text), do: String.split(text)
+
+  # Splits on `pattern`, then drops entries that are empty or only whitespace.
+  @spec split_non_blank(String.t(), Regex.t() | String.pattern()) :: [String.t()]
+  defp split_non_blank(text, pattern) do
+    text
+    |> String.split(pattern, trim: true)
+    |> Enum.reject(&(String.trim(&1) == ""))
+  end
 end

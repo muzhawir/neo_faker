@@ -21,6 +21,14 @@ defmodule NeoFaker.LoremTest do
     test "returns a random sentence with type option" do
       assert is_binary(Lorem.sentence(text: :meditations))
     end
+
+    test "never returns a blank sentence, across many draws" do
+      for text <- [:lorem, :meditations], _ <- 1..200 do
+        sentence = Lorem.sentence(text: text)
+
+        assert sentence =~ ~r/\S/, "blank sentence for text: #{inspect(text)}"
+      end
+    end
   end
 
   describe "word/1" do
@@ -28,8 +36,16 @@ defmodule NeoFaker.LoremTest do
       assert is_binary(Lorem.word())
     end
 
-    test "returns a random word with type option" do
-      assert is_binary(Lorem.word(text: :meditations))
+    test "returns a non-empty word for each text source, across many draws" do
+      # Regression: a source string with a trailing space after its last
+      # sentence produced an empty "sentence", and Lorem.word/1 then called
+      # Enum.random/1 on a wordless list and crashed.
+      for text <- [:lorem, :meditations], _ <- 1..200 do
+        word = Lorem.word(text: text)
+
+        assert is_binary(word)
+        assert word =~ ~r/\S/, "Lorem.word(text: #{inspect(text)}) returned #{inspect(word)}"
+      end
     end
   end
 end

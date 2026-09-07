@@ -39,7 +39,7 @@ defmodule NeoFaker.AppTest do
   defp valid_app_name?(opts \\ nil) do
     regex =
       case opts do
-        nil -> ~r/^[A-Z][a-z0-9]+ [A-Z][a-z0-9]+$/
+        nil -> ~r/^[A-Z][A-Za-z0-9]* [A-Z][A-Za-z0-9]*$/
         :camel_case -> ~r/^[a-z]+(?:[A-Z][a-z0-9]*)*$/
         :pascal_case -> ~r/^[A-Z][a-z0-9]*(?:[A-Z][a-z0-9]*)*$/
         :dashed -> ~r/^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/
@@ -92,12 +92,13 @@ defmodule NeoFaker.AppTest do
 
   describe "name/2" do
     test "returns an app name in default format" do
-      assert valid_app_name?()
+      # Loop: name parts are drawn at random and include the all-caps "AI".
+      for _ <- 1..100, do: assert(valid_app_name?())
     end
 
     test "returns an app name for each supported style option" do
-      for option <- [:camel_case, :pascal_case, :dashed, :single] do
-        assert valid_app_name?(option)
+      for option <- [:camel_case, :pascal_case, :dashed, :single], _ <- 1..50 do
+        assert valid_app_name?(option), "invalid #{option} app name"
       end
     end
   end

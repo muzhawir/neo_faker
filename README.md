@@ -78,12 +78,12 @@ iex> NeoFaker.Color.hex()
 ## Documentation
 
 - [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html): installation, configuration, and first steps.
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html): full module and function documentation.
 - [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html): one-page reference of every domain generator function, with examples.
 - [Locale Cheat Sheet](https://hexdocs.pm/neo_faker/locale-cheat.html): one-page reference of locale-exclusive generators, grouped by locale.
 - [Supported Locales](https://hexdocs.pm/neo_faker/locales.html): available locales and how locale resolution works.
 - [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html): using NeoFaker as the data source in an Ecto-based factory module.
 - [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html): contributor guide for submitting a new locale as a pull request.
-- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html): full module and function documentation.
 - [Changelog](https://hexdocs.pm/neo_faker/changelog.html): release history.
 
 ## Contributing

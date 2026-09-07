@@ -54,10 +54,6 @@ defmodule NeoFaker.MixProject do
   end
 
   # Listed explicitly (rather than globbed) so the sidebar order is intentional.
-  # Each file lives under the lib/pages/ subfolder matching its group below.
-  # ExDoc flattens every extra to `<basename>.html` regardless of subfolder, so
-  # inter-page links stay `[text](getting-started.html)` and never reference the
-  # folder.
   defp extra_pages do
     [
       "lib/pages/guides/getting-started.md",
@@ -86,14 +82,8 @@ defmodule NeoFaker.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
-  def application do
-    [
-      extra_applications: [:logger, :mix]
-    ]
-  end
+  def application, do: [extra_applications: [:logger, :mix]]
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},

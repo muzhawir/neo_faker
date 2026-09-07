@@ -12,13 +12,15 @@ defmodule NeoFaker.Crypto do
   alias NeoFaker.Crypto.HashGenerator
   alias NeoFaker.Crypto.Validator
 
-  @case_schema NimbleOptions.new!(case: [type: {:in, [:lower, :upper]}, default: :lower])
+  @letter_cases [:lower, :upper]
+
+  @case_schema NimbleOptions.new!(case: [type: {:in, @letter_cases}, default: :lower])
 
   @token_schema NimbleOptions.new!(encoding: [type: {:in, [:base64, :hex]}, default: :base64])
 
   @uuid_schema NimbleOptions.new!(
                  format: [type: {:in, [:standard, :compact]}, default: :standard],
-                 case: [type: {:in, [:lower, :upper]}, default: :lower]
+                 case: [type: {:in, @letter_cases}, default: :lower]
                )
 
   @doc """

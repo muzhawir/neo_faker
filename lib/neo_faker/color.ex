@@ -16,14 +16,11 @@ defmodule NeoFaker.Color do
   alias NeoFaker.Color.RgbaGenerator
   alias NeoFaker.Color.RgbGenerator
 
+  @hex_formats [:three_digit, :four_digit, :six_digit, :eight_digit]
+
   @w3c_format_schema NimbleOptions.new!(format: [type: {:in, [nil, :w3c]}, default: nil])
 
-  @hex_schema NimbleOptions.new!(
-                format: [
-                  type: {:in, [:three_digit, :four_digit, :six_digit, :eight_digit]},
-                  default: :six_digit
-                ]
-              )
+  @hex_schema NimbleOptions.new!(format: [type: {:in, @hex_formats}, default: :six_digit])
 
   @keyword_schema NimbleOptions.new!(
                     category: [type: {:in, [:all, :basic, :extended]}, default: :all],

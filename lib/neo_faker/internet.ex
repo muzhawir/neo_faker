@@ -14,56 +14,48 @@ defmodule NeoFaker.Internet do
   alias NeoFaker.Internet.TldGenerator
   alias NeoFaker.Internet.UsernameGenerator
 
+  @joiners [:all, :dot, :underscore, :dash]
+  @username_types [:person, :word]
+  @domain_types [:random, :popular, :custom]
+  @popular_types [:all, :ecommerce, :email, :search, :social]
+  @tld_types [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]
+
   @username_schema NimbleOptions.new!(
                      word_count: [type: :pos_integer, default: 2],
-                     joiner: [type: {:in, [:all, :dot, :underscore, :dash]}, default: :all],
-                     username_type: [type: {:in, [:person, :word]}, default: :person],
+                     joiner: [type: {:in, @joiners}, default: :all],
+                     username_type: [type: {:in, @username_types}, default: :person],
                      number: [type: :boolean, default: false],
                      number_range: [type: {:struct, Range}, default: 1..1000]
                    )
 
   @domain_name_schema NimbleOptions.new!(
                         word_count: [type: :pos_integer, default: 1],
-                        type: [type: {:in, [:random, :popular, :custom]}, default: :random],
-                        popular_type: [
-                          type: {:in, [:all, :ecommerce, :email, :search, :social]},
-                          default: :all
-                        ],
+                        type: [type: {:in, @domain_types}, default: :random],
+                        popular_type: [type: {:in, @popular_types}, default: :all],
                         domain_name: [type: :string, default: "example.com"]
                       )
 
   @tld_schema NimbleOptions.new!(
                 dot: [type: :boolean, default: true],
-                type: [
-                  type:
-                    {:in, [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]},
-                  default: :all_except_safe
-                ]
+                type: [type: {:in, @tld_types}, default: :all_except_safe]
               )
 
   @email_schema NimbleOptions.new!(
                   username_word_count: [type: :pos_integer, default: 2],
-                  joiner: [type: {:in, [:all, :dot, :underscore, :dash]}, default: :all],
-                  username_type: [type: {:in, [:person, :word]}, default: :person],
+                  joiner: [type: {:in, @joiners}, default: :all],
+                  username_type: [type: {:in, @username_types}, default: :person],
                   number: [type: :boolean, default: false],
                   number_range: [type: {:struct, Range}, default: 1..1000],
                   domain_name_word_count: [type: :pos_integer, default: 1],
-                  domain_type: [type: {:in, [:random, :popular, :custom]}, default: :random],
-                  popular_type: [
-                    type: {:in, [:all, :ecommerce, :email, :search, :social]},
-                    default: :all
-                  ],
+                  domain_type: [type: {:in, @domain_types}, default: :random],
+                  popular_type: [type: {:in, @popular_types}, default: :all],
                   domain_name: [type: :string, default: "example.com"],
-                  tld_type: [
-                    type:
-                      {:in, [:all_except_safe, :all, :safe, :generic, :sponsored, :country_code]},
-                    default: :all_except_safe
-                  ]
+                  tld_type: [type: {:in, @tld_types}, default: :all_except_safe]
                 )
 
   @ipv4_schema NimbleOptions.new!(
                  private: [type: :boolean, default: false],
-                 class: [type: {:or, [nil, {:in, [:a, :b, :c]}]}, default: nil]
+                 class: [type: {:in, [nil, :a, :b, :c]}, default: nil]
                )
 
   @ipv6_schema NimbleOptions.new!(
@@ -78,14 +70,11 @@ defmodule NeoFaker.Internet do
 
   @url_schema NimbleOptions.new!(
                 protocol: [type: {:in, [:http, :https]}, default: :https],
-                domain_type: [type: {:in, [:random, :popular, :custom]}, default: :random],
+                domain_type: [type: {:in, @domain_types}, default: :random],
                 path: [type: :boolean, default: false],
                 query: [type: :boolean, default: false],
                 word_count: [type: :pos_integer, default: 1],
-                popular_type: [
-                  type: {:in, [:all, :ecommerce, :email, :search, :social]},
-                  default: :all
-                ],
+                popular_type: [type: {:in, @popular_types}, default: :all],
                 domain_name: [type: :string, default: "example.com"]
               )
 

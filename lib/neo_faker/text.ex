@@ -16,31 +16,24 @@ defmodule NeoFaker.Text do
 
   @character_count 11
 
+  @character_types [:alphabet_lower, :alphabet_upper, :alphabet, :digit]
+  @emoji_categories [
+    :all,
+    :activities,
+    :animals_and_nature,
+    :food_and_drink,
+    :objects,
+    :people_and_body,
+    :smileys_and_emotion,
+    :symbols,
+    :travel_and_places
+  ]
+
   @character_schema NimbleOptions.new!(
-                      type: [
-                        type: {:in, [nil, :alphabet_lower, :alphabet_upper, :alphabet, :digit]},
-                        default: nil
-                      ]
+                      type: [type: {:in, [nil | @character_types]}, default: nil]
                     )
 
-  @emoji_schema NimbleOptions.new!(
-                  category: [
-                    type:
-                      {:in,
-                       [
-                         :all,
-                         :activities,
-                         :animals_and_nature,
-                         :food_and_drink,
-                         :objects,
-                         :people_and_body,
-                         :smileys_and_emotion,
-                         :symbols,
-                         :travel_and_places
-                       ]},
-                    default: :all
-                  ]
-                )
+  @emoji_schema NimbleOptions.new!(category: [type: {:in, @emoji_categories}, default: :all])
 
   @doc """
   Generates a single random character.

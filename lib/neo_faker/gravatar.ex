@@ -15,6 +15,8 @@ defmodule NeoFaker.Gravatar do
   @type email :: String.t() | nil
 
   @fallback_types [:identicon, :monsterid, :wavatar, :robohash, :retro, :blank, :"404"]
+  @ratings [:g, :pg, :r, :x]
+  @profile_formats [:html, :json, :xml, :php, :vcf, :qr]
   @min_size 1
   @max_size 2048
   @size 80
@@ -25,22 +27,11 @@ defmodule NeoFaker.Gravatar do
                       type: {:custom, Validator, :validate_and_format_fallback, []},
                       default: :identicon
                     ],
-                    rating: [
-                      type: {
-                        :or,
-                        [nil, {:in, [:g, :pg, :r, :x]}]
-                      },
-                      default: nil
-                    ],
+                    rating: [type: {:in, [nil | @ratings]}, default: nil],
                     force_default: [type: :boolean, default: false]
                   )
 
-  @profile_schema NimbleOptions.new!(
-                    format: [
-                      type: {:in, [:html, :json, :xml, :php, :vcf, :qr]},
-                      default: :html
-                    ]
-                  )
+  @profile_schema NimbleOptions.new!(format: [type: {:in, @profile_formats}, default: :html])
 
   @doc """
   Generates a Gravatar image URL.

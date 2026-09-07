@@ -20,22 +20,17 @@ defmodule NeoFaker.App do
   @license_file "license.exs"
   @name_file "name.exs"
 
+  @name_styles [:camel_case, :pascal_case, :dashed, :underscore, :single]
+  @semver_types [:pre_release, :build, :pre_release_build]
+
   @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
 
   @name_schema NimbleOptions.new!(
-                 style: [
-                   type: {:in, [nil, :camel_case, :pascal_case, :dashed, :underscore, :single]},
-                   default: nil
-                 ],
+                 style: [type: {:in, [nil | @name_styles]}, default: nil],
                  locale: [type: :atom, default: nil]
                )
 
-  @semver_schema NimbleOptions.new!(
-                   type: [
-                     type: {:in, [nil, :pre_release, :build, :pre_release_build]},
-                     default: nil
-                   ]
-                 )
+  @semver_schema NimbleOptions.new!(type: [type: {:in, [nil | @semver_types]}, default: nil])
 
   @bundle_id_schema NimbleOptions.new!(
                       domain: [

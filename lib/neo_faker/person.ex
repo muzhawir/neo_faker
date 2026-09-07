@@ -18,13 +18,16 @@ defmodule NeoFaker.Person do
 
   @max_age 120
 
+  @sexes [:unisex, :male, :female]
+  @gender_formats [:binary, :short_binary, :non_binary, :all]
+
   @name_schema NimbleOptions.new!(
-                 sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                 sex: [type: {:in, @sexes}, default: :unisex],
                  locale: [type: :atom, default: nil]
                )
 
   @full_name_schema NimbleOptions.new!(
-                      sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                      sex: [type: {:in, @sexes}, default: :unisex],
                       locale: [type: :atom, default: nil],
                       middle_name: [type: :boolean, default: true]
                     )
@@ -32,15 +35,12 @@ defmodule NeoFaker.Person do
   @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
 
   @gender_schema NimbleOptions.new!(
-                   format: [
-                     type: {:in, [:binary, :short_binary, :non_binary, :all]},
-                     default: :binary
-                   ],
+                   format: [type: {:in, @gender_formats}, default: :binary],
                    locale: [type: :atom, default: nil]
                  )
 
   @full_name_with_title_schema NimbleOptions.new!(
-                                 sex: [type: {:in, [:unisex, :male, :female]}, default: :unisex],
+                                 sex: [type: {:in, @sexes}, default: :unisex],
                                  locale: [type: :atom, default: nil],
                                  middle_name: [type: :boolean, default: true],
                                  prefix: [type: :boolean, default: false],

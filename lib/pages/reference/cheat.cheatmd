@@ -1,9 +1,9 @@
 # Cheat Sheet
 
 A quick reference for every random data generator function, grouped by domain. Every function
-accepting a keyword list of options ships with a default, so each one works with zero arguments.
-For country-specific formats that don't fit a shared `:locale` option (US Social Security
-Numbers, Indonesian NIK/NPWP, and so on), see the [Locale Cheat Sheet](locale-cheat.html).
+that accepts a keyword list of options ships with a default, so it works with zero arguments
+too. For country-specific formats that don't fit a shared `:locale` option, like US Social
+Security Numbers or Indonesian NIK/NPWP, see the [Locale Cheat Sheet](locale-cheat.html).
 
 ## [Address](`NeoFaker.Address`)
 

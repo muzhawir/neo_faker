@@ -1,8 +1,8 @@
 # Locale Cheat Sheet
 
-A quick reference for every locale-exclusive generator function, grouped by locale. These are
-country-specific formats that don't fit a shared `:locale` option, for example a US Social
-Security Number has no Indonesian equivalent to fall back to. See
+A quick reference for every locale-exclusive generator function, grouped by locale. These cover
+country-specific formats that don't fit a shared `:locale` option. A US Social Security Number,
+for example, has no Indonesian equivalent to fall back to. See
 [Supported Locales](locales.html#locale-exclusive-generators) for background. For the
 general-purpose domain generators (Address, Person, Blood, and so on), see the
 [Cheat Sheet](cheat.html).

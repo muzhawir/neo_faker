@@ -10,7 +10,7 @@
 [![Hex.pm Downloads](https://img.shields.io/hexpm/dt/neo_faker)](https://hex.pm/packages/neo_faker)
 [![Elixir CI](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml/badge.svg)](https://github.com/muzhawir/neo_faker/actions/workflows/build.yml)
 
-NeoFaker generates realistic-looking fake data for Elixir tests, database seeds, and local development.
+NeoFaker generates realistic fake data for Elixir tests, database seeds, and local development.
 
 ## Requirements
 
@@ -46,15 +46,19 @@ Set a default locale in `config/config.exs`:
 config :neo_faker, locale: :default
 ```
 
-If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English (US) data). `NeoFaker.Locale.set/1` overrides the locale
-for the calling process only, which makes it safe to use inside `async: true` tests without affecting other processes.
+If the requested locale isn't available, NeoFaker falls back to `:default` (generic English (US)
+data). `NeoFaker.Locale.set/1` changes the locale for the current process only. It's safe to use
+inside `async: true` tests, since it can't affect other tests running at the same time.
 
 ### Using with Phoenix Framework
 
-For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the top-level `config.exs`, and call `NeoFaker.start()` in
-`test/test_helper.exs`. If you also use NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for your tests, see
-the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html) guide, which covers wiring NeoFaker into the factory pattern from Ecto's
-own docs, plus how to keep factory-generated values unique where your schema requires it.
+For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the
+top-level `config.exs`. Then call `NeoFaker.start()` in `test/test_helper.exs`.
+
+If you also use NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for
+your tests, see the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html)
+guide. It covers wiring NeoFaker into the factory pattern from Ecto's own docs, and how to keep
+factory-generated values unique where your schema requires it.
 
 ## Usage
 

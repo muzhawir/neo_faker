@@ -29,7 +29,7 @@ defmodule NeoFaker.MixProject do
   end
 
   defp description do
-    "Fake data generator for Elixir tests and development environments."
+    "Generates realistic fake data for Elixir tests, database seeds, and local development."
   end
 
   defp package do

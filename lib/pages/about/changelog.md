@@ -3,9 +3,9 @@
 ## v0.15.0 (2026-09-06)
 
 A large internal rewrite. Some thin top-level functions were removed outright rather than deprecated (a formal
-deprecation cycle begins in v0.20.0); each has a one-to-one replacement. Options that changed a function's return
-type were removed. Everything else is internal: how locale state is scoped, how options are validated, and where the
-private modules live.
+deprecation cycle starts in v0.20.0), but each has a one-to-one replacement. Options that changed a function's
+return type were removed. Everything else is internal: how locale state is scoped, how options are validated, and
+where the private modules live.
 
 ### Features
 

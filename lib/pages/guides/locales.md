@@ -3,18 +3,18 @@
 NeoFaker supports locale-specific data for realistic test output. Almost every function that
 accepts a `:locale` option is locale-aware, and loads its data from
 `priv/data/<locale>/<domain>/<file>.exs` inside the package. If the requested locale has no data
-file for that particular domain/file combination, NeoFaker falls back to `priv/data/default/`
-(generic English (US) data) for that lookup only, rather than raising.
+file for a given domain/file combination, NeoFaker falls back to `priv/data/default/` (generic
+English (US) data) for that lookup only, instead of raising.
 
 ## Available Locales
 
 | Locale     | Country      | Language                           |
-| ---------- | ------------ | ----------------------------------- |
+| ---------- | ------------ | ---------------------------------- |
 | `:default` | 🌐 N/A       | English (US), not country-specific |
 | `:id_id`   | 🇮🇩 Indonesia | Bahasa Indonesia                   |
 
-`:default` is not itself a locale code, since it's the baseline dataset every other locale falls
-back to. `:en_us` is accepted as a locale value but currently has no dataset of its own; it resolves
+`:default` isn't itself a locale code. It's the baseline dataset every other locale falls back
+to. `:en_us` is accepted as a locale value, but it has no dataset of its own yet, so it resolves
 to `:default` data. `:id_id` has its own data for several domains (`Address`, `App`, `Color`,
 `Person`), and falls back to `:default` for the rest.
 
@@ -44,8 +44,8 @@ iex> NeoFaker.App.description()
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-If an unsupported locale is passed to either `NeoFaker.Locale.set/1` or a function's `:locale`
-option, NeoFaker raises `ArgumentError` listing the currently supported locales, the same list
+If you pass an unsupported locale to `NeoFaker.Locale.set/1` or a function's `:locale` option,
+NeoFaker raises `ArgumentError` listing the currently supported locales. That's the same list
 shown in the table above and returned by `NeoFaker.Locale.supported/0`.
 
 See the [configuration instructions](https://hexdocs.pm/neo_faker/getting-started.html#configuration)
@@ -71,9 +71,9 @@ for the full module docs.
 
 ## Adding a new locale
 
-A new locale needs a directory under `priv/data/<locale>/` mirroring the domains it covers (only
-the files you provide are used, and anything missing falls back to `:default`, so a partial
-locale is valid), and its code added to the `@supported_locales` list in `NeoFaker.Locale` (kept
+A new locale needs a directory under `priv/data/<locale>/` mirroring the domains it covers. Only
+the files you provide are used; anything missing falls back to `:default`, so a partial locale is
+valid. It also needs its code added to the `@supported_locales` list in `NeoFaker.Locale` (kept
 alphabetically sorted). Locale-exclusive generators, if any, go under
 `lib/neo_faker/locales/<locale>/`.
 

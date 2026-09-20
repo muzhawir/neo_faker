@@ -37,13 +37,13 @@ Set the default locale in `config/config.exs`:
 config :neo_faker, locale: :default
 ```
 
-If the requested locale is unavailable, NeoFaker falls back to `:default` (generic English US data).
-See the [supported locales](https://hexdocs.pm/neo_faker/locales.html) for a full list.
+If the requested locale isn't available, NeoFaker falls back to `:default` (generic English US
+data). See [supported locales](https://hexdocs.pm/neo_faker/locales.html) for the full list.
 
-`NeoFaker.Locale.set/1` overrides the locale for the calling process only, and it never touches
-`config :neo_faker, locale: ...`, so other processes (including concurrent, `async: true` tests)
-are unaffected. Use it for a quick script or a single test; use `config` for a locale that should
-apply to the whole application.
+`NeoFaker.Locale.set/1` changes the locale for the calling process only. It never touches
+`config :neo_faker, locale: ...`, so other processes, including concurrent `async: true` tests,
+keep using their own locale. Use it for a quick script or a single test. Use `config` for a
+locale that should apply to the whole application.
 
 ### Phoenix Projects
 
@@ -55,15 +55,15 @@ ExUnit.start()
 NeoFaker.start()
 ```
 
-If you use NeoFaker inside a `test/support/factory.ex` module to build fake `Ecto.Schema`
-structs for your tests, see [Ecto Test Factories](ecto-integration.html), which covers wiring
-NeoFaker into the factory pattern from Ecto's own guide, and how to keep factory-generated values
-unique where your schema requires it.
+If you use NeoFaker inside a `test/support/factory.ex` module to build fake `Ecto.Schema` structs
+for your tests, see [Ecto Test Factories](ecto-integration.html). It covers wiring NeoFaker into
+the factory pattern from Ecto's own guide, and how to keep factory-generated values unique where
+your schema requires it.
 
 ## Usage
 
 Every function lives under a domain module such as `NeoFaker.Person`, `NeoFaker.Internet`, or
-`NeoFaker.Date`, and there is no single catch-all module:
+`NeoFaker.Date`. There's no single catch-all module:
 
 ```elixir
 iex> NeoFaker.Person.full_name()
@@ -79,7 +79,7 @@ iex> NeoFaker.App.description(locale: :id_id)
 "Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
 ```
 
-Most functions accept a keyword list of options to control the output shape, so see each
+Most functions accept a keyword list of options to control the output shape. Check each
 function's own documentation for the options it supports:
 
 ```elixir

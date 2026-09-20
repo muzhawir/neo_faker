@@ -34,6 +34,7 @@ defmodule NeoFaker.MixProject do
 
   defp package do
     [
+      files: ~w(lib priv/data priv/assets mix.exs README.md LICENSE.md .formatter.exs),
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/muzhawir/neo_faker",

@@ -107,10 +107,6 @@ mix test --cover
 mix dialyzer
 ```
 
-Test coverage is kept at 100%. Both cheatsheets are generated from the `## Examples` section of
-each function's documentation: after changing a `@doc`, run `mix docs.cheatsheet` and commit the
-result instead of editing the cheatsheets by hand.
-
 ## License
 
 NeoFaker is released under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

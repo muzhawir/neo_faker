@@ -1,35 +1,33 @@
 defmodule NeoFaker.Time do
   @moduledoc """
-  Functions for generating random times.
+  Functions for generating random times of day and time zone names.
 
-  Provides utilities to generate random times, including times relative to now,
-  times within a specific range, time zones, and named periods (morning, afternoon,
-  evening, night). Every function returns a `Time` struct; call `Time.to_iso8601/1`
-  yourself if you need a string.
+  Every time-returning function returns a `Time` struct; use `Time.to_iso8601/1` if you
+  need a string. "Now" means the current time in UTC, as returned by `now/0`.
   """
   @moduledoc since: "0.10.0"
 
   alias NeoFaker.Data
-  alias NeoFaker.Time.Generator, as: TimeGenerator
+  alias NeoFaker.Helpers.Validator
+  alias NeoFaker.Time.Generator
   alias NeoFaker.Time.Validator, as: TimeValidator
 
   @time_zone_file "time_zone.exs"
 
-  @time_range -24..24
-  @midnight ~T[00:00:00]
-  @end_of_day ~T[23:59:59]
-
   @add_schema NimbleOptions.new!(unit: [type: {:in, [:hour, :minute, :second]}, default: :hour])
 
   @doc """
-  Generates a random time offset from now.
+  Generates a random time offset from now by a number of units drawn from `range`.
 
-  Adds a random number of units (hours by default) drawn from `range` to the current time.
-  `range` defaults to `-24..24`.
+  `range` defaults to `-24..24`. The result is truncated to whole seconds and wraps
+  around midnight, so an offset of 25 hours lands one hour after now.
+
+  Raises `ArgumentError` if `range` is not a non-empty range.
 
   ## Options
 
-    * `:unit` (`:hour`, `:minute`, or `:second`) - the unit of the range. Defaults to `:hour`.
+    * `:unit` (`:hour`, `:minute`, or `:second`) - the unit of the offset. Defaults to
+      `:hour`.
 
   ## Examples
 
@@ -41,40 +39,39 @@ defmodule NeoFaker.Time do
 
   """
   @spec add(Range.t(), keyword()) :: Time.t()
-  def add(range \\ @time_range, opts \\ []) do
-    TimeValidator.validate_range!(range)
-    opts = NimbleOptions.validate!(opts, @add_schema)
+  def add(range \\ -24..24, opts \\ []) do
+    Validator.validate_range!(range, "range")
+    unit = opts |> NimbleOptions.validate!(@add_schema) |> Keyword.fetch!(:unit)
 
-    TimeGenerator.add(range, Keyword.fetch!(opts, :unit))
+    Generator.add(range, unit)
   end
 
   @doc """
-  Generates a random time between two times.
+  Generates a random time between `start` and `finish`, inclusive.
 
-  Both `start` and `finish` are inclusive. Defaults to the full day
-  (`~T[00:00:00]`–`~T[23:59:59]`).
+  Defaults to the whole day, `~T[00:00:00]` to `~T[23:59:59]`. The result has second
+  precision when both bounds do, and microsecond precision otherwise.
+
+  Raises `ArgumentError` if either argument is not a `Time`, or if `start` is after
+  `finish`.
 
   ## Examples
 
       iex> NeoFaker.Time.between()
       ~T[15:22:10]
 
-      iex> NeoFaker.Time.between(~T[00:00:00], ~T[23:59:59])
-      ~T[19:30:11]
+      iex> NeoFaker.Time.between(~T[09:00:00], ~T[17:00:00])
+      ~T[11:30:11]
 
   """
   @spec between(Time.t(), Time.t()) :: Time.t()
-  def between(start \\ @midnight, finish \\ @end_of_day) do
+  def between(start \\ ~T[00:00:00], finish \\ ~T[23:59:59]) do
     TimeValidator.validate_time_order!(start, finish)
-
-    TimeGenerator.between(start, finish)
+    Generator.between(start, finish)
   end
 
   @doc """
-  Generates a random time zone string.
-
-  Returns an IANA time zone name from a predefined list, such as
-  `"Asia/Makassar"` or `"America/New_York"`.
+  Generates a random IANA time zone name, such as `"Asia/Makassar"`.
 
   ## Examples
 
@@ -83,12 +80,10 @@ defmodule NeoFaker.Time do
 
   """
   @spec time_zone() :: String.t()
-  def time_zone do
-    Data.random_value(__MODULE__, @time_zone_file, "time_zone")
-  end
+  def time_zone, do: Data.random_value(__MODULE__, @time_zone_file, "time_zone")
 
   @doc """
-  Generates a random morning time (06:00–11:59).
+  Generates a random morning time, from `06:00:00` to `11:59:59`.
 
   ## Examples
 
@@ -97,10 +92,10 @@ defmodule NeoFaker.Time do
 
   """
   @spec morning() :: Time.t()
-  def morning, do: between(~T[06:00:00], ~T[11:59:59])
+  def morning, do: Generator.between(~T[06:00:00], ~T[11:59:59])
 
   @doc """
-  Generates a random afternoon time (12:00–17:59).
+  Generates a random afternoon time, from `12:00:00` to `17:59:59`.
 
   ## Examples
 
@@ -109,10 +104,10 @@ defmodule NeoFaker.Time do
 
   """
   @spec afternoon() :: Time.t()
-  def afternoon, do: between(~T[12:00:00], ~T[17:59:59])
+  def afternoon, do: Generator.between(~T[12:00:00], ~T[17:59:59])
 
   @doc """
-  Generates a random evening time (18:00–23:59).
+  Generates a random evening time, from `18:00:00` to `23:59:59`.
 
   ## Examples
 
@@ -121,10 +116,10 @@ defmodule NeoFaker.Time do
 
   """
   @spec evening() :: Time.t()
-  def evening, do: between(~T[18:00:00], ~T[23:59:59])
+  def evening, do: Generator.between(~T[18:00:00], ~T[23:59:59])
 
   @doc """
-  Generates a random night time (00:00–05:59).
+  Generates a random night time, from `00:00:00` to `05:59:59`.
 
   ## Examples
 
@@ -133,12 +128,13 @@ defmodule NeoFaker.Time do
 
   """
   @spec night() :: Time.t()
-  def night, do: between(~T[00:00:00], ~T[05:59:59])
+  def night, do: Generator.between(~T[00:00:00], ~T[05:59:59])
 
   @doc """
-  Returns the current UTC time.
+  Returns the current time in UTC, with microsecond precision.
 
-  A thin convenience wrapper around `Time.utc_now/0`.
+  This function is not random. It is the reference point for `add/2`, and is equivalent
+  to `Time.utc_now/0`.
 
   ## Examples
 

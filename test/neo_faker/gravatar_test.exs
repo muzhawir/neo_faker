@@ -42,10 +42,11 @@ defmodule NeoFaker.GravatarTest do
     end
 
     test "returns a Gravatar URL with a custom fallback URL string" do
-      custom_url = "https://example.com/default.png"
+      custom_url = "https://example.com/default.png?style=round&v=2"
       url = Gravatar.display(@john_doe_email, fallback: custom_url)
 
-      assert String.contains?(url, "d=#{custom_url}")
+      assert %URI{query: query} = URI.parse(url)
+      assert %{"d" => ^custom_url, "s" => "80"} = URI.decode_query(query)
     end
 
     test "returns a Gravatar URL with a rating parameter" do
@@ -290,14 +291,6 @@ defmodule NeoFaker.GravatarTest do
   describe "Generator" do
     alias NeoFaker.Gravatar.Generator
 
-    test "image_size/1 falls back to the default when given nil" do
-      assert Generator.image_size(nil) == 80
-    end
-
-    test "image_size/1 returns a valid size unchanged" do
-      assert Generator.image_size(120) == 120
-    end
-
     test "display/2 accepts an explicit nil size and uses the default" do
       url = Gravatar.display(@john_doe_email, size: nil)
 
@@ -313,9 +306,18 @@ defmodule NeoFaker.GravatarTest do
     end
 
     test "email_hash/1 raises ArgumentError for a malformed address" do
-      assert_raise ArgumentError, ~r/Invalid email address/, fn ->
+      assert_raise ArgumentError, ~r/invalid email address/, fn ->
         Generator.email_hash("not-an-email")
       end
+    end
+
+    test "email_hash/1 rejects text around an address instead of matching a substring" do
+      assert_raise ArgumentError, fn -> Generator.email_hash("junk junk a@example.com") end
+      assert_raise ArgumentError, fn -> Generator.email_hash("a@example.com\nmore") end
+    end
+
+    test "email_hash/1 trims surrounding whitespace before validating" do
+      assert Generator.email_hash("  a@example.com\n") == Generator.email_hash("a@example.com")
     end
   end
 
@@ -327,27 +329,33 @@ defmodule NeoFaker.GravatarTest do
     alias NeoFaker.Gravatar.Validator
 
     test "validate_size/1 accepts nil and in-range integers" do
-      assert Validator.validate_size(nil) == {:ok, nil}
-      assert Validator.validate_size(80) == {:ok, 80}
+      assert Validator.validate_size(nil, 1..2048, 80) == {:ok, 80}
+      assert Validator.validate_size(120, 1..2048, 80) == {:ok, 120}
     end
 
     test "validate_size/1 rejects out-of-range integers and non-integers" do
-      assert {:error, _} = Validator.validate_size(0)
-      assert {:error, _} = Validator.validate_size(5000)
-      assert {:error, _} = Validator.validate_size("80")
+      assert {:error, _} = Validator.validate_size(0, 1..2048, 80)
+      assert {:error, _} = Validator.validate_size(5000, 1..2048, 80)
+      assert {:error, _} = Validator.validate_size("80", 1..2048, 80)
     end
 
-    test "validate_and_format_fallback/1 accepts known atoms and http(s) URLs" do
-      assert Validator.validate_and_format_fallback(:retro) == {:ok, "retro"}
+    test "validate_fallback/2 accepts known atoms and http(s) URLs" do
+      types = Gravatar.fallback_types()
 
-      assert Validator.validate_and_format_fallback("https://x.test/a.png") ==
+      assert Validator.validate_fallback(:retro, types) == {:ok, "retro"}
+
+      assert Validator.validate_fallback("https://x.test/a.png", types) ==
                {:ok, "https://x.test/a.png"}
     end
 
-    test "validate_and_format_fallback/1 rejects unknown atoms, bad URLs, and other types" do
-      assert {:error, _} = Validator.validate_and_format_fallback(:unknown)
-      assert {:error, _} = Validator.validate_and_format_fallback("ftp://x.test/a.png")
-      assert {:error, _} = Validator.validate_and_format_fallback(42)
+    test "validate_fallback/2 rejects unknown atoms, bad URLs, and other types" do
+      types = Gravatar.fallback_types()
+
+      assert {:error, _} = Validator.validate_fallback(:unknown, types)
+      assert {:error, _} = Validator.validate_fallback("ftp://x.test/a.png", types)
+      assert {:error, _} = Validator.validate_fallback("https://", types)
+      assert {:error, _} = Validator.validate_fallback("https:no-host", types)
+      assert {:error, _} = Validator.validate_fallback(42, types)
     end
   end
 end

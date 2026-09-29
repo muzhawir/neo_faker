@@ -1,17 +1,19 @@
 defmodule NeoFaker.Person do
   @moduledoc """
-  Functions for generating person-related information.
+  Functions for generating personal names and details.
 
-  Provides utilities to generate random personal details including first, middle,
-  and last names, full names, prefixes, suffixes, ages, and genders with support
-  for multiple locales and sex options.
+  Names are drawn from locale-specific lists of female and male names. Functions that
+  take a `:sex` option accept `:female`, `:male`, or `:unisex`; `:unisex` picks one of
+  the two at random for each call. Functions that build a name from several parts, such
+  as `full_name/1`, resolve `:unisex` once, so the parts of one name never mix sexes.
   """
   @moduledoc since: "0.6.0"
 
   alias NeoFaker.Data
+  alias NeoFaker.Helpers.Validator
+  alias NeoFaker.Locale
   alias NeoFaker.Person.FullNameGenerator
   alias NeoFaker.Person.NameGenerator
-  alias NeoFaker.Person.Validator
 
   @gender_file "gender.exs"
   @name_affixes_file "name_affixes.exs"
@@ -23,25 +25,30 @@ defmodule NeoFaker.Person do
 
   @name_schema NimbleOptions.new!(
                  sex: [type: {:in, @sexes}, default: :unisex],
-                 locale: [type: :atom, default: nil]
+                 locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
                )
 
   @full_name_schema NimbleOptions.new!(
                       sex: [type: {:in, @sexes}, default: :unisex],
-                      locale: [type: :atom, default: nil],
+                      locale: [type: {:custom, Locale, :validate_option, []}, default: nil],
                       middle_name: [type: :boolean, default: true]
                     )
 
-  @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
+  @locale_schema NimbleOptions.new!(
+                   locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
+                 )
 
   @gender_schema NimbleOptions.new!(
                    format: [type: {:in, @gender_formats}, default: :binary],
-                   locale: [type: :atom, default: nil]
+                   locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
                  )
 
   @full_name_with_title_schema NimbleOptions.new!(
                                  sex: [type: {:in, @sexes}, default: :unisex],
-                                 locale: [type: :atom, default: nil],
+                                 locale: [
+                                   type: {:custom, Locale, :validate_option, []},
+                                   default: nil
+                                 ],
                                  middle_name: [type: :boolean, default: true],
                                  prefix: [type: :boolean, default: false],
                                  suffix: [type: :boolean, default: false]
@@ -53,7 +60,8 @@ defmodule NeoFaker.Person do
   ## Options
 
     * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -80,7 +88,8 @@ defmodule NeoFaker.Person do
   ## Options
 
     * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -107,7 +116,8 @@ defmodule NeoFaker.Person do
   ## Options
 
     * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -136,7 +146,8 @@ defmodule NeoFaker.Person do
   ## Options
 
     * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
     * `:middle_name` (boolean) - whether to include a middle name. Defaults to `true`.
 
   ## Examples
@@ -167,16 +178,24 @@ defmodule NeoFaker.Person do
   end
 
   @doc """
-  Generates a random name prefix such as `"Mr."`, `"Ms."`, or `"Dr."`.
+  Generates a random name prefix, such as `"Mr."`, `"Ms."`, or `"Dr."`.
 
   ## Options
 
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the person the prefix
+      addresses. Neutral titles such as `"Dr."` are drawn for every sex; `:female` adds
+      titles such as `"Mrs."`, `:male` adds titles such as `"Mr."`, and `:unisex` adds
+      both. Defaults to `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
       iex> NeoFaker.Person.prefix()
       "Mr."
+
+      iex> NeoFaker.Person.prefix(sex: :female)
+      "Mrs."
 
       iex> NeoFaker.Person.prefix(locale: :id_id)
       "Tn."
@@ -185,16 +204,17 @@ defmodule NeoFaker.Person do
   @doc since: "0.7.0"
   @spec prefix(keyword()) :: String.t()
   def prefix(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @locale_schema)
-    Data.random_value(__MODULE__, @name_affixes_file, "prefixes", opts)
+    opts = NimbleOptions.validate!(opts, @name_schema)
+    NameGenerator.prefix(Keyword.fetch!(opts, :locale), Keyword.fetch!(opts, :sex))
   end
 
   @doc """
-  Generates a random name suffix such as `"Jr."`, `"Sr."`, or `"III"`.
+  Generates a random name suffix, such as `"Jr."`, `"III"`, or `"Ph.D."`.
 
   ## Options
 
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -202,10 +222,7 @@ defmodule NeoFaker.Person do
       "Jr."
 
       iex> NeoFaker.Person.suffix(locale: :id_id)
-      "S.Kom"
-
-      iex> NeoFaker.Person.suffix(locale: :en_us)
-      "III"
+      "S.Kom."
 
   """
   @doc since: "0.7.0"
@@ -228,7 +245,8 @@ defmodule NeoFaker.Person do
       * `:all` - the binary and non-binary identities combined, e.g. `"Female"` or
         `"Genderfluid"`. The abbreviated `:short_binary` codes are left out, since they are
         just shorthand for the binary values.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -252,32 +270,22 @@ defmodule NeoFaker.Person do
   @spec gender(keyword()) :: String.t()
   def gender(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @gender_schema)
-    format = Keyword.fetch!(opts, :format)
-    locale_opts = Keyword.take(opts, [:locale])
 
-    case format do
-      :binary -> Data.random_value(__MODULE__, @gender_file, "binary", locale_opts)
-      :short_binary -> Data.random_value(__MODULE__, @gender_file, "short_binary", locale_opts)
-      :non_binary -> Data.random_value(__MODULE__, @gender_file, "non_binary", locale_opts)
-      :all -> random_any_gender(locale_opts)
-    end
-  end
+    keys =
+      case Keyword.fetch!(opts, :format) do
+        # The short codes only abbreviate the binary values, so they are left out.
+        :all -> ["binary", "non_binary"]
+        format -> Atom.to_string(format)
+      end
 
-  # `:all` draws from the binary and non-binary identities pooled together. The
-  # `short_binary` list is deliberately excluded: its entries ("M"/"F") are just
-  # abbreviations of the binary values, not distinct identities.
-  @spec random_any_gender(keyword()) :: String.t()
-  defp random_any_gender(locale_opts) do
-    %{"binary" => binary, "non_binary" => non_binary} =
-      Data.fetch!(locale_opts[:locale], __MODULE__, @gender_file)
-
-    Enum.random(binary ++ non_binary)
+    Data.random_value(__MODULE__, @gender_file, keys, opts)
   end
 
   @doc """
-  Generates a random age as a non-negative integer between `min` and `max`, inclusive.
+  Generates a random age between `min` and `max`, inclusive.
 
-  `min` defaults to `0` and `max` defaults to `120`.
+  `min` defaults to `0` and `max` defaults to `120`. Raises `ArgumentError` if either
+  bound is not a non-negative integer, or if `min` is greater than `max`.
 
   ## Examples
 
@@ -293,20 +301,21 @@ defmodule NeoFaker.Person do
   """
   @spec age(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def age(min \\ 0, max \\ @max_age) do
-    Validator.validate_age_range!(min, max)
-
+    Validator.validate_non_neg_bounds!(min, max, {"min", "max"})
     Enum.random(min..max)
   end
 
   @doc """
-  Generates a random full name with optional prefix and/or suffix.
+  Generates a random full name, optionally with a prefix and a suffix.
 
-  Delegates to `full_name/1` and wraps the result with the requested title parts.
+  The prefix matches the sex of the generated name, so a female name is never paired
+  with a title such as `"Mr."`.
 
   ## Options
 
     * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
     * `:middle_name` (boolean) - whether to include a middle name. Defaults to `true`.
     * `:prefix` (boolean) - when `true`, prepends a name prefix such as `"Mr."` or `"Dr."`.
       Defaults to `false`.
@@ -328,15 +337,16 @@ defmodule NeoFaker.Person do
   @spec full_name_with_title(keyword()) :: String.t()
   def full_name_with_title(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @full_name_with_title_schema)
-    name_opts = Keyword.take(opts, [:sex, :locale, :middle_name])
-    locale_opts = Keyword.take(opts, [:locale])
+    locale = Keyword.fetch!(opts, :locale)
+    sex = opts |> Keyword.fetch!(:sex) |> NameGenerator.resolve_sex()
 
     [
-      if(Keyword.fetch!(opts, :prefix), do: prefix(locale_opts)),
-      full_name(name_opts),
-      if(Keyword.fetch!(opts, :suffix), do: suffix(locale_opts))
+      Keyword.fetch!(opts, :prefix) && NameGenerator.prefix(locale, sex),
+      FullNameGenerator.name(sex, locale, Keyword.fetch!(opts, :middle_name)),
+      Keyword.fetch!(opts, :suffix) &&
+        Data.random_value(__MODULE__, @name_affixes_file, "suffixes", locale: locale)
     ]
-    |> Enum.reject(&is_nil/1)
+    |> Enum.filter(&is_binary/1)
     |> Enum.join(" ")
   end
 end

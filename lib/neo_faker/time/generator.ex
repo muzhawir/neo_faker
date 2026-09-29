@@ -1,38 +1,32 @@
 defmodule NeoFaker.Time.Generator do
   @moduledoc false
 
-  @type time_unit :: :hour | :minute | :second
+  @type unit :: :hour | :minute | :second
 
   @doc """
-  Generates a random time by adding a random value from the given range to the current local
-  time in the specified unit.
+  Returns the current UTC time, truncated to seconds, shifted by a random number of
+  `unit`s drawn from `range`. The result wraps around midnight.
   """
-  @spec add(Range.t(), time_unit()) :: Time.t()
+  @spec add(Range.t(), unit()) :: Time.t()
   def add(range, unit) do
-    NaiveDateTime.local_now()
-    |> Time.add(Enum.random(range), unit)
+    Time.utc_now()
     |> Time.truncate(:second)
+    |> Time.add(Enum.random(range), unit)
   end
 
   @doc """
-  Generates a random `Time` between two given `Time` values.
+  Returns a random time between `start` and `finish`, inclusive.
 
-  Requires `start` to already be chronologically at or before `finish`; every
-  caller (`NeoFaker.Time.between/2`, and the morning/afternoon/evening/night
-  helpers that go through it) enforces this first via
-  `NeoFaker.Time.Validator.validate_time_order!/2`, so it isn't re-checked
-  here. `Enum.min_max/1` below only picks out the smaller second-count to size
-  the random offset; the offset is still added to the literal `start`
-  argument, not to whichever value the seconds comparison found smaller, so
-  this function must not be called directly with `start > finish`.
+  `start` must not be after `finish`. The draw is made in whole seconds when both
+  bounds have second precision, which keeps the result at second precision too;
+  otherwise it is made in microseconds, so a sub-second bound is never overshot.
   """
   @spec between(Time.t(), Time.t()) :: Time.t()
   def between(start, finish) do
-    {start_seconds, _} = Time.to_seconds_after_midnight(start)
-    {finish_seconds, _} = Time.to_seconds_after_midnight(finish)
-    {min_sec, max_sec} = Enum.min_max([start_seconds, finish_seconds])
-    amount_to_add = Enum.random(min_sec..max_sec) - min_sec
+    unit = if whole_second?(start) and whole_second?(finish), do: :second, else: :microsecond
 
-    Time.add(start, amount_to_add, :second)
+    Time.add(start, Enum.random(0..Time.diff(finish, start, unit)), unit)
   end
+
+  defp whole_second?(%Time{microsecond: {_value, precision}}), do: precision == 0
 end

@@ -24,13 +24,13 @@ defmodule NeoFaker.LocaleTest do
     end
 
     test "raises ArgumentError when locale is not an atom" do
-      assert_raise ArgumentError, ~r/Locale must be an atom/, fn ->
+      assert_raise ArgumentError, ~r/locale must be an atom/, fn ->
         Locale.set("en_us")
       end
     end
 
     test "raises ArgumentError for an unsupported atom locale" do
-      assert_raise ArgumentError, ~r/Unsupported locale :bogus/, fn ->
+      assert_raise ArgumentError, ~r/unsupported locale :bogus/, fn ->
         Locale.set(:bogus)
       end
     end
@@ -59,6 +59,19 @@ defmodule NeoFaker.LocaleTest do
         end
 
       assert String.contains?(error.message, "available locales documentation")
+    end
+  end
+
+  describe "validate_option/1" do
+    test "accepts nil, :default, and supported locales" do
+      assert Locale.validate_option(nil) == {:ok, nil}
+      assert Locale.validate_option(:default) == {:ok, :default}
+      assert Locale.validate_option(:id_id) == {:ok, :id_id}
+    end
+
+    test "rejects unsupported atoms and non-atoms" do
+      assert {:error, "unsupported locale :fr_fr" <> _} = Locale.validate_option(:fr_fr)
+      assert {:error, _} = Locale.validate_option("id_id")
     end
   end
 

@@ -45,14 +45,20 @@ defmodule NeoFaker.DateTest do
       assert Date.compare(result, Date.add(today(), 365)) != :gt
     end
 
-    test "raises ArgumentError for a descending range" do
-      assert_raise ArgumentError, ~r/first must be less than or equal to last/, fn ->
-        FakeDate.add(10..1//-1)
+    test "accepts a descending range with a negative step" do
+      result = FakeDate.add(0..-3//-1)
+
+      assert Date.diff(result, today()) in -3..0
+    end
+
+    test "raises ArgumentError for an empty range" do
+      assert_raise ArgumentError, ~r/range must be a non-empty range/, fn ->
+        FakeDate.add(1..10//-1)
       end
     end
 
     test "raises ArgumentError for a non-range" do
-      assert_raise ArgumentError, ~r/Expected a Range/, fn ->
+      assert_raise ArgumentError, ~r/range must be a range/, fn ->
         FakeDate.add(opaque([1, 2, 3]))
       end
     end
@@ -78,7 +84,7 @@ defmodule NeoFaker.DateTest do
     end
 
     test "raises ArgumentError when start is after finish" do
-      assert_raise ArgumentError, ~r/start date must be before or equal to finish date/, fn ->
+      assert_raise ArgumentError, ~r/start date must be on or before finish date/, fn ->
         FakeDate.between(~D[2025-01-01], ~D[2020-01-01])
       end
     end
@@ -101,13 +107,13 @@ defmodule NeoFaker.DateTest do
     end
 
     test "raises ArgumentError when min_age is negative" do
-      assert_raise ArgumentError, ~r/min_age must be non-negative/, fn ->
+      assert_raise ArgumentError, ~r/min_age must be a non-negative integer/, fn ->
         FakeDate.birthday(-1, 65)
       end
     end
 
     test "raises ArgumentError when max_age is negative" do
-      assert_raise ArgumentError, ~r/max_age must be non-negative/, fn ->
+      assert_raise ArgumentError, ~r/max_age must be a non-negative integer/, fn ->
         FakeDate.birthday(0, -1)
       end
     end
@@ -119,11 +125,11 @@ defmodule NeoFaker.DateTest do
     end
 
     test "raises ArgumentError when an age is not an integer" do
-      assert_raise ArgumentError, ~r/min_age must be an integer/, fn ->
+      assert_raise ArgumentError, ~r/min_age must be a non-negative integer/, fn ->
         FakeDate.birthday(opaque(:young), 65)
       end
 
-      assert_raise ArgumentError, ~r/max_age must be an integer/, fn ->
+      assert_raise ArgumentError, ~r/max_age must be a non-negative integer/, fn ->
         FakeDate.birthday(18, opaque(:old))
       end
     end
@@ -196,16 +202,14 @@ defmodule NeoFaker.DateTest do
   end
 
   describe "Validator" do
-    test "validate_range!/1 accepts an ascending range" do
-      assert Validator.validate_range!(1..10) == :ok
-    end
-
     test "validate_date_order!/2 accepts equal dates" do
       assert Validator.validate_date_order!(~D[2020-01-01], ~D[2020-01-01]) == :ok
     end
 
-    test "validate_age_range!/2 accepts a valid window" do
-      assert Validator.validate_age_range!(18, 65) == :ok
+    test "validate_date_order!/2 rejects anything but dates" do
+      assert_raise ArgumentError, ~r/must be Date structs/, fn ->
+        Validator.validate_date_order!(opaque(~N[2020-01-01 00:00:00]), ~D[2020-01-02])
+      end
     end
   end
 end

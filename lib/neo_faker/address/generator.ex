@@ -2,18 +2,18 @@ defmodule NeoFaker.Address.Generator do
   @moduledoc false
 
   @doc """
-  Generates a random latitude value rounded to the given precision.
-
-  Returns a float between -90.0 and 90.0.
+  Returns a uniformly distributed latitude in `-90.0..90.0`, rounded to `precision`.
   """
-  @spec latitude(non_neg_integer()) :: float()
-  def latitude(precision), do: Float.round(:rand.uniform() * 180 - 90, precision)
+  @spec latitude(0..15) :: float()
+  def latitude(precision), do: coordinate(90, precision)
 
   @doc """
-  Generates a random longitude value rounded to the given precision.
-
-  Returns a float between -180.0 and 180.0.
+  Returns a uniformly distributed longitude in `-180.0..180.0`, rounded to `precision`.
   """
-  @spec longitude(non_neg_integer()) :: float()
-  def longitude(precision), do: Float.round(:rand.uniform() * 360 - 180, precision)
+  @spec longitude(0..15) :: float()
+  def longitude(precision), do: coordinate(180, precision)
+
+  defp coordinate(bound, precision) do
+    Float.round(:rand.uniform() * 2 * bound - bound, precision)
+  end
 end

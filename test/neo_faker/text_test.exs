@@ -55,13 +55,13 @@ defmodule NeoFaker.TextTest do
     end
 
     test "raises ArgumentError for a non-positive length" do
-      assert_raise ArgumentError, ~r/number must be a positive integer/, fn ->
+      assert_raise ArgumentError, ~r/count must be a positive integer/, fn ->
         Text.characters(0)
       end
     end
 
     test "raises ArgumentError for a non-integer length" do
-      assert_raise ArgumentError, ~r/number must be a positive integer/, fn ->
+      assert_raise ArgumentError, ~r/count must be a positive integer/, fn ->
         Text.characters(:many)
       end
     end
@@ -120,13 +120,13 @@ defmodule NeoFaker.TextTest do
     end
   end
 
-  describe "Generator.character/1" do
+  describe "Generator.characters/2" do
     test "covers every branch" do
-      assert String.match?(Generator.character(nil), @alphanumeric_regexp)
-      assert String.match?(Generator.character(:alphabet_lower), ~r/^[a-z]$/)
-      assert String.match?(Generator.character(:alphabet_upper), ~r/^[A-Z]$/)
-      assert String.match?(Generator.character(:alphabet), ~r/^[a-zA-Z]$/)
-      assert String.match?(Generator.character(:digit), ~r/^[0-9]$/)
+      assert String.match?(Generator.characters(1, nil), @alphanumeric_regexp)
+      assert String.match?(Generator.characters(1, :alphabet_lower), ~r/^[a-z]$/)
+      assert String.match?(Generator.characters(1, :alphabet_upper), ~r/^[A-Z]$/)
+      assert String.match?(Generator.characters(1, :alphabet), ~r/^[a-zA-Z]$/)
+      assert String.match?(Generator.characters(1, :digit), ~r/^[0-9]$/)
     end
   end
 end

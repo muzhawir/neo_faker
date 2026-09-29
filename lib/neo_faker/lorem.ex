@@ -1,65 +1,60 @@
 defmodule NeoFaker.Lorem do
   @moduledoc """
-  Functions for generating Lorem Ipsum text.
+  Functions for generating placeholder text.
 
-  Provides utilities to generate random paragraphs, sentences, and words sourced
-  from either the classic Lorem Ipsum text or Marcus Aurelius' *Meditations*.
-  All functions accept a `text:` option to switch between sources. The plural
-  functions return a list; join it yourself with `Enum.join/2` if you need a
-  single string.
+  Text is drawn from one of two sources, selected with the `:text` option:
+
+    * `:lorem` - the classic *Lorem ipsum* placeholder text.
+    * `:meditations` - George Long's English translation of Marcus Aurelius'
+      *Meditations*, for placeholder text that reads as real prose.
+
+  The singular functions return a string. The plural functions return a list; use
+  `Enum.join/2` if you need a single string.
   """
   @moduledoc since: "0.8.0"
 
-  alias NeoFaker.Data
+  alias NeoFaker.Locale
   alias NeoFaker.Lorem.Generator
 
   @text_schema NimbleOptions.new!(
                  text: [type: {:in, [:lorem, :meditations]}, default: :lorem],
-                 locale: [type: :atom, default: nil]
+                 locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
                )
 
   @doc """
   Generates a random paragraph.
 
-  Returns a randomly selected paragraph from the chosen text source.
-
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.paragraph()
-      "Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Vestibulum urna
-      risus, egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis
-      convallis sit amet nec diam. Morbi ut blandit est, et placerat neque."
+      "Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Morbi ut blandit est."
 
       iex> NeoFaker.Lorem.paragraph(text: :meditations)
-      "Do the things external which fall upon thee distract thee? Give thyself time to learn
-      something new and good, and cease to be whirled around."
+      "Do the things external which fall upon thee distract thee? Give thyself time to learn something new and good."
 
   """
   @spec paragraph(keyword()) :: String.t()
   def paragraph(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @text_schema)
-    file = Generator.text_file(Keyword.fetch!(opts, :text))
-
-    __MODULE__
-    |> Data.random_value(file, "text", opts)
-    |> Generator.normalize()
-    |> Generator.extract_paragraph()
+    {locale, source} = validate!(opts)
+    Generator.paragraph(locale, source)
   end
 
   @doc """
   Generates a random sentence.
 
-  Extracts a single sentence from a randomly chosen paragraph of the given text source.
+  The sentence is taken from a random paragraph, and keeps its closing punctuation.
 
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -72,18 +67,20 @@ defmodule NeoFaker.Lorem do
   """
   @spec sentence(keyword()) :: String.t()
   def sentence(opts \\ []) do
-    opts |> paragraph() |> Generator.split_sentences() |> Enum.random()
+    {locale, source} = validate!(opts)
+    Generator.sentence(locale, source)
   end
 
   @doc """
   Generates a random word.
 
-  Extracts a single lowercase word from a randomly chosen sentence, stripped of punctuation.
+  The word is lowercase and stripped of punctuation.
 
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -96,69 +93,73 @@ defmodule NeoFaker.Lorem do
   """
   @spec word(keyword()) :: String.t()
   def word(opts \\ []) do
-    opts
-    |> sentence()
-    |> Generator.remove_punctuation()
-    |> Generator.split_words()
-    |> Enum.random()
-    |> String.downcase()
+    {locale, source} = validate!(opts)
+    Generator.word(locale, source)
   end
 
   @doc """
   Generates multiple random paragraphs.
 
-  Returns a list of paragraphs. `count` sets how many are generated and defaults to `3`.
+  `count` is the number of paragraphs and defaults to `3`. Raises `ArgumentError` if it is
+  not a positive integer.
 
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.paragraphs(2)
-      ["First paragraph...", "Second paragraph..."]
+      ["Nulla facilisi. Quisque scelerisque lorem sed dui.", "Fusce nec aliquet elit, et euismod ex."]
 
   """
   @spec paragraphs(pos_integer(), keyword()) :: [String.t()]
-  def paragraphs(count \\ 3, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @text_schema)
+  def paragraphs(count \\ 3, opts \\ []) do
+    count = validate_count!(count)
+    {locale, source} = validate!(opts)
 
-    Enum.map(1..count, fn _ -> paragraph(opts) end)
+    Enum.map(1..count, fn _ -> Generator.paragraph(locale, source) end)
   end
 
   @doc """
   Generates multiple random sentences.
 
-  Returns a list of sentences. `count` sets how many are generated and defaults to `5`.
+  `count` is the number of sentences and defaults to `5`. Raises `ArgumentError` if it is
+  not a positive integer.
 
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
       iex> NeoFaker.Lorem.sentences(3)
-      ["First sentence.", "Second sentence.", "Third sentence."]
+      ["Nulla facilisi.", "Duis ac mi dolor.", "Aliquam erat volutpat."]
 
   """
   @spec sentences(pos_integer(), keyword()) :: [String.t()]
-  def sentences(count \\ 5, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @text_schema)
+  def sentences(count \\ 5, opts \\ []) do
+    count = validate_count!(count)
+    {locale, source} = validate!(opts)
 
-    Enum.map(1..count, fn _ -> sentence(opts) end)
+    Enum.map(1..count, fn _ -> Generator.sentence(locale, source) end)
   end
 
   @doc """
   Generates multiple random words.
 
-  Returns a list of words. `count` sets how many are generated and defaults to `10`.
+  `count` is the number of words and defaults to `10`. Raises `ArgumentError` if it is
+  not a positive integer.
 
   ## Options
 
     * `:text` (`:lorem` or `:meditations`) - the text source. Defaults to `:lorem`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -167,9 +168,21 @@ defmodule NeoFaker.Lorem do
 
   """
   @spec words(pos_integer(), keyword()) :: [String.t()]
-  def words(count \\ 10, opts \\ []) when is_integer(count) and count > 0 do
-    opts = NimbleOptions.validate!(opts, @text_schema)
+  def words(count \\ 10, opts \\ []) do
+    count = validate_count!(count)
+    {locale, source} = validate!(opts)
 
-    Enum.map(1..count, fn _ -> word(opts) end)
+    Enum.map(1..count, fn _ -> Generator.word(locale, source) end)
+  end
+
+  defp validate!(opts) do
+    opts = NimbleOptions.validate!(opts, @text_schema)
+    {Keyword.fetch!(opts, :locale), Keyword.fetch!(opts, :text)}
+  end
+
+  defp validate_count!(count) when is_integer(count) and count > 0, do: count
+
+  defp validate_count!(count) do
+    raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"
   end
 end

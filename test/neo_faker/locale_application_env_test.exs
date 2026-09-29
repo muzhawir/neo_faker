@@ -42,31 +42,35 @@ defmodule NeoFaker.LocaleApplicationEnvTest do
     test "raises ArgumentError when a bogus atom is stored directly" do
       Application.put_env(:neo_faker, :locale, :bogus_locale)
 
-      assert_raise ArgumentError, ~r/Unsupported locale :bogus_locale/, fn -> Locale.fetch() end
+      assert_raise ArgumentError, ~r/unsupported locale :bogus_locale/, fn -> Locale.fetch() end
     end
 
     test "raises ArgumentError when a non-atom is stored directly" do
       Application.put_env(:neo_faker, :locale, "id_id")
 
-      assert_raise ArgumentError, ~r/Invalid locale format/, fn -> Locale.fetch() end
+      assert_raise ArgumentError, ~r/locale must be an atom/, fn -> Locale.fetch() end
     end
   end
 
   describe "NeoFaker.start/0" do
-    test "falls back to :default and returns :ok when no locale is configured" do
+    test "returns :ok without printing when no locale is configured" do
       Application.delete_env(:neo_faker, :locale)
       Process.delete({Locale, :locale})
 
-      assert ExUnit.CaptureIO.capture_io(fn -> assert NeoFaker.start() == :ok end) =~
-               "locale: :default"
-
+      assert ExUnit.CaptureIO.capture_io(fn -> assert NeoFaker.start() == :ok end) == ""
       assert Locale.get() == :default
     end
 
-    test "returns :ok when a locale is already configured" do
-      Application.put_env(:neo_faker, :locale, :default)
+    test "returns :ok when a supported locale is configured" do
+      Application.put_env(:neo_faker, :locale, :id_id)
 
-      assert ExUnit.CaptureIO.capture_io(fn -> assert NeoFaker.start() == :ok end) =~ "NeoFaker"
+      assert NeoFaker.start() == :ok
+    end
+
+    test "raises ArgumentError when the configured locale is unsupported" do
+      Application.put_env(:neo_faker, :locale, :xx_xx)
+
+      assert_raise ArgumentError, ~r/unsupported locale :xx_xx/, fn -> NeoFaker.start() end
     end
   end
 

@@ -23,15 +23,15 @@ defmodule NeoFaker.Locales.EnUs.PersonTest do
     end
 
     test "area_number/0 is a 3-digit string, never 000, 666, or 900+" do
-      # 666 is drawn with probability 1/899 per call; 20k draws exercises the
-      # "666 -> 777" substitution branch with near-certainty while a real 666
-      # must never leak through.
+      # 20k draws reach the values next to the excluded 666 with near-certainty.
       results = for _ <- 1..20_000, do: Generator.area_number()
 
       assert Enum.all?(results, &String.match?(&1, ~r/^\d{3}$/))
       refute "666" in results
       refute "000" in results
       refute Enum.any?(results, fn n -> String.to_integer(n) >= 900 end)
+      assert "665" in results
+      assert "667" in results
     end
   end
 end

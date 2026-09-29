@@ -72,8 +72,10 @@ defmodule NeoFaker.LoremTest do
       assert_raise NimbleOptions.ValidationError, fn -> Lorem.paragraphs(2, join: true) end
     end
 
-    test "raises FunctionClauseError for a non-positive count" do
-      assert_raise FunctionClauseError, fn -> Lorem.paragraphs(0) end
+    test "raises ArgumentError for a non-positive count" do
+      assert_raise ArgumentError, ~r/count must be a positive integer/, fn ->
+        Lorem.paragraphs(0)
+      end
     end
   end
 
@@ -87,8 +89,10 @@ defmodule NeoFaker.LoremTest do
       assert Enum.all?(Lorem.sentences(4), &(is_binary(&1) and &1 =~ ~r/\S/))
     end
 
-    test "raises FunctionClauseError for a non-positive count" do
-      assert_raise FunctionClauseError, fn -> Lorem.sentences(-1) end
+    test "raises ArgumentError for a non-positive count" do
+      assert_raise ArgumentError, ~r/count must be a positive integer/, fn ->
+        Lorem.sentences(-1)
+      end
     end
   end
 
@@ -102,35 +106,24 @@ defmodule NeoFaker.LoremTest do
       assert length(Lorem.words(3, text: :meditations, locale: :default)) == 3
     end
 
-    test "raises FunctionClauseError for a non-positive count" do
-      assert_raise FunctionClauseError, fn -> Lorem.words(0) end
+    test "raises ArgumentError for a non-positive count" do
+      assert_raise ArgumentError, ~r/count must be a positive integer/, fn -> Lorem.words(0) end
     end
   end
 
   describe "Generator" do
-    test "text_file/1 maps each source to its data file" do
-      assert Generator.text_file(:lorem) == "lorem_ipsum.exs"
-      assert Generator.text_file(:meditations) == "meditations.exs"
-    end
-
-    test "normalize/1 collapses single newlines but keeps paragraph breaks" do
-      assert Generator.normalize("a\nb\n\nc") == "a b\n\nc"
+    test "split_paragraphs/1 joins wrapped lines and splits on blank lines" do
+      assert Generator.split_paragraphs("a\nb\n\nc\n") == ["a b", "c"]
     end
 
     test "split_sentences/1 keeps the delimiter and drops blank fragments" do
       assert Generator.split_sentences("One. Two! ") == ["One.", "Two!"]
     end
 
-    test "remove_punctuation/1 strips punctuation" do
-      assert Generator.remove_punctuation("a, b. c!") == "a b c"
-    end
-
-    test "split_words/1 splits on whitespace" do
-      assert Generator.split_words("a b  c") == ["a", "b", "c"]
-    end
-
-    test "extract_paragraph/1 returns one non-blank paragraph" do
-      assert Generator.extract_paragraph("first\n\nsecond") in ["first", "second"]
+    test "word/2 returns a lowercase word without punctuation" do
+      for source <- [:lorem, :meditations], _ <- 1..50 do
+        assert Generator.word(:default, source) =~ ~r/^[a-z]+$/
+      end
     end
   end
 end

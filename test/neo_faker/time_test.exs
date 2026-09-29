@@ -6,7 +6,7 @@ defmodule NeoFaker.TimeTest do
   alias NeoFaker.Time.Generator
   alias NeoFaker.Time.Validator
 
-  defp local_time, do: NaiveDateTime.to_time(NaiveDateTime.local_now())
+  defp utc_time, do: Time.utc_now()
 
   # Launders a value to an opaque type so the compiler's type checker does not
   # narrow it, letting us reach the runtime guard clauses meant for arbitrary input.
@@ -28,14 +28,26 @@ defmodule NeoFaker.TimeTest do
       end
     end
 
-    test "raises ArgumentError for a descending range" do
-      assert_raise ArgumentError, ~r/first must be less than or equal to last/, fn ->
-        FakeTime.add(10..1//-1)
+    test "returns a time at second precision" do
+      assert %Time{microsecond: {0, 0}} = FakeTime.add()
+    end
+
+    test "offsets from the current UTC time" do
+      now = Time.truncate(FakeTime.now(), :second)
+      result = FakeTime.add(0..0, unit: :second)
+
+      # Allow for the clock ticking over between the two reads.
+      assert Time.diff(result, now) in [0, 1, -86_399]
+    end
+
+    test "raises ArgumentError for an empty range" do
+      assert_raise ArgumentError, ~r/range must be a non-empty range/, fn ->
+        FakeTime.add(1..10//-1)
       end
     end
 
     test "raises ArgumentError for a non-range" do
-      assert_raise ArgumentError, ~r/Expected a Range/, fn -> FakeTime.add(opaque(:noon)) end
+      assert_raise ArgumentError, ~r/range must be a range/, fn -> FakeTime.add(opaque(:noon)) end
     end
 
     test "raises NimbleOptions.ValidationError for an unknown unit" do
@@ -49,7 +61,7 @@ defmodule NeoFaker.TimeTest do
 
   describe "between/2" do
     test "returns the exact time when start and finish are equal" do
-      now = local_time()
+      now = utc_time()
 
       assert FakeTime.between(now, now) == now
     end
@@ -58,12 +70,32 @@ defmodule NeoFaker.TimeTest do
       assert_between(FakeTime.between(~T[08:00:00], ~T[18:00:00]), ~T[08:00:00], ~T[18:00:00])
     end
 
+    test "never overshoots sub-second bounds" do
+      for _ <- 1..200 do
+        assert_between(
+          FakeTime.between(~T[10:00:00.900000], ~T[10:00:01.100000]),
+          ~T[10:00:00.900000],
+          ~T[10:00:01.100000]
+        )
+      end
+    end
+
+    test "keeps second precision for whole-second bounds" do
+      assert %Time{microsecond: {0, 0}} = FakeTime.between(~T[08:00:00], ~T[18:00:00])
+    end
+
+    test "raises ArgumentError for a non-Time argument" do
+      assert_raise ArgumentError, ~r/must be Time structs/, fn ->
+        FakeTime.between(opaque("08:00:00"), ~T[18:00:00])
+      end
+    end
+
     test "uses the full day as the default bounds" do
       assert_between(FakeTime.between(), ~T[00:00:00], ~T[23:59:59])
     end
 
     test "raises ArgumentError when start is after finish" do
-      assert_raise ArgumentError, ~r/start time must be before or equal to finish time/, fn ->
+      assert_raise ArgumentError, ~r/start time must be at or before finish time/, fn ->
         FakeTime.between(~T[18:00:00], ~T[08:00:00])
       end
     end
@@ -113,10 +145,6 @@ defmodule NeoFaker.TimeTest do
   end
 
   describe "Validator" do
-    test "validate_range!/1 accepts an ascending range" do
-      assert Validator.validate_range!(1..10) == :ok
-    end
-
     test "validate_time_order!/2 accepts equal times" do
       assert Validator.validate_time_order!(~T[08:00:00], ~T[08:00:00]) == :ok
     end

@@ -75,11 +75,11 @@ defmodule NeoFaker.CryptoTest do
     end
 
     test "raises ArgumentError for an unsupported hash type" do
-      assert_raise ArgumentError, ~r/Invalid hash type/, fn -> Crypto.hash(opaque(:sha3)) end
+      assert_raise ArgumentError, ~r/invalid hash type/, fn -> Crypto.hash(opaque(:sha3)) end
     end
 
     test "raises ArgumentError for a non-atom hash type" do
-      assert_raise ArgumentError, ~r/Invalid hash type/, fn -> Crypto.hash(opaque("md5")) end
+      assert_raise ArgumentError, ~r/invalid hash type/, fn -> Crypto.hash(opaque("md5")) end
     end
 
     test "returns a different hash on repeated calls" do
@@ -167,15 +167,31 @@ defmodule NeoFaker.CryptoTest do
     end
   end
 
-  describe "HashGenerator.generate_hash/2" do
-    alias NeoFaker.Crypto.HashGenerator
+  describe "Generator" do
+    alias NeoFaker.Crypto.Generator
 
-    test "defaults to lowercase when called without options" do
-      assert String.match?(HashGenerator.generate_hash(:md5), ~r/^[0-9a-f]{32}$/)
+    test "hash/2 returns a hex digest in the requested case" do
+      assert String.match?(Generator.hash(:md5, :lower), ~r/^[0-9a-f]{32}$/)
+      assert String.match?(Generator.hash(:sha256, :upper), ~r/^[0-9A-F]{64}$/)
     end
 
-    test "honours an explicit case option" do
-      assert String.match?(HashGenerator.generate_hash(:sha256, case: :upper), ~r/^[0-9A-F]{64}$/)
+    test "uuid4/1 sets the version and variant bits" do
+      for _ <- 1..100 do
+        <<_::binary-12, version, _::binary-3, variant, _::binary>> = Generator.uuid4(:lower)
+
+        assert version == ?4
+        assert variant in ~c"89ab"
+      end
+    end
+  end
+
+  describe "seeding" do
+    test "hashes and UUIDs are reproducible after NeoFaker.seed/1" do
+      NeoFaker.seed(42)
+      first = {Crypto.sha256(), Crypto.uuid()}
+      NeoFaker.seed(42)
+
+      assert {Crypto.sha256(), Crypto.uuid()} == first
     end
   end
 
@@ -187,7 +203,7 @@ defmodule NeoFaker.CryptoTest do
     end
 
     test "raises ArgumentError for an unsupported type" do
-      assert_raise ArgumentError, ~r/Expected one of \[:md5, :sha1, :sha256, :sha512\]/, fn ->
+      assert_raise ArgumentError, ~r/expected one of \[:md5, :sha1, :sha256, :sha512\]/, fn ->
         Validator.validate_hash_type!(:whirlpool)
       end
     end

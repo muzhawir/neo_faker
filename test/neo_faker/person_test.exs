@@ -56,16 +56,34 @@ defmodule NeoFaker.PersonTest do
   end
 
   describe "prefix/1" do
-    test "returns a prefix from the default locale word list" do
-      word_list = fetch_key(:default, "name_affixes.exs", "prefixes")
+    defp prefixes(locale, keys) do
+      Enum.flat_map(keys, &fetch_key(locale, "name_affixes.exs", &1))
+    end
 
-      assert Person.prefix(locale: :default) in word_list
+    test "returns a prefix from the default locale word list" do
+      all = prefixes(:default, ~w[prefixes female_prefixes male_prefixes])
+
+      assert Person.prefix(locale: :default) in all
     end
 
     test "returns a prefix from the id_id locale word list" do
-      word_list = fetch_key(:id_id, "name_affixes.exs", "prefixes")
+      all = prefixes(:id_id, ~w[prefixes female_prefixes male_prefixes])
 
-      assert Person.prefix(locale: :id_id) in word_list
+      assert Person.prefix(locale: :id_id) in all
+    end
+
+    test "never returns a title of the other sex" do
+      for locale <- [:default, :id_id], _ <- 1..50 do
+        assert Person.prefix(sex: :female, locale: locale) in prefixes(
+                 locale,
+                 ~w[prefixes female_prefixes]
+               )
+
+        assert Person.prefix(sex: :male, locale: locale) in prefixes(
+                 locale,
+                 ~w[prefixes male_prefixes]
+               )
+      end
     end
   end
 
@@ -168,9 +186,22 @@ defmodule NeoFaker.PersonTest do
     @test_locale :default
 
     defp known_prefixes do
-      @test_locale
-      |> Data.fetch!(@module, @affixes_file)
-      |> Map.fetch!("prefixes")
+      data = Data.fetch!(@test_locale, @module, @affixes_file)
+
+      Enum.flat_map(~w[prefixes female_prefixes male_prefixes], &Map.fetch!(data, &1))
+    end
+
+    test "pairs a female name with a neutral or female prefix only" do
+      male_only = Map.fetch!(Data.fetch!(@test_locale, @module, @affixes_file), "male_prefixes")
+
+      for _ <- 1..50 do
+        [prefix | _] =
+          [sex: :female, prefix: true, locale: @test_locale]
+          |> Person.full_name_with_title()
+          |> String.split()
+
+        refute prefix in male_only
+      end
     end
 
     defp known_suffixes do
@@ -361,8 +392,13 @@ defmodule NeoFaker.PersonTest do
     end
 
     test "raises ArgumentError for a negative bound" do
-      assert_raise ArgumentError, ~r/min must be non-negative/, fn -> Person.age(-1, 10) end
-      assert_raise ArgumentError, ~r/max must be non-negative/, fn -> Person.age(0, -1) end
+      assert_raise ArgumentError, ~r/min must be a non-negative integer/, fn ->
+        Person.age(-1, 10)
+      end
+
+      assert_raise ArgumentError, ~r/max must be a non-negative integer/, fn ->
+        Person.age(0, -1)
+      end
     end
 
     test "raises ArgumentError when min exceeds max" do
@@ -372,11 +408,11 @@ defmodule NeoFaker.PersonTest do
     end
 
     test "raises ArgumentError for a non-integer bound" do
-      assert_raise ArgumentError, ~r/min must be an integer/, fn ->
+      assert_raise ArgumentError, ~r/min must be a non-negative integer/, fn ->
         Person.age(opaque(:a), 10)
       end
 
-      assert_raise ArgumentError, ~r/max must be an integer/, fn ->
+      assert_raise ArgumentError, ~r/max must be a non-negative integer/, fn ->
         Person.age(0, opaque(:b))
       end
     end
@@ -404,36 +440,6 @@ defmodule NeoFaker.PersonTest do
     test "builds names with and without a middle name for a fixed sex" do
       assert :male |> FullNameGenerator.name(nil, true) |> String.split() |> length() == 3
       assert :female |> FullNameGenerator.name(nil, false) |> String.split() |> length() == 2
-    end
-  end
-
-  describe "Validator.validate_age_range!/2" do
-    alias NeoFaker.Person.Validator
-
-    test "returns :ok for a valid window" do
-      assert Validator.validate_age_range!(0, 120) == :ok
-    end
-
-    test "raises ArgumentError for each invalid shape" do
-      assert_raise ArgumentError, ~r/min must be non-negative/, fn ->
-        Validator.validate_age_range!(-1, 10)
-      end
-
-      assert_raise ArgumentError, ~r/max must be non-negative/, fn ->
-        Validator.validate_age_range!(0, -1)
-      end
-
-      assert_raise ArgumentError, ~r/min must be less than or equal to max/, fn ->
-        Validator.validate_age_range!(10, 5)
-      end
-
-      assert_raise ArgumentError, ~r/min must be an integer/, fn ->
-        Validator.validate_age_range!(opaque(:a), 5)
-      end
-
-      assert_raise ArgumentError, ~r/max must be an integer/, fn ->
-        Validator.validate_age_range!(5, opaque(:b))
-      end
     end
   end
 end

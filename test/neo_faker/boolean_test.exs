@@ -18,11 +18,11 @@ defmodule NeoFaker.BooleanTest do
     end
 
     test "raises ArgumentError when true_ratio is outside 0..100" do
-      assert_raise ArgumentError, ~r/true_ratio must be between 0 and 100/, fn ->
+      assert_raise ArgumentError, ~r/true_ratio must be an integer between 0 and 100/, fn ->
         Boolean.boolean(101)
       end
 
-      assert_raise ArgumentError, ~r/true_ratio must be between 0 and 100/, fn ->
+      assert_raise ArgumentError, ~r/true_ratio must be an integer between 0 and 100/, fn ->
         Boolean.boolean(-1)
       end
     end

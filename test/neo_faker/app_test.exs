@@ -389,7 +389,7 @@ defmodule NeoFaker.AppTest do
       assert NameGenerator.format_text(pair, nil) == "neo faker"
       assert NameGenerator.format_text(pair, :camel_case) == "neoFaker"
       assert NameGenerator.format_text(pair, :pascal_case) == "NeoFaker"
-      assert NameGenerator.format_text(pair, :dashed) == "Neo-faker"
+      assert NameGenerator.format_text(pair, :dashed) == "neo-faker"
       assert NameGenerator.format_text(pair, :underscore) == "neo_faker"
       assert NameGenerator.format_text(pair, :single) in ["Neo", "Faker"]
     end
@@ -405,7 +405,7 @@ defmodule NeoFaker.AppTest do
     end
 
     test "raises ArgumentError when every label is empty after sanitisation" do
-      assert_raise ArgumentError, ~r/produced no valid labels/, fn ->
+      assert_raise ArgumentError, ~r/has no alphanumeric labels/, fn ->
         DomainGenerator.reverse_domain!("...")
       end
     end
@@ -414,22 +414,22 @@ defmodule NeoFaker.AppTest do
   describe "SemverGenerator" do
     alias NeoFaker.App.SemverGenerator
 
-    test "semver_core/0 is MAJOR.MINOR.PATCH within the documented ranges" do
+    test "core/0 is MAJOR.MINOR.PATCH within the documented ranges" do
       [major, minor, patch] =
-        SemverGenerator.semver_core() |> String.split(".") |> Enum.map(&String.to_integer/1)
+        SemverGenerator.core() |> String.split(".") |> Enum.map(&String.to_integer/1)
 
       assert major in 0..9 and minor in 0..20 and patch in 1..30
     end
 
-    test "semver_pre_release/0 is label.N" do
-      [label, n] = String.split(SemverGenerator.semver_pre_release(), ".")
+    test "pre_release/0 is label.N" do
+      [label, n] = String.split(SemverGenerator.pre_release(), ".")
 
       assert label in ~w[alpha beta rc]
       assert String.to_integer(n) in 1..10
     end
 
-    test "semver_build_number/0 is an 8-digit YYYYMMDD string" do
-      assert String.match?(SemverGenerator.semver_build_number(), ~r/^\d{8}$/)
+    test "build/0 is an 8-digit YYYYMMDD string" do
+      assert String.match?(SemverGenerator.build(), ~r/^\d{8}$/)
     end
   end
 end

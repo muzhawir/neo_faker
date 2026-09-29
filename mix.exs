@@ -19,12 +19,10 @@ defmodule NeoFaker.MixProject do
   end
 
   # Store the PLT under priv/plts so CI can cache it as a single directory.
-  # `:mix` is added because application/0 lists it in :extra_applications.
   defp dialyzer do
     [
       plt_local_path: "priv/plts",
-      plt_core_path: "priv/plts",
-      plt_add_apps: [:mix]
+      plt_core_path: "priv/plts"
     ]
   end
 
@@ -83,7 +81,7 @@ defmodule NeoFaker.MixProject do
     ]
   end
 
-  def application, do: [extra_applications: [:logger, :mix]]
+  def application, do: [extra_applications: [:logger]]
 
   defp deps do
     [

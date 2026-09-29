@@ -70,6 +70,7 @@ defmodule NeoFaker.Internet.Generator do
     {256, 101, 126},
     {256, 128, 168},
     {255, 169, 169},
+    {256, 170, 171},
     {240, 172, 172},
     {256, 173, 191},
     {254, 192, 192},
@@ -248,14 +249,38 @@ defmodule NeoFaker.Internet.Generator do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Generates a random compressed IPv6 address.
+  Generates a random IPv6 address in full form: eight groups of four lowercase
+  hex digits.
+  """
+  @spec ipv6() :: String.t()
+  def ipv6 do
+    Enum.map_join(1..8, ":", fn _ ->
+      random_ipv6_group() |> Integer.to_string(16) |> String.pad_leading(4, "0")
+    end)
+  end
 
-  Returns a string using the compressed notation, collapsing the longest consecutive sequence
-  of all-zero groups into `"::"` where applicable.
+  @doc """
+  Generates a random IPv6 address in compressed form (RFC 5952): leading zeros
+  dropped and the longest run of two or more all-zero groups collapsed to `"::"`.
   """
   @spec compressed_ipv6() :: String.t()
   def compressed_ipv6 do
     1..8 |> Enum.map(fn _ -> random_ipv6_group() end) |> compress_ipv6_groups()
+  end
+
+  # ---------------------------------------------------------------------------
+  # MAC address
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Generates a random 48-bit MAC address: six two-digit hex octets joined by
+  `separator`.
+  """
+  @spec mac_address(String.t()) :: String.t()
+  def mac_address(separator) do
+    Enum.map_join(1..6, separator, fn _ ->
+      random_octet() |> Integer.to_string(16) |> String.pad_leading(2, "0")
+    end)
   end
 
   # Renders a list of 16-bit groups in compressed notation: the longest run of
@@ -344,9 +369,12 @@ defmodule NeoFaker.Internet.Generator do
 
   # Like random_octet/0 but never returns a value in `excluded` (a range or a
   # list), used to skip the reserved sub-ranges inside an otherwise-public /8.
+  # Rejection sampling keeps the draw uniform over the remaining octets; at
+  # most 64 of 256 values are ever excluded, so a retry is rare.
   @spec random_octet_except(Range.t() | list(non_neg_integer())) :: non_neg_integer()
   defp random_octet_except(excluded) do
-    0..255 |> Enum.reject(&(&1 in excluded)) |> Enum.random()
+    octet = random_octet()
+    if octet in excluded, do: random_octet_except(excluded), else: octet
   end
 
   # Uniform random 16-bit group of an IPv6 address (0x0000..0xFFFF).
@@ -354,8 +382,7 @@ defmodule NeoFaker.Internet.Generator do
   defp random_ipv6_group, do: :rand.uniform(0x10_000) - 1
 
   # A single lowercase alphanumeric word from NeoFaker.Text, safe to drop into a
-  # URL path segment or query-string key (Formatter.slugify/1 strips any hyphen,
-  # apostrophe, or space a dictionary entry might carry).
+  # URL path segment or query-string key.
   @spec random_word_segment() :: String.t()
   defp random_word_segment, do: Formatter.slugify(NeoFaker.Text.word())
 end

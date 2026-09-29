@@ -1,9 +1,9 @@
 defmodule NeoFaker.HTTP do
   @moduledoc """
-  Functions for generating HTTP-related data.
+  Functions for generating HTTP protocol values.
 
-  Provides utilities to generate random HTTP values including user-agent strings, request
-  methods, status codes, referrer policies, protocol versions, and header names.
+  Covers request methods, status codes, header names, protocol versions, referrer
+  policies, and user-agent strings. None of these values depend on the locale.
   """
   @moduledoc since: "0.11.0"
 
@@ -24,6 +24,8 @@ defmodule NeoFaker.HTTP do
     "QUERY"
   ]
 
+  @common_request_methods @request_methods -- ["HEAD", "OPTIONS", "TRACE", "CONNECT"]
+
   @referrer_policies [
     "no-referrer",
     "no-referrer-when-downgrade",
@@ -34,6 +36,8 @@ defmodule NeoFaker.HTTP do
     "strict-origin-when-cross-origin",
     "unsafe-url"
   ]
+
+  @protocol_versions ["HTTP/1.0", "HTTP/1.1", "HTTP/2", "HTTP/3"]
 
   @user_agent_types [:all, :browser, :crawler, :ai]
   @status_code_types [:simple, :detailed]
@@ -56,7 +60,7 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP header name.
 
-  Returns a common request or response header name from a curated list of ten per category.
+  Draws from ten common request headers and ten common response headers.
 
   ## Options
 
@@ -85,7 +89,7 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP protocol version string.
 
-  Randomly selects from `HTTP/1.0`, `HTTP/1.1`, `HTTP/2`, and optionally `HTTP/3`.
+  Picks one of `"HTTP/1.0"`, `"HTTP/1.1"`, `"HTTP/2"`, and `"HTTP/3"`.
 
   ## Options
 
@@ -105,22 +109,17 @@ defmodule NeoFaker.HTTP do
   def protocol_version(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @protocol_version_schema)
 
-    versions = ["HTTP/1.0", "HTTP/1.1", "HTTP/2"]
-
-    versions =
-      if Keyword.fetch!(opts, :include_http3) do
-        versions ++ ["HTTP/3"]
-      else
-        versions
-      end
-
-    Enum.random(versions)
+    if Keyword.fetch!(opts, :include_http3) do
+      Enum.random(@protocol_versions)
+    else
+      Enum.random(@protocol_versions -- ["HTTP/3"])
+    end
   end
 
   @doc """
   Generates a random HTTP referrer policy.
 
-  Returns one of the eight standard `Referrer-Policy` header values.
+  Returns one of the eight values defined for the `Referrer-Policy` header.
 
   ## Examples
 
@@ -135,12 +134,13 @@ defmodule NeoFaker.HTTP do
   def referrer_policy, do: Enum.random(@referrer_policies)
 
   @doc """
-  Returns the list of all valid referrer policy strings.
+  Returns every `Referrer-Policy` value that `referrer_policy/0` can generate.
 
   ## Examples
 
       iex> NeoFaker.HTTP.all_referrer_policies()
-      ["no-referrer", "no-referrer-when-downgrade", ...]
+      ["no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin",
+       "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"]
 
   """
   @spec all_referrer_policies() :: [String.t()]
@@ -149,12 +149,13 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP request method.
 
-  Returns one of the common methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `QUERY`) by default.
+  By default, returns one of the six methods common in application traffic: `GET`, `POST`,
+  `PUT`, `DELETE`, `PATCH`, and `QUERY`.
 
   ## Options
 
-    * `:common_only` (boolean) - when `false`, includes all ten standard methods instead of just
-      the six most common. Defaults to `true`.
+    * `:common_only` (boolean) - when `false`, also includes `HEAD`, `OPTIONS`, `TRACE`,
+      and `CONNECT`. Defaults to `true`.
 
   ## Examples
 
@@ -171,7 +172,7 @@ defmodule NeoFaker.HTTP do
 
     methods =
       if Keyword.fetch!(opts, :common_only) do
-        @request_methods -- ["HEAD", "OPTIONS", "TRACE", "CONNECT"]
+        @common_request_methods
       else
         @request_methods
       end
@@ -180,7 +181,7 @@ defmodule NeoFaker.HTTP do
   end
 
   @doc """
-  Returns the list of all valid HTTP request methods.
+  Returns every request method that `request_method/1` can generate.
 
   ## Examples
 
@@ -194,7 +195,8 @@ defmodule NeoFaker.HTTP do
   @doc """
   Generates a random HTTP status code.
 
-  Returns either a simple code string (e.g. `"200"`) or a detailed one (e.g. `"200 OK"`).
+  Returns the code alone, such as `"404"`, or with its reason phrase, such as
+  `"404 Not Found"`.
 
   ## Options
 
@@ -227,25 +229,22 @@ defmodule NeoFaker.HTTP do
   def status_code(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @status_code_schema)
 
-    opts
-    |> Keyword.fetch!(:group)
-    |> StatusCodeGenerator.generates!()
-    |> StatusCodeGenerator.number(type: Keyword.fetch!(opts, :type))
+    StatusCodeGenerator.status_code(Keyword.fetch!(opts, :group), Keyword.fetch!(opts, :type))
   end
 
   @doc """
   Generates a random HTTP user-agent.
 
-  Browsers are full user-agent strings; crawlers and AI agents are the bare bot tokens
-  (`"gptbot"`, `"ahrefsbot"`) that identify them in a `User-Agent` header.
+  Browser values are complete `User-Agent` header strings. Crawler and AI values are the
+  bare product tokens that identify those bots, such as `"gptbot"` or `"ahrefsbot"`.
 
   ## Options
 
     * `:type` (`:all`, `:browser`, `:crawler`, or `:ai`) - the user-agent category. `:all` draws
       from every category. Defaults to `:all`.
-      * `:browser` - a real browser user-agent string.
-      * `:crawler` - a search/SEO crawler bot token.
-      * `:ai` - an AI crawler or agent bot token (`"gptbot"`, `"claude-user"`, `"perplexitybot"`).
+      * `:browser` - a desktop or mobile browser.
+      * `:crawler` - a search engine or SEO crawler.
+      * `:ai` - an AI crawler or agent, such as `"gptbot"` or `"claude-user"`.
 
   ## Examples
 

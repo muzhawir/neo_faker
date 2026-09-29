@@ -2,27 +2,22 @@ defmodule NeoFaker.Date.Generator do
   @moduledoc false
 
   @doc """
-  Generates a random date offset from today by a day count drawn from `range`.
-
-  `range` may include negative values (past), positive values (future), or straddle zero; the
-  offset is added to today's local date via `Date.add/2`, which handles either direction the same
-  way.
+  Returns today's local date shifted by a random number of days drawn from `range`.
   """
   @spec add(Range.t()) :: Date.t()
-  def add(range) do
-    NaiveDateTime.local_now() |> NaiveDateTime.to_date() |> Date.add(Enum.random(range))
-  end
+  def add(range), do: Date.add(local_date_now(), Enum.random(range))
 
   @doc """
-  Generates a random date between two dates, inclusive.
+  Returns a random date between `start` and `finish`, inclusive.
+
+  `Date.Range` implements `Enumerable.count/1` and `slice/1`, so `Enum.random/1`
+  picks a day in constant time without walking the range.
   """
   @spec between(Date.t(), Date.t()) :: Date.t()
-  def between(start, finish) do
-    start |> Date.range(finish) |> Enum.random()
-  end
+  def between(start, finish), do: start |> Date.range(finish) |> Enum.random()
 
   @doc """
-  Returns the current local date as a `Date` struct.
+  Returns the current date in the local time zone of the host.
   """
   @spec local_date_now() :: Date.t()
   def local_date_now, do: NaiveDateTime.to_date(NaiveDateTime.local_now())

@@ -1,53 +1,44 @@
 defmodule NeoFaker.Locales.IdId.Person.Generator do
   @moduledoc false
 
-  # Building blocks assembled by NeoFaker.Locales.IdId.Person.nik/0 and
-  # npwp/0.
-
-  alias NeoFaker.Number
-
-  @min_age_years -90
-  @max_age_years -18
+  # Parts of a Nomor Induk Kependudukan (NIK): a 16-digit number made of a
+  # 6-digit region code (province, regency, district), a 6-digit DDMMYY birth
+  # date, and a 4-digit serial.
 
   @doc """
-  Generates a zero-padded random number, used for the trailing serial part
-  of a NIK or NPWP.
+  Returns a random number from `1..max`, zero-padded to `width` digits.
   """
-  @spec serial_number(non_neg_integer(), non_neg_integer()) :: String.t()
-  def serial_number(max_number, pad_count) do
-    1
-    |> Number.between(max_number)
-    |> to_string()
-    |> String.pad_leading(pad_count, "0")
+  @spec serial_number(pos_integer(), pos_integer()) :: String.t()
+  def serial_number(max, width) do
+    1..max |> Enum.random() |> Integer.to_string() |> String.pad_leading(width, "0")
   end
 
   @doc """
-  Generates a random birth date string in `DDMMYY` format, selecting a date between 90 and 18
-  years ago.
+  Returns a random six-digit region code: province `11` to `92`, then regency and
+  district.
+  """
+  @spec region_code() :: String.t()
+  def region_code do
+    "#{Enum.random(11..92)}#{serial_number(79, 2)}#{serial_number(53, 2)}"
+  end
 
-  The day component is randomly chosen as either the actual day or the day plus 40 to represent a
-  female code.
+  @doc """
+  Returns a random `DDMMYY` birth date for someone aged 18 to 90 today.
+
+  For women, the NIK adds 40 to the day of birth, so half of the results have a day
+  from `41` to `71`.
   """
   @spec birth_date() :: String.t()
   def birth_date do
-    today = NaiveDateTime.to_date(NaiveDateTime.local_now())
+    today = Date.utc_today()
 
-    date_range =
-      today
-      |> Date.shift(year: @min_age_years)
-      |> Date.range(Date.shift(today, year: @max_age_years))
+    date =
+      today |> Date.shift(year: -90) |> Date.range(Date.shift(today, year: -18)) |> Enum.random()
 
-    %Date{year: year, month: month, day: day} = Enum.random(date_range)
+    day = Enum.random([date.day, date.day + 40])
 
-    formatted_year = year |> Integer.to_string() |> String.slice(-2, 2)
-    formatted_month = month |> Integer.to_string() |> String.pad_leading(2, "0")
-
-    formatted_day =
-      [day, day + 40]
-      |> Enum.random()
-      |> Integer.to_string()
-      |> String.pad_leading(2, "0")
-
-    "#{formatted_day}#{formatted_month}#{formatted_year}"
+    pad2(day) <> pad2(date.month) <> pad2(rem(date.year, 100))
   end
+
+  defp pad2(n), do: n |> Integer.to_string() |> String.pad_leading(2, "0")
 end

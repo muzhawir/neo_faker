@@ -310,7 +310,6 @@
     "nets",
     "nova",
     "omgili",
-    "omgili",
     "optibot",
     "perplexity-user",
     "perplexitybot",

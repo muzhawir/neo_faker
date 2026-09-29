@@ -26,14 +26,18 @@ defmodule NeoFaker.AddressTest do
       assert String.to_integer(Address.building_number(1..10)) in 1..10
     end
 
-    test "raises ArgumentError for a descending range" do
-      assert_raise ArgumentError, ~r/first must be less than or equal to last/, fn ->
-        Address.building_number(100..1//-1)
+    test "accepts a descending range with a negative step" do
+      assert String.to_integer(Address.building_number(10..1//-1)) in 1..10
+    end
+
+    test "raises ArgumentError for an empty range" do
+      assert_raise ArgumentError, ~r/must be a non-empty range/, fn ->
+        Address.building_number(1..10//-1)
       end
     end
 
     test "raises ArgumentError for a non-range" do
-      assert_raise ArgumentError, ~r/Expected a Range/, fn ->
+      assert_raise ArgumentError, ~r/must be a range/, fn ->
         Address.building_number(opaque([1, 100]))
       end
     end
@@ -48,6 +52,12 @@ defmodule NeoFaker.AddressTest do
       city_list = fetch_cache!(:default, "city.exs")
 
       assert Address.city(locale: :default) in city_list
+    end
+
+    test "raises NimbleOptions.ValidationError for an unsupported locale" do
+      assert_raise NimbleOptions.ValidationError, ~r/unsupported locale :fr_fr/, fn ->
+        Address.city(locale: :fr_fr)
+      end
     end
 
     test "returns a random city name with locale" do
@@ -96,6 +106,11 @@ defmodule NeoFaker.AddressTest do
       assert_raise NimbleOptions.ValidationError, fn -> Address.coordinate(precision: -1) end
     end
 
+    test "raises NimbleOptions.ValidationError for a precision above 15" do
+      assert_raise NimbleOptions.ValidationError, fn -> Address.coordinate(precision: 16) end
+      assert_raise NimbleOptions.ValidationError, fn -> Address.latitude(precision: 16) end
+    end
+
     test "raises NimbleOptions.ValidationError for the removed :type option" do
       assert_raise NimbleOptions.ValidationError, fn -> Address.coordinate(type: :latitude) end
     end
@@ -124,19 +139,6 @@ defmodule NeoFaker.AddressTest do
         assert lat >= -90.0 and lat <= 90.0
         assert lng >= -180.0 and lng <= 180.0
       end
-    end
-  end
-
-  describe "Validator" do
-    alias NeoFaker.Address.Validator
-
-    test "validate_range!/1 accepts an ascending range" do
-      assert Validator.validate_range!(1..10) == :ok
-    end
-
-    test "validate_range!/1 rejects a descending range and a non-range" do
-      assert_raise ArgumentError, fn -> Validator.validate_range!(10..1//-1) end
-      assert_raise ArgumentError, fn -> Validator.validate_range!(opaque([1, 2])) end
     end
   end
 

@@ -2,68 +2,67 @@ defmodule NeoFaker.Number do
   @moduledoc """
   Functions for generating random numbers.
 
-  Provides utilities to generate random integers, floats, digits, and decimals, including
-  values within a specified range and numbers with controlled precision.
+  Integer functions draw uniformly from an inclusive range. Float functions draw
+  uniformly between their bounds and can be rounded to a fixed number of decimal places.
   """
   @moduledoc since: "0.8.0"
 
+  alias NeoFaker.Helpers.Validator
   alias NeoFaker.Number.Generator
-  alias NeoFaker.Number.Validator
-
-  @min 0
-  @max 100
-  @left_digit_range 10..100
-  @right_digit_range 10_000..100_000
-  @digit_range 0..9
+  alias NeoFaker.Number.Validator, as: NumberValidator
 
   @doc """
   Generates a random number between `min` and `max`, inclusive.
 
-  Returns an integer when both arguments are integers, or a float when either argument is a
-  float. Defaults to the range `0`–`100`.
+  Returns an integer when both bounds are integers, and a float when either bound is a
+  float. `min` defaults to `0` and `max` defaults to `100`.
+
+  Raises `ArgumentError` if either bound is not a number, or if `min` is greater than
+  `max`.
 
   ## Examples
 
       iex> NeoFaker.Number.between()
       27
 
-      iex> NeoFaker.Number.between(1, 100)
-      28
+      iex> NeoFaker.Number.between(1, 6)
+      4
 
       iex> NeoFaker.Number.between(20, 100.0)
       29.481745280074264
-
-      iex> NeoFaker.Number.between(50, 50)
-      50
 
       iex> NeoFaker.Number.between(100, 1)
       ** (ArgumentError) min must be less than or equal to max, got: min=100, max=1
 
   """
   @spec between(number(), number()) :: number()
-  def between(min \\ @min, max \\ @max)
+  def between(min \\ 0, max \\ 100)
 
   def between(min, max) when is_number(min) and is_number(max) and min > max do
-    raise ArgumentError, "min must be less than or equal to max, got: min=#{min}, max=#{max}"
+    raise ArgumentError,
+          "min must be less than or equal to max, got: min=#{inspect(min)}, max=#{inspect(max)}"
   end
 
-  def between(min, max) when is_integer(min) and is_integer(max) do
-    Enum.random(min..max)
-  end
-
-  def between(min, max) when is_float(min) and is_float(max) do
-    Generator.float_between(min, max)
-  end
+  def between(min, max) when is_integer(min) and is_integer(max), do: Enum.random(min..max//1)
 
   def between(min, max) when is_number(min) and is_number(max) do
-    between(Generator.to_float(min), Generator.to_float(max))
+    Generator.float_between(Generator.to_float(min), Generator.to_float(max))
+  end
+
+  def between(min, max) do
+    raise ArgumentError,
+          "min and max must be numbers, got: min=#{inspect(min)}, max=#{inspect(max)}"
   end
 
   @doc """
-  Generates a random floating-point number within the given range.
+  Generates a random float by joining two random integers with a decimal point.
 
-  Combines a randomly selected integer part from `left_digit` (defaults to `10..100`) and a
-  fractional part from `right_digit` (defaults to `10_000..100_000`) into a float.
+  The integer part is drawn from `left_digit`, which defaults to `10..100`. The digits
+  after the decimal point are drawn from `right_digit`, which defaults to
+  `10_000..100_000`, and are written as-is: a draw of `42` gives `.42`, not `.00042`.
+
+  Raises `ArgumentError` if either argument is not a non-empty range, or if
+  `right_digit` contains a negative number.
 
   ## Examples
 
@@ -73,23 +72,17 @@ defmodule NeoFaker.Number do
       iex> NeoFaker.Number.float(1..9, 10..90)
       1.44
 
-      iex> NeoFaker.Number.float(10..5, 10..100)
-      ** (ArgumentError) left_digit range must have first <= last, got: 10..5
-
   """
   @spec float(Range.t(), Range.t()) :: float()
-  def float(left_digit \\ @left_digit_range, right_digit \\ @right_digit_range) do
-    Validator.validate_range!(left_digit, "left_digit")
-    Validator.validate_range!(right_digit, "right_digit")
-
-    left = Enum.random(left_digit)
-    right = Enum.random(right_digit)
+  def float(left_digit \\ 10..100, right_digit \\ 10_000..100_000) do
+    left = left_digit |> Validator.validate_range!("left_digit") |> Enum.random()
+    right = right_digit |> NumberValidator.validate_fraction_range!() |> Enum.random()
 
     String.to_float("#{left}.#{right}")
   end
 
   @doc """
-  Generates a random single digit between `0` and `9`.
+  Generates a random digit from `0` to `9`.
 
   ## Examples
 
@@ -97,92 +90,87 @@ defmodule NeoFaker.Number do
       5
 
   """
-  @spec digit() :: integer()
-  def digit, do: Enum.random(@digit_range)
+  @spec digit() :: 0..9
+  def digit, do: Enum.random(0..9)
 
   @doc """
-  Generates a random positive integer between `1` and `max`, inclusive.
+  Generates a random integer between `1` and `max`, inclusive.
 
-  `max` defaults to `100`.
+  `max` defaults to `100`. Raises `ArgumentError` if `max` is not a positive integer.
 
   ## Examples
-
-      iex> NeoFaker.Number.positive(50)
-      27
 
       iex> NeoFaker.Number.positive()
       42
 
+      iex> NeoFaker.Number.positive(50)
+      27
+
       iex> NeoFaker.Number.positive(0)
-      ** (ArgumentError) max must be at least 1, got: 0
+      ** (ArgumentError) max must be a positive integer, got: 0
 
   """
   @spec positive(pos_integer()) :: pos_integer()
-  def positive(max \\ @max)
+  def positive(max \\ 100)
+  def positive(max) when is_integer(max) and max >= 1, do: Enum.random(1..max)
 
-  def positive(max) when is_integer(max) and max >= 1, do: between(1, max)
-
-  def positive(max) when is_integer(max) do
-    raise ArgumentError, "max must be at least 1, got: #{max}"
+  def positive(max) do
+    raise ArgumentError, "max must be a positive integer, got: #{inspect(max)}"
   end
 
   @doc """
-  Generates a random negative integer between `min` and `-1`, inclusive.
+  Generates a random integer between `min` and `-1`, inclusive.
 
-  `min` defaults to `-100`.
+  `min` defaults to `-100`. Raises `ArgumentError` if `min` is not a negative integer.
 
   ## Examples
-
-      iex> NeoFaker.Number.negative(-50)
-      -27
 
       iex> NeoFaker.Number.negative()
       -42
 
+      iex> NeoFaker.Number.negative(-50)
+      -27
+
   """
   @spec negative(neg_integer()) :: neg_integer()
-  def negative(min \\ -@max)
+  def negative(min \\ -100)
+  def negative(min) when is_integer(min) and min <= -1, do: Enum.random(min..-1//1)
 
-  def negative(min) when is_integer(min) and min <= -1, do: between(min, -1)
-
-  def negative(min) when is_integer(min) do
-    raise ArgumentError, "min must be at most -1, got: #{min}"
+  def negative(min) do
+    raise ArgumentError, "min must be a negative integer, got: #{inspect(min)}"
   end
 
   @doc """
-  Generates a random float rounded to the specified number of decimal places.
+  Generates a random float between `min` and `max`, rounded to `precision` decimal places.
 
-  `min` and `max` default to `0.0` and `100.0`; `precision` defaults to `2`.
+  `min` defaults to `0.0`, `max` to `100.0`, and `precision` to `2`. Because of the
+  rounding, the result can equal either bound.
+
+  Raises `ArgumentError` if `min` or `max` is not a number, if `min` is greater than
+  `max`, or if `precision` is not an integer from `0` to `15`.
 
   ## Examples
 
-      iex> NeoFaker.Number.decimal(0.0, 10.0, 2)
-      5.47
+      iex> NeoFaker.Number.decimal()
+      42.73
 
       iex> NeoFaker.Number.decimal(0.0, 1.0, 4)
       0.7384
-
-      iex> NeoFaker.Number.decimal()
-      42.73
 
       iex> NeoFaker.Number.decimal(100.0, 0.0)
       ** (ArgumentError) min must be less than or equal to max, got: min=100.0, max=0.0
 
   """
-  @spec decimal(number(), number(), non_neg_integer()) :: float()
-  def decimal(min \\ 0.0, max \\ 100.0, precision \\ 2)
+  @spec decimal(number(), number(), 0..15) :: float()
+  def decimal(min \\ 0.0, max \\ 100.0, precision \\ 2) do
+    NumberValidator.validate_precision!(precision)
 
-  def decimal(min, max, precision)
-      when is_number(min) and is_number(max) and is_integer(precision) and precision >= 0 do
-    min
-    |> Generator.to_float()
-    |> between(Generator.to_float(max))
-    |> Float.round(precision)
+    # Integer bounds are widened to floats so that `between/2` draws a float.
+    {min, max} = {widen(min), widen(max)}
+
+    min |> between(max) |> Float.round(precision)
   end
 
-  def decimal(min, max, precision)
-      when is_number(min) and is_number(max) and is_integer(precision) do
-    raise ArgumentError,
-          "precision must be greater than or equal to 0, got: #{precision}"
-  end
+  defp widen(n) when is_integer(n), do: Generator.to_float(n)
+  defp widen(n), do: n
 end

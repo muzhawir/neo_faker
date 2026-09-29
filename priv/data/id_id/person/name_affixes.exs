@@ -1,31 +1,34 @@
 %{
+  # Titles that suit any name.
   "prefixes" => [
-    "Bapak",
     "Dr.",
+    "Ir.",
+    "Prof.",
+    "R.K."
+  ],
+  "female_prefixes" => [
     "Dra.",
-    "Drs.",
-    "H.",
     "Hj.",
     "Ibu",
-    "Ir.",
-    "K.H.",
     "Nn.",
     "Ny.",
-    "Prof.",
     "R.A.",
-    "R.K.",
+    "Saudari"
+  ],
+  "male_prefixes" => [
+    "Bapak",
+    "Drs.",
+    "H.",
+    "K.H.",
     "R.M.",
     "Raden",
     "Saudara",
-    "Saudari",
     "Sdr.",
     "Tn."
   ],
+  # Academic and professional degrees, written after the name. Titles that go
+  # before the name, such as Dr., Drs., and Dra., are prefixes instead.
   "suffixes" => [
-    "Dr.",
-    "Dra.",
-    "Drs.",
-    "H.C.",
     "M.Hum.",
     "M.Kom.",
     "M.M.",

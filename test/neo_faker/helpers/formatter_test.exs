@@ -23,7 +23,12 @@ defmodule NeoFaker.Helpers.FormatterTest do
       assert Formatter.slugify("o'clock") == "oclock"
       assert Formatter.slugify("long-term") == "longterm"
       assert Formatter.slugify("ice cream") == "icecream"
-      assert Formatter.slugify("José") == "jos"
+      assert Formatter.slugify("o’clock") == "oclock"
+    end
+
+    test "keeps the base letter of accented characters" do
+      assert Formatter.slugify("José") == "jose"
+      assert Formatter.slugify("Ñandú Müller") == "nandumuller"
     end
 
     test "leaves an already-bare lowercase token unchanged" do

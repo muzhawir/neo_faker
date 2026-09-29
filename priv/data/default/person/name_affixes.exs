@@ -1,8 +1,7 @@
 %{
+  # Titles that suit any name.
   "prefixes" => [
     "Ambassador",
-    "Baron",
-    "Baroness",
     "Brig.",
     "Capt.",
     "Chief",
@@ -10,21 +9,27 @@
     "Col.",
     "Consul",
     "Cpl.",
-    "Dame",
     "Dr.",
     "Hon.",
     "Judge",
     "Lt.",
-    "Madam",
     "Maj.",
-    "Mr.",
-    "Mrs.",
-    "Ms.",
     "Mx.",
     "Prof.",
     "Pvt.",
     "Rev.",
-    "Sgt.",
+    "Sgt."
+  ],
+  "female_prefixes" => [
+    "Baroness",
+    "Dame",
+    "Madam",
+    "Mrs.",
+    "Ms."
+  ],
+  "male_prefixes" => [
+    "Baron",
+    "Mr.",
     "Sir"
   ],
   "suffixes" => [

@@ -2,25 +2,23 @@ defmodule NeoFaker.Date do
   @moduledoc """
   Functions for generating random dates.
 
-  Provides utilities to generate random dates, including dates relative to today,
-  dates within a custom range, birthdays, and past and future dates. Every function
-  returns a `Date` struct; call `Date.to_iso8601/1` yourself if you need a string.
+  Every function returns a `Date` struct; use `Date.to_iso8601/1` if you need a string.
+  "Today" means the current date in the local time zone of the host, as returned by
+  `today/0`.
   """
   @moduledoc since: "0.9.0"
 
   alias NeoFaker.Date.Generator
-  alias NeoFaker.Date.Validator
-
-  @epoch_date ~D[1970-01-01]
-  @date_range -365..365
-  @min_age 18
-  @max_age 65
+  alias NeoFaker.Date.Validator, as: DateValidator
+  alias NeoFaker.Helpers.Validator
 
   @doc """
-  Generates a random date within a specified range relative to today.
+  Generates a random date offset from today by a number of days drawn from `range`.
 
-  By default, returns a date between 365 days before and 365 days after the current date.
-  `range` specifies the number of days to add or subtract from today.
+  `range` defaults to `-365..365`, a date within a year of today. Negative offsets are in
+  the past and positive offsets are in the future.
+
+  Raises `ArgumentError` if `range` is not a non-empty range.
 
   ## Examples
 
@@ -32,66 +30,74 @@ defmodule NeoFaker.Date do
 
   """
   @spec add(Range.t()) :: Date.t()
-  def add(range \\ @date_range) do
-    Validator.validate_range!(range)
-
-    Generator.add(range)
+  def add(range \\ -365..365) do
+    range
+    |> Validator.validate_range!("range")
+    |> Generator.add()
   end
 
   @doc """
-  Generates a random date between two given dates.
+  Generates a random date between `start` and `finish`, inclusive.
 
-  Both `start` and `finish` are inclusive. Defaults to a date between the Unix
-  epoch (`~D[1970-01-01]`) and today.
+  `start` defaults to the Unix epoch, `~D[1970-01-01]`, and `finish` defaults to today.
+
+  Raises `ArgumentError` if either argument is not a `Date`, or if `start` is after
+  `finish`.
 
   ## Examples
 
       iex> NeoFaker.Date.between()
-      ~D[2025-03-25]
+      ~D[1994-06-13]
 
       iex> NeoFaker.Date.between(~D[2020-01-01], ~D[2025-01-01])
       ~D[2022-08-17]
 
   """
   @spec between(Date.t(), Date.t()) :: Date.t()
-  def between(start \\ @epoch_date, finish \\ Generator.local_date_now()) do
-    Validator.validate_date_order!(start, finish)
-
+  def between(start \\ ~D[1970-01-01], finish \\ today()) do
+    DateValidator.validate_date_order!(start, finish)
     Generator.between(start, finish)
   end
 
   @doc """
-  Generates a random birthday within the specified age range.
+  Generates a random birthday for a person aged between `min_age` and `max_age`, inclusive.
 
-  Calculates the valid date window from the current date and `min_age`/`max_age` (defaulting
-  to `18` and `65` respectively), then returns a random date within that window.
+  Ages are in whole years as of today. `min_age` defaults to `18` and `max_age` defaults
+  to `65`.
+
+  Raises `ArgumentError` if either age is not a non-negative integer, or if `min_age` is
+  greater than `max_age`.
 
   ## Examples
 
       iex> NeoFaker.Date.birthday()
       ~D[1997-01-02]
 
-      iex> NeoFaker.Date.birthday(18, 65)
-      ~D[1998-03-04]
+      iex> NeoFaker.Date.birthday(0, 12)
+      ~D[2018-03-04]
 
   """
   @doc since: "0.10.0"
   @spec birthday(non_neg_integer(), non_neg_integer()) :: Date.t()
-  def birthday(min_age \\ @min_age, max_age \\ @max_age) do
-    Validator.validate_age_range!(min_age, max_age)
+  def birthday(min_age \\ 18, max_age \\ 65) do
+    Validator.validate_non_neg_bounds!(min_age, max_age, {"min_age", "max_age"})
 
-    today = Generator.local_date_now()
-    start_date = today |> Date.shift(year: -(max_age + 1)) |> Date.add(1)
-    finish_date = Date.shift(today, year: -min_age)
+    today = today()
 
-    Generator.between(start_date, finish_date)
+    # The oldest person turns `max_age + 1` tomorrow; the youngest turned
+    # `min_age` today.
+    oldest = today |> Date.shift(year: -(max_age + 1)) |> Date.add(1)
+    youngest = Date.shift(today, year: -min_age)
+
+    Generator.between(oldest, youngest)
   end
 
   @doc """
-  Generates a random date in the past.
+  Generates a random date between `days` days ago and today, inclusive.
 
-  Returns a random date between `days` ago (defaults to `365`) and today. Equivalent to
-  `add(-days..0)`.
+  `days` defaults to `365`. Equivalent to `add(-days..0)`.
+
+  Raises `ArgumentError` if `days` is not a positive integer.
 
   ## Examples
 
@@ -101,18 +107,15 @@ defmodule NeoFaker.Date do
   """
   @spec past(pos_integer()) :: Date.t()
   def past(days \\ 365)
-
-  def past(days) when is_integer(days) and days > 0, do: add(-days..0)
-
-  def past(days) do
-    raise ArgumentError, "days must be a positive integer, got: #{inspect(days)}"
-  end
+  def past(days) when is_integer(days) and days > 0, do: Generator.add(-days..0//1)
+  def past(days), do: raise_days!(days)
 
   @doc """
-  Generates a random date in the future.
+  Generates a random date between today and `days` days from now, inclusive.
 
-  Returns a random date between today and `days` from now (defaults to `365`). Equivalent to
-  `add(0..days)`.
+  `days` defaults to `365`. Equivalent to `add(0..days)`.
+
+  Raises `ArgumentError` if `days` is not a positive integer.
 
   ## Examples
 
@@ -122,17 +125,14 @@ defmodule NeoFaker.Date do
   """
   @spec future(pos_integer()) :: Date.t()
   def future(days \\ 365)
-
-  def future(days) when is_integer(days) and days > 0, do: add(0..days)
-
-  def future(days) do
-    raise ArgumentError, "days must be a positive integer, got: #{inspect(days)}"
-  end
+  def future(days) when is_integer(days) and days > 0, do: Generator.add(0..days//1)
+  def future(days), do: raise_days!(days)
 
   @doc """
-  Returns today's local date.
+  Returns today's date in the local time zone of the host.
 
-  A convenience wrapper that always returns the current date without any randomisation.
+  This function is not random. It is the reference point for every other function in
+  this module.
 
   ## Examples
 
@@ -142,4 +142,8 @@ defmodule NeoFaker.Date do
   """
   @spec today() :: Date.t()
   def today, do: Generator.local_date_now()
+
+  defp raise_days!(days) do
+    raise ArgumentError, "days must be a positive integer, got: #{inspect(days)}"
+  end
 end

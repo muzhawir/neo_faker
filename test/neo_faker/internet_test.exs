@@ -122,14 +122,14 @@ defmodule NeoFaker.InternetTest do
 
     test "raises NimbleOptions.ValidationError when type: :custom and :domain_name is not a string" do
       assert_raise NimbleOptions.ValidationError,
-                   ~r/invalid value for :domain_name option: expected string/,
+                   ~r/invalid value for :domain_name option: expected a non-empty string/,
                    fn ->
                      Internet.domain_name(type: :custom, domain_name: 42)
                    end
     end
 
-    test "raises ArgumentError when type: :custom and :domain_name is an empty string" do
-      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+    test "raises NimbleOptions.ValidationError when type: :custom and :domain_name is an empty string" do
+      assert_raise NimbleOptions.ValidationError, ~r/expected a non-empty string/, fn ->
         Internet.domain_name(type: :custom, domain_name: "")
       end
     end
@@ -199,14 +199,14 @@ defmodule NeoFaker.InternetTest do
 
     test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is not a string" do
       assert_raise NimbleOptions.ValidationError,
-                   ~r/invalid value for :domain_name option: expected string/,
+                   ~r/invalid value for :domain_name option: expected a non-empty string/,
                    fn ->
                      Internet.email(domain_type: :custom, domain_name: :not_a_string)
                    end
     end
 
-    test "raises ArgumentError when domain_type: :custom and :domain_name is an empty string" do
-      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+    test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is an empty string" do
+      assert_raise NimbleOptions.ValidationError, ~r/expected a non-empty string/, fn ->
         Internet.email(domain_type: :custom, domain_name: "")
       end
     end
@@ -237,6 +237,19 @@ defmodule NeoFaker.InternetTest do
 
     test "returns a valid IPv4 address" do
       assert_valid_ipv4(Internet.ipv4())
+    end
+
+    test "can reach every first octet that has public addresses" do
+      NeoFaker.seed(2024)
+
+      seen =
+        MapSet.new(1..60_000, fn _ ->
+          Internet.ipv4() |> String.split(".") |> hd() |> String.to_integer()
+        end)
+
+      expected = MapSet.new(Enum.to_list(1..223) -- [10, 127])
+
+      assert MapSet.difference(expected, seen) == MapSet.new()
     end
 
     # -------------------------------------------------------------------------
@@ -577,14 +590,14 @@ defmodule NeoFaker.InternetTest do
 
     test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is not a string" do
       assert_raise NimbleOptions.ValidationError,
-                   ~r/invalid value for :domain_name option: expected string/,
+                   ~r/invalid value for :domain_name option: expected a non-empty string/,
                    fn ->
                      Internet.url(domain_type: :custom, domain_name: ["not", "a", "string"])
                    end
     end
 
-    test "raises ArgumentError when domain_type: :custom and :domain_name is an empty string" do
-      assert_raise ArgumentError, ~r/Invalid :domain_name/, fn ->
+    test "raises NimbleOptions.ValidationError when domain_type: :custom and :domain_name is an empty string" do
+      assert_raise NimbleOptions.ValidationError, ~r/expected a non-empty string/, fn ->
         Internet.url(domain_type: :custom, domain_name: "")
       end
     end
@@ -663,8 +676,14 @@ defmodule NeoFaker.InternetTest do
       assert slugs |> Enum.uniq() |> length() > 1
     end
 
-    test "raises FunctionClauseError for a non-positive word count" do
-      assert_raise FunctionClauseError, fn -> Internet.slug(0) end
+    test "raises ArgumentError for a non-positive or non-integer word count" do
+      assert_raise ArgumentError, ~r/word_count must be a positive integer/, fn ->
+        Internet.slug(0)
+      end
+
+      assert_raise ArgumentError, ~r/word_count must be a positive integer/, fn ->
+        Internet.slug(Enum.random(["3"]))
+      end
     end
   end
 
@@ -679,14 +698,26 @@ defmodule NeoFaker.InternetTest do
       end
     end
 
-    test "DomainGenerator.generate_popular_domain_name/1 covers every branch" do
+    test "DomainGenerator.popular/1 covers every branch" do
       for type <- [:all, :ecommerce, :email, :search, :social] do
-        assert is_binary(DomainGenerator.generate_popular_domain_name(type))
+        assert is_binary(DomainGenerator.popular(type))
       end
     end
   end
 
   describe "username/1 option validation" do
+    test "raises NimbleOptions.ValidationError for an empty number_range" do
+      assert_raise NimbleOptions.ValidationError, ~r/expected a non-empty range/, fn ->
+        Internet.username(number: true, number_range: 5..1//1)
+      end
+    end
+
+    test "appends the number with the same joiner as the words" do
+      for _ <- 1..20 do
+        assert Internet.username(joiner: :dot, number: true) =~ ~r/^[a-z0-9]+\.[a-z0-9]+\.\d+$/
+      end
+    end
+
     test "raises NimbleOptions.ValidationError for an unknown joiner" do
       assert_raise NimbleOptions.ValidationError, fn -> Internet.username(joiner: :space) end
     end

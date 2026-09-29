@@ -1,9 +1,10 @@
 defmodule NeoFaker.Blood do
   @moduledoc """
-  Functions for generating blood types.
+  Functions for generating blood groups.
 
-  Provides utilities to generate random blood groups, blood types, and Rh factors following the
-  ABO and Rh blood group system classification.
+  Values follow the ABO system (`A`, `B`, `AB`, `O`) combined with the Rh factor (`+` or
+  `-`). Every combination is equally likely; the output does not follow real-world
+  population frequencies.
   """
   @moduledoc since: "0.3.1"
 
@@ -77,14 +78,12 @@ defmodule NeoFaker.Blood do
   def rh_factor, do: Generator.rh_factor()
 
   @doc """
-  Generates a random blood type in medical notation.
-
-  Returns a descriptive string combining the ABO type and Rh factor.
+  Generates a random blood group written out in words.
 
   ## Options
 
-    * `:verbose` (boolean) - when `true`, uses the full descriptive `"Type X, Rh Y"` form
-      instead of `"X Y"`. Defaults to `false`.
+    * `:verbose` (boolean) - when `true`, returns the longer `"Type AB, Rh positive"` form
+      instead of `"AB positive"`. Defaults to `false`.
 
   ## Examples
 
@@ -111,7 +110,7 @@ defmodule NeoFaker.Blood do
   end
 
   @doc """
-  Returns all 4 blood types in the ABO system.
+  Returns the four ABO blood types.
 
   ## Examples
 

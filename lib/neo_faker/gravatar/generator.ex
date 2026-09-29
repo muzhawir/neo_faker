@@ -1,59 +1,50 @@
 defmodule NeoFaker.Gravatar.Generator do
   @moduledoc false
 
-  @typedoc "Email address."
-  @type email :: String.t() | nil
+  @base_url "https://gravatar.com/"
 
-  @gravatar_url "https://gravatar.com/avatar/"
-  # The HTML5/WHATWG "valid email address" pattern (the same one browsers use for
-  # <input type="email">). Deliberately permissive, not full RFC 5322 validation,
-  # since Gravatar itself accepts anything email-shaped.
-  @w3c_email_regex ~r/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-  @default_image_size 80
+  # The WHATWG "valid email address" shape, anchored at both ends. It is
+  # deliberately loose: Gravatar accepts anything email-shaped.
+  @email_regex ~r/\A[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+\z/
 
   @doc """
-  Returns `size`, or the default when `size` is `nil`. Does not itself enforce the 1..2048
-  range; callers validate that separately before calling this.
+  Builds an avatar URL from an email hash and an ordered list of query parameters.
+  Parameter values are percent-encoded, so a fallback URL cannot break the query.
   """
-  @spec image_size(integer() | nil) :: integer()
-  def image_size(nil), do: @default_image_size
-  def image_size(size) when size in 1..2048, do: size
+  @spec avatar_url(String.t(), keyword()) :: String.t()
+  def avatar_url(hash, params), do: "#{@base_url}avatar/#{hash}?#{URI.encode_query(params)}"
 
   @doc """
-  Builds the Gravatar image URL from an email hash, size, and fallback type.
+  Builds a profile URL from an email hash, with an optional format extension.
   """
-  @spec gravatar_url(email(), integer(), String.t()) :: String.t()
-  def gravatar_url(email, image_size, default_fallback) do
-    @gravatar_url
-    |> URI.parse()
-    |> URI.append_path("/#{email_hash(email)}")
-    |> URI.append_query("d=#{default_fallback}")
-    |> URI.append_query("s=#{image_size}")
-    |> URI.to_string()
-  end
+  @spec profile_url(String.t(), String.t() | nil) :: String.t()
+  def profile_url(hash, nil), do: @base_url <> hash
+  def profile_url(hash, extension), do: "#{@base_url}#{hash}.#{extension}"
 
   @doc """
-  Hashes an email address for use in a Gravatar URL.
+  Returns the lowercase hex SHA-256 digest Gravatar uses to identify an email.
 
-  When `email` is `nil`, hashes a freshly randomized placeholder address instead of a fixed
-  constant, so repeated calls with no email don't all collapse to the same Gravatar hash (and
-  therefore the same avatar).
+  The address is trimmed and downcased first, as Gravatar requires. `nil` hashes a
+  random placeholder address, so repeated calls produce different avatars.
+
+  Raises `ArgumentError` if `email` is not shaped like an email address.
   """
-  @spec email_hash(email()) :: String.t()
-  def email_hash(nil) do
-    random_email = "neo_faker_user_#{:rand.uniform(100_000)}@example.com"
-    hash_string(random_email)
-  end
+  @spec email_hash(String.t() | nil) :: String.t()
+  def email_hash(nil), do: sha256("user#{:rand.uniform(1_000_000)}@example.com")
 
   def email_hash(email) when is_binary(email) do
-    if Regex.match?(@w3c_email_regex, email) do
-      email |> String.trim() |> String.downcase() |> hash_string()
+    normalized = email |> String.trim() |> String.downcase()
+
+    if Regex.match?(@email_regex, normalized) do
+      sha256(normalized)
     else
-      raise ArgumentError, "Invalid email address"
+      raise ArgumentError, "invalid email address #{inspect(email)}"
     end
   end
 
-  defp hash_string(str) do
-    :sha256 |> :crypto.hash(str) |> Base.encode16(case: :lower)
+  def email_hash(email) do
+    raise ArgumentError, "expected an email address string or nil, got: #{inspect(email)}"
   end
+
+  defp sha256(string), do: :sha256 |> :crypto.hash(string) |> Base.encode16(case: :lower)
 end

@@ -1,10 +1,8 @@
 defmodule NeoFaker.Text do
   @moduledoc """
-  Functions for generating random text.
+  Functions for generating characters, words, and emoji.
 
-  Provides utilities to generate single characters, multi-character strings,
-  emojis, and words from common word lists. All character generators support
-  type filtering (alphabet, digits, or mixed alphanumeric).
+  For placeholder sentences and paragraphs, see `NeoFaker.Lorem`.
   """
   @moduledoc since: "0.8.0"
 
@@ -13,8 +11,6 @@ defmodule NeoFaker.Text do
   alias NeoFaker.Text.Generator
 
   @word_file "word.exs"
-
-  @character_count 11
 
   @character_types [:alphabet_lower, :alphabet_upper, :alphabet, :digit]
   @emoji_categories [
@@ -36,18 +32,16 @@ defmodule NeoFaker.Text do
   @emoji_schema NimbleOptions.new!(category: [type: {:in, @emoji_categories}, default: :all])
 
   @doc """
-  Generates a single random character.
-
-  Returns a single character from the alphanumeric set by default.
+  Generates a random ASCII letter or digit, as a one-character string.
 
   ## Options
 
-    * `:type` (an atom below, or `nil`) - the character pool to draw from. Defaults to `nil`
-      (the full alphanumeric set).
-      * `:alphabet_lower` - lowercase letters only.
-      * `:alphabet_upper` - uppercase letters only.
-      * `:alphabet` - any letter (lower or upper).
-      * `:digit` - a digit (`0`–`9`).
+    * `:type` (an atom below, or `nil`) - the characters to draw from. Defaults to `nil`,
+      any letter or digit.
+      * `:alphabet` - any letter, lowercase or uppercase.
+      * `:alphabet_lower` - a lowercase letter.
+      * `:alphabet_upper` - an uppercase letter.
+      * `:digit` - a digit from `0` to `9`.
 
   ## Examples
 
@@ -55,93 +49,69 @@ defmodule NeoFaker.Text do
       "a"
 
       iex> NeoFaker.Text.character(type: :digit)
-      "0"
-
-      iex> NeoFaker.Text.character(type: :alphabet_lower)
-      "z"
+      "7"
 
       iex> NeoFaker.Text.character(type: :alphabet_upper)
-      "A"
-
-      iex> NeoFaker.Text.character(type: :alphabet)
-      "X"
+      "Q"
 
   """
   @spec character(keyword()) :: String.t()
-  def character(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @character_schema)
-    Generator.character(Keyword.fetch!(opts, :type))
-  end
+  def character(opts \\ []), do: characters(1, opts)
 
   @doc """
-  Generates a string of random characters.
+  Generates a string of `count` random ASCII letters or digits.
 
-  Calls `character/1` `number` times and joins the results into a single string. `number`
-  defaults to `11`.
+  `count` defaults to `11`. Raises `ArgumentError` if it is not a positive integer.
 
   ## Options
 
-    * `:type` (see `character/1`'s `:type` option) - the character pool to draw from.
-      Defaults to `nil` (the full alphanumeric set).
+    * `:type` - the characters to draw from, as in `character/1`. Defaults to `nil`, any
+      letter or digit.
 
   ## Examples
 
       iex> NeoFaker.Text.characters()
       "XfELJU1mRMg"
 
-      iex> NeoFaker.Text.characters(20, type: :alphabet_upper)
-      "BVAJHRGSCEVJFNYSWCJE"
-
       iex> NeoFaker.Text.characters(5, type: :digit)
       "74392"
 
-      iex> NeoFaker.Text.characters(10, type: :alphabet_lower)
-      "xyzabcdefg"
+      iex> NeoFaker.Text.characters(8, type: :alphabet_lower)
+      "qzmvkpth"
 
   """
   @spec characters(pos_integer(), keyword()) :: String.t()
-  def characters(number \\ @character_count, opts \\ [])
+  def characters(count \\ 11, opts \\ [])
 
-  def characters(number, opts) when is_integer(number) and number > 0 and is_list(opts) do
-    Enum.map_join(1..number, fn _ -> character(opts) end)
+  def characters(count, opts) when is_integer(count) and count > 0 do
+    type = opts |> NimbleOptions.validate!(@character_schema) |> Keyword.fetch!(:type)
+    Generator.characters(count, type)
   end
 
-  def characters(number, _opts) when is_integer(number) do
-    raise ArgumentError, "number must be a positive integer, got: #{number}"
-  end
-
-  def characters(number, _opts) do
-    raise ArgumentError, "number must be a positive integer, got: #{inspect(number)}"
+  def characters(count, _opts) do
+    raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"
   end
 
   @doc """
   Generates a random emoji.
 
-  Returns a random emoji from the specified category, or from all categories by default.
-
   ## Options
 
-    * `:category` (an atom below) - the emoji category. Defaults to `:all`.
-      * `:all` - any category.
-      * `:activities` - activities.
-      * `:animals_and_nature` - animals and nature.
-      * `:food_and_drink` - food and drink.
-      * `:objects` - objects.
-      * `:people_and_body` - people and body.
-      * `:smileys_and_emotion` - smileys and emotion.
-      * `:symbols` - symbols.
-      * `:travel_and_places` - travel and places.
+    * `:category` (an atom below) - the Unicode emoji category to draw from. Defaults to
+      `:all`, every category.
+      * `:activities`
+      * `:animals_and_nature`
+      * `:food_and_drink`
+      * `:objects`
+      * `:people_and_body`
+      * `:smileys_and_emotion`
+      * `:symbols`
+      * `:travel_and_places`
 
   ## Examples
 
       iex> NeoFaker.Text.emoji()
       "✨"
-
-      iex> NeoFaker.Text.emoji(category: :activities)
-      "🎉"
-
-      iex> NeoFaker.Text.emoji(category: :smileys_and_emotion)
-      "😀"
 
       iex> NeoFaker.Text.emoji(category: :animals_and_nature)
       "🐶"
@@ -149,12 +119,16 @@ defmodule NeoFaker.Text do
   """
   @spec emoji(keyword()) :: String.t()
   def emoji(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @emoji_schema)
-    EmojiGenerator.emoji(Keyword.fetch!(opts, :category))
+    opts
+    |> NimbleOptions.validate!(@emoji_schema)
+    |> Keyword.fetch!(:category)
+    |> EmojiGenerator.emoji()
   end
 
   @doc """
-  Generates a random word from a common English word list.
+  Generates a random common English word.
+
+  A few words contain a hyphen or an apostrophe, such as `"T-shirt"`.
 
   ## Examples
 
@@ -163,32 +137,25 @@ defmodule NeoFaker.Text do
 
   """
   @spec word() :: String.t()
-  def word do
-    Data.random_value(__MODULE__, @word_file, "words")
-  end
+  def word, do: Data.random_value(__MODULE__, @word_file, "words")
 
   @doc """
-  Generates multiple random words.
+  Generates a list of `count` random common English words.
 
-  Returns a list of words. `count` sets how many are generated and defaults to `5`. Join them
-  yourself with `Enum.join/2` if you need a single string.
+  `count` defaults to `5`. Raises `ArgumentError` if it is not a positive integer. Use
+  `Enum.join/2` if you need a single string.
 
   ## Examples
 
       iex> NeoFaker.Text.words(3)
-      ["computer", "elixir", "phoenix"]
+      ["computer", "garden", "river"]
 
   """
   @spec words(pos_integer()) :: [String.t()]
   def words(count \\ 5)
 
-  def words(count) when is_integer(count) and count > 0 do
-    Enum.map(1..count, fn _ -> word() end)
-  end
-
-  def words(count) when is_integer(count) do
-    raise ArgumentError, "count must be a positive integer, got: #{count}"
-  end
+  def words(count) when is_integer(count) and count > 0,
+    do: Enum.map(1..count, fn _ -> word() end)
 
   def words(count) do
     raise ArgumentError, "count must be a positive integer, got: #{inspect(count)}"

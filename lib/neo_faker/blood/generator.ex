@@ -10,9 +10,9 @@ defmodule NeoFaker.Blood.Generator do
   @spec rh_factor() :: String.t()
   def rh_factor, do: Enum.random(@rh_factors)
 
-  @spec all_types() :: [String.t()]
+  @spec all_types() :: [String.t(), ...]
   def all_types, do: @blood_types
 
-  @spec all_rh_factors() :: [String.t()]
+  @spec all_rh_factors() :: [String.t(), ...]
   def all_rh_factors, do: @rh_factors
 end

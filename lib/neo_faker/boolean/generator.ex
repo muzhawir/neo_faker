@@ -2,10 +2,12 @@ defmodule NeoFaker.Boolean.Generator do
   @moduledoc false
 
   @doc """
-  Generates a random boolean value based on the given true ratio.
+  Returns `true` with a probability of `true_ratio / 100`.
 
-  Returns `true` with a probability of `true_ratio / 100`, and `false` otherwise.
+  Draws an integer from `1..100` rather than comparing a float with `<=`:
+  `:rand.uniform/0` can return exactly `0.0`, which would make a ratio of `0`
+  occasionally return `true`.
   """
   @spec boolean(0..100) :: boolean()
-  def boolean(true_ratio), do: :rand.uniform() <= true_ratio / 100
+  def boolean(true_ratio), do: :rand.uniform(100) <= true_ratio
 end

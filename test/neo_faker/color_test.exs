@@ -139,10 +139,17 @@ defmodule NeoFaker.ColorTest do
       end
     end
 
-    test "a non-:w3c format falls through to the per-generator branch" do
-      # The individual generators only accept their own format values, so an
-      # arbitrary format passed to random/1 surfaces as a validation error.
+    test "accepts an explicit format: nil like the default" do
+      for _ <- 1..50 do
+        result = Color.random(format: nil)
+
+        assert is_tuple(result) or Regex.match?(@hex_regexp, result)
+      end
+    end
+
+    test "raises NimbleOptions.ValidationError for any other format or unknown option" do
       assert_raise NimbleOptions.ValidationError, fn -> Color.random(format: :six_digit) end
+      assert_raise NimbleOptions.ValidationError, fn -> Color.random(foo: :bar) end
     end
   end
 end

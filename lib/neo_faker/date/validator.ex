@@ -2,66 +2,23 @@ defmodule NeoFaker.Date.Validator do
   @moduledoc false
 
   @doc """
-  Validates that the given value is a `Range` with `first <= last`.
-
-  Raises `ArgumentError` if the range is inverted or if the value is not a `Range`.
+  Returns `:ok` if `start` and `finish` are `Date` structs with `start` on or before
+  `finish`, raising `ArgumentError` otherwise.
   """
-  @spec validate_range!(Range.t()) :: :ok
-  def validate_range!(range) when is_struct(range, Range) do
-    if range.first <= range.last do
-      :ok
+  @spec validate_date_order!(term(), term()) :: :ok
+  def validate_date_order!(%Date{} = start, %Date{} = finish) do
+    if Date.after?(start, finish) do
+      raise ArgumentError,
+            "start date must be on or before finish date, " <>
+              "got: start=#{inspect(start)}, finish=#{inspect(finish)}"
     else
-      raise ArgumentError, "Invalid range: first must be less than or equal to last"
+      :ok
     end
   end
 
-  def validate_range!(invalid) do
-    raise ArgumentError, "Expected a Range, got: #{inspect(invalid)}"
-  end
-
-  @doc """
-  Validates that `start` is before or equal to `finish`.
-
-  Raises `ArgumentError` if `start` is after `finish`.
-  """
-  @spec validate_date_order!(Date.t(), Date.t()) :: :ok
   def validate_date_order!(start, finish) do
-    case Date.compare(start, finish) do
-      :gt ->
-        raise ArgumentError, "start date must be before or equal to finish date"
-
-      _ ->
-        :ok
-    end
-  end
-
-  @doc """
-  Validates that `min_age` and `max_age` are non-negative integers with `min_age <= max_age`.
-
-  Raises `ArgumentError` if either value is negative, not an integer, or if `min_age > max_age`.
-  """
-  @spec validate_age_range!(non_neg_integer(), non_neg_integer()) :: :ok
-  def validate_age_range!(min_age, max_age) when is_integer(min_age) and is_integer(max_age) do
-    cond do
-      min_age < 0 ->
-        raise ArgumentError, "min_age must be non-negative, got: #{min_age}"
-
-      max_age < 0 ->
-        raise ArgumentError, "max_age must be non-negative, got: #{max_age}"
-
-      min_age > max_age ->
-        raise ArgumentError, "min_age must be less than or equal to max_age"
-
-      true ->
-        :ok
-    end
-  end
-
-  def validate_age_range!(min_age, _max_age) when not is_integer(min_age) do
-    raise ArgumentError, "min_age must be an integer, got: #{inspect(min_age)}"
-  end
-
-  def validate_age_range!(_min_age, max_age) when not is_integer(max_age) do
-    raise ArgumentError, "max_age must be an integer, got: #{inspect(max_age)}"
+    raise ArgumentError,
+          "start and finish must be Date structs, " <>
+            "got: start=#{inspect(start)}, finish=#{inspect(finish)}"
   end
 end

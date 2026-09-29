@@ -152,4 +152,48 @@ defmodule NeoFaker.DataTest do
       assert Enum.uniq(first[@valid_key]) == first[@valid_key]
     end
   end
+
+  describe "locale validation" do
+    test "rejects an unsupported locale instead of falling back silently" do
+      assert_raise ArgumentError, ~r/unsupported locale :fr_fr/, fn ->
+        Data.random_value(@module, @valid_file, @valid_key, locale: :fr_fr)
+      end
+    end
+
+    test "rejects a locale that would escape priv/data" do
+      assert_raise ArgumentError, ~r/unsupported locale/, fn ->
+        Data.fetch!(:"../../../tmp", @module, @valid_file)
+      end
+    end
+  end
+
+  describe "random_value/4 with a list of keys" do
+    test "draws from every listed key, counting shared values once" do
+      data = Data.fetch!(:default, NeoFaker.Color, "keyword.exs")
+      pool = Enum.uniq(data["basic"] ++ data["extended"])
+
+      for _ <- 1..50 do
+        assert Data.random_value(NeoFaker.Color, "keyword.exs", ["basic", "extended"],
+                 locale: :default
+               ) in pool
+      end
+    end
+  end
+
+  describe "derive!/5" do
+    test "computes a value once and returns the cached result afterwards" do
+      name = {:test, make_ref()}
+      counter = :counters.new(1, [])
+
+      fun = fn data ->
+        :counters.add(counter, 1, 1)
+        map_size(data)
+      end
+
+      first = Data.derive!(:default, @module, @valid_file, name, fun)
+
+      assert Data.derive!(:default, @module, @valid_file, name, fun) == first
+      assert :counters.get(counter, 1) == 1
+    end
+  end
 end

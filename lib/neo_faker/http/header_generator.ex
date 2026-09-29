@@ -1,8 +1,8 @@
 defmodule NeoFaker.HTTP.HeaderGenerator do
   @moduledoc false
 
-  # A representative sample of commonly seen header names, not an exhaustive
-  # list of every header the HTTP spec defines.
+  # A representative sample of common header names, not every header the HTTP
+  # specifications define.
   @request_headers [
     "Accept",
     "Accept-Encoding",
@@ -30,9 +30,7 @@ defmodule NeoFaker.HTTP.HeaderGenerator do
   ]
 
   @doc """
-  Generates a random HTTP header name from the given category.
-
-  `:request` and `:response` draw from their own list; `:all` draws from both combined.
+  Returns a random header name from the given category, or from both for `:all`.
   """
   @spec name(:all | :request | :response) :: String.t()
   def name(:request), do: Enum.random(@request_headers)

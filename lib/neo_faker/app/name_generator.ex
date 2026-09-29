@@ -1,44 +1,25 @@
 defmodule NeoFaker.App.NameGenerator do
   @moduledoc false
 
-  @type case_style :: nil | :camel_case | :pascal_case | :dashed | :underscore | :single
+  @type style :: nil | :camel_case | :pascal_case | :dashed | :underscore | :single
 
   @doc """
-  Formats a tuple of first and last name into a string according to the specified case style.
+  Formats a `{first, last}` word pair in the given style.
 
-  Supported formats include:
-  - `nil`: Returns the full name as "first_name last_name" without case transformation.
-  - `:camel_case`: Returns the name in camel case (lowercase first name, capitalized last name,
-  no space).
-  - `:pascal_case`: Returns the name in Pascal case (both names capitalized, no space).
-  - `:dashed`: Returns the name with the first name capitalized and the last name as-is, joined by
-  a dash.
-  - `:underscore`: Returns the name in lowercase, joined by an underscore.
-  - `:single`: Randomly selects either the first or last name, capitalizes it, and returns it as
-  a single name.
+  See `NeoFaker.App.name/1` for what each style produces.
   """
-  @spec format_text({String.t(), String.t()}, case_style()) :: String.t()
-  def format_text({first_name, last_name}, style) do
-    case style do
-      nil ->
-        "#{first_name} #{last_name}"
+  @spec format_text({String.t(), String.t()}, style()) :: String.t()
+  def format_text({first, last}, nil), do: "#{first} #{last}"
 
-      :camel_case ->
-        "#{String.downcase(first_name)}#{String.capitalize(last_name)}"
+  def format_text({first, last}, :camel_case),
+    do: String.downcase(first) <> String.capitalize(last)
 
-      :pascal_case ->
-        "#{String.capitalize(first_name)}#{String.capitalize(last_name)}"
+  def format_text({first, last}, :pascal_case),
+    do: String.capitalize(first) <> String.capitalize(last)
 
-      :dashed ->
-        "#{String.capitalize(first_name)}-#{last_name}"
+  def format_text({first, last}, :dashed), do: String.downcase("#{first}-#{last}")
+  def format_text({first, last}, :underscore), do: String.downcase("#{first}_#{last}")
 
-      :underscore ->
-        "#{String.downcase(first_name)}_#{String.downcase(last_name)}"
-
-      :single ->
-        [first_name, last_name]
-        |> Enum.random()
-        |> String.capitalize()
-    end
-  end
+  def format_text({first, last}, :single),
+    do: [first, last] |> Enum.random() |> String.capitalize()
 end

@@ -3,44 +3,54 @@ defmodule NeoFaker.Internet.UsernameGenerator do
 
   alias NeoFaker.Helpers.Formatter
   alias NeoFaker.Person
+  alias NeoFaker.Text
+
+  @joiners [dot: ".", underscore: "_", dash: "-"]
 
   @type word_type :: :person | :word
-  @type separator_type :: :all | :dot | :underscore | :dash
+  @type joiner :: :all | :dot | :underscore | :dash
 
   @doc """
-  Generates a single lowercase alphanumeric word to use as one segment of a
-  username.
+  Returns a username of `count` segments joined by one joiner, with an optional
+  numeric suffix drawn from `number_range` (`nil` for none).
+  """
+  @spec username(pos_integer(), joiner(), word_type(), Range.t() | nil) :: String.t()
+  def username(count, joiner, word_type, number_range) do
+    joiner = joiner(joiner)
+    segments = Enum.map(1..count, fn _ -> word(word_type) end)
 
-  `:person` returns a random first or last name; `:word` returns a random
-  common word. Either way the result is run through `Formatter.slugify/1`, so a
-  name or word with a hyphen, apostrophe, space, or accent still yields a bare
-  token. The caller (`NeoFaker.Internet.username/1`) joins multiple calls
-  together with `joiner/1`; this function never combines words itself.
+    segments
+    |> append_number(number_range)
+    |> Enum.join(joiner)
+  end
+
+  @doc """
+  Returns one lowercase alphanumeric username segment.
+
+  `:person` draws a first or last name and `:word` draws a common word; either way the
+  result is passed through `NeoFaker.Helpers.Formatter.slugify/1`, so hyphens,
+  apostrophes, and accents never leak into the username.
   """
   @spec word(word_type()) :: String.t()
-  def word(type) do
-    raw =
-      case type do
-        :person -> Enum.random([Person.first_name(), Person.last_name()])
-        :word -> NeoFaker.Text.word()
+  def word(:person) do
+    name =
+      case Enum.random([:first, :last]) do
+        :first -> Person.first_name()
+        :last -> Person.last_name()
       end
 
-    Formatter.slugify(raw)
+    Formatter.slugify(name)
   end
+
+  def word(:word), do: Formatter.slugify(Text.word())
 
   @doc """
-  Returns the separator character placed between username word segments.
-
-  `:all` picks one of `.`, `_`, or `-` at random; the other types return
-  their fixed character directly.
+  Returns the separator for `type`; `:all` picks one of the three at random.
   """
-  @spec joiner(separator_type()) :: String.t()
-  def joiner(type) do
-    case type do
-      :all -> Enum.random([".", "_", "-"])
-      :dot -> "."
-      :underscore -> "_"
-      :dash -> "-"
-    end
-  end
+  @spec joiner(joiner()) :: String.t()
+  def joiner(:all), do: @joiners |> Keyword.values() |> Enum.random()
+  def joiner(type), do: Keyword.fetch!(@joiners, type)
+
+  defp append_number(segments, nil), do: segments
+  defp append_number(segments, range), do: segments ++ [Integer.to_string(Enum.random(range))]
 end

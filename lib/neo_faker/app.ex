@@ -1,10 +1,10 @@
 defmodule NeoFaker.App do
   @moduledoc """
-  Functions for generating app metadata.
+  Functions for generating software application metadata.
 
-  Provides utilities to generate random app-related information, including author names, app
-  names, descriptions, versions, licenses, bundle identifiers, and package names with support for
-  multiple locales and formatting options.
+  Covers the fields a package manifest or app store listing typically needs: names,
+  authors, descriptions, licenses, semantic versions, bundle identifiers, and package
+  names.
   """
   @moduledoc since: "0.4.0"
 
@@ -14,6 +14,7 @@ defmodule NeoFaker.App do
   alias NeoFaker.App.Validator
   alias NeoFaker.Data
   alias NeoFaker.Helpers.Formatter
+  alias NeoFaker.Locale
   alias NeoFaker.Person
 
   @description_file "description.exs"
@@ -23,11 +24,13 @@ defmodule NeoFaker.App do
   @name_styles [:camel_case, :pascal_case, :dashed, :underscore, :single]
   @semver_types [:pre_release, :build, :pre_release_build]
 
-  @locale_schema NimbleOptions.new!(locale: [type: :atom, default: nil])
+  @locale_schema NimbleOptions.new!(
+                   locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
+                 )
 
   @name_schema NimbleOptions.new!(
                  style: [type: {:in, [nil | @name_styles]}, default: nil],
-                 locale: [type: :atom, default: nil]
+                 locale: [type: {:custom, Locale, :validate_option, []}, default: nil]
                )
 
   @semver_schema NimbleOptions.new!(type: [type: {:in, [nil | @semver_types]}, default: nil])
@@ -48,17 +51,18 @@ defmodule NeoFaker.App do
                        )
 
   @doc """
-  Generates a random app author name.
+  Generates a random author name.
 
-  Delegates to `NeoFaker.Person.full_name/1`, with `:middle_name` defaulting to `false`
-  for cleaner attribution strings. Accepts the same options as `full_name/1`.
+  Accepts the same options as `NeoFaker.Person.full_name/1`, except that `:middle_name`
+  defaults to `false`, which reads more naturally in an author field.
 
   ## Options
 
     * `:middle_name` (boolean) - whether to include a middle name. Defaults to `false`.
-    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the generated name. Defaults
-      to `:unisex`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:sex` (`:unisex`, `:female`, or `:male`) - the sex of the name. Defaults to
+      `:unisex`.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -74,18 +78,18 @@ defmodule NeoFaker.App do
   """
   @spec author(keyword()) :: String.t()
   def author(opts \\ []) do
-    opts_with_defaults = Keyword.put_new(opts, :middle_name, false)
-    Person.full_name(opts_with_defaults)
+    opts
+    |> Keyword.put_new(:middle_name, false)
+    |> Person.full_name()
   end
 
   @doc """
-  Generates a random short app description.
-
-  Returns a one-line description string selected from locale-specific data.
+  Generates a random one-line app description.
 
   ## Options
 
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -105,9 +109,8 @@ defmodule NeoFaker.App do
   @doc """
   Generates a random open-source license name.
 
-  Returns a name from a curated list sourced from
-  [ChooseALicense](https://choosealicense.com/appendix), such as `"MIT License"`,
-  `"Apache License 2.0"`, or `"GNU General Public License v3.0"`.
+  Names come from the [choosealicense.com appendix](https://choosealicense.com/appendix),
+  for example `"MIT License"` or `"Apache License 2.0"`.
 
   ## Examples
 
@@ -119,17 +122,19 @@ defmodule NeoFaker.App do
   def license, do: Data.random_value(__MODULE__, @license_file, "licenses")
 
   @doc """
-  Generates a random app name.
-
-  Combines a random first word and last word from locale-specific data, then formats the
-  result according to the requested style.
+  Generates a random two-word app name.
 
   ## Options
 
-    * `:style` (`nil`, `:camel_case`, `:pascal_case`, `:dashed`, `:underscore`, or `:single`) -
-      the case style for the name. `nil` produces a title-spaced format (e.g. `"Neo Faker"`);
-      `:single` returns the first word only (e.g. `"Faker"`). Defaults to `nil`.
-    * `:locale` (atom) - the locale to use. Defaults to the application's configured locale.
+    * `:style` - the case style of the name. Defaults to `nil`.
+      * `nil` - two capitalized words separated by a space, e.g. `"Neo Faker"`.
+      * `:camel_case` - e.g. `"neoFaker"`.
+      * `:pascal_case` - e.g. `"NeoFaker"`.
+      * `:dashed` - lowercase words joined by a dash, e.g. `"neo-faker"`.
+      * `:underscore` - lowercase words joined by an underscore, e.g. `"neo_faker"`.
+      * `:single` - one of the two words, capitalized, e.g. `"Faker"`.
+    * `:locale` (atom) - the locale to use. Defaults to the active locale, see
+      `NeoFaker.Locale`.
 
   ## Examples
 
@@ -150,38 +155,22 @@ defmodule NeoFaker.App do
   def name(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @name_schema)
 
-    first_name =
-      Data.random_value(
-        __MODULE__,
-        @name_file,
-        "first_names",
-        locale: Keyword.fetch!(opts, :locale)
-      )
+    first = Data.random_value(__MODULE__, @name_file, "first_names", opts)
+    last = Data.random_value(__MODULE__, @name_file, "last_names", opts)
 
-    last_name =
-      Data.random_value(
-        __MODULE__,
-        @name_file,
-        "last_names",
-        locale: Keyword.fetch!(opts, :locale)
-      )
-
-    NameGenerator.format_text({first_name, last_name}, Keyword.fetch!(opts, :style))
+    NameGenerator.format_text({first, last}, Keyword.fetch!(opts, :style))
   end
 
   @doc """
-  Generates a random semantic version number.
-
-  Returns a version string following the [Semantic Versioning](https://semver.org)
-  (`MAJOR.MINOR.PATCH`) standard.
+  Generates a random [semantic version](https://semver.org).
 
   ## Options
 
-    * `:type` (`nil`, `:pre_release`, `:build`, or `:pre_release_build`) - which metadata to
-      append. `nil` returns the core version only (e.g. `"1.2.3"`); `:pre_release` appends a
-      pre-release label (e.g. `"1.2.3-beta.1"`); `:build` appends build metadata (e.g.
-      `"1.2.3+20250325"`); `:pre_release_build` appends both (e.g. `"1.2.3-rc.1+20250325"`).
-      Defaults to `nil`.
+    * `:type` - which optional parts to append to `MAJOR.MINOR.PATCH`. Defaults to `nil`.
+      * `nil` - the core version only, e.g. `"1.2.3"`.
+      * `:pre_release` - a pre-release label, e.g. `"1.2.3-beta.1"`.
+      * `:build` - build metadata, e.g. `"1.2.3+20250325"`.
+      * `:pre_release_build` - both, e.g. `"1.2.3-rc.1+20250325"`.
 
   ## Examples
 
@@ -201,28 +190,18 @@ defmodule NeoFaker.App do
   @spec semver(keyword()) :: String.t()
   def semver(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @semver_schema)
-
-    core = SemverGenerator.semver_core()
+    core = SemverGenerator.core()
 
     case Keyword.fetch!(opts, :type) do
-      nil ->
-        core
-
-      :pre_release ->
-        "#{core}-#{SemverGenerator.semver_pre_release()}"
-
-      :build ->
-        "#{core}+#{SemverGenerator.semver_build_number()}"
-
-      :pre_release_build ->
-        "#{core}-#{SemverGenerator.semver_pre_release()}+#{SemverGenerator.semver_build_number()}"
+      nil -> core
+      :pre_release -> "#{core}-#{SemverGenerator.pre_release()}"
+      :build -> "#{core}+#{SemverGenerator.build()}"
+      :pre_release_build -> "#{core}-#{SemverGenerator.pre_release()}+#{SemverGenerator.build()}"
     end
   end
 
   @doc """
-  Generates a simplified `MAJOR.MINOR` version number.
-
-  Derives the version by taking the first two components of a `semver/1` result.
+  Generates a random `MAJOR.MINOR` version.
 
   ## Examples
 
@@ -231,19 +210,21 @@ defmodule NeoFaker.App do
 
   """
   @spec version() :: String.t()
-  def version, do: semver() |> String.split(".") |> Stream.take(2) |> Enum.join(".")
+  def version, do: SemverGenerator.major_minor()
 
   @doc """
-  Generates a random app bundle identifier.
+  Generates a random bundle identifier in reverse-domain notation.
 
-  Returns a bundle ID in reverse-domain notation, commonly used for iOS and Android apps.
-  The app name portion is generated via `name/1`.
+  Bundle identifiers name apps on Apple platforms (`CFBundleIdentifier`) and are also
+  common as Android application IDs. The last segment is a random app name from
+  `name/1`.
 
   ## Options
 
-    * `:domain` (string) - the base domain. Defaults to `"example.com"`.
-    * `:style` (`:underscore` or `:dashed`) - the name style for the app segment. Defaults to
-      `:underscore`.
+    * `:domain` (string) - the organization's domain, reversed to form the prefix.
+      Defaults to `"example.com"`.
+    * `:style` (`:underscore` or `:dashed`) - how the words of the app name are joined.
+      Defaults to `:underscore`.
 
   ## Examples
 
@@ -260,21 +241,21 @@ defmodule NeoFaker.App do
   @spec bundle_id(keyword()) :: String.t()
   def bundle_id(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @bundle_id_schema)
+    prefix = DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))
 
-    app_name = name(style: Keyword.fetch!(opts, :style))
-
-    "#{DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))}.#{String.downcase(app_name)}"
+    "#{prefix}.#{name(style: Keyword.fetch!(opts, :style))}"
   end
 
   @doc """
-  Generates a random app package name.
+  Generates a random package name in Java reverse-domain notation.
 
-  Returns a package name in Java reverse-domain notation (e.g. for Android apps).
-  The app name segment is lowercased and stripped of all non-alphanumeric characters.
+  The last segment is a random app name, lowercased and stripped of every character that
+  is not a letter or a digit, as Java package components require.
 
   ## Options
 
-    * `:domain` (string) - the base domain. Defaults to `"example.com"`.
+    * `:domain` (string) - the organization's domain, reversed to form the prefix.
+      Defaults to `"example.com"`.
 
   ## Examples
 
@@ -288,9 +269,8 @@ defmodule NeoFaker.App do
   @spec package_name(keyword()) :: String.t()
   def package_name(opts \\ []) do
     opts = NimbleOptions.validate!(opts, @package_name_schema)
+    prefix = DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))
 
-    app_name = Formatter.slugify(name())
-
-    "#{DomainGenerator.reverse_domain!(Keyword.fetch!(opts, :domain))}.#{app_name}"
+    "#{prefix}.#{Formatter.slugify(name())}"
   end
 end

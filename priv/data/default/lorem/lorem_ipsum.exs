@@ -24,7 +24,7 @@
     Vivamus odio mi, elementum a velit nec, sagittis pharetra nulla. Aliquam fermentum justo nec
     dolor gravida finibus. Pellentesque tempor in ligula a pharetra. Curabitur elit lorem, congue
     at auctor eu, facilisis id erat. Praesent mauris sem, tincidunt et cursus volutpat, molestie et
-    mauris. uspendisse et erat nec nunc consequat auctor. Duis ac mi dolor. Nulla nec vulputate
+    mauris. Suspendisse et erat nec nunc consequat auctor. Duis ac mi dolor. Nulla nec vulputate
     augue. Ut varius quam vitae viverra tristique. Integer ut congue magna, ut vulputate erat.
     Vestibulum cursus turpis velit, aliquam finibus dolor rhoncus quis.
 
@@ -175,7 +175,7 @@
     Suspendisse ac justo venenatis, tincidunt sapien nec, accumsan augue. Vestibulum urna risus,
     egestas ut ultrices non, aliquet eget massa. Mauris id diam eget augue sagittis convallis sit
     amet nec diam. Morbi ut blandit est, et placerat neque. Curabitur at tortor a massa commodo
-    uctor. Etiam quis feugiat nunc. Etiam at porta odio. Suspendisse potenti.
+    auctor. Etiam quis feugiat nunc. Etiam at porta odio. Suspendisse potenti.
 
     Praesent eget nulla cursus mauris maximus pellentesque vel sed lacus. Maecenas id vulputate est.
     Vivamus aliquam dolor urna, vitae condimentum ligula imperdiet sed. Praesent pharetra, felis vel

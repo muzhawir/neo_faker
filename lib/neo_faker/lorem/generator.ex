@@ -1,56 +1,81 @@
 defmodule NeoFaker.Lorem.Generator do
   @moduledoc false
 
-  # Text-manipulation helpers shared by NeoFaker.Lorem's paragraph/sentence/word
-  # functions, regardless of which source text (:lorem or :meditations) they
-  # were told to draw from via the :text option.
+  # Splits a source text into paragraphs and sentences once per locale and
+  # source, via `NeoFaker.Data.derive!/5`, so each call only has to pick.
 
-  @lorem_ipsum_file "lorem_ipsum.exs"
-  @meditations_file "meditations.exs"
-  # Matches a single "\n" not adjacent to another "\n", so paragraph breaks
-  # ("\n\n") are left untouched while mid-paragraph line wraps collapse to a space.
-  @new_line_regexp ~r/(?<!\n)\n(?!\n)/
-  @punctuation_regexp ~r/[[:punct:]]/
-  @sentence_delimiter_regexp ~r/(?<=[.!?])\s+/
+  alias NeoFaker.Data
 
-  @spec text_file(atom()) :: String.t()
-  def text_file(:lorem), do: @lorem_ipsum_file
-  def text_file(:meditations), do: @meditations_file
+  @files [lorem: "lorem_ipsum.exs", meditations: "meditations.exs"]
+
+  # A single "\n" that is not part of a blank line: a mid-paragraph line wrap.
+  @line_wrap ~r/(?<!\n)\n(?!\n)/
+  @sentence_end ~r/(?<=[.!?])\s+/
+  @punctuation ~r/[[:punct:]]/u
+
+  @type source :: :lorem | :meditations
 
   @doc """
-  Collapses mid-paragraph line wraps to spaces, leaving blank-line paragraph
-  separators intact so `extract_paragraph/1` can still split on them.
+  Returns a random paragraph from `source`.
   """
-  @spec normalize(String.t()) :: String.t()
-  def normalize(text), do: String.replace(text, @new_line_regexp, " ")
+  @spec paragraph(atom() | nil, source()) :: String.t()
+  def paragraph(locale, source), do: locale |> paragraphs(source) |> Enum.random()
 
-  @spec extract_paragraph(String.t()) :: String.t()
-  def extract_paragraph(text) do
-    text |> split_non_blank("\n\n") |> Enum.random()
+  @doc """
+  Returns a random sentence from a random paragraph of `source`.
+  """
+  @spec sentence(atom() | nil, source()) :: String.t()
+  def sentence(locale, source) do
+    locale |> sentences_by_paragraph(source) |> Enum.random() |> Enum.random()
   end
 
   @doc """
-  Splits on `.`, `!`, or `?` followed by whitespace, keeping the delimiter
-  attached to the sentence it ends.
-
-  Blank fragments are dropped, so a source string with a trailing space after
-  its final sentence (`"This in Carnuntum. "`) does not yield an empty
-  "sentence" that would later crash `Enum.random/1` on a wordless list.
+  Returns a random lowercase word, without punctuation, from a random sentence of `source`.
   """
+  @spec word(atom() | nil, source()) :: String.t()
+  def word(locale, source) do
+    locale
+    |> sentence(source)
+    |> String.replace(@punctuation, "")
+    |> String.split()
+    |> Enum.random()
+    |> String.downcase()
+  end
+
+  defp paragraphs(locale, source) do
+    Data.derive!(locale, NeoFaker.Lorem, file(source), :paragraphs, fn %{"text" => texts} ->
+      Enum.flat_map(texts, &split_paragraphs/1)
+    end)
+  end
+
+  defp sentences_by_paragraph(locale, source) do
+    Data.derive!(locale, NeoFaker.Lorem, file(source), :sentences, fn %{"text" => texts} ->
+      texts |> Enum.flat_map(&split_paragraphs/1) |> Enum.map(&split_non_blank(&1, @sentence_end))
+    end)
+  end
+
+  @doc false
+  # Joins wrapped lines, then splits on blank lines. Public for tests.
+  @spec split_paragraphs(String.t()) :: [String.t()]
+  def split_paragraphs(text) do
+    text
+    |> String.replace(@line_wrap, " ")
+    |> split_non_blank("\n\n")
+  end
+
+  @doc false
+  # Splits after `.`, `!`, or `?` followed by whitespace. Public for tests.
   @spec split_sentences(String.t()) :: [String.t()]
-  def split_sentences(text), do: split_non_blank(text, @sentence_delimiter_regexp)
+  def split_sentences(paragraph), do: split_non_blank(paragraph, @sentence_end)
 
-  @spec remove_punctuation(String.t()) :: String.t()
-  def remove_punctuation(text), do: String.replace(text, @punctuation_regexp, "")
+  defp file(source), do: Keyword.fetch!(@files, source)
 
-  @spec split_words(String.t()) :: [String.t()]
-  def split_words(text), do: String.split(text)
-
-  # Splits on `pattern`, then drops entries that are empty or only whitespace.
-  @spec split_non_blank(String.t(), Regex.t() | String.pattern()) :: [String.t()]
+  # Blank fragments are dropped so that a trailing space or newline never
+  # yields an empty paragraph or sentence for `Enum.random/1` to pick.
   defp split_non_blank(text, pattern) do
     text
-    |> String.split(pattern, trim: true)
-    |> Enum.reject(&(String.trim(&1) == ""))
+    |> String.split(pattern)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
   end
 end

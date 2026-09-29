@@ -51,15 +51,23 @@ defmodule NeoFaker.NumberTest do
       assert is_float(Number.float(1..9, 10..90))
     end
 
-    test "raises ArgumentError when the left_digit range is descending" do
-      assert_raise ArgumentError, ~r/left_digit range must have first <= last/, fn ->
-        Number.float(10..5//-1, 10..100)
+    test "accepts descending ranges with a negative step" do
+      assert is_float(Number.float(10..5//-1, 100..10//-1))
+    end
+
+    test "raises ArgumentError for an empty left_digit range" do
+      assert_raise ArgumentError, ~r/left_digit must be a non-empty range/, fn ->
+        Number.float(5..10//-1, 10..100)
       end
     end
 
-    test "raises ArgumentError when the right_digit range is descending" do
-      assert_raise ArgumentError, ~r/right_digit range must have first <= last/, fn ->
-        Number.float(1..9, 100..10//-1)
+    test "raises ArgumentError when right_digit contains a negative number" do
+      assert_raise ArgumentError, ~r/right_digit must only contain non-negative integers/, fn ->
+        Number.float(1..9, -5..5)
+      end
+
+      assert_raise ArgumentError, ~r/right_digit must only contain non-negative integers/, fn ->
+        Number.float(1..9, 5..-5//-1)
       end
     end
   end
@@ -80,7 +88,7 @@ defmodule NeoFaker.NumberTest do
     end
 
     test "raises ArgumentError when max is below 1" do
-      assert_raise ArgumentError, ~r/max must be at least 1/, fn -> Number.positive(0) end
+      assert_raise ArgumentError, ~r/max must be a positive integer/, fn -> Number.positive(0) end
     end
   end
 
@@ -94,7 +102,7 @@ defmodule NeoFaker.NumberTest do
     end
 
     test "raises ArgumentError when min is above -1" do
-      assert_raise ArgumentError, ~r/min must be at most -1/, fn -> Number.negative(0) end
+      assert_raise ArgumentError, ~r/min must be a negative integer/, fn -> Number.negative(0) end
     end
   end
 
@@ -133,9 +141,26 @@ defmodule NeoFaker.NumberTest do
       end
     end
 
-    test "raises ArgumentError when precision is negative" do
-      assert_raise ArgumentError, ~r/precision must be greater than or equal to 0/, fn ->
+    test "raises ArgumentError when precision is outside 0..15" do
+      assert_raise ArgumentError, ~r/precision must be an integer between 0 and 15/, fn ->
         Number.decimal(0.0, 10.0, -1)
+      end
+
+      assert_raise ArgumentError, ~r/precision must be an integer between 0 and 15/, fn ->
+        Number.decimal(0.0, 10.0, 16)
+      end
+    end
+
+    test "draws a float even when both bounds are integers" do
+      results = for _ <- 1..50, do: Number.decimal(0, 10, 3)
+
+      assert Enum.all?(results, &is_float/1)
+      assert Enum.any?(results, &(&1 != Float.round(&1)))
+    end
+
+    test "raises ArgumentError for a non-numeric bound" do
+      assert_raise ArgumentError, ~r/min and max must be numbers/, fn ->
+        Number.decimal(Enum.random(["0"]), 10.0)
       end
     end
   end
@@ -151,27 +176,26 @@ defmodule NeoFaker.NumberTest do
       assert result >= 1.0 and result < 2.0
     end
 
+    test "float_between/2 does not overflow near the float limits" do
+      result = Generator.float_between(-1.0e308, 1.0e308)
+
+      assert result >= -1.0e308 and result <= 1.0e308
+    end
+
     test "to_float/1 coerces integers and leaves floats untouched" do
       assert Generator.to_float(3) === 3.0
       assert Generator.to_float(3.5) === 3.5
     end
   end
 
-  describe "Validator.validate_range!/2" do
-    test "returns :ok for an ascending range" do
-      assert Validator.validate_range!(1..10, "left_digit") == :ok
+  describe "Validator" do
+    test "validate_fraction_range!/1 returns a valid range unchanged" do
+      assert Validator.validate_fraction_range!(0..10) == 0..10
     end
 
-    test "raises ArgumentError for a descending range, naming the argument" do
-      assert_raise ArgumentError, ~r/^right_digit range must have first <= last/, fn ->
-        Validator.validate_range!(10..1//-1, "right_digit")
-      end
-    end
-
-    test "raises ArgumentError for a non-range value, naming the argument" do
-      assert_raise ArgumentError, ~r/^left_digit must be a Range/, fn ->
-        Validator.validate_range!(opaque([1, 10]), "left_digit")
-      end
+    test "validate_precision!/1 accepts 0..15 only" do
+      assert Validator.validate_precision!(15) == :ok
+      assert_raise ArgumentError, fn -> Validator.validate_precision!(opaque(1.5)) end
     end
   end
 end

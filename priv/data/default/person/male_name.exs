@@ -17,7 +17,6 @@
     "Ethan",
     "Felix",
     "Fernando",
-    "Fernando",
     "Geoff",
     "Graydon",
     "Guido",

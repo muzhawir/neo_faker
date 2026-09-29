@@ -1,38 +1,48 @@
 defmodule NeoFaker do
   @moduledoc """
-  NeoFaker is a package for generating fake data in Elixir.
+  A fake data generator for tests, database seeds, and local development.
 
-  This module provides the main interface for starting the application and seeding the random
-  number generator. See `NeoFaker.Locale` for managing locale configuration.
+  Generators are grouped by domain, one module each, for example `NeoFaker.Person`,
+  `NeoFaker.Internet`, and `NeoFaker.Date`. Functions that return a single value are
+  named after that value (`NeoFaker.Person.first_name/1`); functions that return several
+  values use the plural form and always return a list (`NeoFaker.Lorem.words/2`).
 
-  ## Locale support
+  ## Locales
 
-  Many modules accept a `:locale` option. Use `NeoFaker.Locale.set/1` to override the locale for
-  the calling process, or pass `locale:` per call. To set a locale for the whole application
-  instead (e.g. for a Phoenix app), configure `config :neo_faker, locale: ...`, then see
-  [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html).
+  Generators backed by a data set accept a `:locale` option. To change the locale for the
+  calling process, use `NeoFaker.Locale.set/1`. To set a default for the whole
+  application, configure it:
 
-      iex> NeoFaker.Locale.set(:id_id)
-      :ok
+      config :neo_faker, locale: :id_id
 
-      iex> NeoFaker.Person.first_name()  # uses :id_id for this process
-      "Jaka"
+  See `NeoFaker.Locale` for how these settings interact.
 
-      iex> NeoFaker.Person.first_name(locale: :en_us)  # overrides per call
-      "José"
+  ## Reproducible output
 
-  See the [available locales](https://hexdocs.pm/neo_faker/locales.html) for the full list of
-  supported locale codes.
+  Every generator draws from `:rand`, which the VM seeds per process. Call `seed/1` to
+  make the calling process produce the same sequence of values on every run.
+
+  ## Examples
+
+      iex> NeoFaker.Person.full_name()
+      "Abigail Bethany Crawford"
+
+      iex> NeoFaker.Person.full_name(locale: :id_id)
+      "Siti Nurhaliza Putri"
+
   """
   @moduledoc since: "0.1.0"
 
   alias NeoFaker.Locale
 
   @doc """
-  Starts the NeoFaker application and ensures a locale is configured.
+  Starts the `:neo_faker` application and validates the configured locale.
 
-  If no locale is set in the application environment, it defaults to `:default`.
-  Prints the active locale to stdout and returns `:ok`.
+  Calling this function is optional: every generator works without it. It is useful in
+  `test/test_helper.exs`, where it fails fast on an invalid
+  `config :neo_faker, locale: ...` instead of on the first generator call.
+
+  Raises `ArgumentError` if the configured locale is not supported.
 
   ## Examples
 
@@ -42,29 +52,20 @@ defmodule NeoFaker do
   """
   @spec start() :: :ok
   def start do
-    Application.ensure_started(:neo_faker)
-
-    active_locale =
-      case Locale.fetch() do
-        {:ok, locale} ->
-          locale
-
-        :error ->
-          Locale.set(:default)
-          :default
-      end
-
-    IO.puts("\nNeoFaker started with locale: :#{active_locale}")
-
+    {:ok, _apps} = Application.ensure_all_started(:neo_faker)
+    _locale = Locale.fetch()
     :ok
   end
 
   @doc """
-  Seeds the random number generator for the calling process, for reproducible output.
+  Seeds the random number generator of the calling process.
 
-  NeoFaker draws values via `Enum.random/1` and `:rand.uniform/1`, both backed by `:rand`, which
-  OTP already seeds automatically and unpredictably per process. Call this at the start of a
-  test (or anywhere else you need deterministic fake data) to pin that seed instead.
+  After seeding, every generator called from the same process returns the same sequence
+  of values, which makes failures involving fake data reproducible. Only the calling
+  process is affected. `NeoFaker.Crypto.token/2` is the one exception: it always uses
+  cryptographically strong random bytes and is therefore never reproducible.
+
+  `seed` is an integer or a three-integer tuple, as accepted by `:rand.seed/2`.
 
   ## Examples
 
@@ -77,8 +78,8 @@ defmodule NeoFaker do
   """
   @doc since: "0.15.0"
   @spec seed(integer() | {integer(), integer(), integer()}) :: :ok
-  def seed(seed_value) when is_integer(seed_value) or tuple_size(seed_value) == 3 do
-    :rand.seed(:exsplus, seed_value)
+  def seed(seed) when is_integer(seed) or (is_tuple(seed) and tuple_size(seed) == 3) do
+    _state = :rand.seed(:exsss, seed)
     :ok
   end
 end

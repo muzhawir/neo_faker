@@ -2,8 +2,10 @@ defmodule NeoFaker.Locales.IdId.Person.Generator do
   @moduledoc false
 
   # Parts of a Nomor Induk Kependudukan (NIK): a 16-digit number made of a
-  # 6-digit region code (province, regency, district), a 6-digit DDMMYY birth
-  # date, and a 4-digit serial.
+  # 6-digit district (kecamatan) code, a 6-digit DDMMYY birth date, and a
+  # 4-digit serial.
+
+  alias NeoFaker.Data
 
   @doc """
   Returns a random number from `1..max`, zero-padded to `width` digits.
@@ -14,12 +16,18 @@ defmodule NeoFaker.Locales.IdId.Person.Generator do
   end
 
   @doc """
-  Returns a random six-digit region code: province `11` to `92`, then regency and
-  district.
+  Returns a random six-digit district (kecamatan) code from the official list in
+  `priv/data/id_id/person/region_code.exs`.
   """
   @spec region_code() :: String.t()
   def region_code do
-    "#{Enum.random(11..92)}#{serial_number(79, 2)}#{serial_number(53, 2)}"
+    # Kept as a tuple so a draw from the ~7,300 codes is constant time.
+    codes =
+      Data.derive!(:id_id, NeoFaker.Locales.IdId.Person, "region_code.exs", :tuple, fn data ->
+        data |> Map.fetch!("district_codes") |> List.to_tuple()
+      end)
+
+    elem(codes, :rand.uniform(tuple_size(codes)) - 1)
   end
 
   @doc """

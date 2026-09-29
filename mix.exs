@@ -4,7 +4,7 @@ defmodule NeoFaker.MixProject do
   def project do
     [
       app: :neo_faker,
-      version: "0.15.0",
+      version: "0.16.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       dialyzer: dialyzer(),
@@ -48,7 +48,10 @@ defmodule NeoFaker.MixProject do
       logo: "priv/assets/logo/doc_logo.svg",
       extras: extra_pages(),
       groups_for_extras: groups_for_extras(),
-      groups_for_modules: groups_for_modules()
+      groups_for_modules: groups_for_modules(),
+      # The changelog names functions and private modules as they were at each
+      # release; many have since been renamed, removed, or hidden.
+      skip_undefined_reference_warnings_on: ["lib/pages/about/changelog.md"]
     ]
   end
 

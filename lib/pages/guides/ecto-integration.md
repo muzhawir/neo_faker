@@ -111,7 +111,7 @@ Add NeoFaker as a dev/test-only dependency:
 ```elixir
 def deps do
   [
-    {:neo_faker, "~> 0.15.0", only: [:dev, :test]}
+    {:neo_faker, "~> 0.16.0", only: [:dev, :test]}
   ]
 end
 ```

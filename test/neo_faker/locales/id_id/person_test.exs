@@ -1,8 +1,13 @@
 defmodule NeoFaker.Locales.IdId.PersonTest do
   use ExUnit.Case, async: true
 
+  alias NeoFaker.Data
   alias NeoFaker.Locales.IdId.Person
   alias NeoFaker.Locales.IdId.Person.Generator
+
+  defp district_codes do
+    :id_id |> Data.fetch!(Person, "region_code.exs") |> Map.fetch!("district_codes")
+  end
 
   @sixteen_digits ~r/^\d{16}$/
 
@@ -13,6 +18,14 @@ defmodule NeoFaker.Locales.IdId.PersonTest do
 
         assert is_binary(nik)
         assert String.match?(nik, @sixteen_digits)
+      end
+    end
+
+    test "starts with an official district code" do
+      codes = MapSet.new(district_codes())
+
+      for _ <- 1..50 do
+        assert binary_part(Person.nik(), 0, 6) in codes
       end
     end
   end
@@ -26,6 +39,17 @@ defmodule NeoFaker.Locales.IdId.PersonTest do
   end
 
   describe "Generator" do
+    test "the district code list covers all 38 provinces with six-digit codes" do
+      codes = district_codes()
+
+      assert Enum.all?(codes, &String.match?(&1, ~r/^\d{6}$/))
+      assert codes |> Enum.map(&binary_part(&1, 0, 2)) |> Enum.uniq() |> length() == 38
+    end
+
+    test "region_code/0 returns an official district code" do
+      assert Generator.region_code() in district_codes()
+    end
+
     test "serial_number/2 zero-pads to the requested width" do
       for _ <- 1..100 do
         assert String.match?(Generator.serial_number(79, 2), ~r/^\d{2}$/)

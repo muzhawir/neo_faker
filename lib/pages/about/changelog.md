@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.16.0 (2026-09-29)
 
 A correctness release. It fixes bugs found in a full audit of the library, several of which
 changed generated output silently, and tightens validation that used to let invalid input
@@ -55,6 +55,10 @@ through. The public API is unchanged except where noted under Breaking Changes.
   float draws between bounds near the largest float raised `ArithmeticError`.
 - `NeoFaker.Boolean.boolean(0)` could return `true`, because `:rand.uniform/0` can return `0.0`.
 - `NeoFaker.Locales.EnUs.Person.ssn/0` generated area number `777` twice as often as any other.
+- `NeoFaker.Locales.IdId.Person.nik/0` and `npwp/0` built the six-digit region code from
+  arbitrary ranges, so most codes named no real place (province `20`, for example). The code is
+  now drawn from the 7,285 official district (kecamatan) codes of Kepmendagri
+  No. 300.2.2-2430 Tahun 2025, covering all 38 provinces.
 - `NeoFaker.Crypto` hashes and UUIDs ignored `NeoFaker.seed/1`. `token/2` still uses
   cryptographically strong bytes and is documented as the one generator that cannot be seeded.
 - An empty `:number_range` in `NeoFaker.Internet.username/1` and `email/1` raises a validation
@@ -75,7 +79,8 @@ through. The public API is unchanged except where noted under Breaking Changes.
   text, TLDs filed under the wrong category, and prefix titles listed as Indonesian suffixes.
 - Documentation rewritten throughout in the style of the Elixir standard library, with corrected
   examples. The cheatsheet is now generated from the function docs by
-  `scripts/gen_cheatsheet.exs`, so the two cannot drift apart.
+  `scripts/gen_cheatsheet.exs`, so the two cannot drift apart. `mix docs` builds without
+  warnings.
 
 ## v0.15.0 (2026-09-06)
 

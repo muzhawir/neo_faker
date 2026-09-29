@@ -160,6 +160,10 @@ These live under `lib/neo_faker/locales/<locale>/`, namespaced under `NeoFaker.L
 (`lib/neo_faker/locales/id_id/person.ex`). `mix.exs`'s `groups_for_modules/0` splits ExDoc's sidebar into "Random Generators" vs. "Locale Random
 Generators" by matching the literal `NeoFaker.Locales.` prefix, so keep every locale-exclusive module under that namespace.
 
+A locale-exclusive module that needs a data set reads it through `NeoFaker.Data` with an explicit `locale:` (it must not depend on the active
+locale), e.g. `NeoFaker.Locales.IdId.Person.Generator` reads the official district codes for NIK from `priv/data/id_id/person/region_code.exs`
+(derived from the last module segment, `Person`). That file is generated from third-party data; keep its source and license header.
+
 ### Shared helpers
 
 `lib/neo_faker/helpers/`:
@@ -187,6 +191,10 @@ which is always ASCII).
 
 `lib/pages/reference/cheat.cheatmd` is generated from those `## Examples` blocks by `mix run scripts/gen_cheatsheet.exs`. Edit the `@doc`, then
 rerun the script; never edit the cheatsheet by hand. (`scripts/` is not in the Hex package.)
+
+`mix docs` must build without warnings. The changelog is exempt from reference checks
+(`skip_undefined_reference_warnings_on` in `mix.exs`), since it names functions as they were at each release;
+everywhere else, never reference a `@moduledoc false` module or a removed function in backticks.
 
 A test that mutates `Application` env directly (bypassing `NeoFaker.Locale.set/1`, e.g. to test the raw-config validation path in
 `NeoFaker.Locale.fetch/0`) is node-global and must not run `async: true` alongside anything else that reads `config :neo_faker, locale: ...`. See

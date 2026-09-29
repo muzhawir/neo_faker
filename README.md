@@ -12,14 +12,22 @@
 
 NeoFaker generates realistic fake data for Elixir tests, database seeds, and local development.
 
+- **Broad coverage**: people, addresses, internet identifiers, dates and times, colors, hashes,
+  HTTP values, placeholder text, and more, one module per domain.
+- **Locale-aware**: data sets for US English and Indonesian, selectable per call, per process,
+  or for the whole application.
+- **Safe in concurrent tests**: locale overrides are scoped to the calling process, so
+  `async: true` tests never interfere with each other.
+- **Reproducible**: `NeoFaker.seed/1` makes a process generate the same values on every run.
+
 ## Requirements
 
-- **Erlang**: `28.0` or newer
-- **Elixir**: `1.18.4-otp-28` or newer
+- Elixir 1.18 or newer
+- Erlang/OTP 27 or newer
 
 ## Installation
 
-Add NeoFaker to your `mix.exs` dependencies:
+Add `:neo_faker` to your dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -29,36 +37,7 @@ def deps do
 end
 ```
 
-Then fetch it:
-
-```sh
-mix deps.get
-```
-
-See the [Getting Started Guide](https://hexdocs.pm/neo_faker/getting-started.html) for the full
-setup walkthrough, including test-suite configuration.
-
-## Configuration
-
-Set a default locale in `config/config.exs`:
-
-```elixir
-config :neo_faker, locale: :default
-```
-
-If the requested locale isn't available, NeoFaker falls back to `:default` (generic English (US)
-data). `NeoFaker.Locale.set/1` changes the locale for the current process only. It's safe to use
-inside `async: true` tests, since it can't affect other tests running at the same time.
-
-### Using with Phoenix Framework
-
-For a Phoenix app, set the locale in `config/dev.exs` and `config/test.exs` instead of the
-top-level `config.exs`. Then call `NeoFaker.start()` in `test/test_helper.exs`.
-
-If you also use NeoFaker inside `test/support/factory.ex` to build fake `Ecto.Schema` structs for
-your tests, see the [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html)
-guide. It covers wiring NeoFaker into the factory pattern from Ecto's own docs, and how to keep
-factory-generated values unique where your schema requires it.
+Then run `mix deps.get`.
 
 ## Usage
 
@@ -67,10 +46,10 @@ iex> NeoFaker.Person.full_name()
 "Abigail Bethany Crawford"
 
 iex> NeoFaker.Internet.email()
-"jose@example.com"
+"abigail.crawford@kappa.com"
 
 iex> NeoFaker.Address.city(locale: :id_id)
-"Sigi"
+"Palu"
 
 iex> NeoFaker.Date.past(30)
 ~D[2025-02-25]
@@ -79,21 +58,51 @@ iex> NeoFaker.Color.hex()
 "#613583"
 ```
 
+Functions accept a keyword list of options where the output can be shaped, for example
+`NeoFaker.Crypto.uuid(format: :compact)` or `NeoFaker.Person.full_name(sex: :female)`. Each
+function documents its options.
+
+## Configuration
+
+Every locale-aware generator uses the `:default` data set (US English) unless told otherwise.
+To change the default for the whole application, set it in your config:
+
+```elixir
+# config/test.exs
+config :neo_faker, locale: :id_id
+```
+
+To change it for the current process only, call `NeoFaker.Locale.set/1`. To change it for a
+single call, pass the `:locale` option. See the
+[Locales guide](https://hexdocs.pm/neo_faker/locales.html) for details.
+
 ## Documentation
 
-- [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html): installation, configuration, and first steps.
-- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html): full module and function documentation.
-- [Cheat Sheet](https://hexdocs.pm/neo_faker/cheat.html): one-page reference of every domain generator function, with examples.
-- [Locale Cheat Sheet](https://hexdocs.pm/neo_faker/locale-cheat.html): one-page reference of locale-exclusive generators, grouped by locale.
-- [Supported Locales](https://hexdocs.pm/neo_faker/locales.html): available locales and how locale resolution works.
-- [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html): using NeoFaker as the data source in an Ecto-based factory module.
-- [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html): contributor guide for submitting a new locale as a pull request.
+- [Getting Started](https://hexdocs.pm/neo_faker/getting-started.html): installation,
+  configuration, and first steps.
+- [Locales](https://hexdocs.pm/neo_faker/locales.html): supported locales and how the active
+  locale is resolved.
+- [Ecto Test Factories](https://hexdocs.pm/neo_faker/ecto-integration.html): using NeoFaker in
+  an Ecto factory module.
+- [Cheatsheet](https://hexdocs.pm/neo_faker/cheat.html) and
+  [Locale Cheatsheet](https://hexdocs.pm/neo_faker/locale-cheat.html): every generator on one page.
+- [API Reference](https://hexdocs.pm/neo_faker/api-reference.html): full module and function
+  documentation.
+- [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html): how to contribute a new
+  locale.
 - [Changelog](https://hexdocs.pm/neo_faker/changelog.html): release history.
 
 ## Contributing
 
-Issues and pull requests are welcome on [GitHub](https://github.com/muzhawir/neo_faker).
+Issues and pull requests are welcome on [GitHub](https://github.com/muzhawir/neo_faker). Before
+opening a pull request, make sure these pass:
+
+```sh
+mix format --check-formatted
+mix credo --strict
+mix test
+```
 
 ## License
 
-Licensed under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).
+NeoFaker is released under the [MIT License](https://github.com/muzhawir/neo_faker/blob/main/LICENSE.md).

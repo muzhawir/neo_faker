@@ -36,8 +36,8 @@ defmodule MyApp.Factory do
   def build(:post) do
     %MyApp.Post{
       title: NeoFaker.Lorem.sentence(),
-      body: NeoFaker.Lorem.paragraphs(3) |> Enum.join("\n\n"),
-      inserted_at: NeoFaker.Date.past(30)
+      body: 3 |> NeoFaker.Lorem.paragraphs() |> Enum.join("\n\n"),
+      published_on: NeoFaker.Date.past(30)
     }
   end
 
@@ -74,13 +74,13 @@ the pattern, but every generated record ends up with the same shape, so formatti
 encoding edge cases never show up in a real test suite. NeoFaker fixes that: it returns a
 different, realistic value on each call, across more domains than are worth writing by hand:
 `NeoFaker.Person`, `NeoFaker.Address`, `NeoFaker.Date`, `NeoFaker.Time`, `NeoFaker.Internet`,
-`NeoFaker.Lorem`, `NeoFaker.Color`, `NeoFaker.Crypto`, and more. See the [Cheat Sheet](cheat.html)
+`NeoFaker.Lorem`, `NeoFaker.Color`, `NeoFaker.Crypto`, and more. See the [Cheatsheet](cheat.html)
 for the full list.
 
 ## Generating unique values
 
 NeoFaker guarantees realism, not uniqueness. It draws from a finite, locale-specific dataset (see
-[Supported Locales](locales.html)) and keeps no record of what it has already returned, so
+[Locales](locales.html)) and keeps no record of what it has already returned, so
 `NeoFaker.Person.first_name()` can return the same value on two separate calls.
 
 Ecto already has a complete answer for uniqueness, and NeoFaker isn't part of it: a
@@ -136,10 +136,9 @@ defp elixirc_paths(_), do: ["lib"]
 
 This applies to the factory pattern itself, not just NeoFaker.
 
-Set a default locale for tests in `config/test.exs` (see
-[Getting Started](getting-started.html#configuration) for the full configuration guide,
-including notes for Phoenix projects):
+Optionally, set the locale your tests should use in `config/test.exs` (see
+[Getting Started](getting-started.html#configuration)):
 
 ```elixir
-config :neo_faker, locale: :default
+config :neo_faker, locale: :id_id
 ```

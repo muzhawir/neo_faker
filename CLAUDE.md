@@ -19,6 +19,7 @@ mix test # run full test suite
 mix test test/neo_faker/address_test.exs # run one test file
 mix test test/neo_faker/address_test.exs:42 # run a single test at a line
 mix docs # build ExDoc documentation (uses lib/pages/{guides,reference,contributing,about}/*)
+mix run scripts/gen_cheatsheet.exs # regenerate lib/pages/reference/cheat.cheatmd from @doc examples
 ```
 
 `mise.toml` defines composite tasks (`mise run format|lint|analyze|fix`) that chain the above in order: format → credo → dialyzer → test.
@@ -52,11 +53,12 @@ Each public-facing generator lives at `lib/neo_faker/<domain>.ex` (e.g. `NeoFake
 submodules in `lib/neo_faker/<domain>/`:
 
 - `Generator` handles pure computation/randomization logic (e.g. `Address.Generator` builds lat/long). If a domain's generator logic is large
-  enough to split further, sub-parts get a `*Generator` suffix (`Internet.UsernameGenerator`, `HTTP.HeaderGenerator`, `Crypto.HashGenerator`, etc.),
+  enough to split further, sub-parts get a `*Generator` suffix (`Internet.UsernameGenerator`, `HTTP.HeaderGenerator`, `Internet.TldGenerator`, etc.),
   never a bare feature name.
-- `Validator` handles validation for **positional** function arguments only (a `range`, `start`/`finish`, `min`/`max`), raising `ArgumentError` with a
-  descriptive message. Keyword-list **options** (`opts`) are validated by a `NimbleOptions` schema instead (see "Options handling" below); a domain
-  with no positional arguments to validate has no `Validator` module at all (e.g. `Blood`, `HTTP`, `Internet`, `Lorem`, `Color`, `Text`).
+- `Validator` holds domain-specific checks: positional-argument checks that raise `ArgumentError` (e.g. `Date.Validator.validate_date_order!/2`)
+  and `{:ok, value} | {:error, message}` functions used as NimbleOptions `{:custom, ...}` types (e.g. `App.Validator.validate_domain/1`).
+  Checks shared by several domains (non-empty ranges, non-negative bounds) live in `NeoFaker.Helpers.Validator` instead; a domain that needs
+  nothing beyond those has no `Validator` module at all (e.g. `Address`, `Person`, `Blood`, `Color`, `Text`).
 
 Some domains use more specific submodule names instead of a generic `Generator` (`Person.NameGenerator`, `Person.FullNameGenerator`,
 `Text.EmojiGenerator`, `Lorem.Generator`). All of these submodules are `@moduledoc false`, never part of the public API, so renaming or
@@ -107,7 +109,8 @@ public function's docs:
   `` * `:key` (type or allowed values) - description. Defaults to `value`. `` When an option
   takes several named atoms that each need explaining, nest a nested `*` list under that
   option's bullet instead of a free-floating "The values for `:x` can be:" paragraph.
-- Keep `## Examples` with `iex>` doctests as-is.
+- Keep `## Examples` with `iex>` blocks. Results must be values the function can actually return.
+- Error messages start in lowercase and name the offending value: `"count must be a positive integer, got: 0"`.
 
 See `lib/neo_faker/blood.ex` or `lib/neo_faker/color.ex` for compact examples, and
 `lib/neo_faker/internet.ex`'s `email/1` for a composite function that groups options by the
@@ -128,19 +131,26 @@ Key points:
   `priv/data/<code>/` files and usually a `lib/neo_faker/locales/<code>/` module), so the list lives next to the code that enforces it, not in a data file.
 - `:default` is a special locale that is _not_ in `@supported_locales`, since `priv/data/default/` holds the baseline (US English) data set. There is no
   `priv/data/en_us/` directory; `:en_us` falls back to `:default` data unless a locale-specific override file exists.
-- If a locale-specific data file doesn't exist for a given module/file, `NeoFaker.Data` silently falls back to `:default` rather than erroring
-  (`resolve_locale/3`), and the same fallback applies to `fetch!/3` (used by tests), not just `random_value/4`.
-- Locale data is cached in `:persistent_term` after first read (per locale/module/file), keyed by the `{NeoFaker.Data, locale, module, file}` tuple.
-  Each list in the file is deduplicated with `Enum.uniq/1` at cache time but kept in file order; the per-call pick is `Enum.random/1` on the cached
-  list (`NeoFaker.Data.random_value/4`), so randomness happens per call, not at cache time.
-- `validate_file_name!/1` restricts data file names to a bare filename ending in `.exs`, which guards against path traversal / arbitrary file eval
-  via `Code.eval_string/3`. Never bypass this when adding new data lookups.
+- If a *supported* locale has no data file for a given module/file, `NeoFaker.Data` falls back to the `:default` copy of that file, for
+  `random_value/4` and `fetch!/3` alike. An *unsupported* locale is never a fallback case: `NeoFaker.Locale.validate!/1` raises `ArgumentError`,
+  and every schema declares `locale: [type: {:custom, NeoFaker.Locale, :validate_option, []}, default: nil]` so a bad per-call `locale:` raises
+  `NimbleOptions.ValidationError` first.
+- Locale data is cached in `:persistent_term` after first read, keyed by `{NeoFaker.Data, requested_locale, module, file}`, so a fallback costs one
+  `File.exists?/1` on the first read only. Each list is deduplicated with `Enum.uniq/1` at cache time but kept in file order; the per-call pick
+  is `Enum.random/1`, so randomness happens per call, not at cache time.
+- `random_value/4` takes either one key or a list of keys. A list draws from the union of those lists with duplicates removed (e.g. color
+  `:all` pools `"basic"` and `"extended"`, which overlap), cached via `derive!/5`. Use a key list rather than `Map.values |> List.flatten` in
+  generators, which would over-weight values listed under several keys.
+- `derive!/5` caches any value computed from a data file (e.g. `Lorem.Generator` splits its text into paragraphs once). Use it for any
+  preprocessing that would otherwise run on every call.
+- The locale segment (checked by `NeoFaker.Locale.validate!/1`) and `validate_file_name!/1` (a bare filename ending in `.exs`) together keep
+  every path handed to `Code.eval_string/3` inside `priv/data/`. Never bypass either when adding new data lookups.
 - Locale resolution has two layers, checked in order by `NeoFaker.Locale.fetch/0`: a **process-scoped** override set via `NeoFaker.Locale.set/1`
   (stored in the process dictionary, so it never leaks between processes, which is safe under `async: true` tests), then `config :neo_faker,
   locale: ...` (`Application.get_env/2`, the static default for the whole node, e.g. what a Phoenix app sets in `config/dev.exs`/`config/test.exs`).
-  `NeoFaker.Locale.get/0` wraps this and always returns an atom (`:default` when neither layer is set). Any domain function accepts a per-call
-  `locale:` option that overrides both layers for that one call. `NeoFaker.locale/0`, `set_locale/1`, and `get_locale/0` still exist as `@deprecated`
-  delegates to `NeoFaker.Locale.*` for backward compatibility; use the `NeoFaker.Locale` names in new code.
+  `NeoFaker.Locale.get/0` wraps this and always returns an atom (`:default` when neither layer is set). Any locale-aware domain function accepts a
+  per-call `locale:` option that overrides both layers for that one call. The old top-level `NeoFaker.locale/0`, `set_locale/1`, and
+  `get_locale/0` were removed in v0.15.0.
 
 ### Locale-exclusive modules
 
@@ -154,7 +164,11 @@ Generators" by matching the literal `NeoFaker.Locales.` prefix, so keep every lo
 
 `lib/neo_faker/helpers/`:
 
-- `Formatter` provides shared output formatting (e.g. numbers to string).
+- `Formatter` provides shared string shaping: `apply_case/2`, and `slugify/1`, which reduces a word to lowercase ASCII letters and digits
+  (keeping the base letter of accented characters) for usernames, domain labels, and slugs.
+- `Validator` provides argument checks shared by several domains: `validate_range!/2` (a non-empty range; checked with `Range.size/1`, not
+  `first <= last`, so descending stepped ranges pass and empty ones fail), `validate_range_option/1` (the same, as a NimbleOptions custom type),
+  and `validate_non_neg_bounds!/3` (a `min`/`max` pair of non-negative integers).
 
 Options parsing has no shared helper: every domain module calls `NimbleOptions.validate!/2` directly (see "Options handling" above) instead of
 ad hoc `Keyword.get/3` + manual validation.
@@ -163,13 +177,17 @@ ad hoc `Keyword.get/3` + manual validation.
 
 Test files mirror `lib/` under `test/neo_faker/`, including locale-exclusive subdirectories (`test/neo_faker/locales/en_us/`, `test/neo_faker/locales/id_id/`).
 Tests commonly call `NeoFaker.Data.fetch!/3` directly to pull the full cached data set for a module/file and assert generated values are drawn from it
-(see `test/neo_faker/address_test.exs`). `test/test_helper.exs` calls `NeoFaker.start()` before the suite runs, so a locale is always configured
-during tests.
+(see `test/neo_faker/address_test.exs`). `test/test_helper.exs` calls `NeoFaker.start()` before the suite runs, which starts the application and
+validates the configured locale.
 
-**Doctests are not wired up.** Every public function has `## Examples` with `iex>` blocks, but no test file has a `doctest NeoFaker.X` call, so
-`mix test` never executes them (`grep -rln doctest test/` returns nothing), meaning a `@doc` example can silently drift from actual behavior. Don't treat
-an accurate-looking `## Examples` block as verified; check the real function if the behavior matters.
+**Doctests are not wired up, on purpose.** Every public function has `## Examples` with `iex>` blocks, but their results are random, so no test
+file has a `doctest NeoFaker.X` call and `mix test` never executes them. A `@doc` example can therefore drift from actual behavior; don't treat an
+accurate-looking `## Examples` block as verified, and keep examples to values the function can really return (e.g. no `"josé"` in a username,
+which is always ASCII).
 
-A test that mutates `Application` env directly (bypassing `set_locale/1`, e.g. to test the raw-config validation path in `NeoFaker.locale/0`) is
-node-global and must not run `async: true` alongside anything else that reads `config :neo_faker, locale: ...`. See
-`test/neo_faker_application_env_test.exs`.
+`lib/pages/reference/cheat.cheatmd` is generated from those `## Examples` blocks by `mix run scripts/gen_cheatsheet.exs`. Edit the `@doc`, then
+rerun the script; never edit the cheatsheet by hand. (`scripts/` is not in the Hex package.)
+
+A test that mutates `Application` env directly (bypassing `NeoFaker.Locale.set/1`, e.g. to test the raw-config validation path in
+`NeoFaker.Locale.fetch/0`) is node-global and must not run `async: true` alongside anything else that reads `config :neo_faker, locale: ...`. See
+`test/neo_faker/locale_application_env_test.exs`.

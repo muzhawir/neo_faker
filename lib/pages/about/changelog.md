@@ -1,5 +1,82 @@
 # Changelog
 
+## Unreleased
+
+A correctness release. It fixes bugs found in a full audit of the library, several of which
+changed generated output silently, and tightens validation that used to let invalid input
+through. The public API is unchanged except where noted under Breaking Changes.
+
+### Breaking Changes
+
+- **An unsupported `:locale` option now raises `NimbleOptions.ValidationError`.** It used to fall
+  back to `:default` silently, so a typo such as `locale: :id` returned English data. The
+  per-file fallback for locales that do not ship a data file is unchanged.
+- **`NeoFaker.start/0` no longer prints to standard output**, and no longer sets a process
+  locale. It still starts the application and now raises `ArgumentError` for an invalid
+  `config :neo_faker, locale: ...`.
+- **`NeoFaker.App.name(style: :dashed)`** returns lowercase kebab-case (`"neo-faker"`), as its
+  documentation always stated, instead of `"Neo-Faker"`.
+- **`NeoFaker.Time.add/2`** offsets from the current UTC time, matching `NeoFaker.Time.now/0`,
+  instead of the host's local time.
+- **Range arguments are checked for emptiness instead of order.** Descending ranges with a
+  negative step, such as `10..1//-1`, are now accepted; empty ranges, such as `1..10//-1`, raise
+  `ArgumentError` before `Enum.random/1` can raise `Enum.EmptyError`.
+- **Invalid positional arguments raise `ArgumentError` consistently.** `NeoFaker.Internet.slug/2`
+  and `NeoFaker.Lorem.paragraphs/2`, `sentences/2`, and `words/2` used to raise
+  `FunctionClauseError` for a non-positive count. `NeoFaker.Number.between/2`,
+  `positive/1`, `negative/1`, and `decimal/3` now raise `ArgumentError` for non-numeric input.
+- **An empty `:domain_name`** in `NeoFaker.Internet` raises `NimbleOptions.ValidationError`
+  instead of `ArgumentError`, like every other invalid option.
+- **`NeoFaker.seed/1` uses the `:exsss` algorithm**, the `:rand` default, so seeded sequences
+  differ from v0.15.0.
+- **Error messages were reworded** to follow the Elixir convention of starting in lowercase.
+  Match on the exception type rather than the message text.
+- **Locale data:** `person/name_affixes.exs` gains `"female_prefixes"` and `"male_prefixes"`
+  keys, which a locale that ships this file must define.
+
+### Bug Fixes
+
+- `NeoFaker.Internet.ipv4/1` never generated addresses in `170.0.0.0/8` or `171.0.0.0/8`, two
+  fully public blocks missing from its first-octet table.
+- `NeoFaker.Color.random/1` raised for any `:format` other than `:w3c`, including an explicit
+  `format: nil`, and built a color in all six models to return one.
+- `NeoFaker.Color.keyword/1` with `category: :all` returned the 15 basic colors twice as often as
+  the others, because they are also listed as extended colors. Pooled draws across several
+  categories (emoji, TLDs, popular domains, user agents, status codes) now count each value once.
+- `NeoFaker.Gravatar.display/2` accepted any string that merely contained an email address, and
+  put a custom `:fallback` URL into the query string without encoding it, so a URL with its own
+  query string produced a broken avatar URL.
+- `NeoFaker.Time.between/2` could return a time after `finish` when a bound had sub-second
+  precision.
+- `NeoFaker.Person.full_name_with_title/1` could pair a name with a title of the other sex, such
+  as `"Mr. Jane Doe"`. `NeoFaker.Person.prefix/1` takes a new `:sex` option.
+- `NeoFaker.Number.float/2` crashed with a negative `right_digit`; `decimal/3` and the
+  `:precision` option of `NeoFaker.Address` raised an unhelpful error above 15 decimal places;
+  float draws between bounds near the largest float raised `ArithmeticError`.
+- `NeoFaker.Boolean.boolean(0)` could return `true`, because `:rand.uniform/0` can return `0.0`.
+- `NeoFaker.Locales.EnUs.Person.ssn/0` generated area number `777` twice as often as any other.
+- `NeoFaker.Crypto` hashes and UUIDs ignored `NeoFaker.seed/1`. `token/2` still uses
+  cryptographically strong bytes and is documented as the one generator that cannot be seeded.
+- An empty `:number_range` in `NeoFaker.Internet.username/1` and `email/1` raises a validation
+  error instead of `Enum.EmptyError`.
+- Usernames and slugs keep the base letter of accented characters (`"José"` becomes `"jose"`,
+  not `"jos"`).
+- The `:locale` segment of a data file path is validated before use, so a crafted locale atom
+  can no longer point the data loader outside `priv/data/`.
+- `mix.exs` no longer lists `:mix` as a runtime application of the library.
+
+### Improvements
+
+- `NeoFaker.Lorem` parses its source text once per locale instead of on every call, making word
+  and sentence generation about 40 times faster.
+- A locale that falls back to `:default` for a file no longer checks the file system on every
+  call.
+- Data cleanup: duplicate entries, two emoji with a leading space, typos in the Lorem ipsum
+  text, TLDs filed under the wrong category, and prefix titles listed as Indonesian suffixes.
+- Documentation rewritten throughout in the style of the Elixir standard library, with corrected
+  examples. The cheatsheet is now generated from the function docs by
+  `scripts/gen_cheatsheet.exs`, so the two cannot drift apart.
+
 ## v0.15.0 (2026-09-06)
 
 A large internal rewrite. Some thin top-level functions were removed outright rather than deprecated (a formal

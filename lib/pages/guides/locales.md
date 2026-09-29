@@ -1,61 +1,67 @@
-# Supported Locales
+# Locales
 
-NeoFaker supports locale-specific data for realistic test output. Almost every function that
-accepts a `:locale` option is locale-aware, and loads its data from
-`priv/data/<locale>/<domain>/<file>.exs` inside the package. If the requested locale has no data
-file for a given domain/file combination, NeoFaker falls back to `priv/data/default/` (generic
-English (US) data) for that lookup only, instead of raising.
+A locale selects the data set a generator draws from, such as Indonesian names instead of US
+English ones. Generators that read from a data set accept a `:locale` option; generators whose
+output does not depend on language, such as `NeoFaker.Crypto` or `NeoFaker.HTTP`, do not.
 
-## Available Locales
+## Supported locales
 
-| Locale     | Country      | Language                           |
-| ---------- | ------------ | ---------------------------------- |
-| `:default` | 🌐 N/A       | English (US), not country-specific |
-| `:id_id`   | 🇮🇩 Indonesia | Bahasa Indonesia                   |
+| Locale     | Region        | Language             | Own data for                          |
+| ---------- | ------------- | -------------------- | ------------------------------------- |
+| `:default` | None          | English (US)         | Every domain                          |
+| `:en_us`   | United States | English (US)         | None yet, reads `:default` everywhere |
+| `:id_id`   | Indonesia     | Bahasa Indonesia     | `Address`, `App`, `Color`, `Person`   |
 
-`:default` isn't itself a locale code. It's the baseline dataset every other locale falls back
-to. `:en_us` is accepted as a locale value, but it has no dataset of its own yet, so it resolves
-to `:default` data. `:id_id` has its own data for several domains (`Address`, `App`, `Color`,
-`Person`), and falls back to `:default` for the rest.
+`NeoFaker.Locale.supported/0` returns the supported codes. `:default` is not in that list: it
+is the baseline data set rather than a regional locale.
 
-## Setting the locale
+### Fallback to `:default`
 
-There are three ways to control which locale a function draws from, checked in this order:
+A locale does not have to ship every data file. When a generator asks for a file the locale
+does not have, NeoFaker reads the `:default` copy of that file instead. For example,
+`NeoFaker.Text.word(locale: :id_id)` returns an English word, because `:id_id` has no word
+list of its own.
 
-1. **Per call.** Pass `locale: :id_id` (or any supported locale) directly to the function.
-   This overrides everything else for that one call only.
-2. **Per process.** Call `NeoFaker.Locale.set/1` once, and every subsequent call in that
-   process uses it until changed. This is process-scoped (stored in the process dictionary), so
-   it's safe to use inside `async: true` tests without affecting other tests running
-   concurrently.
-3. **Application-wide.** Set `config :neo_faker, locale: ...` in your config files. This is the
-   fallback used by any process that hasn't called `NeoFaker.Locale.set/1`, and the right choice
-   for a whole application's default (e.g. a Phoenix app's `config/dev.exs`).
+This fallback applies to missing data files only. An unsupported locale code is always an
+error:
+
+  * `NeoFaker.Locale.set(:fr_fr)` raises `ArgumentError`.
+  * `NeoFaker.Person.first_name(locale: :fr_fr)` raises `NimbleOptions.ValidationError`, like
+    any other invalid option.
+
+## Choosing the locale
+
+The locale of a generator call is resolved in this order:
+
+  1. **The `:locale` option** of that call.
+  2. **The process locale**, set with `NeoFaker.Locale.set/1`. It is stored in the process
+     dictionary, so it only affects the calling process and is safe to use in `async: true`
+     tests.
+  3. **The application locale**, set with `config :neo_faker, locale: ...`. It applies to
+     every process that has not set its own.
+  4. **`:default`**, when none of the above is set.
 
 ```elixir
-# Per call, overrides everything else for this one call
-iex> NeoFaker.App.description(locale: :id_id)
-"Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
+iex> NeoFaker.Address.city(locale: :id_id)
+"Palu"
 
-# Per process, affects every call in the current process from here on
 iex> NeoFaker.Locale.set(:id_id)
 :ok
-iex> NeoFaker.App.description()
-"Penghasil data palsu untuk pengujian dan lingkungan pengembangan Elixir."
+
+iex> NeoFaker.Address.city()
+"Bandung"
+
+iex> NeoFaker.Locale.get()
+:id_id
 ```
 
-If you pass an unsupported locale to `NeoFaker.Locale.set/1` or a function's `:locale` option,
-NeoFaker raises `ArgumentError` listing the currently supported locales. That's the same list
-shown in the table above and returned by `NeoFaker.Locale.supported/0`.
-
-See the [configuration instructions](https://hexdocs.pm/neo_faker/getting-started.html#configuration)
-for how to set the application-wide default, including notes for Phoenix projects.
+The process locale is not inherited by processes spawned afterwards, including `Task`s. Pass
+the `:locale` option, or call `NeoFaker.Locale.set/1` inside the new process.
 
 ## Locale-exclusive generators
 
-Some data only makes sense for a single locale and isn't expressed as a `:locale` option on a
-shared function. For example, a US Social Security Number has no Indonesian equivalent to fall
-back to. These live under their own `NeoFaker.Locales.*` namespace instead:
+Some formats exist in only one country and have no equivalent to fall back to, such as the US
+Social Security Number. These live in their own modules under `NeoFaker.Locales`:
 
 ```elixir
 iex> NeoFaker.Locales.EnUs.Person.ssn()
@@ -65,18 +71,11 @@ iex> NeoFaker.Locales.IdId.Person.nik()
 "7645504903500640"
 ```
 
-See the [Locale Cheat Sheet](locale-cheat.html) for a quick reference grouped by locale, or the
-"Locale Random Generators" group in the [API Reference](https://hexdocs.pm/neo_faker/api-reference.html)
-for the full module docs.
+They ignore the active locale. See the [Locale Cheatsheet](locale-cheat.html) for the full
+list.
 
-## Adding a new locale
+## Adding a locale
 
-A new locale needs a directory under `priv/data/<locale>/` mirroring the domains it covers. Only
-the files you provide are used; anything missing falls back to `:default`, so a partial locale is
-valid. It also needs its code added to the `@supported_locales` list in `NeoFaker.Locale` (kept
-alphabetically sorted). Locale-exclusive generators, if any, go under
-`lib/neo_faker/locales/<locale>/`.
-
-See [Adding a Locale](adding-a-locale.html) for the full contributor walkthrough, from picking a
-locale code through opening the pull request. Open an issue or pull request on
-[GitHub](https://github.com/muzhawir/neo_faker) to propose one.
+A new locale needs data files under `priv/data/<locale>/` and its code in the
+`@supported_locales` list of `NeoFaker.Locale`. It can start small: every file it leaves out
+falls back to `:default`. See [Adding a Locale](adding-a-locale.html) for the full walkthrough.

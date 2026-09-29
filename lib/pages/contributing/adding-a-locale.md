@@ -5,8 +5,8 @@ files and, optionally, a few locale-specific generator functions. No changes to 
 generator logic are needed. This guide walks through the process end to end, using `:id_id`
 (the existing Indonesian locale) as the reference example.
 
-See [Supported Locales](locales.html) first if you haven't already, for how locale resolution
-works from the caller's side.
+See [Locales](locales.html) first if you haven't already, for how locale resolution works from
+the caller's side.
 
 ## 1. Pick a locale code
 
@@ -64,8 +64,8 @@ are what each domain module looks up:
 | `color/keyword.exs`       | `"basic"`, `"extended"`                                                            | Two separate lists. Keep `"basic"` small (the CSS Level 1 palette equivalent); `"extended"` can be larger.                                     |
 | `person/female_name.exs`  | `"first_names"`, `"middle_names"`, `"last_names"`                                  | One file per gender, see below.                                                                                                                |
 | `person/male_name.exs`    | `"first_names"`, `"middle_names"`, `"last_names"`                                  | Same three keys as the female file.                                                                                                            |
-| `person/gender.exs`       | `"binary"` (exactly 2 values), `"short_binary"` (exactly 2 values), `"non_binary"` | `"binary"`/`"short_binary"` are positional: index 0 is treated as male, index 1 as female, matching `["Male", "Female"]` in `default`.         |
-| `person/name_affixes.exs` | `"prefixes"`, `"suffixes"`                                                         | Titles like `"Dr."` and suffixes like `"Jr."`. Skip any that don't have a natural equivalent in your locale rather than forcing a translation. |
+| `person/gender.exs`       | `"binary"`, `"short_binary"`, `"non_binary"`                                       | Keep `"binary"` and `"short_binary"` in the same order as `default` (male first), so the two lists line up.                                    |
+| `person/name_affixes.exs` | `"prefixes"`, `"female_prefixes"`, `"male_prefixes"`, `"suffixes"`                 | `"prefixes"` holds titles for anyone, such as `"Dr."`; the other two hold titles for one sex only, such as `"Mrs."` or `"Mr."`. Suffixes go after the name, such as `"Jr."` or `"Ph.D."`. |
 
 Each file is a plain Elixir map literal, evaluated at load time, for example
 `priv/data/id_id/address/city.exs`:
@@ -80,9 +80,12 @@ Each file is a plain Elixir map literal, evaluated at load time, for example
 }
 ```
 
-A few constraints are enforced by `NeoFaker.Data`, the shared loader every domain module goes
+A few constraints are enforced by the internal data loader that every domain module goes
 through:
 
+- A file you ship replaces the `:default` copy as a whole, so it must define every key listed
+  above for that file, even if some lists are short. A missing key raises `KeyError` when a
+  generator asks for it.
 - The filename must be a bare name ending in `.exs`, with no subdirectories. Match the existing
   filenames in `priv/data/default/` exactly rather than inventing new ones.
 - Values are deduplicated once when first loaded, then cached (the per-call pick is a uniform
@@ -101,9 +104,8 @@ keeping the list alphabetically sorted:
 ```
 
 This attribute is the single source of truth that `NeoFaker.Locale.supported/0` and
-`NeoFaker.Locale.available?/1` read from. If you skip this step, every function silently falls
-back to `:default` instead of using your new files, since an unregistered locale is treated as
-unsupported.
+`NeoFaker.Locale.available?/1` read from. Until the code is listed here, passing it to
+`NeoFaker.Locale.set/1` or to a `:locale` option raises an error.
 
 ## 5. Add locale-exclusive generators (optional)
 
@@ -117,16 +119,15 @@ Follow the existing pattern in `lib/neo_faker/locales/id_id/person.ex`:
 ```elixir
 defmodule NeoFaker.Locales.IdId.Person do
   @moduledoc """
-  Functions for generating person-related information specific to Indonesia.
+  Functions for generating personal details specific to Indonesia.
   """
   @moduledoc since: "0.9.0"
 
   alias NeoFaker.Locales.IdId.Person.Generator
 
   @doc """
-  Generates a random NIK.
-
-  Returns a random NIK (Nomor Induk Kependudukan).
+  Generates a random Nomor Induk Kependudukan (NIK), the Indonesian resident identity
+  number.
 
   ## Examples
 
@@ -186,11 +187,10 @@ end
 
 ## 7. Update the docs
 
-- Add a row for your locale to the "Available Locales" table in `lib/pages/locales.md`.
-- If you added locale-exclusive generators, add an example for them to the "Locale-exclusive
-  generators" section of `lib/pages/locales.md`, and a new locale section (or a new entry under
-  an existing one) in `lib/pages/locale-cheat.cheatmd`.
-- Update the locale list in the "Locale-aware" bullet of `README.md`'s Features section.
+- Add a row for your locale to the "Supported locales" table in `lib/pages/guides/locales.md`.
+- If you added locale-exclusive generators, add a section for your locale (or an entry under an
+  existing one) in `lib/pages/reference/locale-cheat.cheatmd`.
+- Update the locale list in the "Locale-aware" bullet of `README.md`.
 
 ## 8. Verify
 
@@ -213,9 +213,9 @@ iex> NeoFaker.Person.full_name()
 "..."
 ```
 
-If a function still returns `:default`-looking data, double-check the directory name under
-`priv/data/your_locale/` matches the module's downcased last segment exactly, and that the locale
-code is listed in `@supported_locales` in `lib/neo_faker/locale.ex`.
+If a function still returns `:default` data, check that the directory name under
+`priv/data/your_locale/` matches the module's downcased last segment exactly, and that the file
+name matches the `default` one.
 
 ## 9. Open the pull request
 

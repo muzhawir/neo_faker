@@ -94,10 +94,10 @@ defmodule NeoFaker.App do
   ## Examples
 
       iex> NeoFaker.App.description()
-      "Elixir library for generating fake data in tests and development."
+      "Elixir library for generating fake data for testing and development purposes."
 
       iex> NeoFaker.App.description(locale: :id_id)
-      "Pustaka Elixir untuk menghasilkan data palsu dalam pengujian dan pengembangan."
+      "Pustaka Elixir untuk membuat data tiruan untuk keperluan pengujian dan pengembangan."
 
   """
   @spec description(keyword()) :: String.t()

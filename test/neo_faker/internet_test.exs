@@ -705,6 +705,45 @@ defmodule NeoFaker.InternetTest do
     end
   end
 
+  describe "options that require another option" do
+    test "ipv4/1 rejects :class without private: true" do
+      assert_raise NimbleOptions.ValidationError, ~r/option :class requires private: true/, fn ->
+        Internet.ipv4(class: :a)
+      end
+
+      assert_raise NimbleOptions.ValidationError, ~r/requires private: true/, fn ->
+        Internet.ipv4(private: false, class: :b)
+      end
+    end
+
+    test "ipv4/1 accepts :class with private: true, and an explicit nil :class" do
+      assert String.starts_with?(Internet.ipv4(private: true, class: :a), "10.")
+      assert is_binary(Internet.ipv4(class: nil))
+    end
+
+    test "username/1 and email/1 reject :number_range without number: true" do
+      assert_raise NimbleOptions.ValidationError,
+                   ~r/option :number_range requires number: true/,
+                   fn ->
+                     Internet.username(number_range: 1..5)
+                   end
+
+      assert_raise NimbleOptions.ValidationError,
+                   ~r/option :number_range requires number: true/,
+                   fn ->
+                     Internet.email(number_range: 1..5)
+                   end
+    end
+
+    test "email/1 forwards :number_range to the username when number: true" do
+      for _ <- 1..20 do
+        [username, _domain] = String.split(Internet.email(number: true, number_range: 7..7), "@")
+
+        assert String.ends_with?(username, "7")
+      end
+    end
+  end
+
   describe "username/1 option validation" do
     test "raises NimbleOptions.ValidationError for an empty number_range" do
       assert_raise NimbleOptions.ValidationError, ~r/expected a non-empty range/, fn ->

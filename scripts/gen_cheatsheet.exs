@@ -84,7 +84,10 @@ defmodule NeoFaker.Cheatsheet do
   # can have several modules with functions of the same name.
   defp locale_sections(modules) do
     modules
-    |> Enum.group_by(fn module -> module |> Module.split() |> Enum.at(2) end)
+    |> Enum.group_by(fn module ->
+      ["NeoFaker", "Locales", code | _] = Module.split(module)
+      code
+    end)
     |> Enum.sort()
     |> Enum.map(fn {code, modules} ->
       title =

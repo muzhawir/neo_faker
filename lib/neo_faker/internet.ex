@@ -109,7 +109,7 @@ defmodule NeoFaker.Internet do
       and last names; `:word` builds it from common English words. Defaults to `:person`.
     * `:number` (boolean) - whether to append a number. Defaults to `false`.
     * `:number_range` (non-empty `Range`) - the range the appended number is drawn from.
-      Defaults to `1..1000`.
+      Requires `number: true`. Defaults to `1..1000`.
 
   ## Examples
 
@@ -125,7 +125,10 @@ defmodule NeoFaker.Internet do
   """
   @spec username(keyword()) :: String.t()
   def username(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @username_schema)
+    opts =
+      opts
+      |> NimbleOptions.validate!(@username_schema)
+      |> InternetValidator.validate_requires!(opts, :number_range, :number)
 
     UsernameGenerator.username(
       Keyword.fetch!(opts, :word_count),
@@ -233,7 +236,7 @@ defmodule NeoFaker.Internet do
     * `:number` (boolean) - whether to append a number to the username. Defaults to
       `false`.
     * `:number_range` (non-empty `Range`) - the range the appended number is drawn from.
-      Defaults to `1..1000`.
+      Requires `number: true`. Defaults to `1..1000`.
 
   ## Domain name options
 
@@ -268,14 +271,17 @@ defmodule NeoFaker.Internet do
   """
   @spec email(keyword()) :: String.t()
   def email(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @email_schema)
+    opts =
+      opts
+      |> NimbleOptions.validate!(@email_schema)
+      |> InternetValidator.validate_requires!(opts, :number_range, :number)
 
     username = EmailGenerator.generate_username(opts)
     domain_name = EmailGenerator.generate_domain_name(opts)
 
     case Keyword.fetch!(opts, :domain_type) do
       :random -> "#{username}@#{domain_name}#{EmailGenerator.generate_tld(opts)}"
-      _qualified -> "#{username}@#{domain_name}"
+      qualified when qualified in [:popular, :custom] -> "#{username}@#{domain_name}"
     end
   end
 
@@ -290,7 +296,7 @@ defmodule NeoFaker.Internet do
 
     * `:private` (boolean) - when `true`, returns an address from a private range
       (RFC 1918) instead. Defaults to `false`.
-    * `:class` (`:a`, `:b`, `:c`, or `nil`) - the private range, for `private: true`.
+    * `:class` (`:a`, `:b`, `:c`, or `nil`) - the private range. Requires `private: true`.
       Defaults to `nil`, which picks one at random.
       * `:a` - `10.0.0.0/8`.
       * `:b` - `172.16.0.0/12`.
@@ -310,7 +316,10 @@ defmodule NeoFaker.Internet do
   """
   @spec ipv4(keyword()) :: String.t()
   def ipv4(opts \\ []) do
-    opts = NimbleOptions.validate!(opts, @ipv4_schema)
+    opts =
+      opts
+      |> NimbleOptions.validate!(@ipv4_schema)
+      |> InternetValidator.validate_requires!(opts, :class, :private)
 
     if Keyword.fetch!(opts, :private) do
       class = Keyword.fetch!(opts, :class) || Enum.random([:a, :b, :c])

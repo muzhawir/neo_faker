@@ -340,13 +340,14 @@ defmodule NeoFaker.Person do
     locale = Keyword.fetch!(opts, :locale)
     sex = opts |> Keyword.fetch!(:sex) |> NameGenerator.resolve_sex()
 
-    [
-      Keyword.fetch!(opts, :prefix) && NameGenerator.prefix(locale, sex),
-      FullNameGenerator.name(sex, locale, Keyword.fetch!(opts, :middle_name)),
-      Keyword.fetch!(opts, :suffix) &&
-        Data.random_value(__MODULE__, @name_affixes_file, "suffixes", locale: locale)
-    ]
-    |> Enum.filter(&is_binary/1)
-    |> Enum.join(" ")
+    prefix = if Keyword.fetch!(opts, :prefix), do: [NameGenerator.prefix(locale, sex)], else: []
+    name = FullNameGenerator.name(sex, locale, Keyword.fetch!(opts, :middle_name))
+
+    suffix =
+      if Keyword.fetch!(opts, :suffix),
+        do: [Data.random_value(__MODULE__, @name_affixes_file, "suffixes", locale: locale)],
+        else: []
+
+    Enum.join(prefix ++ [name | suffix], " ")
   end
 end

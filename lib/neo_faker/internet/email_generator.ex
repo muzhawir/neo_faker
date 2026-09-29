@@ -11,9 +11,16 @@ defmodule NeoFaker.Internet.EmailGenerator do
   """
   @spec generate_username(keyword()) :: String.t()
   def generate_username(opts) do
+    # `username/1` rejects `:number_range` without `number: true`, and the
+    # validated email options always carry the default range.
+    keys =
+      if Keyword.fetch!(opts, :number),
+        do: [:joiner, :username_type, :number, :number_range],
+        else: [:joiner, :username_type, :number]
+
     username_opts =
       opts
-      |> Keyword.take([:joiner, :username_type, :number, :number_range])
+      |> Keyword.take(keys)
       |> Keyword.put(:word_count, Keyword.fetch!(opts, :username_word_count))
 
     Internet.username(username_opts)

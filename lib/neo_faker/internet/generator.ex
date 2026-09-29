@@ -3,87 +3,52 @@ defmodule NeoFaker.Internet.Generator do
 
   alias NeoFaker.Helpers.Formatter
 
-  # Randomization backend for `NeoFaker.Internet`: IPv4/IPv6 addresses, URL
+  # Randomization backend for `NeoFaker.Internet`: IP and MAC addresses, URL
   # paths, and query strings. The public module owns option parsing and output
-  # casing; everything here just produces raw random values.
+  # casing; everything here produces raw random values.
   #
-  # The one non-obvious piece is public IPv4 generation. Rather than "pick a
-  # random address, retry if reserved", it walks the address space top-down
-  # (first octet -> second -> third -> fourth), skipping reserved ranges at each
-  # level, so every call returns a publicly routable address with no rejection
-  # loop. `reserved_ipv4?/3` is the standalone predicate for the same rules and
-  # is what the tests check against.
-
-  # ---------------------------------------------------------------------------
-  # IANA special-purpose blocks excluded from public_ipv4/0 (iana.org):
+  # Public IPv4 addresses are drawn without a rejection loop: the first octet
+  # comes from the weighted table below, then the second and third octets skip
+  # the reserved sub-blocks left inside that /8. The table is the single list of
+  # IANA special-purpose blocks this module excludes (iana.org); every public
+  # /8 must appear in it, and `reserved_ipv4?/3` encodes the same blocks as a
+  # predicate for the tests.
   #
-  #   0.0.0.0/8        "This" network (RFC 791 / RFC 1122)
-  #   10.0.0.0/8       RFC 1918 private class A
-  #   100.64.0.0/10    Shared address / CGN (RFC 6598), second octets 64-127
-  #   127.0.0.0/8      Loopback (RFC 1122)
-  #   169.254.0.0/16   Link-local (RFC 3927), second octet 254 only
-  #   172.16.0.0/12    RFC 1918 private class B, second octets 16-31
-  #   192.0.0.0/24     IETF protocol assignments (RFC 6890), second=0, all thirds
-  #   192.0.2.0/24     TEST-NET-1 (RFC 5737), second=0, third=2 (covered above)
-  #   192.88.99.0/24   Deprecated 6to4 relay (RFC 7526), second=88, third=99
-  #   192.168.0.0/16   RFC 1918 private class C, second=168, all thirds
-  #   198.18.0.0/15    Benchmarking (RFC 2544), second octets 18-19
-  #   198.51.100.0/24  TEST-NET-2 (RFC 5737), second=51, third=100
-  #   203.0.113.0/24   TEST-NET-3 (RFC 5737), second=0, third=113
-  #   224.0.0.0/4      Multicast (RFC 3171)
-  #   240.0.0.0/4      Reserved / broadcast (RFC 1112)
-  #
-  # Strategy: the first-octet table covers every /8 that contains at least one
-  # public address. A first octet with a mixed public/reserved range (100, 169,
-  # 172, 192, 198, 203) is weighted by its count of valid second octets, so a
-  # single :rand.uniform/1 draw over the whole table still lands on each
-  # individual public address with equal probability, not on each first octet.
-  # The narrow reserved sub-ranges inside those mixed octets are then excluded
-  # in pick_public_second_octet/1 or pick_public_third_octet/2.
-  # ---------------------------------------------------------------------------
-
-  # Weights for mixed-range first octets (count of valid second octets, out of 256):
-  #
-  #   100  100.64-127 reserved (a /10, 64 second octets)   -> 256 - 64 = 192 valid
-  #   169  169.254 reserved (a /16, 1 second octet)         -> 256 - 1  = 255 valid
-  #   172  172.16-31 reserved (a /12, 16 second octets)     -> 256 - 16 = 240 valid
-  #   192  second=0 (covers both the /24 IETF block and the /24 TEST-NET-1
-  #        block) and second=168 (the /16 RFC 1918 block) are fully excluded;
-  #        second=88 stays valid here since only its /24 sub-block is reserved,
-  #        which is handled later in pick_public_third_octet/2 -> 254 valid
-  #   198  second=18 and second=19 (the /15 benchmarking block) are fully
-  #        excluded; second=51 stays valid here since only its /24 sub-block is
-  #        reserved, which is handled later in pick_public_third_octet/2
-  #        -> 254 valid
-  #   203  no second octet is fully reserved (only third=113 under second=0
-  #        is), so all 256 second octets stay valid here, guarded in the third
-  #        octet instead
-
-  # The table is a list of {weight, lo, hi} ranges of first octets.
-  # Pure-public /8 blocks each have weight 256 (all second octets valid).
-  # Mixed blocks carry their actual valid-second-octet count as weight.
+  # Each entry is {weight, lo, hi}: every first octet from lo to hi has `weight`
+  # valid second octets, so one draw over the whole table is uniform per public
+  # address rather than per first octet. First octets absent from the table are
+  # reserved outright: 0 ("this" network, RFC 1122), 10 (private, RFC 1918),
+  # 127 (loopback, RFC 1122), and 224-255 (multicast and reserved, RFC 3171 /
+  # RFC 1112).
   @public_first_octet_ranges [
-    # weight, lo, hi
     {256, 1, 9},
     {256, 11, 99},
+    # 100.64.0.0/10, shared address space / CGN (RFC 6598): 64 second octets.
     {192, 100, 100},
     {256, 101, 126},
     {256, 128, 168},
+    # 169.254.0.0/16, link-local (RFC 3927): 1 second octet.
     {255, 169, 169},
     {256, 170, 171},
+    # 172.16.0.0/12, private (RFC 1918): 16 second octets.
     {240, 172, 172},
     {256, 173, 191},
+    # 192.0.0.0/24 and 192.0.2.0/24 (RFC 6890 / RFC 5737) exclude second octet
+    # 0 entirely; 192.168.0.0/16 (RFC 1918) excludes 168. 192.88.99.0/24
+    # (6to4 relay, RFC 7526) is excluded at the third octet.
     {254, 192, 192},
     {256, 193, 197},
+    # 198.18.0.0/15, benchmarking (RFC 2544): 2 second octets.
+    # 198.51.100.0/24 (TEST-NET-2, RFC 5737) is excluded at the third octet.
     {254, 198, 198},
     {256, 199, 202},
+    # 203.0.113.0/24 (TEST-NET-3, RFC 5737) is excluded at the third octet.
     {256, 203, 203},
     {256, 204, 223}
   ]
 
-  # Pre-compute the cumulative weight table at compile time so public_ipv4/0
-  # costs only a single :rand.uniform/1 call for the first octet. Each entry is
-  # {cumulative_weight, per_octet_weight, lo, hi}.
+  # Cumulative weights, computed at compile time, so the first octet costs a
+  # single :rand.uniform/1 call. Each entry is {cumulative, weight, lo, hi}.
   {octet_entries, octet_total} =
     Enum.map_reduce(@public_first_octet_ranges, 0, fn {weight, lo, hi}, cumulative ->
       cumulative = cumulative + weight * (hi - lo + 1)
@@ -98,28 +63,10 @@ defmodule NeoFaker.Internet.Generator do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Returns `true` when the address `a.b.c.x` falls inside any IANA special-purpose
-  block that `public_ipv4/0` excludes; `false` when the address is publicly routable.
+  Returns `true` if `a.b.c.x` is in a block excluded from `public_ipv4/0`.
 
-  Only the first three octets are required because every reserved block that is
-  narrower than a /24 is fully identified by `{a, b, c}`, so the fourth octet never
-  changes the classification.
-
-  Reserved ranges checked (RFC references match the module-level comment):
-
-  - `0.x.x.x` covers the "This" network (RFC 791)
-  - `10.x.x.x` covers RFC 1918 private class A
-  - `100.64–127.x.x` covers carrier-grade NAT / CGN (RFC 6598)
-  - `127.x.x.x` covers loopback (RFC 1122)
-  - `169.254.x.x` covers link-local (RFC 3927)
-  - `172.16–31.x.x` covers RFC 1918 private class B
-  - `192.0.x.x` covers IETF protocol assignments and TEST-NET-1 (RFC 6890 / RFC 5737)
-  - `192.88.99.x` covers the deprecated 6to4 relay anycast (RFC 7526)
-  - `192.168.x.x` covers RFC 1918 private class C
-  - `198.18–19.x.x` covers benchmarking (RFC 2544)
-  - `198.51.100.x` covers TEST-NET-2 (RFC 5737)
-  - `203.0.113.x` covers TEST-NET-3 (RFC 5737)
-  - `224–255.x.x.x` covers multicast and reserved/broadcast (RFC 3171 / RFC 1112)
+  Three octets are enough because no excluded block is narrower than a /24.
+  The blocks are listed with `@public_first_octet_ranges`.
   """
   @spec reserved_ipv4?(non_neg_integer(), non_neg_integer(), non_neg_integer()) :: boolean()
   def reserved_ipv4?(0, _b, _c), do: true
@@ -138,30 +85,8 @@ defmodule NeoFaker.Internet.Generator do
   def reserved_ipv4?(_a, _b, _c), do: false
 
   @doc """
-  Generates a random publicly routable IPv4 address.
-
-  Returns a string in the form `"A.B.C.D"` where the address is guaranteed to
-  fall outside all IANA special-purpose ranges, including:
-
-  - `0.0.0.0/8` covers the "This" network (RFC 791)
-  - `10.0.0.0/8` covers RFC 1918 private class A
-  - `100.64.0.0/10` covers the shared address space / carrier-grade NAT (RFC 6598)
-  - `127.0.0.0/8` covers loopback (RFC 1122)
-  - `169.254.0.0/16` covers link-local (RFC 3927)
-  - `172.16.0.0/12` covers RFC 1918 private class B
-  - `192.0.0.0/24` covers IETF protocol assignments (RFC 6890)
-  - `192.0.2.0/24` covers TEST-NET-1 (RFC 5737)
-  - `192.88.99.0/24` covers the deprecated 6to4 relay anycast (RFC 7526)
-  - `192.168.0.0/16` covers RFC 1918 private class C
-  - `198.18.0.0/15` covers benchmarking (RFC 2544)
-  - `198.51.100.0/24` covers TEST-NET-2 (RFC 5737)
-  - `203.0.113.0/24` covers TEST-NET-3 (RFC 5737)
-  - `224.0.0.0/4` covers multicast (RFC 3171)
-  - `240.0.0.0/4` covers reserved/broadcast addresses (RFC 1112)
-
-  All other addresses in `1.0.0.0`–`223.255.255.255` are eligible, including
-  the public portions of `100.x`, `169.x`, `172.x`, `192.x`, `198.x`, and
-  `203.x` that fall outside the reserved sub-blocks above.
+  Returns a random publicly routable IPv4 address, uniformly distributed over
+  every address outside the blocks listed with `@public_first_octet_ranges`.
   """
   @spec public_ipv4() :: String.t()
   def public_ipv4 do
@@ -184,8 +109,6 @@ defmodule NeoFaker.Internet.Generator do
   def private_ipv4(:b), do: "172.#{Enum.random(16..31)}.#{random_octet()}.#{random_octet()}"
   def private_ipv4(:c), do: "192.168.#{random_octet()}.#{random_octet()}"
 
-  # Pick a first octet from the public /8 ranges, weighted so each individual
-  # public address (not each first octet) is equally likely.
   @spec pick_public_first_octet() :: 1..223
   defp pick_public_first_octet do
     find_octet_in_table(@first_octet_entries, :rand.uniform(@first_octet_total))
@@ -204,39 +127,18 @@ defmodule NeoFaker.Internet.Generator do
     end
   end
 
-  # Second-octet guards for the mixed public/reserved first octets. Pure-public
-  # first octets fall through to the catch-all clause.
+  # Second octets excluded for the mixed first octets in the table.
   @spec pick_public_second_octet(non_neg_integer()) :: non_neg_integer()
-
-  # 100.64.0.0/10 (second octets 64–127) is CGN / shared address space (RFC 6598).
   defp pick_public_second_octet(100), do: random_octet_except(64..127)
-
-  # 169.254.0.0/16 (second octet 254) is link-local (RFC 3927).
   defp pick_public_second_octet(169), do: random_octet_except([254])
-
-  # 172.16.0.0/12 (second octets 16–31) is RFC 1918 private class B.
   defp pick_public_second_octet(172), do: random_octet_except(16..31)
-
-  # 192: second=0 covers 192.0.0.0/24 (IETF assignments) and 192.0.2.0/24
-  # (TEST-NET-1); second=168 covers 192.168.0.0/16 (RFC 1918 class C). second=88
-  # stays valid here — only 192.88.99.0/24 is reserved, guarded in the third octet.
   defp pick_public_second_octet(192), do: random_octet_except([0, 168])
-
-  # 198: second=18/19 cover 198.18.0.0/15 (benchmarking, RFC 2544). second=51
-  # stays valid here — only 198.51.100.0/24 is reserved, guarded in the third octet.
   defp pick_public_second_octet(198), do: random_octet_except(18..19)
-
   defp pick_public_second_octet(_first), do: random_octet()
 
-  # Third-octet guards for the sub-/16 reservations that survive the second
-  # octet: 192.88.99.0/24 (deprecated 6to4 relay anycast, RFC 7526),
-  # 198.51.100.0/24 (TEST-NET-2, RFC 5737), and 203.0.113.0/24 (TEST-NET-3,
-  # RFC 5737). Any other pair returns a plain random octet.
-  #
-  # `@doc false` but a `def`, not `defp`: it stays an internal detail with no
-  # published docs, but is reachable from tests so these narrow branches can be
-  # checked directly rather than by waiting for `public_ipv4/0` to draw the
-  # exact second octet that leads here.
+  # The /24 blocks excluded at the third octet. A `def` rather than `defp` so
+  # tests can hit these narrow branches directly instead of waiting for
+  # `public_ipv4/0` to draw the matching second octet.
   @doc false
   @spec pick_public_third_octet(non_neg_integer(), non_neg_integer()) :: non_neg_integer()
   def pick_public_third_octet(192, 88), do: random_octet_except([99])

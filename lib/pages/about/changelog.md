@@ -25,6 +25,10 @@ through. The public API is unchanged except where noted under Breaking Changes.
   and `NeoFaker.Lorem.paragraphs/2`, `sentences/2`, and `words/2` used to raise
   `FunctionClauseError` for a non-positive count. `NeoFaker.Number.between/2`,
   `positive/1`, `negative/1`, and `decimal/3` now raise `ArgumentError` for non-numeric input.
+- **Options that only work together with another option now raise when given alone.**
+  `NeoFaker.Internet.ipv4(class: :a)` used to ignore `:class` and return a public address;
+  it now requires `private: true`. Likewise `:number_range` in `NeoFaker.Internet.username/1`
+  and `email/1` requires `number: true`. Both raise `NimbleOptions.ValidationError`.
 - **An empty `:domain_name`** in `NeoFaker.Internet` raises `NimbleOptions.ValidationError`
   instead of `ArgumentError`, like every other invalid option.
 - **`NeoFaker.seed/1` uses the `:exsss` algorithm**, the `:rand` default, so seeded sequences

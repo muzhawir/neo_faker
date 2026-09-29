@@ -7,6 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 NeoFaker is a fake data generator library for Elixir (published on Hex), used for tests and
 development environments. Requires Elixir `~> 1.18`.
 
+`docs/architecture.md` (Indonesian, not shipped to Hex or HexDocs) explains the architecture and internals in depth, with
+Mermaid diagrams. Update it in the same change whenever the layering, caching, locale resolution, or a documented algorithm changes.
+
 ## Commands
 
 ```bash

@@ -62,6 +62,33 @@ Functions accept a keyword list of options where the output can be shaped, for e
 `NeoFaker.Crypto.uuid(format: :compact)` or `NeoFaker.Person.full_name(sex: :female)`. Each
 function documents its options.
 
+## Generators
+
+| Module | Generates |
+| ------ | --------- |
+| [`NeoFaker.Address`](https://hexdocs.pm/neo_faker/NeoFaker.Address.html) | City and country names, building numbers, coordinates |
+| [`NeoFaker.App`](https://hexdocs.pm/neo_faker/NeoFaker.App.html) | App names, descriptions, authors, licenses, semantic versions, bundle IDs |
+| [`NeoFaker.Blood`](https://hexdocs.pm/neo_faker/NeoFaker.Blood.html) | ABO blood groups and Rh factors |
+| [`NeoFaker.Boolean`](https://hexdocs.pm/neo_faker/NeoFaker.Boolean.html) | Booleans with a configurable chance of `true` |
+| [`NeoFaker.Color`](https://hexdocs.pm/neo_faker/NeoFaker.Color.html) | CMYK, HEX, HSL(A), and RGB(A) colors, CSS color keywords |
+| [`NeoFaker.Crypto`](https://hexdocs.pm/neo_faker/NeoFaker.Crypto.html) | MD5 and SHA digests, UUIDs, random tokens |
+| [`NeoFaker.Date`](https://hexdocs.pm/neo_faker/NeoFaker.Date.html) | Dates in a range, past and future dates, birthdays |
+| [`NeoFaker.Gravatar`](https://hexdocs.pm/neo_faker/NeoFaker.Gravatar.html) | Gravatar avatar and profile URLs |
+| [`NeoFaker.HTTP`](https://hexdocs.pm/neo_faker/NeoFaker.HTTP.html) | Request methods, status codes, header names, user agents |
+| [`NeoFaker.Internet`](https://hexdocs.pm/neo_faker/NeoFaker.Internet.html) | Usernames, emails, domains, URLs, slugs, IPv4, IPv6, and MAC addresses |
+| [`NeoFaker.Lorem`](https://hexdocs.pm/neo_faker/NeoFaker.Lorem.html) | Placeholder paragraphs, sentences, and words |
+| [`NeoFaker.Number`](https://hexdocs.pm/neo_faker/NeoFaker.Number.html) | Integers, floats, and decimals in a range |
+| [`NeoFaker.Person`](https://hexdocs.pm/neo_faker/NeoFaker.Person.html) | Names, titles, ages, genders |
+| [`NeoFaker.Text`](https://hexdocs.pm/neo_faker/NeoFaker.Text.html) | Characters, words, emoji |
+| [`NeoFaker.Time`](https://hexdocs.pm/neo_faker/NeoFaker.Time.html) | Times of day, time zone names |
+
+Formats that exist in only one country live under `NeoFaker.Locales`:
+
+| Module | Generates |
+| ------ | --------- |
+| [`NeoFaker.Locales.EnUs.Person`](https://hexdocs.pm/neo_faker/NeoFaker.Locales.EnUs.Person.html) | US Social Security Numbers |
+| [`NeoFaker.Locales.IdId.Person`](https://hexdocs.pm/neo_faker/NeoFaker.Locales.IdId.Person.html) | Indonesian NIK and NPWP numbers, using official district codes |
+
 ## Configuration
 
 Every locale-aware generator uses the `:default` data set (US English) unless told otherwise.
@@ -94,14 +121,22 @@ single call, pass the `:locale` option. See the
 
 ## Contributing
 
-Issues and pull requests are welcome on [GitHub](https://github.com/muzhawir/neo_faker). Before
-opening a pull request, make sure these pass:
+Issues and pull requests are welcome on [GitHub](https://github.com/muzhawir/neo_faker). To add
+a locale, follow the [Adding a Locale](https://hexdocs.pm/neo_faker/adding-a-locale.html) guide.
+
+Before opening a pull request, run the same checks as CI:
 
 ```sh
 mix format --check-formatted
 mix credo --strict
-mix test
+mix docs.cheatsheet --check
+mix test --cover
+mix dialyzer
 ```
+
+Test coverage is kept at 100%. Both cheatsheets are generated from the `## Examples` section of
+each function's documentation: after changing a `@doc`, run `mix docs.cheatsheet` and commit the
+result instead of editing the cheatsheets by hand.
 
 ## License
 

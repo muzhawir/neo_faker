@@ -113,6 +113,9 @@ jobs:
       - name: Run Credo
         run: mix credo --strict
 
+      - name: Check cheatsheets are up to date
+        run: mix docs.cheatsheet --check
+
       - name: Build PLT
         run: mix dialyzer --plt
 

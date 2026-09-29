@@ -11,6 +11,7 @@ defmodule NeoFaker.MixProject do
       description: description(),
       package: package(),
       deps: deps(),
+      aliases: aliases(),
       name: "neo_faker",
       source_url: "https://github.com/muzhawir/neo_faker",
       homepage_url: "https://hex.pm/packages/neo_faker",
@@ -81,6 +82,15 @@ defmodule NeoFaker.MixProject do
     [
       "Random Generators": ~r/^NeoFaker(?!\.Locales\.)/,
       "Locale Random Generators": ~r/^NeoFaker\.Locales\..+/
+    ]
+  end
+
+  # `mix docs` regenerates the cheatsheets first, so a docs build never
+  # publishes stale ones. `mix docs.cheatsheet --check` only verifies them.
+  defp aliases do
+    [
+      "docs.cheatsheet": "run scripts/gen_cheatsheet.exs",
+      docs: ["docs.cheatsheet", "docs"]
     ]
   end
 

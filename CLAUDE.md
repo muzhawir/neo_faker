@@ -18,17 +18,18 @@ mix dialyzer # type checking (build-only CI job, not lint-only job)
 mix test # run full test suite
 mix test test/neo_faker/address_test.exs # run one test file
 mix test test/neo_faker/address_test.exs:42 # run a single test at a line
-mix docs # build ExDoc documentation (uses lib/pages/{guides,reference,contributing,about}/*)
-mix run scripts/gen_cheatsheet.exs # regenerate lib/pages/reference/cheat.cheatmd from @doc examples
+mix docs # regenerate both cheatsheets, then build ExDoc documentation (lib/pages/{guides,reference,contributing,about}/*)
+mix docs.cheatsheet # regenerate lib/pages/reference/{cheat,locale-cheat}.cheatmd from @doc examples
+mix docs.cheatsheet --check # fail if either cheatsheet is stale (runs in CI)
 ```
 
 `mise.toml` defines composite tasks (`mise run format|lint|analyze|fix`) that chain the above in order: format → credo → dialyzer → test.
 
 Two CI workflows mirror these checks, both running every step with `MIX_ENV=test` and `mix compile --warnings-as-errors`:
 
-- `lint.yml` (PRs into non-main branches): one job, single toolchain, running format check + credo + test.
+- `lint.yml` (PRs into non-main branches): one job, single toolchain, running format check + credo + cheatsheet check + test.
 - `build.yml` (push/PR to `main`): a `test` job matrixed over the oldest supported toolchain (Elixir 1.18 / OTP 27, the `~> 1.18` floor)
-  and the current one (kept in sync with `mise.toml`), plus a `static` job on the current toolchain running format check + credo + dialyzer.
+  and the current one (kept in sync with `mise.toml`), plus a `static` job on the current toolchain running format check + credo + cheatsheet check + dialyzer.
   Dialyzer's PLT is cached via the `:dialyzer` `plt_local_path` config in `mix.exs` (`priv/plts/`, gitignored).
 
 Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test` before being considered done; run `mix dialyzer`
@@ -189,8 +190,11 @@ file has a `doctest NeoFaker.X` call and `mix test` never executes them. A `@doc
 accurate-looking `## Examples` block as verified, and keep examples to values the function can really return (e.g. no `"josé"` in a username,
 which is always ASCII).
 
-`lib/pages/reference/cheat.cheatmd` is generated from those `## Examples` blocks by `mix run scripts/gen_cheatsheet.exs`. Edit the `@doc`, then
-rerun the script; never edit the cheatsheet by hand. (`scripts/` is not in the Hex package.)
+Both cheatsheets (`lib/pages/reference/cheat.cheatmd` and `locale-cheat.cheatmd`) are generated from those `## Examples` blocks by
+`scripts/gen_cheatsheet.exs`, run through the `mix docs.cheatsheet` alias (and automatically by `mix docs`). Edit the `@doc`, then rerun it; never
+edit a cheatsheet by hand, since CI runs `mix docs.cheatsheet --check`. Modules are discovered from the compiled app: every public module except
+`NeoFaker` and `NeoFaker.Locale` is included, `NeoFaker.Locales.*` modules go to the locale cheatsheet, and a new locale code needs a section
+title in the script's `@locale_names`. (`scripts/` is not in the Hex package.)
 
 `mix docs` must build without warnings. The changelog is exempt from reference checks
 (`skip_undefined_reference_warnings_on` in `mix.exs`), since it names functions as they were at each release;

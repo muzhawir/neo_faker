@@ -316,6 +316,16 @@ defmodule NeoFaker.GravatarTest do
       assert_raise ArgumentError, fn -> Generator.email_hash("a@example.com\nmore") end
     end
 
+    test "email_hash/1 raises ArgumentError for a value that is neither a string nor nil" do
+      assert_raise ArgumentError, ~r/expected an email address string or nil, got: :john/, fn ->
+        Generator.email_hash(Enum.random([:john]))
+      end
+
+      assert_raise ArgumentError, ~r/expected an email address string or nil/, fn ->
+        Gravatar.display(Enum.random([~c"john@example.com"]))
+      end
+    end
+
     test "email_hash/1 trims surrounding whitespace before validating" do
       assert Generator.email_hash("  a@example.com\n") == Generator.email_hash("a@example.com")
     end

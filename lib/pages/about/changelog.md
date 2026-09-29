@@ -78,8 +78,9 @@ through. The public API is unchanged except where noted under Breaking Changes.
 - Data cleanup: duplicate entries, two emoji with a leading space, typos in the Lorem ipsum
   text, TLDs filed under the wrong category, and prefix titles listed as Indonesian suffixes.
 - Documentation rewritten throughout in the style of the Elixir standard library, with corrected
-  examples. The cheatsheet is now generated from the function docs by
-  `scripts/gen_cheatsheet.exs`, so the two cannot drift apart. `mix docs` builds without
+  examples. Both cheatsheets are now generated from the function docs by
+  `mix docs.cheatsheet` (run automatically by `mix docs` and checked in CI), so they cannot drift
+  apart. `mix docs` builds without
   warnings.
 
 ## v0.15.0 (2026-09-06)

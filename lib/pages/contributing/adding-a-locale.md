@@ -190,7 +190,6 @@ end
 - Add a row for your locale to the "Supported locales" table in `lib/pages/guides/locales.md`.
 - If you added locale-exclusive generators, add a section for your locale (or an entry under an
   existing one) in `lib/pages/reference/locale-cheat.cheatmd`.
-- Update the locale list in the "Locale-aware" bullet of `README.md`.
 
 ## 8. Verify
 

@@ -14,8 +14,8 @@ NeoFaker generates realistic fake data for Elixir tests, database seeds, and loc
 
 - **Broad coverage**: people, addresses, internet identifiers, dates and times, colors, hashes,
   HTTP values, placeholder text, and more, one module per domain.
-- **Locale-aware**: data sets for US English and Indonesian, selectable per call, per process,
-  or for the whole application.
+- **Locale-aware**: localized data sets, selectable per call, per process, or for the whole
+  application.
 - **Safe in concurrent tests**: locale overrides are scoped to the calling process, so
   `async: true` tests never interfere with each other.
 - **Reproducible**: `NeoFaker.seed/1` makes a process generate the same values on every run.

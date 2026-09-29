@@ -79,6 +79,7 @@ berbahaya untuk library data palsu, karena test tetap hijau sementara datanya sa
 | Opsi `locale:` | `locale: :id` (typo) diam-diam menghasilkan data Inggris | Locale tidak divalidasi; fallback per file menutupi typo |
 | `NeoFaker.Data` | Atom locale buatan bisa menunjuk file di luar `priv/data` lalu di-`eval` | Segmen locale di path tidak divalidasi |
 | `Color.random/1` | Selalu raise untuk format selain `:w3c` | Opsi diteruskan ke fungsi yang skemanya berbeda |
+| `Color` dengan `format: :w3c` | Tipe hasil berganti tuple atau string tergantung opsi; CMYK ditulis `cmyk()`, notasi yang tidak ada di CSS | Satu fungsi melayani dua bentuk hasil |
 | `Color.keyword(category: :all)` | 15 warna dasar muncul 2x lebih sering | `Map.values \|> List.flatten` menghitung duplikat lintas kategori |
 | `Gravatar.display/2` | Email `"sampah a@b.com"` diterima; URL fallback merusak query | Regex tidak di-anchor; parameter tidak di-encode |
 | `Time.between/2` | Bisa melewati batas `finish` sub-detik | Offset dihitung dalam detik, ditambahkan ke waktu bermikrodetik |
@@ -730,6 +731,33 @@ string
 
 Normalisasi NFD memisahkan huruf dasar dari tanda diakritiknya, jadi `"José"` menjadi `"jose"`, bukan `"jos"`.
 
+### 10.12 Color: satu tipe hasil per fungsi
+
+Sejak v0.16.0 setiap fungsi `Color` hanya punya satu bentuk hasil:
+
+| Fungsi | Hasil | Contoh |
+| --- | --- | --- |
+| `cmyk/0`, `hsl/0`, `hsla/0`, `rgb/0`, `rgba/0` | Tuple komponen | `{255, 128, 64}` |
+| `css/1` | String notasi CSS | `"rgb(255, 128, 64)"` |
+| `hex/1` | String kode hex | `"#613583"` |
+| `keyword/1` | String nama warna | `"blueviolet"` |
+
+Sebelumnya `rgb(format: :w3c)` mengembalikan string sementara `rgb()` mengembalikan tuple. Itu anti-pattern
+*alternative return types*: pemanggil tidak bisa tahu bentuk hasil dari call site. Argumen `css/1` hanya memilih
+notasi, dan hasilnya selalu string.
+
+Notasi yang dipakai `css/1`:
+
+- `rgb()`, `rgba()`, `hsl()`, `hsla()` memakai sintaks legacy dengan koma dari CSS Color 4, yang didukung semua browser.
+- CMYK memakai `device-cmyk(0% 25% 50% 100%)` dari CSS Color 5. Output lama, `cmyk(0%, 25%, 50%, 100%)`, tidak valid
+  dua kali: fungsi `cmyk()` tidak ada, dan sintaks legacy `device-cmyk()` dengan koma hanya menerima angka 0 sampai 1,
+  bukan persen.
+- `css()` tanpa argumen memilih acak di antara `:hex`, `:rgb`, `:rgba`, `:hsl`, dan `:hsla`. `:cmyk` sengaja tidak
+  ikut, karena `device-cmyk()` ditujukan untuk cetak, bukan untuk warna yang dirender browser.
+
+Tuple RGB dan HSL sama-sama tiga integer, jadi dari tuple saja model warnanya tidak bisa diketahui. Karena itu
+tidak ada fungsi "tuple ke CSS" di API publik; `css/1` membuat warna dan menulisnya sekaligus.
+
 ---
 
 ## 11. Pipeline dokumentasi
@@ -832,6 +860,8 @@ dengan status non-nol kalau coverage di bawah itu. Di `build.yml`, hanya entri t
 | `ArgumentError` untuk argumen posisional | `FunctionClauseError` dari guard | Pesan menyebut nama argumen dan nilainya |
 | Cheatsheet di-generate | Ditulis tangan | Tidak bisa basi; dicek CI |
 | `NeoFaker.start/0` tanpa output | `IO.puts` locale aktif | Library tidak boleh menulis ke stdout |
+| Satu tipe hasil per fungsi `Color`; `css/1` untuk string | Opsi `format: :w3c` yang mengganti tuple jadi string | Bentuk hasil terlihat dari nama fungsi, bukan dari opsi |
+| Opsi huruf `case: :lower \| :upper` | `uppercase: true \| false` | Konsisten dengan `Crypto`; atom menyisakan ruang untuk nilai baru |
 
 ---
 

@@ -244,14 +244,27 @@ false
 
 {: .col-2}
 
-### [`cmyk(opts \\ [])`](`NeoFaker.Color.cmyk/1`)
+### [`cmyk()`](`NeoFaker.Color.cmyk/0`)
 
 ```elixir
 iex> NeoFaker.Color.cmyk()
 {0, 25, 50, 100}
+```
 
-iex> NeoFaker.Color.cmyk(format: :w3c)
-"cmyk(0%, 25%, 50%, 100%)"
+### [`css(notation \\ :random)`](`NeoFaker.Color.css/1`)
+
+```elixir
+iex> NeoFaker.Color.css()
+"hsl(180, 50%, 75%)"
+
+iex> NeoFaker.Color.css(:rgb)
+"rgb(255, 128, 64)"
+
+iex> NeoFaker.Color.css(:hsla)
+"hsla(180, 50%, 75%, 0.8)"
+
+iex> NeoFaker.Color.css(:cmyk)
+"device-cmyk(0% 25% 50% 100%)"
 ```
 
 ### [`hex(opts \\ [])`](`NeoFaker.Color.hex/1`)
@@ -267,24 +280,18 @@ iex> NeoFaker.Color.hex(format: :eight_digit)
 "#613583FF"
 ```
 
-### [`hsl(opts \\ [])`](`NeoFaker.Color.hsl/1`)
+### [`hsl()`](`NeoFaker.Color.hsl/0`)
 
 ```elixir
 iex> NeoFaker.Color.hsl()
 {180, 50, 75}
-
-iex> NeoFaker.Color.hsl(format: :w3c)
-"hsl(180, 50%, 75%)"
 ```
 
-### [`hsla(opts \\ [])`](`NeoFaker.Color.hsla/1`)
+### [`hsla()`](`NeoFaker.Color.hsla/0`)
 
 ```elixir
 iex> NeoFaker.Color.hsla()
 {180, 50, 75, 0.8}
-
-iex> NeoFaker.Color.hsla(format: :w3c)
-"hsla(180, 50%, 75%, 0.8)"
 ```
 
 ### [`keyword(opts \\ [])`](`NeoFaker.Color.keyword/1`)
@@ -300,34 +307,18 @@ iex> NeoFaker.Color.keyword(locale: :id_id)
 "ungu"
 ```
 
-### [`rgb(opts \\ [])`](`NeoFaker.Color.rgb/1`)
+### [`rgb()`](`NeoFaker.Color.rgb/0`)
 
 ```elixir
 iex> NeoFaker.Color.rgb()
 {255, 128, 64}
-
-iex> NeoFaker.Color.rgb(format: :w3c)
-"rgb(255, 128, 64)"
 ```
 
-### [`rgba(opts \\ [])`](`NeoFaker.Color.rgba/1`)
+### [`rgba()`](`NeoFaker.Color.rgba/0`)
 
 ```elixir
 iex> NeoFaker.Color.rgba()
 {255, 128, 64, 0.8}
-
-iex> NeoFaker.Color.rgba(format: :w3c)
-"rgba(255, 128, 64, 0.8)"
-```
-
-### [`random(opts \\ [])`](`NeoFaker.Color.random/1`)
-
-```elixir
-iex> NeoFaker.Color.random()
-{255, 128, 64}
-
-iex> NeoFaker.Color.random(format: :w3c)
-"hsl(180, 50%, 75%)"
 ```
 
 ## [Crypto](`NeoFaker.Crypto`)
@@ -692,10 +683,10 @@ iex> NeoFaker.Internet.ipv4(private: true, class: :a)
 iex> NeoFaker.Internet.ipv6()
 "E0E6:7E24:EC6E:E44C:FC69:9C25:CD85:CE08"
 
-iex> NeoFaker.Internet.ipv6(uppercase: false)
+iex> NeoFaker.Internet.ipv6(case: :lower)
 "e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
 
-iex> NeoFaker.Internet.ipv6(compressed: true, uppercase: false)
+iex> NeoFaker.Internet.ipv6(compressed: true, case: :lower)
 "2001:db8::8a2e:370:7334"
 ```
 
@@ -708,7 +699,7 @@ iex> NeoFaker.Internet.mac_address()
 iex> NeoFaker.Internet.mac_address(separator: "-")
 "74-4E-44-B0-D0-93"
 
-iex> NeoFaker.Internet.mac_address(separator: "", uppercase: false)
+iex> NeoFaker.Internet.mac_address(separator: "", case: :lower)
 "744e44b0d093"
 ```
 

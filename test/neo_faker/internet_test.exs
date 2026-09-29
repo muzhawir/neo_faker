@@ -473,8 +473,8 @@ defmodule NeoFaker.InternetTest do
       assert String.match?(ip, ~r/^([0-9A-F]{1,4}:){7}[0-9A-F]{1,4}$/)
     end
 
-    test "returns an IPv6 address in lowercase when uppercase: false" do
-      ip = Internet.ipv6(uppercase: false)
+    test "returns an IPv6 address in lowercase when case: :lower" do
+      ip = Internet.ipv6(case: :lower)
 
       assert String.match?(ip, ~r/^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/)
     end
@@ -486,6 +486,18 @@ defmodule NeoFaker.InternetTest do
     end
   end
 
+  describe "case option" do
+    test "ipv6/1 and mac_address/1 reject the removed :uppercase option" do
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.ipv6(uppercase: false) end
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.mac_address(uppercase: false) end
+    end
+
+    test "ipv6/1 and mac_address/1 reject an unknown case" do
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.ipv6(case: :title) end
+      assert_raise NimbleOptions.ValidationError, fn -> Internet.mac_address(case: :title) end
+    end
+  end
+
   describe "mac_address/1" do
     test "returns a MAC address in uppercase by default" do
       mac = Internet.mac_address()
@@ -493,8 +505,8 @@ defmodule NeoFaker.InternetTest do
       assert String.match?(mac, ~r/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/)
     end
 
-    test "returns a MAC address in lowercase when uppercase: false" do
-      mac = Internet.mac_address(uppercase: false)
+    test "returns a MAC address in lowercase when case: :lower" do
+      mac = Internet.mac_address(case: :lower)
 
       assert String.match?(mac, ~r/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/)
     end
@@ -785,7 +797,7 @@ defmodule NeoFaker.InternetTest do
     end
 
     test "compressed lowercase notation is honoured" do
-      ip = Internet.ipv6(compressed: true, uppercase: false)
+      ip = Internet.ipv6(compressed: true, case: :lower)
 
       assert String.match?(ip, ~r/^[0-9a-f:]+$/)
     end

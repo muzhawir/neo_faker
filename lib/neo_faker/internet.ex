@@ -72,12 +72,12 @@ defmodule NeoFaker.Internet do
                )
 
   @ipv6_schema NimbleOptions.new!(
-                 uppercase: [type: :boolean, default: true],
+                 case: [type: {:in, [:lower, :upper]}, default: :upper],
                  compressed: [type: :boolean, default: false]
                )
 
   @mac_address_schema NimbleOptions.new!(
-                        uppercase: [type: :boolean, default: true],
+                        case: [type: {:in, [:lower, :upper]}, default: :upper],
                         separator: [type: {:in, [":", "-", ""]}, default: ":"]
                       )
 
@@ -336,7 +336,7 @@ defmodule NeoFaker.Internet do
 
   ## Options
 
-    * `:uppercase` (boolean) - whether hex digits are uppercase. Defaults to `true`.
+    * `:case` (`:lower` or `:upper`) - the case of the hex digits. Defaults to `:upper`.
     * `:compressed` (boolean) - when `true`, uses the compressed form from RFC 5952:
       leading zeros are dropped and the longest run of zero groups becomes `"::"`.
       Defaults to `false`.
@@ -346,10 +346,10 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.ipv6()
       "E0E6:7E24:EC6E:E44C:FC69:9C25:CD85:CE08"
 
-      iex> NeoFaker.Internet.ipv6(uppercase: false)
+      iex> NeoFaker.Internet.ipv6(case: :lower)
       "e0e6:7e24:ec6e:e44c:fc69:9c25:cd85:ce08"
 
-      iex> NeoFaker.Internet.ipv6(compressed: true, uppercase: false)
+      iex> NeoFaker.Internet.ipv6(compressed: true, case: :lower)
       "2001:db8::8a2e:370:7334"
 
   """
@@ -362,7 +362,7 @@ defmodule NeoFaker.Internet do
         do: Generator.compressed_ipv6(),
         else: Generator.ipv6()
 
-    Formatter.apply_case(address, letter_case(opts))
+    Formatter.apply_case(address, Keyword.fetch!(opts, :case))
   end
 
   @doc """
@@ -370,7 +370,7 @@ defmodule NeoFaker.Internet do
 
   ## Options
 
-    * `:uppercase` (boolean) - whether hex digits are uppercase. Defaults to `true`.
+    * `:case` (`:lower` or `:upper`) - the case of the hex digits. Defaults to `:upper`.
     * `:separator` (`":"`, `"-"`, or `""`) - the separator between octets. Defaults to
       `":"`.
 
@@ -382,7 +382,7 @@ defmodule NeoFaker.Internet do
       iex> NeoFaker.Internet.mac_address(separator: "-")
       "74-4E-44-B0-D0-93"
 
-      iex> NeoFaker.Internet.mac_address(separator: "", uppercase: false)
+      iex> NeoFaker.Internet.mac_address(separator: "", case: :lower)
       "744e44b0d093"
 
   """
@@ -393,7 +393,7 @@ defmodule NeoFaker.Internet do
     opts
     |> Keyword.fetch!(:separator)
     |> Generator.mac_address()
-    |> Formatter.apply_case(letter_case(opts))
+    |> Formatter.apply_case(Keyword.fetch!(opts, :case))
   end
 
   @doc """
@@ -480,6 +480,4 @@ defmodule NeoFaker.Internet do
   defp random_words(count, separator) do
     Enum.map_join(1..count, separator, fn _ -> Formatter.slugify(Text.word()) end)
   end
-
-  defp letter_case(opts), do: if(Keyword.fetch!(opts, :uppercase), do: :upper, else: :lower)
 end

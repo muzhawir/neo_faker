@@ -11,10 +11,6 @@ defmodule NeoFaker.Helpers.FormatterTest do
     test "lowercases for :lower" do
       assert Formatter.apply_case("Hello", :lower) == "hello"
     end
-
-    test "returns the string unchanged for :none" do
-      assert Formatter.apply_case("Hello", :none) == "Hello"
-    end
   end
 
   describe "slugify/1" do

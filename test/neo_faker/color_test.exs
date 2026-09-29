@@ -5,12 +5,14 @@ defmodule NeoFaker.ColorTest do
   alias NeoFaker.Data
 
   @module Color
-  @cmyk_regexp ~r/^cmyk\(\d{1,3}%, \d{1,3}%, \d{1,3}%, \d{1,3}%\)$/
+  @cmyk_regexp ~r/^device-cmyk\(\d{1,3}% \d{1,3}% \d{1,3}% \d{1,3}%\)$/
   @hex_regexp ~r/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/
   @hsl_regexp ~r/^hsl\(\d{1,3}, \d{1,3}%, \d{1,3}%\)$/
   @hsla_regexp ~r/^hsla\(\d{1,3}, \d{1,3}%, \d{1,3}%, [01](\.\d)?\)$/
   @rgb_regexp ~r/^rgb\(\d{1,3}, \d{1,3}, \d{1,3}\)$/
   @rgba_regexp ~r/^rgba\(\d{1,3}, \d{1,3}, \d{1,3}, [01](\.\d)?\)$/
+
+  defp opaque(term), do: Enum.random([term])
 
   defp keyword_cache(locale) do
     locale |> Data.fetch!(@module, "keyword.exs") |> Map.values() |> List.flatten()
@@ -22,13 +24,81 @@ defmodule NeoFaker.ColorTest do
     assert Enum.all?(Tuple.to_list(value), type_fun)
   end
 
-  describe "cmyk/1" do
-    test "returns a 4-integer tuple in 0..100 by default" do
+  describe "cmyk/0" do
+    test "returns a 4-integer tuple in 0..100" do
       assert_tuple_of(Color.cmyk(), 4, &(&1 in 0..100))
     end
+  end
 
-    test "returns a W3C string when format: :w3c" do
-      assert Regex.match?(@cmyk_regexp, Color.cmyk(format: :w3c))
+  describe "hsl/0" do
+    test "returns a {hue, saturation, lightness} tuple in range" do
+      {h, s, l} = Color.hsl()
+
+      assert h in 0..359
+      assert s in 0..100 and l in 0..100
+    end
+  end
+
+  describe "hsla/0" do
+    test "returns a 4-element tuple with a float alpha" do
+      {h, s, l, a} = Color.hsla()
+
+      assert h in 0..359
+      assert s in 0..100 and l in 0..100
+      assert is_float(a) and a >= 0.0 and a <= 1.0
+    end
+  end
+
+  describe "rgb/0" do
+    test "returns a 3-integer tuple in 0..255" do
+      assert_tuple_of(Color.rgb(), 3, &(&1 in 0..255))
+    end
+  end
+
+  describe "rgba/0" do
+    test "returns a 4-element tuple with a float alpha" do
+      {r, g, b, a} = Color.rgba()
+
+      assert Enum.all?([r, g, b], &(&1 in 0..255))
+      assert is_float(a) and a >= 0.0 and a <= 1.0
+    end
+  end
+
+  describe "css/1" do
+    test "returns each notation in its CSS syntax" do
+      for _ <- 1..20 do
+        assert Regex.match?(@hex_regexp, Color.css(:hex))
+        assert Regex.match?(@rgb_regexp, Color.css(:rgb))
+        assert Regex.match?(@rgba_regexp, Color.css(:rgba))
+        assert Regex.match?(@hsl_regexp, Color.css(:hsl))
+        assert Regex.match?(@hsla_regexp, Color.css(:hsla))
+        assert Regex.match?(@cmyk_regexp, Color.css(:cmyk))
+      end
+    end
+
+    test "uses a six-digit hex code for :hex" do
+      assert String.length(Color.css(:hex)) == 7
+    end
+
+    test "returns a string in a web notation by default, never device-cmyk" do
+      web = [@hex_regexp, @rgb_regexp, @rgba_regexp, @hsl_regexp, @hsla_regexp]
+
+      for _ <- 1..100 do
+        result = Color.css()
+
+        assert Enum.any?(web, &Regex.match?(&1, result))
+        refute String.starts_with?(result, "device-cmyk")
+      end
+    end
+
+    test "treats :random like the default" do
+      assert is_binary(Color.css(:random))
+    end
+
+    test "raises ArgumentError for an unknown notation" do
+      assert_raise ArgumentError, ~r/invalid CSS notation :lab/, fn ->
+        Color.css(opaque(:lab))
+      end
     end
   end
 
@@ -53,29 +123,6 @@ defmodule NeoFaker.ColorTest do
     end
   end
 
-  describe "hsl/1" do
-    test "returns a 3-integer tuple by default" do
-      assert_tuple_of(Color.hsl(), 3, &is_integer/1)
-    end
-
-    test "returns a W3C string when format: :w3c" do
-      assert Regex.match?(@hsl_regexp, Color.hsl(format: :w3c))
-    end
-  end
-
-  describe "hsla/1" do
-    test "returns a 4-element tuple of numbers with a float alpha by default" do
-      {h, s, l, a} = Color.hsla()
-
-      assert Enum.all?([h, s, l], &is_integer/1)
-      assert is_float(a) and a >= 0.0 and a <= 1.0
-    end
-
-    test "returns a W3C string when format: :w3c" do
-      assert Regex.match?(@hsla_regexp, Color.hsla(format: :w3c))
-    end
-  end
-
   describe "keyword/1" do
     test "returns a keyword colour from the default locale" do
       assert Color.keyword() in keyword_cache(:default)
@@ -93,63 +140,6 @@ defmodule NeoFaker.ColorTest do
 
     test "raises NimbleOptions.ValidationError for an unknown category" do
       assert_raise NimbleOptions.ValidationError, fn -> Color.keyword(category: :muted) end
-    end
-  end
-
-  describe "rgb/1" do
-    test "returns a 3-integer tuple in 0..255 by default" do
-      assert_tuple_of(Color.rgb(), 3, &(&1 in 0..255))
-    end
-
-    test "returns a W3C string when format: :w3c" do
-      assert Regex.match?(@rgb_regexp, Color.rgb(format: :w3c))
-    end
-  end
-
-  describe "rgba/1" do
-    test "returns a 4-element tuple with a float alpha by default" do
-      {r, g, b, a} = Color.rgba()
-
-      assert Enum.all?([r, g, b], &(&1 in 0..255))
-      assert is_float(a) and a >= 0.0 and a <= 1.0
-    end
-
-    test "returns a W3C string when format: :w3c" do
-      assert Regex.match?(@rgba_regexp, Color.rgba(format: :w3c))
-    end
-  end
-
-  describe "random/1" do
-    test "returns a tuple or a hex string when no options are given" do
-      for _ <- 1..50 do
-        result = Color.random()
-
-        assert is_tuple(result) or Regex.match?(@hex_regexp, result)
-      end
-    end
-
-    test "restricts the pool to W3C-capable formats when format: :w3c" do
-      w3c_regexps = [@cmyk_regexp, @hsl_regexp, @hsla_regexp, @rgb_regexp, @rgba_regexp]
-
-      for _ <- 1..50 do
-        result = Color.random(format: :w3c)
-
-        assert is_binary(result)
-        assert Enum.any?(w3c_regexps, &Regex.match?(&1, result))
-      end
-    end
-
-    test "accepts an explicit format: nil like the default" do
-      for _ <- 1..50 do
-        result = Color.random(format: nil)
-
-        assert is_tuple(result) or Regex.match?(@hex_regexp, result)
-      end
-    end
-
-    test "raises NimbleOptions.ValidationError for any other format or unknown option" do
-      assert_raise NimbleOptions.ValidationError, fn -> Color.random(format: :six_digit) end
-      assert_raise NimbleOptions.ValidationError, fn -> Color.random(foo: :bar) end
     end
   end
 end

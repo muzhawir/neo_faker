@@ -4,7 +4,7 @@ defmodule NeoFaker.Helpers.Formatter do
   # String-shaping helpers shared by several domain modules.
 
   @doc """
-  Upcases or downcases `string`; `:none` returns it unchanged.
+  Upcases or downcases `string`.
 
   ## Examples
 
@@ -12,10 +12,9 @@ defmodule NeoFaker.Helpers.Formatter do
       "HELLO"
 
   """
-  @spec apply_case(String.t(), :upper | :lower | :none) :: String.t()
+  @spec apply_case(String.t(), :upper | :lower) :: String.t()
   def apply_case(string, :upper), do: String.upcase(string)
   def apply_case(string, :lower), do: String.downcase(string)
-  def apply_case(string, :none), do: string
 
   @doc """
   Reduces `string` to a lowercase ASCII token of letters and digits.

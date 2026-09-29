@@ -29,6 +29,14 @@ through. The public API is unchanged except where noted under Breaking Changes.
   `NeoFaker.Internet.ipv4(class: :a)` used to ignore `:class` and return a public address;
   it now requires `private: true`. Likewise `:number_range` in `NeoFaker.Internet.username/1`
   and `email/1` requires `number: true`. Both raise `NimbleOptions.ValidationError`.
+- **`NeoFaker.Color` functions return one type each.** `cmyk/0`, `hsl/0`, `hsla/0`, `rgb/0`,
+  and `rgba/0` always return a tuple and no longer take options; the `format: :w3c` option,
+  which switched them to a string, is gone. The new `NeoFaker.Color.css/1` returns CSS notation
+  for any model (`css(:rgb)`, `css(:hsla)`, and so on). `NeoFaker.Color.random/1`, which
+  returned either a tuple or a hex string, is replaced by `css/0`, which always returns a string
+  in a random web notation.
+- **`NeoFaker.Internet.ipv6/1` and `mac_address/1` take `case: :lower | :upper`** instead of
+  `uppercase: true | false`, matching `NeoFaker.Crypto`. The default is still uppercase.
 - **An empty `:domain_name`** in `NeoFaker.Internet` raises `NimbleOptions.ValidationError`
   instead of `ArgumentError`, like every other invalid option.
 - **`NeoFaker.seed/1` uses the `:exsss` algorithm**, the `:rand` default, so seeded sequences
@@ -42,8 +50,8 @@ through. The public API is unchanged except where noted under Breaking Changes.
 
 - `NeoFaker.Internet.ipv4/1` never generated addresses in `170.0.0.0/8` or `171.0.0.0/8`, two
   fully public blocks missing from its first-octet table.
-- `NeoFaker.Color.random/1` raised for any `:format` other than `:w3c`, including an explicit
-  `format: nil`, and built a color in all six models to return one.
+- The CSS form of a CMYK color was `"cmyk(0%, 25%, 50%, 100%)"`, which is not valid CSS. It is
+  now `"device-cmyk(0% 25% 50% 100%)"`, the CSS Color 5 syntax (see `NeoFaker.Color.css/1`).
 - `NeoFaker.Color.keyword/1` with `category: :all` returned the 15 basic colors twice as often as
   the others, because they are also listed as extended colors. Pooled draws across several
   categories (emoji, TLDs, popular domains, user agents, status codes) now count each value once.

@@ -28,14 +28,18 @@ defmodule NeoFaker.Color.Generator do
   def hex(digits), do: for(_ <- 1..digits, into: "", do: <<Enum.random(@hex_digits)>>)
 
   @doc """
-  Formats a color tuple as a CSS functional notation string.
+  Formats a color tuple in CSS notation.
+
+  RGB and HSL use the comma-separated legacy syntax of CSS Color 4, which every
+  browser supports. CMYK uses `device-cmyk()` from CSS Color 5; its percentage
+  form requires the space-separated modern syntax.
   """
-  @spec to_w3c(model(), tuple()) :: String.t()
-  def to_w3c(:cmyk, {c, m, y, k}), do: "cmyk(#{c}%, #{m}%, #{y}%, #{k}%)"
-  def to_w3c(:hsl, {h, s, l}), do: "hsl(#{h}, #{s}%, #{l}%)"
-  def to_w3c(:hsla, {h, s, l, a}), do: "hsla(#{h}, #{s}%, #{l}%, #{a})"
-  def to_w3c(:rgb, {r, g, b}), do: "rgb(#{r}, #{g}, #{b})"
-  def to_w3c(:rgba, {r, g, b, a}), do: "rgba(#{r}, #{g}, #{b}, #{a})"
+  @spec to_css(model(), tuple()) :: String.t()
+  def to_css(:cmyk, {c, m, y, k}), do: "device-cmyk(#{c}% #{m}% #{y}% #{k}%)"
+  def to_css(:hsl, {h, s, l}), do: "hsl(#{h}, #{s}%, #{l}%)"
+  def to_css(:hsla, {h, s, l, a}), do: "hsla(#{h}, #{s}%, #{l}%, #{a})"
+  def to_css(:rgb, {r, g, b}), do: "rgb(#{r}, #{g}, #{b})"
+  def to_css(:rgba, {r, g, b, a}), do: "rgba(#{r}, #{g}, #{b}, #{a})"
 
   @doc """
   Returns a random CSS color keyword from `category`. `:all` pools every

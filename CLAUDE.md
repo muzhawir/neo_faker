@@ -63,7 +63,7 @@ submodules in `lib/neo_faker/<domain>/`:
 - `Validator` holds domain-specific checks: positional-argument checks that raise `ArgumentError` (e.g. `Date.Validator.validate_date_order!/2`)
   and `{:ok, value} | {:error, message}` functions used as NimbleOptions `{:custom, ...}` types (e.g. `App.Validator.validate_domain/1`).
   Checks shared by several domains (non-empty ranges, non-negative bounds) live in `NeoFaker.Helpers.Validator` instead; a domain that needs
-  nothing beyond those has no `Validator` module at all (e.g. `Address`, `Person`, `Blood`, `Color`, `Text`).
+  nothing beyond those has no `Validator` module at all (e.g. `Address`, `Person`, `Blood`, `Text`).
 
 Some domains use more specific submodule names instead of a generic `Generator` (`Person.NameGenerator`, `Person.FullNameGenerator`,
 `Text.EmojiGenerator`, `Lorem.Generator`). All of these submodules are `@moduledoc false`, never part of the public API, so renaming or
@@ -115,6 +115,9 @@ public function's docs:
   takes several named atoms that each need explaining, nest a nested `*` list under that
   option's bullet instead of a free-floating "The values for `:x` can be:" paragraph.
 - Keep `## Examples` with `iex>` blocks. Results must be values the function can actually return.
+- An option must never change the *type* of the return value (e.g. a tuple vs. a string); give each
+  return shape its own function instead, as `NeoFaker.Color` does with `rgb/0` (tuple) and `css/1` (string).
+  Case options are `case: :lower | :upper`, never a boolean.
 - Error messages start in lowercase and name the offending value: `"count must be a positive integer, got: 0"`.
 
 See `lib/neo_faker/blood.ex` or `lib/neo_faker/color.ex` for compact examples, and

@@ -132,7 +132,7 @@ defmodule NeoFaker.Locales.IdId.Person do
   ## Examples
 
       iex> NeoFaker.Locales.IdId.Person.nik()
-      "7645504903500640"
+      "3273014903950042"
 
   """
   @spec nik() :: String.t()

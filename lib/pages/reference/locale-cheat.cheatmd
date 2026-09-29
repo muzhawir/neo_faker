@@ -26,12 +26,12 @@ iex> NeoFaker.Locales.EnUs.Person.ssn()
 
 ```elixir
 iex> NeoFaker.Locales.IdId.Person.nik()
-"7645504903500640"
+"3273014903950042"
 ```
 
 ### [`NeoFaker.Locales.IdId.Person.npwp()`](`NeoFaker.Locales.IdId.Person.npwp/0`)
 
 ```elixir
 iex> NeoFaker.Locales.IdId.Person.npwp()
-"7645504903500640"
+"3273014903950042"
 ```

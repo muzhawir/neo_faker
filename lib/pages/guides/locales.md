@@ -68,7 +68,7 @@ iex> NeoFaker.Locales.EnUs.Person.ssn()
 "184-63-2006"
 
 iex> NeoFaker.Locales.IdId.Person.nik()
-"7645504903500640"
+"3273014903950042"
 ```
 
 They ignore the active locale. See the [Locale Cheatsheet](locale-cheat.html) for the full

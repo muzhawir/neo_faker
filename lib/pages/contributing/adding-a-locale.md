@@ -188,8 +188,9 @@ end
 ## 7. Update the docs
 
 - Add a row for your locale to the "Supported locales" table in `lib/pages/guides/locales.md`.
-- If you added locale-exclusive generators, add a section for your locale (or an entry under an
-  existing one) in `lib/pages/reference/locale-cheat.cheatmd`.
+- If you added locale-exclusive generators, add a section title for your locale code to
+  `@locale_names` in `scripts/gen_cheatsheet.exs`, then run `mix docs.cheatsheet`. The
+  cheatsheets are generated from each function's `## Examples`, so don't edit them by hand.
 
 ## 8. Verify
 

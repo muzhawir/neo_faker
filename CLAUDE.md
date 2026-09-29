@@ -30,13 +30,14 @@ mix docs.cheatsheet --check # fail if either cheatsheet is stale (runs in CI)
 
 Two CI workflows mirror these checks, both running every step with `MIX_ENV=test` and `mix compile --warnings-as-errors`:
 
-- `lint.yml` (PRs into non-main branches): one job, single toolchain, running format check + credo + cheatsheet check + test.
+- `lint.yml` (PRs into non-main branches): one job, single toolchain, running format check + credo + cheatsheet check + `test --cover`.
 - `build.yml` (push/PR to `main`): a `test` job matrixed over the oldest supported toolchain (Elixir 1.18 / OTP 27, the `~> 1.18` floor)
-  and the current one (kept in sync with `mise.toml`), plus a `static` job on the current toolchain running format check + credo + cheatsheet check + dialyzer.
+  and the current one (kept in sync with `mise.toml`; only this entry runs `test --cover`), plus a `static` job on the current toolchain running format check + credo + cheatsheet check + dialyzer.
   Dialyzer's PLT is cached via the `:dialyzer` `plt_local_path` config in `mix.exs` (`priv/plts/`, gitignored).
 
-Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test` before being considered done; run `mix dialyzer`
-too when types/specs changed.
+Any change should pass `mix format --check-formatted`, `mix credo --strict`, and `mix test --cover` before being considered done; run
+`mix dialyzer` too when types/specs changed. Coverage must stay at 100%: `test_coverage: [summary: [threshold: 100]]` in `mix.exs` makes
+`mix test --cover` exit non-zero below that, and CI runs it. Every new branch, including error clauses, needs a test.
 
 ## Elixir documentation lookup
 

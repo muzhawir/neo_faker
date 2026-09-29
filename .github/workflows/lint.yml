@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Elixir
         id: beam
@@ -36,7 +36,7 @@ jobs:
           otp-version: "29.0.6"
 
       - name: Restore deps and _build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             deps
@@ -60,5 +60,5 @@ jobs:
       - name: Check cheatsheets are up to date
         run: mix docs.cheatsheet --check
 
-      - name: Run tests
-        run: mix test
+      - name: Run tests with coverage (threshold 100%)
+        run: mix test --cover

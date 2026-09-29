@@ -800,15 +800,19 @@ jangan menulis referensi ber-backtick ke modul `@moduledoc false` atau fungsi ya
 ```mermaid
 flowchart TB
     PR["Pull request ke branch non-main"] --> LINT["lint.yml<br/>Elixir 1.20.4 / OTP 29"]
-    LINT --> L1["compile --warnings-as-errors"] --> L2["format --check-formatted"] --> L3["credo --strict"] --> L4["docs.cheatsheet --check"] --> L5["test"]
+    LINT --> L1["compile --warnings-as-errors"] --> L2["format --check-formatted"] --> L3["credo --strict"] --> L4["docs.cheatsheet --check"] --> L5["test --cover<br/>(ambang 100%)"]
 
     MAIN["Push / PR ke main"] --> BUILD["build.yml"]
-    BUILD --> T["job test (matrix)<br/>1.18/OTP 27 dan 1.20.4/OTP 29"]
+    BUILD --> T["job test (matrix)<br/>1.18/OTP 27: test<br/>1.20.4/OTP 29: test --cover"]
     BUILD --> S["job static (1.20.4/OTP 29)<br/>format, credo, docs.cheatsheet --check, dialyzer"]
 ```
 
-Semua langkah berjalan dengan `MIX_ENV=test`, sehingga satu cache `deps`/`_build` dipakai bersama. Coverage 100%
-dijaga secara konvensi (`mix test --cover`); CI belum menegakkan ambang ini.
+Semua langkah berjalan dengan `MIX_ENV=test`, sehingga satu cache `deps`/`_build` dipakai bersama.
+
+Coverage 100% ditegakkan oleh `test_coverage: [summary: [threshold: 100]]` di `mix.exs`: `mix test --cover` keluar
+dengan status non-nol kalau coverage di bawah itu. Di `build.yml`, hanya entri toolchain terbaru yang menjalankan
+`--cover`, supaya perbedaan cara compiler lama menghitung baris tidak bisa menggagalkan build. Action yang dipakai:
+`actions/checkout@v7`, `actions/cache@v6`, dan `erlef/setup-beam@v1`.
 
 ---
 

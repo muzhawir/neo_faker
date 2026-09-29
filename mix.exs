@@ -8,6 +8,8 @@ defmodule NeoFaker.MixProject do
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       dialyzer: dialyzer(),
+      # `mix test --cover` fails below this. CI runs it on the current toolchain.
+      test_coverage: [summary: [threshold: 100]],
       description: description(),
       package: package(),
       deps: deps(),

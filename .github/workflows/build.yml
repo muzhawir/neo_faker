@@ -33,12 +33,15 @@ jobs:
           # Oldest supported toolchain: mix.exs requires Elixir ~> 1.18.
           - elixir: "1.18"
             otp: "27"
-          # Current dev toolchain, kept in sync with mise.toml.
+          # Current dev toolchain, kept in sync with mise.toml. Coverage is
+          # enforced here only, so a compiler difference in how the oldest
+          # toolchain counts lines cannot fail the build.
           - elixir: "1.20.4"
             otp: "29.0.6"
+            cover: true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Elixir
         id: beam
@@ -48,7 +51,7 @@ jobs:
           otp-version: ${{ matrix.otp }}
 
       - name: Restore deps and _build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             deps
@@ -67,14 +70,19 @@ jobs:
         run: mix compile --warnings-as-errors
 
       - name: Run tests
+        if: ${{ !matrix.cover }}
         run: mix test
+
+      - name: Run tests with coverage (threshold 100%)
+        if: ${{ matrix.cover }}
+        run: mix test --cover
 
   static:
     name: Static analysis
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Elixir
         id: beam
@@ -84,7 +92,7 @@ jobs:
           otp-version: "29.0.6"
 
       - name: Restore deps and _build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             deps
@@ -94,7 +102,7 @@ jobs:
             ${{ runner.os }}-mix-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-
 
       - name: Restore Dialyzer PLT cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: priv/plts
           key: ${{ runner.os }}-plt-${{ steps.beam.outputs.otp-version }}-${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}

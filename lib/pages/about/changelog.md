@@ -80,7 +80,9 @@ through. The public API is unchanged except where noted under Breaking Changes.
 - Documentation rewritten throughout in the style of the Elixir standard library, with corrected
   examples. Both cheatsheets are now generated from the function docs by
   `mix docs.cheatsheet` (run automatically by `mix docs` and checked in CI), so they cannot drift
-  apart. `mix docs` builds without
+  apart.
+- CI enforces 100% test coverage (`mix test --cover` with a threshold in `mix.exs`) and uses
+  `actions/checkout@v7` and `actions/cache@v6`. `mix docs` builds without
   warnings.
 
 ## v0.15.0 (2026-09-06)
